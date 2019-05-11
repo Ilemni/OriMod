@@ -1,0 +1,80 @@
+Tree Upgrades
+1 - Sprout
+  Crafted from: basic items
+  Sein Upgrades: 1, 2, 3
+2 - Sapling
+  Crafted from: Mythral
+  Sein Upgrades: 4, 5, 6
+3 - Mature
+  Crafted from: Lunar Fragments
+  Sein Upgrades: 7, 8
+  
+
+Sein Upgrades
+
+Implicit rules, shoddy attempt at balancing:
+  Every even upgrade: +1 shot per burst
+  Every odd upgrade: damage increase
+  Add one exciting thing per upgrade (denoted by !)
+
+1 - Basic
+  Crafted from: Silver/Tungston
+  Tree: Sprout
+  1 Target
+  1 Shot per Burst
+  Slow rate
+  Slow speed
+  Low damage
+  Poor tracking
+
+2
+  Crafted from: Demonite/Crimsane
+  Tree: Sprout
+! + 1 Shot per Burst
+  + Slightly improved tracking
+  
+3
+  Crafted from: Hellstone
+  Tree: Sprout
+  + Damage
+! + Projectiles shoot through walls
+  + Speed
+  + Slightly improved range
+4
+  Crafted from: Mythral
+  Tree: Sapling
+  + 1 Shot per Burst
+! + 1 Target
+  + Improved tracking
+5
+  Crafted from: Hallow Bars
+  Tree: Sapling
+  + Damage
+! + 1 Pierce
+  + Improved Range
+
+6 - Master
+  Crafted from: Spectral Bars
+  Tree: Sapling
+  + Faster shooting (replacing Shots per Burst)
+  + Damage (slight)
+! + Can now target through walls (very short distance)
+  + 1 Target
+
+7
+  Crafted from: Lunar Fragments
+  Tree: Mature
+  + 1 Shots per Burst
+  
+
+8 - Divine
+  Crafted from: Lumanite Bars
+  Tree: Mature
+  + Greatly improved range (whole screen)
+  + Greatly improved range through walls (1/3 of screen)
+  + Greatly improved tracking
+  + Greatly improved speed
+  + 2 Targets
+  + 1 Shot per Burst
+  + 1 Pierce
+  - Much longer cooldown between bursts

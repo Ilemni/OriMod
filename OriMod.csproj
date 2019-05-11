@@ -1,0 +1,475 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8298EAB6-0586-4BDA-9483-83624B66B13A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OriMod</RootNamespace>
+    <AssemblyName>OriMod</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GlobalNPC.cs" />
+    <Compile Include="Items\OriPotion.cs" />
+    <Compile Include="Items\OriPotionEmpty.cs" />
+    <Compile Include="Items\SpiritSapling.cs" />
+    <Compile Include="Items\Ori\OriAccessory.cs" />
+    <Compile Include="ModPlayer.cs" />
+    <Compile Include="OriMod.cs" />
+    <Compile Include="PlayerEffects\OriGlow.cs" />
+    <Compile Include="Projectiles\bigflash.cs" />
+    <Compile Include="Projectiles\StompHitbox.cs" />
+    <Compile Include="Projectiles\OriDrown.cs" />
+    <Compile Include="Projectiles\BashHitbox.cs" />
+    <Compile Include="Tiles\SpiritSapling.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Game\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Graphics\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Microsoft.Xna.Framework.Xact\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Xact.dll</HintPath>
+    </Reference>
+    <Reference Include="ReLogic">
+      <HintPath>..\..\references\ReLogic.dll</HintPath>
+    </Reference>
+    <Reference Include="ReLogic.Content.Pipeline">
+      <HintPath>..\..\references\ReLogic.Content.Pipeline.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="Terraria">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\terraria\Terraria.exe</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Items\Sein\" />
+    <Folder Include="Sounds\Custom\NewSFX\AudioClipMP3\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="build.txt" />
+    <Content Include="description.txt" />
+    <Content Include="icon.png" />
+    <Content Include="Items\OriPotion.png" />
+    <Content Include="Items\OriPotionEmpty.png" />
+    <Content Include="Items\Ori\OriAccessory.png" />
+    <Content Include="Items\SpiritSapling.png" />
+    <Content Include="PlayerEffects\bashArrow.png" />
+    <Content Include="PlayerEffects\invisible.png" />
+    <Content Include="PlayerEffects\OriDamage.png" />
+    <Content Include="PlayerEffects\OriGlowRight.png" />
+    <Content Include="PlayerEffects\OriHead.png" />
+    <Content Include="PlayerEffects\OriPlayer.png" />
+    <Content Include="PlayerEffects\Sein.png" />
+    <Content Include="PlayerEffects\transform.png" />
+    <Content Include="Projectiles\bigflash.png" />
+    <Content Include="Projectiles\StompHitbox.png" />
+    <Content Include="Projectiles\OriDrown.png" />
+    <Content Include="Projectiles\BashHitbox.png" />
+    <Content Include="Sounds\Custom\BashCharge.mp3" />
+    <Content Include="Sounds\Custom\BashEnd1.mp3" />
+    <Content Include="Sounds\Custom\BashEnd2.mp3" />
+    <Content Include="Sounds\Custom\BashEnd3.mp3" />
+    <Content Include="Sounds\Custom\BashStart.mp3" />
+    <Content Include="Sounds\Custom\DoubleJump1.mp3" />
+    <Content Include="Sounds\Custom\DoubleJump2.mp3" />
+    <Content Include="Sounds\Custom\DoubleJump3.mp3" />
+    <Content Include="Sounds\Custom\DoubleJump4.mp3" />
+    <Content Include="Sounds\Custom\DoubleJump5.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\AbilityPedestal\abilityPedestalMusic.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\AbilityPedestal\abilityPedestalStart.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\BouncePad\bouncePadWooshA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\BouncePad\bouncePadWooshB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\BouncePad\bouncePadWooshC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Containers\energyCollectedFirstTime.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Containers\energyContainerCollected.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Containers\energyContainerCollectedFirstTime.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\HUD\inventoryPressOption.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\HUD\seinLevelUp.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\HUD\soulFlameReadySound.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Music\ginsoTreeWaterRisingLoop.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Bash\bashNoTargetB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Bash\seinBashEndA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Bash\seinBashEndB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Bash\seinBashEndC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Bash\seinBashLoopA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Bash\seinBashStartA.wav" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeDash\seinChargeDashA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeDash\seinChargeDashB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeDash\seinChargeDashC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeDash\seinChargeDashCharged.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeDash\seinChargeDashChargeStartA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeDash\seinChargeDashChargeStartB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeDash\seinChargeDashUncharge.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeJump\seinChargeJumpChargeA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeJump\seinChargeJumpJumpA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeJump\seinChargeJumpJumpB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\ChargeJump\seinChargeJumpJumpC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Dash\seinDashA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Dash\seinDashB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Dash\seinDashC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLaserA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLaserB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLaserC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLaserD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLaserE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLavaA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLavaB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLavaC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLavaD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathLavaE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathRegularA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathRegularB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathRegularC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathRegularD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathRegularE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathSpikesA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathSpikesB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathSpikesC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathSpikesD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinDeathSpikesE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinSwimmingDrowningDeathA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinSwimmingDrowningDeathB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinSwimmingDrowningDeathC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsA.wav" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\FlipJump\seinFlipJumpsGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\FlipJump\seinFlipJumpsGrassB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\FlipJump\seinFlipJumpsGrassC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Grass\seinFootstepsGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Grass\seinFootstepsGrassB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Grass\seinFootstepsGrassC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Grass\seinFootstepsGrassD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Grass\seinFootstepsGrassE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Mushroom\seinFootstepsMushroomA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Mushroom\seinFootstepsMushroomB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Mushroom\seinFootstepsMushroomC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Mushroom\seinFootstepsMushroomD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Mushroom\seinFootstepsMushroomE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Rock\seinFootstepsRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Rock\seinFootstepsRockB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Rock\seinFootstepsRockC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Rock\seinFootstepsRockD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Rock\seinFootstepsRockE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Sand\seinFootstepsSandA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Sand\seinFootstepsSandB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Sand\seinFootstepsSandC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Sand\seinFootstepsSandD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Sand\seinFootstepsSandE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Sand\seinFootstepsSandF.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Sand\seinFootstepsSandG.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Sand\seinFootstepsSandH.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowF.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowG.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowH.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowI.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Snow\seinFootstepsSnowJ.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Rock\seinSpiritTreeFootstepsRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Rock\seinSpiritTreeFootstepsRockB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Rock\seinSpiritTreeFootstepsRockC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Rock\seinSpiritTreeFootstepsRockD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Rock\seinSpiritTreeFootstepsRockE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Wood\seinSpiritTreeFootstepsWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Wood\seinSpiritTreeFootstepsWoodB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Wood\seinSpiritTreeFootstepsWoodC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Wood\seinSpiritTreeFootstepsWoodD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\SpiritTree\Wood\seinSpiritTreeFootstepsWoodE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Water\seinFootstepsWaterA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Water\seinFootstepsWaterB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Water\seinFootstepsWaterC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Water\seinFootstepsWaterD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Wood\seinFootstepsWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Wood\seinFootstepsWoodB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Wood\seinFootstepsWoodC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Wood\seinFootstepsWoodD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Footsteps\Wood\seinFootstepsWoodE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGildeEndA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGildeEndB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGildeEndC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGlideLoopA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGlideMoveLeftRightA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGlideMoveLeftRightB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGlideMoveLeftRightC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGlideMoveLeftRightD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGlideMoveLeftRightE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGlideStartA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGlideStartB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Glide\seinGlideStartC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimDirectionSwitchA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimDirectionSwitchB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimDirectionSwitchC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimLoop.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimStartA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimStartB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimStartC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimStopA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimStopB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeAimStopC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeBounceA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeBounceB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeBounceC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeEnterWaterA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeEnterWaterB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeEnterWaterC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeExplodeA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeExplodeB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeLoop.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeThrowA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeThrowB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Grenade\seinGrenadeThrowC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinBadlyHurtRegularA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinBadlyHurtRegularB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinBadlyHurtRegularC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinBadlyHurtRegularD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinBadlyHurtRegularE.wav" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinHurtRegularA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinHurtRegularB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinHurtRegularC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinHurtRegularD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Hurt\seinHurtRegularE.wav" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Jump\seinJumpsGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Jump\seinJumpsGrassB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Jump\seinJumpsGrassC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Jump\seinJumpsGrassD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Jump\seinJumpsGrassE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Jump\seinJumpsRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Jump\seinJumpsWaterA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Jump\seinJumpsWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Grass\seinLandsGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Grass\seinLandsGrassB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Mushroom\seinLandsMushroomA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Mushroom\seinLandsMushroomB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Mushroom\seinLandsMushroomC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Mushroom\seinLandsMushroomD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Mushroom\seinLandsMushroomE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Rock\seinLandsRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Rock\seinLandsRockB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Rock\seinLandsRockC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Water\seinLandsWaterA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Water\seinLandsWaterB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Water\seinLandsWaterC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Water\seinLandsWaterD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Water\seinLandsWaterE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Wood\seinLandsWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Wood\seinLandsWoodB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Wood\seinLandsWoodC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Wood\seinLandsWoodD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Land\Wood\seinLandsWoodE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\MiscVoice\caveBeforeWakeUp.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\MiscVoice\seinIdleYawn.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpinJump\seinSpinJumpA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpinJump\seinSpinJumpB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpinJump\seinSpinJumpC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpinJump\seinSpinJumpD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpinJump\seinSpinJumpE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\Charge\seinSpiritFlameChargeEndA.wav" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\Charge\seinSpiritFlameChargeEndB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\Charge\seinSpiritFlameChargeEndC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\Charge\seinSpiritFlameChargeLoopA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\Charge\seinSpiritFlameChargeLoopB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\Charge\seinSpiritFlameChargeStartA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitLevelBA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitLevelBB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitLevelBC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitLevelCA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitLevelCB.wav" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitLevelCC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitLevelDA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitLevelDB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardHitLevelDC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardKillLevelA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardKillLevelB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardKillLevelC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardKillLevelD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowLevelBA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowLevelBB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowLevelBC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowLevelCA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowLevelCB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowLevelCC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowLevelDA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowLevelDB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\SpiritFlame\seinSpiritFlameStandardThrowLevelDC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Stomp\seinStompFallA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Stomp\seinStompFallB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Stomp\seinStompFallC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Stomp\seinStompImpactA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Stomp\seinStompImpactB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Stomp\seinStompImpactC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Stomp\seinStompStartA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Stomp\seinStompStartB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Stomp\seinStompStartC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\TripleJump\seinTripleJumpsA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\TripleJump\seinTripleJumpsB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\TripleJump\seinTripleJumpsC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\TripleJump\seinTripleJumpsD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\TripleJump\seinTripleJumpsE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Grass\seinWallClimbEnterGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Grass\seinWallClimbEnterGrassB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Grass\seinWallClimbEnterGrassC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Grass\seinWallClimbEnterGrassD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Grass\seinWallClimbEnterGrassE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Rock\seinWallClimbEnterRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Rock\seinWallClimbEnterRockB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Rock\seinWallClimbEnterRockC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Rock\seinWallClimbEnterRockD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Rock\seinWallClimbEnterRockE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Wood\seinWallClimbEnterWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Wood\seinWallClimbEnterWoodB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Wood\seinWallClimbEnterWoodC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Wood\seinWallClimbEnterWoodD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Enter\Wood\seinWallClimbEnterWoodE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Grass\seinWallClimbExitGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Grass\seinWallClimbExitGrassB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Grass\seinWallClimbExitGrassC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Grass\seinWallClimbExitGrassD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Grass\seinWallClimbExitGrassE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Rock\seinWallClimbExitRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Rock\seinWallClimbExitRockB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Rock\seinWallClimbExitRockC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Rock\seinWallClimbExitRockD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Rock\seinWallClimbExitRockE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Wood\seinWallClimbExitWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Wood\seinWallClimbExitWoodB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Wood\seinWallClimbExitWoodC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Wood\seinWallClimbExitWoodD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Exit\Wood\seinWallClimbExitWoodE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Grass\seinWallClimbStepsGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Grass\seinWallClimbStepsGrassB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Grass\seinWallClimbStepsGrassC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Grass\seinWallClimbStepsGrassD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Grass\seinWallClimbStepsGrassE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Rock\seinWallClimbStepsRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Rock\seinWallClimbStepsRockB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Rock\seinWallClimbStepsRockC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Rock\seinWallClimbStepsRockD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Rock\seinWallClimbStepsRockE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Wood\seinWallClimbStepsWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Wood\seinWallClimbStepsWoodB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Wood\seinWallClimbStepsWoodC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Wood\seinWallClimbStepsWoodD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallClimb\Steps\Wood\seinWallClimbStepsWoodE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallJump\seinWallJumpsA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallJump\seinWallJumpsB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallJump\seinWallJumpsC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallJump\seinWallJumpsD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallJump\seinWallJumpsE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideDown\seinWallSlideDownGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideDown\seinWallSlideDownGrassB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideDown\seinWallSlideDownLightDarkPlatform.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideDown\seinWallSlideDownMushroomA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideDown\seinWallSlideDownRock.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideDown\seinWallSlideDownWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideDown\seinWallSlideDownWoodB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Rock\seinWallSlideEnterRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Rock\seinWallSlideEnterRockB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Rock\seinWallSlideEnterRockC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Rock\seinWallSlideEnterRockD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Rock\seinWallSlideEnterRockE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\seinWallSlideEnterGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\seinWallSlideEnterMushroomA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Wood\seinWallSlideEnterWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Wood\seinWallSlideEnterWoodB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Wood\seinWallSlideEnterWoodC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Wood\seinWallSlideEnterWoodD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideEnter\Wood\seinWallSlideEnterWoodE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Grass\seinWallSlideExitGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Grass\seinWallSlideExitGrassB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Grass\seinWallSlideExitGrassC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Grass\seinWallSlideExitGrassD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Grass\seinWallSlideExitGrassE.wav" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Rock\seinWallSlideExitRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Rock\seinWallSlideExitRockB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Rock\seinWallSlideExitRockC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Rock\seinWallSlideExitRockD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Rock\seinWallSlideExitRockE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\seinWallSlideExitMushroomA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Wood\seinWallSlideExitWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Wood\seinWallSlideExitWoodB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Wood\seinWallSlideExitWoodC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Wood\seinWallSlideExitWoodD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideExit\Wood\seinWallSlideExitWoodE.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideUp\seinWallSlideUpGrassA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideUp\seinWallSlideUpMushroomA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideUp\seinWallSlideUpRockA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\WallSlide\SlideUp\seinWallSlideUpWoodA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\bashIntoWater.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingBoostA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingBoostB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingBoostC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingBoostD.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingEmergeHighBreathA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingEmergeHighBreathB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingEmergeHighBreathC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingEmergeLoBreathA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingEmergeLoBreathB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingEmergeLoBreathC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingEmergeMedBreathA.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingEmergeMedBreathB.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingEmergeMedBreathC.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingPaddlingSurface.wav" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\Water\seinSwimmingPaddlingUnderwater.wav" />
+    <Content Include="Sounds\Custom\NewSFX\SavePoints\checkpointCantPlaceSound.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\SavePoints\checkpointSpawnSound.mp3" />
+    <Content Include="Sounds\Custom\NewSFX\SavePoints\hint.mp3" />
+    <Content Include="Sounds\Custom\OriDamage1.mp3" />
+    <Content Include="Sounds\Custom\OriDamage2.mp3" />
+    <Content Include="Sounds\Custom\OriDash1.mp3" />
+    <Content Include="Sounds\Custom\OriDash2.mp3" />
+    <Content Include="Sounds\Custom\OriDash3.mp3" />
+    <Content Include="Tiles\SpiritSapling.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"C:\Program Files (x86)\Steam\steamapps\common\Terraria\tModLoaderServer.exe" -build "$(ProjectDir)\" -eac "$(TargetPath)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

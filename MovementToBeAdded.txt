@@ -1,0 +1,22 @@
+Specific movement traits in Blind Forest to be implemented here
+https://kb.speeddemosarchive.com/Ori/Techniques_and_Glitches
+
+Dash:
+  Dash lasts for 24 frames
+  On a ground dash, a ground jump can be done 6 frames after no longer grounded
+
+CDash:
+  CDash also lasts 24 frames
+  CDash should target the nearest enemy with line of sight
+  If cancelled 12 frames in (via Bash or Stomp), energy spent on that CDash is refunded
+  If jumping, momentum at that time is preserved
+
+Glide:
+  Glide is only available, and always available, when not grounded and falling
+
+Bash:
+  Lasts a minimum of 2/3 of a second (40 frames)
+  If Bash button is released and pressed an instant later, a double bash is performed
+  If Bash button is released and the bash angle changes the frame after, a trash bash is performed
+  If no movement button is held, horizontal speed caused from the bash is preserved
+    Bash Gliding is a known speedrunning technique as a result
