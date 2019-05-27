@@ -31,17 +31,23 @@
     - The Spirit Orb is used to summon Sein
     - This item can be upgraded throughout your playthrough
 - Added the minion Sein
+    - Moves like Sein
+    - Shoots like Sein... sorta
     - Uses 0 Minion slots
     - Maximum 1 active per player
     - Upgraded versions of the Spirit Orb summon a stronger variant of Sein.
-### Bug FIxes
+        - There is little balancing done for Sein. The damage and other factors may be adjusted in the future.
+### Bug Fixes
 - The Spirit Guardian state is now properly synced among clients.
 - Lunar armors no longer caused Spirit Guardian animations to animate at unintended speeds.
+- Double Jump is now usable after Bashing or Wall Jumping
 
 ## Known Issues
 - Multiplayer syncing for movement doesn't account for Double or Triple Jumping.
 - Lunar armors cause the Spirit Guardian's trails to animate improperly.
 - Other mods may cause Spirit Guardian movement to behave abnormally.
+- Ori is not properly affected by the Mighty Winds debuff.
+- Sein may occasionally disappear unexpectedly. The cause for this is currently unknown. Simply cancel your Sein buff and resummon.
 
 ## To be added
 - Spirit Light ability upgrade system

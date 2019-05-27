@@ -33,33 +33,22 @@ namespace OriMod.Items {
 		public override bool AltFunctionUse(Player player) {
 			return true;
 		}
-		public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack) {
-			if (player.altFunctionUse != 2) {
-				OriPlayer modPlayer = player.GetModPlayer<OriPlayer>(mod);
-				if (!modPlayer.seinMinionActive) {
-					modPlayer.seinMinionActive = true;
-					modPlayer.seinMinionUpgrade = upgrade;
-				}
-				else {
-					// Identical Sein upgrade: do nothing
-					if (modPlayer.seinMinionUpgrade == upgrade) {
-						return false;
-					}
-					// Replace different Sein
-					else {
-						modPlayer.RemoveSeinBuffs(exclude:upgrade);
-						modPlayer.seinMinionUpgrade = upgrade;
-						return true;
-					}
-				}
+		public override bool CanUseItem(Player player) {
+			OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
+			if (player.altFunctionUse == 2) {
+				return false;
 			}
+			if (oPlayer.seinMinionActive && oPlayer.seinMinionUpgrade == upgrade) return false;
+			return true;
+		}
+		public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack) {
+			OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+			oPlayer.RemoveSeinBuffs(exclude:upgrade);
+			oPlayer.seinMinionUpgrade = upgrade;
+			oPlayer.seinMinionActive = true;
 			return true;
 		}
 		public override bool UseItem(Player player) {
-			OriPlayer modPlayer = player.GetModPlayer<OriPlayer>(mod);
-			if (modPlayer.seinMinionActive) {
-				return true;
-			}
 			if(player.altFunctionUse == 2) {
 				player.MinionNPCTargetAim();
 			}

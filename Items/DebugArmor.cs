@@ -19,13 +19,13 @@ namespace OriMod.Items {
 			item.height = 18;
 			item.rare = 10;
       item.value = 90000000;
-      item.defense = 5000;
 		}
 
 		public override void UpdateEquip(Player player)
 		{
       player.noKnockback = true;
 			player.maxMinions++;
+			player.immune = true;
 		}
     public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit) {
       player.statLife = player.statLifeMax;

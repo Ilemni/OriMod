@@ -4,41 +4,41 @@ Connon.OriPotion=Spirit Potion
 
 ItemName.SpiritOrb1={$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff1={$Mods.OriMod.Common.Sein}
-ItemTooltip.SpiritOrb1=Calls forth a new ally.
+ItemTooltip.SpiritOrb1=Calls forth a familiar ally.
 BuffDescription.SeinBuff1="The eyes of the Spirit Tree."
 
-ItemName.SpiritOrb2={$Mods.OriMod.Common.SpiritOrb} (Tier 2)
-BuffName.SeinBuff2={$Mods.OriMod.Common.Sein} (Tier 2)
+ItemName.SpiritOrb2=Darkened {$Mods.OriMod.Common.SpiritOrb}
+BuffName.SeinBuff2={$Mods.OriMod.Common.Sein} (Darkened)
 ItemTooltip.SpiritOrb2=Calls forth a trusty companion.
-BuffDescription.SeinBuff2="The wrath of the Spirit Tree, toughened by evil forces."
+BuffDescription.SeinBuff2="The wrath of the Spirit Tree, sharpened by evil forces."
 
-ItemName.SpiritOrb3={$Mods.OriMod.Common.SpiritOrb} (Tier 3)
-BuffName.SeinBuff3={$Mods.OriMod.Common.Sein} (Tier 3)
+ItemName.SpiritOrb3=Blazing {$Mods.OriMod.Common.SpiritOrb}
+BuffName.SeinBuff3={$Mods.OriMod.Common.Sein} (Blazed)
 ItemTooltip.SpiritOrb3=Calls forth a reliable friend.
 BuffDescription.SeinBuff3="The fury of the Spirit Tree, reinforced by the inferno."
 
-ItemName.SpiritOrb4={$Mods.OriMod.Common.SpiritOrb} (Tier 4)
-BuffName.SeinBuff4={$Mods.OriMod.Common.Sein} (Tier 4)
+ItemName.SpiritOrb4=Focused {$Mods.OriMod.Common.SpiritOrb}
+BuffName.SeinBuff4={$Mods.OriMod.Common.Sein} (Focused)
 ItemTooltip.SpiritOrb4=Calls forth a dependable partner.
 BuffDescription.SeinBuff4="The focus of the Spirit Tree, fortified by serene metal."
 
-ItemName.SpiritOrb5={$Mods.OriMod.Common.SpiritOrb} (Tier 5)
-BuffName.SeinBuff5={$Mods.OriMod.Common.Sein} (Tier 5)
+ItemName.SpiritOrb5=Divine {$Mods.OriMod.Common.SpiritOrb}
+BuffName.SeinBuff5={$Mods.OriMod.Common.Sein} (Divine)
 ItemTooltip.SpiritOrb5=Calls forth your honorable comrade.
 BuffDescription.SeinBuff5="The light of the Spirit Tree, illuminated by holy essence."
 
-ItemName.SpiritOrb6={$Mods.OriMod.Common.SpiritOrb} (Tier 6)
-BuffName.SeinBuff6={$Mods.OriMod.Common.Sein} (Tier 6)
+ItemName.SpiritOrb6=Spiritual {$Mods.OriMod.Common.SpiritOrb}
+BuffName.SeinBuff6={$Mods.OriMod.Common.Sein} (Spiritual)
 ItemTooltip.SpiritOrb6=Calls forth your soul mate.
 BuffDescription.SeinBuff6="The intuition of the Spirit Tree, amplified by the supernatural."
 
-ItemName.SpiritOrb7={$Mods.OriMod.Common.SpiritOrb} (Tier 7)
-BuffName.SeinBuff7={$Mods.OriMod.Common.Sein} (Tier 7)
+ItemName.SpiritOrb7=Ascended {$Mods.OriMod.Common.SpiritOrb}
+BuffName.SeinBuff7={$Mods.OriMod.Common.Sein} (Ascended)
 ItemTooltip.SpiritOrb7=Calls forth the oracle of the Spirit Tree.
 BuffDescription.SeinBuff7="The presence of the Spirit Tree, brought forth by higher forces."
 
-ItemName.SpiritOrb8={$Mods.OriMod.Common.SpiritOrb} (Tier 8)
-BuffName.SeinBuff8={$Mods.OriMod.Common.Sein} (Tier 8)
+ItemName.SpiritOrb8=Grandmaster {$Mods.OriMod.Common.SpiritOrb}
+BuffName.SeinBuff8={$Mods.OriMod.Common.Sein} (Grandmaster)
 ItemTooltip.SpiritOrb8=Calls forth the full might of the Spirit Tree.
 BuffDescription.SeinBuff8="The ultimate power of the Spirit Tree."
 
@@ -53,3 +53,6 @@ ItemTooltip.SpiritSapling1=A gift from the Spirit Tree
 
 ItemName.SpiritSapling2=Spirit Sapling
 ItemTooltip.SpiritSapling2=A young Spirit Tree still in early growth.
+
+ItemName.SpiritSapling3=Spirit Tree
+ItemTooltip.SpiritSapling3=A fully grown Spirit Tree, smaller in size than thee most powerful ones.

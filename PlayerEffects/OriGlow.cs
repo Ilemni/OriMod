@@ -14,8 +14,7 @@ namespace OriMod.PlayerEffects {
       dust.velocity = new Vector2(0, 0);
       dust.rotation = 0;
       dust.alpha += 4;
-      if (dust.alpha >= 255)
-      {
+      if (dust.alpha >= 255) {
         dust.active = false;
       }
       return false;

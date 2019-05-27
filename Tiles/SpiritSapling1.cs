@@ -37,13 +37,13 @@ namespace OriMod.Tiles {
       if (oPlayer.animatedTransform) {
         if (!oPlayer.OriSet && !oPlayer.transforming) {
           oPlayer.blockLocation = new Vector2(i, j) * 16;
-          oPlayer.Transformation(player);
-          Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/AbilityPedestal/abilityPedestalMusic"), player.position);
-          Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/AbilityPedestal/abilityPedestalStart"), player.position);
+          oPlayer.DoTransformation(player);
+          oPlayer.PlayNewSound("AbilityPedestal/abilityPedestalMusic");
+          oPlayer.PlayNewSound("AbilityPedestal/abilityPedestalStart");
         }
         else if (!oPlayer.transforming) {
           oPlayer.OriSet = false;
-          oPlayer.OriSetPrevious = false;
+          oPlayer.OriSet = false;
           oPlayer.counterTimer = 0;
           oPlayer.countering = false;
           for (int m = 0; m < 100; m++) { //does particles
@@ -56,13 +56,13 @@ namespace OriMod.Tiles {
         }
       }
       else {
-        if (!oPlayer.OriSetPrevious) {
+        if (!oPlayer.OriSet) {
           oPlayer.OriSet = true;
-          oPlayer.OriSetPrevious = true;
+          oPlayer.OriSet = true;
         }
         else {
           oPlayer.OriSet = false;
-          oPlayer.OriSetPrevious = false;
+          oPlayer.OriSet = false;
           oPlayer.counterTimer = 0;
           oPlayer.countering = false;
         }

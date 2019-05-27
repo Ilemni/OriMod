@@ -22,13 +22,13 @@ namespace OriMod.Items {
 
 		// Note that this item does not work in Multiplayer, but serves as a learning tool for other things.
 		public override bool UseItem(Player player) {
-      if (!player.GetModPlayer<OriPlayer>().OriSetPrevious) {
+      if (!player.GetModPlayer<OriPlayer>().OriSet) {
         player.GetModPlayer<OriPlayer>().OriSet = true;
-        player.GetModPlayer<OriPlayer>().OriSetPrevious = true;
+        player.GetModPlayer<OriPlayer>().OriSet = true;
       }
       else {
         player.GetModPlayer<OriPlayer>().OriSet = false;
-        player.GetModPlayer<OriPlayer>().OriSetPrevious = false;
+        player.GetModPlayer<OriPlayer>().OriSet = false;
         player.GetModPlayer<OriPlayer>().counterTimer = 0;
         player.GetModPlayer<OriPlayer>().countering = false;
       }

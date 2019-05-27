@@ -18,6 +18,11 @@ namespace OriMod.Items {
 			recipe.AddTile(mod.GetTile("SpiritSapling1"));
 			recipe.SetResult(this);
 			recipe.AddRecipe();
+
+			recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.DirtBlock);
+			recipe.SetResult(this);
+			recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb2 : SpiritOrbBase {
@@ -39,6 +44,11 @@ namespace OriMod.Items {
 			recipe.AddTile(mod.GetTile("SpiritSapling1"));
 			recipe.SetResult(this);
 			recipe.AddRecipe();
+
+			recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.DirtBlock);
+			recipe.SetResult(this);
+			recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb3 : SpiritOrbBase {
@@ -51,6 +61,11 @@ namespace OriMod.Items {
 			recipe.AddIngredient(mod.GetItem("SpiritOrb2"));
 			recipe.AddIngredient(ItemID.HellstoneBar, 15);
 			recipe.AddTile(mod.GetTile("SpiritSapling1"));
+			recipe.SetResult(this);
+			recipe.AddRecipe();
+
+			recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.DirtBlock);
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 		}
@@ -76,6 +91,11 @@ namespace OriMod.Items {
 			recipe.AddTile(mod.GetTile("SpiritSapling1"));
 			recipe.SetResult(this);
 			recipe.AddRecipe();
+
+			recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.DirtBlock);
+			recipe.SetResult(this);
+			recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb5 : SpiritOrbBase {
@@ -91,6 +111,11 @@ namespace OriMod.Items {
 			recipe.AddTile(mod.GetTile("SpiritSapling1"));
 			recipe.SetResult(this);
 			recipe.AddRecipe();
+
+			recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.DirtBlock);
+			recipe.SetResult(this);
+			recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb6 : SpiritOrbBase {
@@ -104,6 +129,11 @@ namespace OriMod.Items {
 			recipe.AddIngredient(ItemID.SpectreBar, 12);
 			recipe.AddIngredient(ItemID.SoulofLight, 15);
 			recipe.AddTile(mod.GetTile("SpiritSapling1"));
+			recipe.SetResult(this);
+			recipe.AddRecipe();
+
+			recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.DirtBlock);
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 		}
@@ -124,6 +154,11 @@ namespace OriMod.Items {
 			recipe.AddTile(mod.GetTile("SpiritSapling1"));
 			recipe.SetResult(this);
 			recipe.AddRecipe();
+
+			recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.DirtBlock);
+			recipe.SetResult(this);
+			recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb8 : SpiritOrbBase {
@@ -141,6 +176,11 @@ namespace OriMod.Items {
 			recipe.AddIngredient(ItemID.FragmentStardust, 10);
 			recipe.AddIngredient(ItemID.SoulofLight, 30);
 			recipe.AddTile(mod.GetTile("SpiritSapling1"));
+			recipe.SetResult(this);
+			recipe.AddRecipe();
+
+			recipe = new ModRecipe(mod);
+			recipe.AddIngredient(ItemID.DirtBlock);
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 		}

@@ -36,6 +36,7 @@ namespace OriMod.Projectiles.Minions {
 			speed = u.projectileSpeedStart;
 			acceleration = u.projectileSpeedIncreaseRate;
 			accelDelay = u.projectileSpeedIncreaseDelay;
+			projectile.maxPenetrate = u.pierce;
 			projectile.tileCollide = u.tileCollide;
 			projectile.width = u.flameWidth;
 			projectile.height = u.flameHeight;
@@ -56,6 +57,19 @@ namespace OriMod.Projectiles.Minions {
 			dustWidth = 10;
 			dustHeight = 10;
 		}
+		public void CreateDust() {
+			int dust = Dust.NewDust(projectile.position, dustWidth, dustHeight, dustType);
+			Main.dust[dust].scale = dustScale;
+			if (projectile.velocity == Vector2.Zero) {
+				Main.dust[dust].velocity.Y -= 1f;
+			} else {
+				Main.dust[dust].velocity = projectile.velocity * 0.05f;
+			}
+			
+			Main.dust[dust].rotation = (float)(Math.Atan2(projectile.velocity.Y, projectile.velocity.X) - (Math.PI/180 * 270));
+			Main.dust[dust].position = projectile.Center;
+			Main.dust[dust].noGravity = true;
+		}
 
 		public override void AI() {
 			Lighting.AddLight(projectile.Center, color.ToVector3() * lightStrength);
@@ -71,7 +85,7 @@ namespace OriMod.Projectiles.Minions {
 			}
 			// Increase homing strength over time
 			if (currLerpDelay < lerpDelay) {
-				currLerpDelay += 1;
+				currLerpDelay++;
 			} else {
 				if (lerp > 1) {
 					lerp = 1;
@@ -81,7 +95,7 @@ namespace OriMod.Projectiles.Minions {
 			}
 			// Increase speed over time
 			if (currAccelDelay <= accelDelay) {
-				currAccelDelay += 1;
+				currAccelDelay++;
 			}
 			if (currAccelDelay > accelDelay) {
 				speed += acceleration;
@@ -113,18 +127,10 @@ namespace OriMod.Projectiles.Minions {
 			Vector2 newVelocity = Vector2.Lerp(currVelocity, currDist, lerp);
 			newVelocity *= speed;
 			projectile.velocity = newVelocity;
+			CreateDust();
+		}
+		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
 			
-			int dust = Dust.NewDust(projectile.position, dustWidth, dustHeight, dustType);
-			Main.dust[dust].scale = dustScale;
-			if (projectile.velocity == Vector2.Zero) {
-				Main.dust[dust].velocity.Y -= 1f;
-			} else {
-				Main.dust[dust].velocity = projectile.velocity * 0.05f;
-			}
-			
-			Main.dust[dust].rotation = (float)(Math.Atan2(projectile.velocity.Y, projectile.velocity.X) - (Math.PI/180 * 270));
-			Main.dust[dust].position = projectile.Center;
-			Main.dust[dust].noGravity = true;
 		}
 
 		// public override bool OnTileCollide(Vector2 oldVelocity)
