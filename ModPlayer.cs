@@ -1507,7 +1507,7 @@ namespace OriMod
       Vector2 position = drawPlayer.position;
 
       // modPlayer.UpdateTrail(drawPlayer);
-      for (int i = 0; i <= 25; i++) {
+      for (int i = 0; i < 26; i++) {
         oPlayer.trailAlpha[i] -= 4;
         if (oPlayer.trailAlpha[i] < 0) {
           oPlayer.trailAlpha[i] = 0;
@@ -1527,7 +1527,7 @@ namespace OriMod
           oPlayer.trailAlpha[oPlayer.trailUpdate] = 104;
         }
       }
-      for (int i = 0; i <= 25; i++) {
+      for (int i = 0; i < 26; i++) {
         SpriteEffects effect = SpriteEffects.None;
 
         if (oPlayer.trailDirection[i] == -1) {
