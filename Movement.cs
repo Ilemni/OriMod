@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Terraria;
 using Terraria.GameInput;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -72,6 +73,13 @@ namespace OriMod {
     public byte bashCurrNPC = 255;
     public int bashCurrTime = 0;
     public float bashCurrAngle = 0;
+
+    public const int stompStartDur = 24;
+    public const int stompMinDur = 60;
+    public const float stompGrav = 4f;
+    public const float stompMaxFallSpeed = 28f;
+    public int stompCurrDur = 0;
+    public Projectile stompProj;
 
     public const float glideMaxFallSpeed = 2f;
     public const float glideRunSlowdown = 0.125f;
@@ -158,15 +166,47 @@ namespace OriMod {
     public void Stomp() {
       switch (GetState("Stomp")) {
         case State.Starting: {
+          if (stompCurrDur == 0) {
+            oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + OriPlayer.RandomChar(3), 1f, 0.2f);
+          }
+          player.velocity.X = 0;
+          player.velocity.Y *= 0.9f;
+          player.gravity = -0.1f;
           break;
         }
         case State.Active: {
-          oPlayer.tempInvincibility = true;
+          if (stompCurrDur == 0) {
+            oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + OriPlayer.RandomChar(3));
+            stompProj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
+          }
+          player.velocity.X = 0;
+          player.gravity = stompGrav;
+          player.maxFallSpeed = stompMaxFallSpeed;
+          player.immune = true;
+          break;
+        }
+        case State.Ending: {
+          oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + OriPlayer.RandomChar(3));
+          Vector2 position = new Vector2(player.position.X, player.position.Y + 32);
+          for (int i = 0; i < 25; i++) { // does particles
+            Dust dust = Main.dust[Terraria.Dust.NewDust(position, 30, 15, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
+            dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
+            dust.velocity *= new Vector2(2, 0.5f);
+            if (dust.velocity.Y > 0) {
+              dust.velocity.Y = -dust.velocity.Y;
+            }
+          }
+          stompProj.width = 600;
+          stompProj.height = 320;
           break;
         }
         default:
-          break;
+          return;
       }
+      player.controlUp = false;
+      player.controlDown = false;
+      player.controlLeft = false;
+      player.controlRight = false;
     }
     public void Glide() {
       switch (GetState("Glide")) {
@@ -368,6 +408,7 @@ namespace OriMod {
           if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Cart)) {
             SetState("AirJump", State.Active);
             airJumpCurrTime = 0;
+            SetState("Stomp", State.CanUse);
           }
         }
       }
@@ -377,11 +418,31 @@ namespace OriMod {
       }
       
       if (IsUnlocked("Stomp")) {
-        if (PlayerInput.Triggers.JustPressed.Down && !oPlayer.isGrounded && !IsInUse("Stomp") && !IsInUse("Dash") && !IsInUse("ChargeDash") && !IsInUse("Glide")) {
-          SetState("Stomp", State.Starting);
+        if (!oPlayer.isGrounded && !IsInUse("Stomp") && !IsInUse("Dash") && !IsInUse("ChargeDash") && !IsInUse("Glide")) {
+          SetState("Stomp", State.CanUse);
         }
-        if (IsState("Stomp", State.Starting)) {
-
+        if (PlayerInput.Triggers.JustPressed.Down && CanUse("Stomp")) {
+          SetState("Stomp", State.Starting);
+          stompCurrDur = 0;
+        }
+        else if (IsState("Stomp", State.Starting)) {
+          stompCurrDur++;
+          if (stompCurrDur > stompStartDur) {
+            stompCurrDur = 0;
+            SetState("Stomp", State.Active);
+          }
+        }
+        else if (IsState("Stomp", State.Active)) {
+          stompCurrDur++;
+          if (stompCurrDur > stompMinDur && !PlayerInput.Triggers.Current.Down) {
+            SetState("Stomp", State.CanUse);
+          }
+          if (oPlayer.isGrounded) {
+            SetState("Stomp", State.Ending);
+          }
+        }
+        else if (IsState("Stomp", State.Ending)) {
+          SetState("Stomp", State.Disable);
         }
       }
 

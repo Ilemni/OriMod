@@ -84,14 +84,6 @@ namespace OriMod
     public int outLookUpTimer = 0;
 
     // Variables relating to Stomping
-    public bool intoStomp = false;
-    public bool stomping = false;
-    public bool outOfStomp = false;
-    public int intoStompTimer = 0;
-    public int stompingTimer = 0;
-    public int outOfStompTimer = 0;
-    public float preHeight = 0;
-    public int stompHitboxTimer = 0;
     public bool waterBreath = false; // Only used in Save/Load
 
     // Variables relating to Crouching
@@ -336,12 +328,12 @@ namespace OriMod
         Increment("Bash");
         return;
       }
-      if (intoStomp) {
+      if (Movement.IsState("Stomp", MovementHandler.State.Starting)) {
         Increment("AirJump");
         AnimRads = AnimTime;
         return;
       }
-      if (stomping) {
+      if (Movement.IsState("Stomp", MovementHandler.State.Active)) {
         Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideMeta:new Vector3(0,2,0));
         return;
       }
@@ -721,32 +713,10 @@ namespace OriMod
       }
 
       if (!OriSet) { return; }
-      if (player.mount.Cart) {
-        intoStomp = false;
-        intoStompTimer = 0;
-        stomping = false;
-        stompingTimer = 0;
-        outOfStomp = false;
-        outOfStompTimer = 0;
-      }
       // Moves that shouldn't execute when doing other broad specified actions
       if (!player.pulley && !player.minecartLeft && !player.mount.Active && !player.mount.Cart) {
         // Climbing
         // Stomp
-        if (
-          PlayerInput.Triggers.JustPressed.Down &&
-          !isGrounded &&
-          !bashActive &&
-          !intoStomp &&
-          !stomping &&
-          !onWall
-        ) {
-          intoStomp = true;
-          intoStompTimer = 24;
-          player.velocity.X = 0;
-          PlayNewSound("Ori/Stomp/seinStompStart" + RandomChar(3), 1f, 0.2f);
-          preHeight = player.position.Y;
-        }
         // Crouch
         if (
           PlayerInput.Triggers.JustPressed.Down &&
@@ -924,78 +894,13 @@ namespace OriMod
             outCrouchTimer = 0;
           }
         }
-        if (outOfStomp) {
-          player.controlUp = false;
-          player.controlDown = false;
-          player.controlLeft = false;
-          player.controlRight = false;
-          if (outOfStompTimer == 0 || Movement.IsInUse("Dash") || bashActive || Movement.IsInUse("AirJump")) {
-            outOfStomp = false;
-            outOfStompTimer = 0;
-          }
-        }
-        if (stomping) {
-          player.controlUp = false;
-          player.controlDown = false;
-          player.controlLeft = false;
-          player.controlRight = false;
-          tempInvincibility = true;
-          immuneTimer = 15;
-          stompHitboxTimer = 3;
-          if (PlayerInput.Triggers.JustPressed.Jump) {
-            stomping = false;
-            outOfStomp = true;
-            outOfStompTimer = 10;
-          }
-          if (isGrounded) {
-            stomping = false;
-            PlayNewSound("Ori/Stomp/seinStompImpact" + RandomChar(3));
-            Vector2 position = new Vector2(player.position.X, player.position.Y + 32);
-            for (int i = 0; i < 25; i++) { // does particles
-              Dust dust = Main.dust[Terraria.Dust.NewDust(position, 30, 15, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
-              dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
-              dust.velocity *= new Vector2(2, 0.5f);
-              if (dust.velocity.Y > 0) {
-                dust.velocity.Y = -dust.velocity.Y;
-              }
-            }
-          }
-          if (stompingTimer == 0) {
-            stomping = false;
-          }
-        }
-        if (intoStomp) {
-          player.controlUp = false;
-          player.controlDown = false;
-          player.controlLeft = false;
-          player.controlRight = false;
-          if (intoStompTimer == 0) {
-            intoStomp = false;
-            stomping = true;
-            stompingTimer = 20;
-            PlayNewSound("Ori/Stomp/seinStompFall" + RandomChar(3));
-            stompHitboxTimer = 3;
-            Projectile.NewProjectile(player.Center, new Vector2(0, 0), mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1);
-          }
-          if (player.velocity.Y > 0) {
-            player.velocity.Y /= 3;
-          }
-          if (player.velocity.Y < -2) {
-            player.velocity.Y = -2;
-          }
-          // if (PlayerInput.Triggers.JustPressed.Jump && jumpsAvailable > 0) { TODO: Stomp affected by DJump
-          //   intoStompTimer = 0;
-          //   intoStomp = false;
-          //   player.position.Y = preHeight;
-          // }
-        }
       }
       // Bashing
       if (
         OriMod.BashKey.JustPressed &&
         bashActivate == 0 &&
         !Movement.IsInUse("Dash") && // Bash should be available during Dash
-        !intoStomp &&  // Bash should be available during Stomp
+        !Movement.IsInUse("Stomp") &&  // Bash should be available during Stomp
         abilityBash
       ) {
         bashActivate = 3;
@@ -1073,7 +978,7 @@ namespace OriMod
         PlayNewSound("Ori/Bash/seinBashEnd" + RandomChar(3), /*0.7f*/ Main.soundVolume);
         unrestrictedMovement = true;
         player.velocity = new Vector2((float)(0 - (Math.Cos(bashAngle) * bashDistance)), (float)(0 - (Math.Sin(bashAngle) * bashDistance)));
-        player.velocity.Y = player.velocity.Y / 1.3f;
+        player.velocity.Y /= 1.3f;
         bashActivate = 50;
         tempInvincibility = true;
         immuneTimer = 15;
@@ -1125,7 +1030,6 @@ namespace OriMod
           PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + RandomChar(3));
           chargeJumpAnimTimer = 20;
           upRefresh = true;
-          stompHitboxTimer = 3;
           Projectile.NewProjectile(player.Center, new Vector2(0, 0), mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1);
         }
         if (charged && OriMod.DashKey.Current) {
@@ -1234,19 +1138,9 @@ namespace OriMod
           player.maxFallSpeed = 6f;
           player.jumpSpeedBoost -= 6f;
         }
-        else if (onWall && player.velocity.Y > 0 && !intoStomp && !stomping && !outOfStomp && !isGrounded) {
+        else if (onWall && player.velocity.Y > 0 && !Movement.IsInUse("Stomp") && !isGrounded) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
-        }
-        else if (intoStomp) {
-          player.gravity = -0.1f;
-          player.runAcceleration = 0;
-          player.maxRunSpeed = 0;
-        }
-        else if (stomping) {
-          player.gravity = 4f;
-          player.runAcceleration = 0;
-          player.maxRunSpeed = 0;
         }
         else if (chargeJumpAnimTimer > 0) {
           player.gravity = 0.1f;
@@ -1289,6 +1183,9 @@ namespace OriMod
         }
         if (OriMod.ClimbKey.Current && onWall) {
           Movement.Climb();
+        }
+        if (PlayerInput.Triggers.JustPressed.Down || Movement.IsInUse("Stomp")) {
+          Movement.Stomp();
         }
       }
       else if (transforming) {
@@ -1348,7 +1245,7 @@ namespace OriMod
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       if (OriSet) {
-        if (stomping || chargeJumpAnimTimer > 0) {
+        if (Movement.IsInUse("Stomp") || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         if (bashActivate > 0 && bashActiveTimer == 0 && !bashActive && !countering) {
@@ -1367,7 +1264,7 @@ namespace OriMod
       if (OriSet && playSound) {
         playSound = false; // stops regular hurt sound from playing
         genGore = false; // stops regular gore from appearing
-        if (bashActiveTimer > 0 || bashActive || stomping || intoStomp || chargeJumpAnimTimer > 0) {
+        if (bashActiveTimer > 0 || bashActive || Movement.IsInUse("Stomp") || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         else {
@@ -1692,15 +1589,10 @@ namespace OriMod
         if (bashActiveTimer < 0) { bashActiveTimer = 0; }
         if (flashTimer > 0) { flashTimer--; }
         if (featherTrailTimer > 0) { featherTrailTimer--; }
-        if (intoStompTimer > 0) { intoStompTimer--; }
-        if (outOfStompTimer > 0) { outOfStompTimer--; }
-        if (stompHitboxTimer > 0) { stompHitboxTimer--; }
-        if (stompingTimer > 0) { stompingTimer--; }
         if (!lookUp) { lookUpTimer = 1; }
 
         if (chargeJumpAnimTimer > 0) {
           chargeJumpAnimTimer--;
-          stompHitboxTimer = 3;
         }
 
         if (counterTimer > 0) {

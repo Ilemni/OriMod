@@ -24,13 +24,12 @@ namespace OriMod.Projectiles {
       projectile.friendly = true;
     }
     public override void AI() {
-      if (Owner().stomping) {
-        projectile.width = 150;
-      }
       projectile.Center = Main.player[projectile.owner].Center;
-      if (Owner().stompHitboxTimer > 0) {
-        projectile.Center = Main.player[projectile.owner].Center;
-        projectile.position.Y += 10;
+      if (Owner().Movement.IsInUse("Stomp")) {
+        if (!Owner().Movement.IsState("Stomp", MovementHandler.State.Ending)) {
+          projectile.width = 150;
+          projectile.position.Y += 10;
+        }
       }
       else {
         projectile.Kill();
