@@ -103,13 +103,13 @@ namespace OriMod {
     public int chargeDashCurrDirection = 1;
     #endregion
   
-    public int SoulLink() {
+    public void SoulLink() {
       switch (GetState("SoulLink")) {
         default:
-          return 0;
+          return;
       }
     }
-    public int WallJump() {
+    public void WallJump() {
       switch (GetState("WallJump")) {
         case State.Active: {
           player.velocity.Y = wallJumpVelocity.Y;
@@ -122,21 +122,21 @@ namespace OriMod {
           break;
         }
         default:
-          return 0;
+          return;
       }
       player.velocity.X = wallJumpVelocity.X * -player.direction;
       oPlayer.unrestrictedMovement = true;
-      return 1;
+      return;
     }
-    public int ChargeFlame() {
+    public void ChargeFlame() {
       switch (GetState("ChargeFlame")) {
         default:
-          return 0;
+          return;
       }
     }
-    public int AirJump() {
+    public void AirJump() {
       switch (GetState("AirJump")) {
-        case State.Disable: return 0;
+        case State.Disable: return;
         case State.Active: {
           if (airJumpsCurr == airJumpsMax - 1) {
             oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + OriPlayer.RandomChar(5), 0.7f);
@@ -148,29 +148,31 @@ namespace OriMod {
         }
         break;
       }
-      return 1;
     }
-    public int Bash() {
+    public void Bash() {
       switch (GetState("Bash")) {
         default:
-          return 0;
+          return;
       }
     }
-    public int Stomp() {
+    public void Stomp() {
       switch (GetState("Stomp")) {
+        case State.Starting: {
+          break;
+        }
         case State.Active: {
           oPlayer.tempInvincibility = true;
-          return 1;
+          break;
         }
         default:
-          return 0;
+          break;
       }
     }
-    public int Glide() {
+    public void Glide() {
       switch (GetState("Glide")) {
         case State.Disable: {
           player.maxFallSpeed = defaultFallSpeed; // Default fall speed
-          return 0;
+          return;
         }
         case State.Starting: {
           if (glideCurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
@@ -186,15 +188,12 @@ namespace OriMod {
           }
           break;
         }
-        default:
-          return 0;
       }
       player.maxFallSpeed = glideMaxFallSpeed;
       player.runSlowdown = glideRunSlowdown;
       player.runAcceleration = glideRunAcceleration;
-      return 1;
     }
-    public int Climb() {
+    public void Climb() {
       switch (GetState("Climb")) {
         case State.Active: {
           if (PlayerInput.Triggers.Current.Up) {
@@ -213,19 +212,17 @@ namespace OriMod {
               player.velocity.Y--;
             }
           }
-          return 1;
+          break;
         }
-        default:
-          return 0;
       }
     }
-    public int ChargeJump() {
+    public void ChargeJump() {
       switch (GetState("ChargeJump")) {
         default:
-          return 0;
+          return;
       }
     }
-    public int Dash() {
+    public void Dash() {
       switch (GetState("Dash")) {
         case State.Starting: {
           dashCurrDirection = player.direction;
@@ -238,14 +235,13 @@ namespace OriMod {
           break;
         }
         default:
-          return 0;
+          return;
       }
       player.velocity.X = dashSpeeds[dashCurrTime] * dashCurrDirection * 0.65f;
       player.velocity.Y = 0.25f * dashCurrTime;
       if (dashCurrTime > 20) player.runSlowdown = 26f;
-      return 1;
     }
-    public int ChargeDash() {
+    public void ChargeDash() {
       // Funny story. I was going to implement rocket jumping later...
       // ...but it so happens that this code already has rocket jumping as a side effect
       // So no need to bother with that, huh?
@@ -276,7 +272,7 @@ namespace OriMod {
           break;
         }
         default:
-          return 0;
+          return;
       }
       if (chargeDashCurrNPC < Main.maxNPCs) {
         Vector2 dir = (Main.npc[chargeDashCurrNPC].position - player.position);
@@ -298,15 +294,14 @@ namespace OriMod {
         player.velocity.Y = oPlayer.isGrounded ? -0.1f : 0.15f * chargeDashCurrTime;
       }
       player.runSlowdown = 26f;
-      return 1;
     }
-    public int Grenade(int mouseX=0, int mouseY=0) {
-      return Grenade(new Vector2(mouseX, mouseY));
+    public void Grenade(int mouseX=0, int mouseY=0) {
+      Grenade(new Vector2(mouseX, mouseY));
     }
-    public int Grenade(Vector2 mousePos) {
+    public void Grenade(Vector2 mousePos) {
       switch (GetState("Grenade")) {
         default:
-          return 0;
+          return;
       }
     }
     public void Tick() {
@@ -382,7 +377,12 @@ namespace OriMod {
       }
       
       if (IsUnlocked("Stomp")) {
-        if (IsInUse("Stomp")) {}
+        if (PlayerInput.Triggers.JustPressed.Down && !oPlayer.isGrounded && !IsInUse("Stomp") && !IsInUse("Dash") && !IsInUse("ChargeDash") && !IsInUse("Glide")) {
+          SetState("Stomp", State.Starting);
+        }
+        if (IsState("Stomp", State.Starting)) {
+
+        }
       }
 
       if (IsUnlocked("Glide")) {
