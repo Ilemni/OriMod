@@ -34,10 +34,14 @@ namespace OriMod {
       flags[0] = fromPlayer.OriSet;
       flags[1] = fromPlayer.OriSet;
       flags[2] = fromPlayer.flashing;
+      flags[3] = fromPlayer.transforming;
       packet.Write((byte)flags);
-      Vector2 animFrame = fromPlayer.AnimTile;
-      packet.Write((byte)animFrame.X);
-      packet.Write((byte)animFrame.Y);
+      if (fromPlayer.transforming) {
+        packet.Write((short)fromPlayer.transformTimer);
+      }
+      Vector2 animTile = fromPlayer.AnimTile;
+      packet.Write((byte)animTile.X);
+      packet.Write((byte)animTile.Y);
 
       packet.Send(toWho, fromWho);
     }
@@ -48,14 +52,20 @@ namespace OriMod {
       bool oriSet = flags[0];
       bool oriSetPrevious = flags[1];
       bool flashing = flags[2];
-      byte animFrameX = r.ReadByte();
-      byte animFrameY = r.ReadByte();
+      bool transforming = flags[3];
+      short transformTimer = 0;
+      if (transforming) {
+        transformTimer = r.ReadInt16();
+      }
+      Vector2 animTile = new Vector2(r.ReadByte(), r.ReadByte());
 
       fromPlayer.OriSet = oriSet;
       fromPlayer.OriSet = oriSetPrevious;
       fromPlayer.flashing = flashing;
+      fromPlayer.transforming = transforming;
+      fromPlayer.transformTimer = transformTimer;
+      fromPlayer.AnimTile = animTile;
       
-      fromPlayer.AnimFrame = OriPlayer.TileToPixel(animFrameX, animFrameY);
       if (Main.netMode == NetmodeID.Server) {
 				SendOriState(-1, fromWho);
 			}
