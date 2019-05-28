@@ -24,7 +24,7 @@ namespace OriMod.Projectiles {
     }
     public override void AI() {
       projectile.Center = Main.player[projectile.owner].Center;
-      if (Owner().bashActivate > 0 || Owner().bashActiveTimer >= 6) {
+      if (Owner().bashActivate > 0 || Owner().bashActiveTimer > 5) {
         projectile.Center = Main.player[projectile.owner].Center;
       }
       else {

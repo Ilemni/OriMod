@@ -450,19 +450,19 @@ namespace OriMod {
         if (IsInUse("Glide")) {
           if (IsState("Glide", State.Starting)) {
             glideCurrTime++;
-            if (glideCurrTime >= glideStartDuration) {
+            if (glideCurrTime > glideStartDuration) {
               SetState("Glide", State.Active);
               glideCurrTime = 0;
             }
           }
           else if (IsState("Glide", State.Ending)) {
             glideCurrTime++;
-            if (glideCurrTime >= glideEndDuration) {
+            if (glideCurrTime > glideEndDuration) {
               SetState("Glide", State.CanUse);
               glideCurrTime = 0;
             }
           }
-          if (player.velocity.Y <= 0 || oPlayer.onWall) {
+          if (player.velocity.Y < 0 || oPlayer.onWall) {
             SetState("Glide", IsInUse("Glide") ? State.Ending : State.Disable);
           }
           else if (OriMod.FeatherKey.JustReleased) {
@@ -498,7 +498,7 @@ namespace OriMod {
       if (IsUnlocked("Dash")) {
         if (IsInUse("Dash")) {
           dashCurrTime++;
-          if (dashCurrTime >= dashDuration || oPlayer.onWall) {
+          if (dashCurrTime > dashDuration || oPlayer.onWall) {
             SetState("Dash", State.Disable);
           }
           if (IsState("Dash", State.Starting)) {
@@ -525,7 +525,7 @@ namespace OriMod {
             SetState("ChargeDash", State.Disable);
           }
           chargeDashCurrTime++;
-          if (chargeDashCurrTime >= chargeDashDuration || oPlayer.onWall) {
+          if (chargeDashCurrTime > chargeDashDuration || oPlayer.onWall) {
             SetState("ChargeDash", State.Disable);
             chargeDashCurrNPC = 255;
             player.velocity *= 0.2f;

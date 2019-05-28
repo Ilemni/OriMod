@@ -94,7 +94,7 @@ namespace OriMod.Projectiles.Minions {
 				}
 			}
 			// Increase speed over time
-			if (currAccelDelay <= accelDelay) {
+			if (currAccelDelay < accelDelay) {
 				currAccelDelay++;
 			}
 			if (currAccelDelay > accelDelay) {

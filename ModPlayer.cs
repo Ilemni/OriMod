@@ -1044,7 +1044,7 @@ namespace OriMod
           charged = false;
         }
       }
-      if ((!PlayerInput.Triggers.Current.Up) && chargeJumpAnimTimer <= 0) {
+      if (!PlayerInput.Triggers.Current.Up && chargeJumpAnimTimer <= 0) {
         upRefresh = false;
       }
 
@@ -1237,7 +1237,7 @@ namespace OriMod
       player.pulley = false;
       bashNPC = target.whoAmI;
       bashNPCPosition = target.Center;
-      bashFrameUp = (2.0f >= bashNPCAngle && bashNPCAngle >= 1.3f);
+      bashFrameUp = (bashNPCAngle < 2.0f && bashNPCAngle > 1.3f);
       if (bashActiveTimer == 6) {
         target.HitEffect(dmg: 15);
         target.velocity = new Vector2((float)(Math.Cos(bashAngle) * bashDistance), (float)(Math.Sin(bashAngle) * bashDistance));
@@ -1499,28 +1499,28 @@ namespace OriMod
       if (oPlayer.transformTimer > 236) { // Transform Start
         float t = oPlayer.transformTimer - 235;
         if (t > 0) {
-          if (t >= 391) {
+          if (t > 390) {
             y = 0;
           }
-          else if (t >= 331) {
+          else if (t > 330) {
             y = 1;
           }
-          else if (t >= 271) {
+          else if (t > 270) {
             y = 2;
           }
-          else if (t >= 151) {
+          else if (t > 150) {
             y = 3;
           }
-          else if (t >= 111) {
+          else if (t > 110) {
             y = 4;
           }
-          else if (t >= 71) {
+          else if (t > 70) {
             y = 5;
           }
-          else if (t >= 31) {
+          else if (t > 30) {
             y = 6;
           }
-          else if (t >= 1) {
+          else {
             y = 7;
           }
         }
@@ -1548,11 +1548,8 @@ namespace OriMod
 
       int frameY = 0;
 
-      if (oPlayer.bashActiveTimer < 55 && oPlayer.bashActiveTimer > 45) {
-        frameY = 1;
-      }
-      else if (oPlayer.bashActiveTimer < 46) {
-        frameY = 2;
+      if (oPlayer.bashActiveTimer < 55) {
+        frameY = oPlayer.bashActiveTimer > 45 ? 1 : 2;
       }
       DrawData data = new DrawData(texture,
         new Vector2(
