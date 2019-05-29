@@ -25,8 +25,8 @@ namespace OriMod.Projectiles {
     }
     public override void AI() {
       projectile.Center = Main.player[projectile.owner].Center;
-      if (Owner().Movement.IsInUse("Stomp")) {
-        if (!Owner().Movement.IsState("Stomp", MovementHandler.State.Ending)) {
+      if (Owner().movementHandler.IsInUse("Stomp")) {
+        if (!Owner().movementHandler.IsState("Stomp", MovementHandler.State.Ending)) {
           projectile.width = 150;
           projectile.position.Y += 10;
         }
