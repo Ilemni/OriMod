@@ -11,6 +11,63 @@ using Terraria.ModLoader;
 namespace OriMod {
   
   // This partial class is for Movement-specific implementations
+  public abstract class Movement {
+    protected Player player;
+    protected OriPlayer oPlayer;
+    protected bool isLocalPlayer;
+    protected MovementHandler Handler;
+    public Movement(OriPlayer oriPlayer, MovementHandler handler) {
+      player = oriPlayer.player;
+      oPlayer = oriPlayer;
+      isLocalPlayer = player.whoAmI == Terraria.Main.myPlayer;
+      Handler = handler;
+    }
+    public enum State {
+      Inactive = 0,
+      Starting = 1,
+      Active = 2,
+      Ending = 3,
+      Failed = 4
+    }
+    public State state = State.Inactive;
+    public bool unlocked = true;
+    public bool canUse = false;
+    public bool IsState(params State[] stat) {
+      foreach(int s in stat) {
+        State v = (State)s;
+        if (state == v) return true;
+      }
+      return false;
+    }
+    public bool isInUse {
+      get {
+        return state != State.Inactive;
+      }
+    }
+    public virtual void Main() {
+      if (!canUse && !isInUse) return;
+      Ability();
+    }
+    public virtual bool Ability() {
+      switch (state) {
+        case State.Active: Active();
+          return true;
+        case State.Starting: Starting();
+          return true;
+        case State.Ending: Ending();
+          return true;
+        case State.Failed: Failed();
+          return true;
+        default:
+          return false;
+      }
+    }
+    public virtual void Starting() { }
+    public virtual void Active() { }
+    public virtual void Ending() { }
+    public virtual void Failed() { }
+    public abstract void Tick();
+  }
   public partial class MovementHandler {
     #region Variables
     
