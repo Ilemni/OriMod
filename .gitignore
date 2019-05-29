@@ -1,5 +1,7 @@
-.vscode/
+**/.vscode/
 **/bin/
+**/obj/
+**/vs/
 *.txt
 !build.txt
 !description.txt
