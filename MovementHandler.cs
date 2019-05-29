@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OriMod.Movements;
 
 namespace OriMod {
   // This partial class is for how movement is handled. I'd recommend not modifying this code.
   public partial class MovementHandler {
     public OriPlayer oPlayer;
     public Player player;
+    public AirJump airJump;
     public MovementHandler(OriPlayer o) {
       oPlayer = o;
       player = o.player;
@@ -28,6 +30,7 @@ namespace OriMod {
         { "Crouch", new int[] { 1, 0 } },
         { "LookUp", new int[] { 1, 0 } },
       };
+      airJump = new AirJump(o, this);
     }
     private int GetValue(string move, int idx) {
       int[] value = new int[1];

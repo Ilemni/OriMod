@@ -70,7 +70,7 @@ namespace OriMod {
   }
   public partial class MovementHandler {
     #region Variables
-    
+
     public Dictionary<string, int[]> movementStates;
     public enum MoveType {
       SoulLink = 1,
@@ -117,12 +117,6 @@ namespace OriMod {
     private static readonly Vector2 wallJumpVelocity = new Vector2(4, -7.2f);
     private const int wallJumpEndDur = 12;
     public int wallJumpCurrDur = 0;
-    
-    private const float airJumpVelocity = -8.8f;
-    private const int airJumpEndDur = 32;
-    private const int airJumpsMax = 2;
-    public int airJumpsCurr = 0;
-    public int airJumpCurrTime = 0;
 
     private const int bashMinTime = 40;
     private const int bashMaxTime = 150;
@@ -200,19 +194,7 @@ namespace OriMod {
       }
     }
     public void AirJump() {
-      switch (GetState("AirJump")) {
-        case State.Disable: return;
-        case State.Active: {
-          if (airJumpsCurr == airJumpsMax - 1) {
-            oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + OriPlayer.RandomChar(5), 0.7f);
-          }
-          else {
-            oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + OriPlayer.RandomChar(5), 0.75f);
-          }
-          if (player.velocity.Y > airJumpVelocity) player.velocity.Y = airJumpVelocity;
-        }
-        break;
-      }
+      airJump.Ability();
     }
     public void Bash() {
       switch (GetState("Bash")) {
@@ -442,33 +424,7 @@ namespace OriMod {
         if (IsInUse("ChargeFlame")) {}
       }
       
-      if (IsUnlocked("AirJump")) {
-        if (IsState("AirJump", State.Ending)) {
-          airJumpCurrTime++;
-          if (airJumpCurrTime > airJumpEndDur) {
-            SetState("AirJump", airJumpsCurr < airJumpsMax ? State.CanUse : State.Disable);
-            airJumpCurrTime = 0;
-          }
-        }
-        if (IsState("AirJump", State.Active)) {
-          airJumpsCurr++;
-          SetState("AirJump", State.Ending);
-        }
-        if (airJumpsCurr <= airJumpsMax && !oPlayer.isGrounded && !IsState("AirJump", State.Ending)) {
-          SetState("AirJump", State.CanUse);
-        }
-        if (oPlayer.isGrounded || IsInUse("Bash") || oPlayer.bashActive || oPlayer.onWall) {
-          airJumpsCurr = 0;
-          SetState("AirJump", State.Disable);
-        }
-        if (IsState("AirJump", State.CanUse, State.Ending) && airJumpsCurr < airJumpsMax && PlayerInput.Triggers.JustPressed.Jump) {
-          if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Cart)) {
-            SetState("AirJump", State.Active);
-            airJumpCurrTime = 0;
-            SetState("Stomp", State.CanUse);
-          }
-        }
-      }
+      airJump.Tick();
       
       if (IsUnlocked("Bash")) {
         if (IsInUse("Bash")) {}

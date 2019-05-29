@@ -264,7 +264,7 @@ namespace OriMod
       }
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>();
 
-      if (Movement.IsInUse("AirJump") && !(Movement.IsInUse("Dash") || Movement.IsInUse("ChargeDash"))) {
+      if (Movement.airJump.isInUse && !(Movement.IsInUse("Dash") || Movement.IsInUse("ChargeDash"))) {
         Increment("AirJump");
         AnimRads = AnimTime * 0.8f;
         return;
