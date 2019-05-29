@@ -1,5 +1,7 @@
 .vscode/
 **/bin/
 *.txt
+!build.txt
+!description.txt
 *.xcf
 *.pdn
