@@ -11,6 +11,7 @@ namespace OriMod {
     public OriPlayer oPlayer;
     public Player player;
     public AirJump airJump;
+    public Glide glide;
     public MovementHandler(OriPlayer o) {
       oPlayer = o;
       player = o.player;
@@ -31,6 +32,7 @@ namespace OriMod {
         { "LookUp", new int[] { 1, 0 } },
       };
       airJump = new AirJump(o, this);
+      glide = new Glide(o, this);
     }
     private int GetValue(string move, int idx) {
       int[] value = new int[1];
