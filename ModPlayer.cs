@@ -269,9 +269,9 @@ namespace OriMod
         AnimRads = AnimTime * 0.8f;
         return;
       }
-      if (movementHandler.IsInUse("Glide")) {
-        if (movementHandler.IsState("Glide", MovementHandler.State.Starting)) Increment("GlideStart");
-        else if (movementHandler.IsState("Glide", MovementHandler.State.Active)) Increment("Glide");
+      if (movementHandler.glide.inUse) {
+        if (movementHandler.glide.IsState(Movement.State.Starting)) Increment("GlideStart");
+        else if (movementHandler.glide.IsState(Movement.State.Active)) Increment("Glide");
         else Increment("GlideStart", overrideMeta:new Vector3(0, 0, 3));
         return;
       }

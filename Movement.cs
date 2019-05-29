@@ -39,13 +39,13 @@ namespace OriMod {
       }
       return false;
     }
-    public bool isInUse {
+    public bool inUse {
       get {
         return state != State.Inactive;
       }
     }
     public virtual void Main() {
-      if (!canUse && !isInUse) return;
+      if (!canUse && !inUse) return;
       Ability();
     }
     public virtual bool Ability() {
@@ -131,13 +131,6 @@ namespace OriMod {
     public const float stompMaxFallSpeed = 28f;
     public int stompCurrDur = 0;
     public Projectile stompProj;
-
-    public const float glideMaxFallSpeed = 2f;
-    public const float glideRunSlowdown = 0.125f;
-    public const float glideRunAcceleration = 0.2f;
-    private const int glideStartDuration = 8;
-    private const int glideEndDuration = 10;
-    public int glideCurrTime = 0;
 
     private const int chargeJumpStartTime = 60;
     public int chargeJumpCurrTime = 0;
@@ -248,29 +241,7 @@ namespace OriMod {
       player.controlRight = false;
     }
     public void Glide() {
-      switch (GetState("Glide")) {
-        case State.Disable: {
-          player.maxFallSpeed = defaultFallSpeed; // Default fall speed
-          return;
-        }
-        case State.Starting: {
-          if (glideCurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
-          break;
-        }
-        case State.Ending: {
-          if (glideCurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGildeEnd" + OriPlayer.RandomChar(3), 0.8f);
-          break;
-        }
-        case State.Active: {
-          if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
-            oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + OriPlayer.RandomChar(5), 0.45f);
-          }
-          break;
-        }
-      }
-      player.maxFallSpeed = glideMaxFallSpeed;
-      player.runSlowdown = glideRunSlowdown;
-      player.runAcceleration = glideRunAcceleration;
+      glide.Ability();
     }
     public void Climb() {
       switch (GetState("Climb")) {
@@ -431,7 +402,7 @@ namespace OriMod {
       }
       
       if (IsUnlocked("Stomp")) {
-        if (!oPlayer.isGrounded && !IsInUse("Stomp") && !IsInUse("Dash") && !IsInUse("ChargeDash") && !IsInUse("Glide")) {
+        if (!oPlayer.isGrounded && !IsInUse("Stomp") && !IsInUse("Dash") && !IsInUse("ChargeDash") && !glide.inUse) {
           SetState("Stomp", State.CanUse);
         }
         if (PlayerInput.Triggers.JustPressed.Down && CanUse("Stomp")) {
@@ -459,35 +430,7 @@ namespace OriMod {
         }
       }
 
-      if (IsUnlocked("Glide")) {
-        if (IsInUse("Glide")) {
-          if (IsState("Glide", State.Starting)) {
-            glideCurrTime++;
-            if (glideCurrTime > glideStartDuration) {
-              SetState("Glide", State.Active);
-              glideCurrTime = 0;
-            }
-          }
-          else if (IsState("Glide", State.Ending)) {
-            glideCurrTime++;
-            if (glideCurrTime > glideEndDuration) {
-              SetState("Glide", State.CanUse);
-              glideCurrTime = 0;
-            }
-          }
-          if (player.velocity.Y < 0 || oPlayer.onWall) {
-            SetState("Glide", IsInUse("Glide") ? State.Ending : State.Disable);
-          }
-          else if (OriMod.FeatherKey.JustReleased) {
-            SetState("Glide", State.Ending);
-          }
-        }
-        else {
-          if (player.velocity.Y > 0 && !oPlayer.onWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
-            SetState("Glide", State.Starting);
-          }
-        }
-      }
+      glide.Tick();
 
       if (IsUnlocked("Climb")) {
         if (IsInUse("Climb")) {
