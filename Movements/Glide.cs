@@ -30,6 +30,12 @@ namespace OriMod.Movements {
     }
     public override void Tick() {
       if (!unlocked) return;
+      if (Handler.dash.inUse) {
+        state = State.Inactive;
+        canUse = false;
+        glideCurrTime = 0;
+        return;
+      }
       if (inUse) {
         if (IsState(State.Starting)) {
           glideCurrTime++;
@@ -49,6 +55,7 @@ namespace OriMod.Movements {
           state = inUse ? State.Ending : State.Inactive;
           canUse = false;
         }
+        
         else if (OriMod.FeatherKey.JustReleased) {
           state = State.Ending;
           glideCurrTime = 0;
@@ -58,7 +65,6 @@ namespace OriMod.Movements {
         if (player.velocity.Y > 0 && !oPlayer.onWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
           state = State.Starting;
           glideCurrTime = 0;
-          Handler.SetState("Stomp", MovementHandler.State.Disable);
         }
       }
     }

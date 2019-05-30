@@ -20,9 +20,7 @@ namespace OriMod.Movements {
       if (player.velocity.Y > airJumpVelocity) player.velocity.Y = airJumpVelocity;
     }
 
-    public override void Tick()
-    {
-      if (oPlayer == null || player == null || Handler == null) return;
+    public override void Tick() {
       if (unlocked) {
         if (IsState(State.Ending)) {
           airJumpCurrTime++;
@@ -46,6 +44,10 @@ namespace OriMod.Movements {
         if ((IsState(State.Ending) || canUse) && airJumpCurrCount < airJumpsMax && PlayerInput.Triggers.JustPressed.Jump) {
           if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Cart)) {
             state = State.Active;
+            if (Handler.dash.inUse) {
+              Handler.dash.canUse = false;
+              Handler.dash.state = State.Inactive;
+            }
             airJumpCurrTime = 0;
             airJumpCurrCount++;
             canUse = false;

@@ -264,7 +264,7 @@ namespace OriMod
       }
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>();
 
-      if (movementHandler.airJump.inUse && !(movementHandler.IsInUse("Dash") || movementHandler.IsInUse("ChargeDash"))) {
+      if (movementHandler.airJump.inUse && !(movementHandler.dash.inUse || movementHandler.IsInUse("ChargeDash"))) {
         Increment("AirJump");
         AnimRads = AnimTime * 0.8f;
         return;
@@ -275,7 +275,7 @@ namespace OriMod
         else Increment("GlideStart", overrideMeta:new Vector3(0, 0, 3));
         return;
       }
-      if (movementHandler.IsInUse("Dash") || movementHandler.IsInUse("ChargeDash")) {
+      if (movementHandler.dash.inUse || movementHandler.IsInUse("ChargeDash")) {
         if (Math.Abs(player.velocity.X) > 18f) {
           Increment("Dash");
         }
@@ -376,7 +376,7 @@ namespace OriMod
         return;
       }
       if (drawPlayer.velocity.X != 0 && isGrounded &&
-        !movementHandler.IsInUse("Dash") &&
+        !movementHandler.dash.inUse &&
         !bashActive &&
         !onWall && (
           PlayerInput.Triggers.Current.Left ||
@@ -752,7 +752,7 @@ namespace OriMod
             OriMod.BashKey.JustPressed ||
             OriMod.DashKey.JustPressed ||
             PlayerInput.Triggers.Current.Down ||
-            movementHandler.IsInUse("Dash")
+            movementHandler.dash.inUse
           ) {
             intoLookUpTimer = 0;
             intoLookUp = false;
@@ -772,7 +772,7 @@ namespace OriMod
             OriMod.BashKey.JustPressed ||
             OriMod.DashKey.JustPressed ||
             !isGrounded ||
-            movementHandler.IsInUse("Dash")
+            movementHandler.dash.inUse
           ) {
             lookUp = false;
           }
@@ -791,7 +791,7 @@ namespace OriMod
             OriMod.BashKey.JustPressed ||
             OriMod.DashKey.JustPressed ||
             !isGrounded ||
-            movementHandler.IsInUse("Dash") ||
+            movementHandler.dash.inUse ||
             outLookUpTimer == 0
           ) {
             outLookUp = false;
@@ -899,7 +899,7 @@ namespace OriMod
       if (
         OriMod.BashKey.JustPressed &&
         bashActivate == 0 &&
-        !movementHandler.IsInUse("Dash") && // Bash should be available during Dash
+        !movementHandler.dash.inUse && // Bash should be available during Dash
         !movementHandler.stomp.inUse &&  // Bash should be available during Stomp
         abilityBash
       ) {
@@ -1145,7 +1145,7 @@ namespace OriMod
         if (PlayerInput.Triggers.JustPressed.Jump) {
           movementHandler.AirJump();
         }
-        if (OriMod.DashKey.JustPressed || movementHandler.IsInUse("Dash") || movementHandler.IsInUse("ChargeDash")) {
+        if (OriMod.DashKey.JustPressed || movementHandler.dash.inUse || movementHandler.IsInUse("ChargeDash")) {
           if (OriMod.ChargeKey.Current || movementHandler.IsInUse("ChargeDash")) {
             movementHandler.ChargeDash();
           }
@@ -1195,10 +1195,10 @@ namespace OriMod
           dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
           dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
           dust.noGravity = false;
-          featherTrailTimer = movementHandler.IsInUse("Dash") ? Main.rand.Next(2, 4) : Main.rand.Next(10, 15);
+          featherTrailTimer = movementHandler.dash.inUse ? Main.rand.Next(2, 4) : Main.rand.Next(10, 15);
         }
       }
-      else if (movementHandler.IsInUse("Dash") && featherTrailTimer > 4) {
+      else if (movementHandler.dash.inUse && featherTrailTimer > 4) {
         featherTrailTimer = Main.rand.Next(2, 4);
       }
       flashing = flashPattern.Contains(flashTimer);

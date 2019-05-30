@@ -139,14 +139,6 @@ namespace OriMod {
 
     public Vector2 grenadePos = Vector2.Zero;
     
-    private static readonly float[] dashSpeeds = new float[] {
-      50f, 50f, 50f, 49.9f, 49.6f, 49f, 48f, 46.7f, 44.9f, 42.4f, 39.3f, 35.4f, 28.6f, 20f,
-      19.6f, 19.1f, 18.7f, 18.3f, 17.9f, 17.4f, 17f, 16.5f, 16.1f, 15.7f, 15.2f
-    };
-    private const int dashDuration = 24;
-    public int dashCurrTime = 0;
-    public int dashCurrDirection = 1;
-    
     private static readonly float[] chargeDashSpeeds = new float[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 25f
     };
@@ -219,23 +211,7 @@ namespace OriMod {
       }
     }
     public void Dash() {
-      switch (GetState("Dash")) {
-        case State.Starting: {
-          dashCurrDirection = player.direction;
-          dashCurrTime = 0;
-          oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3), 0.2f);
-          player.pulley = false;
-          break;
-        }
-        case State.Active: {
-          break;
-        }
-        default:
-          return;
-      }
-      player.velocity.X = dashSpeeds[dashCurrTime] * dashCurrDirection * 0.65f;
-      player.velocity.Y = 0.25f * dashCurrTime;
-      if (dashCurrTime > 20) player.runSlowdown = 26f;
+      dash.Ability();
     }
     public void ChargeDash() {
       // Funny story. I was going to implement rocket jumping later...
@@ -356,29 +332,8 @@ namespace OriMod {
       if (IsUnlocked("ChargeJump")) {
         if (IsInUse("ChargeJump")) {}
       }
-
-      if (IsUnlocked("Dash")) {
-        if (IsInUse("Dash")) {
-          dashCurrTime++;
-          if (dashCurrTime > dashDuration || oPlayer.onWall) {
-            SetState("Dash", State.Disable);
-          }
-          if (IsState("Dash", State.Starting)) {
-            SetState("Dash", State.Active);
-          }
-        }
-        else {
-          if (oPlayer.bashActive || oPlayer.onWall || oPlayer.isGrounded) {
-            dashCurrTime = 0;
-          }
-          if (dashCurrTime == 0 && !oPlayer.bashActive /*TODO: Replace with IsInUse */ && !oPlayer.onWall) {
-            SetState("Dash", State.CanUse);
-          }
-          if (CanUse("Dash") && OriMod.DashKey.JustPressed) {
-            SetState("Dash", State.Starting);
-          }
-        }
-      }
+      
+      dash.Tick();
       
       if (IsUnlocked("ChargeDash")) {
         if (IsInUse("ChargeDash")) {
