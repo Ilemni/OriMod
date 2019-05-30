@@ -55,7 +55,7 @@ namespace OriMod.Movements {
       player.controlRight = false;
     }
     public override void Tick() {
-      canUse = !oPlayer.isGrounded && !inUse && !Handler.IsInUse("Dash") && !Handler.IsInUse("ChargeDash") && !Handler.glide.inUse;
+      canUse = !oPlayer.isGrounded && !inUse && !Handler.IsInUse("Dash") && !Handler.IsInUse("ChargeDash") && !Handler.glide.inUse && !Handler.climb.inUse;
       if (PlayerInput.Triggers.JustPressed.Down && canUse) {
         state = State.Starting;
         stompCurrDur = 0;

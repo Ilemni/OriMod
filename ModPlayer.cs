@@ -346,7 +346,7 @@ namespace OriMod
         return;
       }
       if (onWall && !isGrounded) {
-        if (movementHandler.IsInUse("Climb") && player.velocity.Y < 0) {
+        if (movementHandler.climb.inUse && player.velocity.Y < 0) {
           Increment("Climb", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
         }
         else {
@@ -1108,32 +1108,7 @@ namespace OriMod
           player.maxRunSpeed += 2f;
         }
         Main.SetCameraLerp(0.05f, 1);
-        if (OriMod.ClimbKey.Current && onWall) {
-          player.gravity = 0;
-          player.runAcceleration = 0;
-          player.maxRunSpeed = 0;
-          if (
-            (
-              player.velocity.Y > 1 &&
-              !PlayerInput.Triggers.Current.Down
-            ) || (
-              player.velocity.Y < 1 &&
-              !PlayerInput.Triggers.Current.Up
-            )
-          ) {
-            player.velocity.Y /= 3;
-          }
-          if (
-            player.velocity.Y != 0 &&
-            player.velocity.Y < 1 &&
-            player.velocity.Y > -1 &&
-            !PlayerInput.Triggers.Current.Up &&
-            !PlayerInput.Triggers.Current.Down
-          ) {
-            player.velocity.Y = 0;
-          }
-        }
-        else if (onWall && (isGrounded || player.velocity.Y < 0)) {
+        if (onWall && (isGrounded || player.velocity.Y < 0) && !movementHandler.climb.inUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
           player.jumpSpeedBoost -= 6f;

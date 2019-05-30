@@ -204,24 +204,10 @@ namespace OriMod {
       glide.Ability();
     }
     public void Climb() {
+      climb.Ability();
       switch (GetState("Climb")) {
         case State.Active: {
-          if (PlayerInput.Triggers.Current.Up) {
-            if (player.velocity.Y < -2) {
-              player.velocity.Y++;
-            }
-            else {
-              player.velocity.Y--;
-            }
-          }
-          else if (PlayerInput.Triggers.Current.Down) {
-            if (player.velocity.Y < 4) {
-              player.velocity.Y++;
-            }
-            else {
-              player.velocity.Y--;
-            }
-          }
+          
           break;
         }
       }
@@ -365,20 +351,7 @@ namespace OriMod {
 
       glide.Tick();
 
-      if (IsUnlocked("Climb")) {
-        if (IsInUse("Climb")) {
-          if (OriMod.ClimbKey.JustReleased) SetState("Climb", State.CanUse);
-          if (!oPlayer.onWall) SetState("Climb", State.Disable);
-        }
-        else {
-          if (oPlayer.onWall) {
-            SetState("Climb", State.CanUse);
-          }
-          if (CanUse("Climb") && (OriMod.ClimbKey.JustPressed || OriMod.ClimbKey.Current)) {
-            SetState("Climb", State.Active);
-          }
-        }
-      }
+      climb.Tick();
 
       if (IsUnlocked("ChargeJump")) {
         if (IsInUse("ChargeJump")) {}

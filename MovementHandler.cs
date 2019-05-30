@@ -10,9 +10,10 @@ namespace OriMod {
   public partial class MovementHandler {
     public OriPlayer oPlayer;
     public Player player;
-    public AirJump airJump;
-    public Glide glide;
-    public Stomp stomp;
+    public Movement airJump;
+    public Movement glide;
+    public Movement stomp;
+    public Movement climb;
     public MovementHandler(OriPlayer o) {
       oPlayer = o;
       player = o.player;
@@ -35,6 +36,7 @@ namespace OriMod {
       airJump = new AirJump(o, this);
       glide = new Glide(o, this);
       stomp = new Stomp(o, this);
+      climb = new Climb(o, this);
     }
     private int GetValue(string move, int idx) {
       int[] value = new int[1];
