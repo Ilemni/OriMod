@@ -43,7 +43,7 @@ namespace OriMod {
             packet.Write((int)fromPlayer.movementHandler.grenadePos.Y);
             break;
           case "ChargeDash":
-            packet.Write(fromPlayer.movementHandler.chargeDashCurrNPC);
+            packet.Write(fromPlayer.movementHandler.cDash.npc);
             break;
         }
       }
@@ -69,7 +69,7 @@ namespace OriMod {
             fromPlayer.movementHandler.grenadePos.Y = r.ReadInt32();
             break;
           case "ChargeDash":
-            fromPlayer.movementHandler.chargeDashCurrNPC = r.ReadByte();
+            fromPlayer.movementHandler.cDash.npc = r.ReadByte();
             break;
         }
         if (Main.netMode == NetmodeID.MultiplayerClient) fromPlayer.movementHandler.UseMovement(move);

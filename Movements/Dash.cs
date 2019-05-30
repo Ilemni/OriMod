@@ -6,7 +6,6 @@ using Terraria.GameInput;
 namespace OriMod.Movements {
   public class Dash : Movement {
     public Dash(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
-    public bool refreshed = false;
     private static readonly float[] speeds = new float[] {
       50f, 50f, 50f, 49.9f, 49.6f, 49f, 48f, 46.7f, 44.9f, 42.4f, 39.3f, 35.4f, 28.6f, 20f,
       19.6f, 19.1f, 18.7f, 18.3f, 17.9f, 17.4f, 17f, 16.5f, 16.1f, 15.7f, 15.2f
@@ -18,7 +17,6 @@ namespace OriMod.Movements {
     public override void Active() {
       if (currTime == 0) {
         currDirection = player.direction;
-        currTime = 0;
         oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3), 0.2f);
         player.pulley = false;
       }
@@ -30,7 +28,6 @@ namespace OriMod.Movements {
       if (!refreshed && (oPlayer.isGrounded || oPlayer.onWall || oPlayer.bashActive /* TODO: Replace with bash.inUse */)) {
         refreshed = true;
       }
-      canUse = !inUse && refreshed && !oPlayer.onWall && !Handler.stomp.inUse && !oPlayer.bashActive /* TODO: Replace with bash.inUse */;
       if (inUse) {
         currTime++;
         if (currTime > duration || oPlayer.onWall || oPlayer.bashActive) {
@@ -38,6 +35,7 @@ namespace OriMod.Movements {
         }
       }
       else {
+        canUse = refreshed && !oPlayer.onWall && !Handler.stomp.inUse && !oPlayer.bashActive /* TODO: Replace with bash.inUse */;
         if (canUse && OriMod.DashKey.JustPressed) {
           state = State.Active;
           currTime = 0;

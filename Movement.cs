@@ -32,6 +32,7 @@ namespace OriMod {
     public State state = State.Inactive;
     public bool unlocked = true;
     public bool canUse = false;
+    public bool refreshed = false;
     public bool IsState(params State[] stat) {
       foreach(int s in stat) {
         State v = (State)s;
@@ -138,15 +139,6 @@ namespace OriMod {
     public int chargeJumpCurrTime = 0;
 
     public Vector2 grenadePos = Vector2.Zero;
-    
-    private static readonly float[] chargeDashSpeeds = new float[] {
-      100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 25f
-    };
-    private const int chargeDashDuration = 15;
-    
-    public byte chargeDashCurrNPC = 255;
-    private int chargeDashCurrTime = 0;
-    public int chargeDashCurrDirection = 1;
     #endregion
   
     public void SoulLink() {
@@ -218,54 +210,7 @@ namespace OriMod {
       // ...but it so happens that this code already has rocket jumping as a side effect
       // So no need to bother with that, huh?
       //   Edit: no longer the case, somehow :/
-      switch (GetState("ChargeDash")) {
-        case State.Starting: {
-          float tempDist = 720f;
-          int tempNPC = -1;
-          for (int n = 0; n < Main.maxNPCs; n++) {
-            NPC npc = Main.npc[n];
-            if (!npc.active) continue;
-            float dist = (player.position - npc.position).Length();
-            if (dist < tempDist) {
-              tempDist = dist;
-              tempNPC = npc.whoAmI;
-            }
-          }
-          if (tempNPC != -1) {
-            chargeDashCurrNPC = (byte)tempNPC;
-          }
-          chargeDashCurrDirection = player.direction;
-          chargeDashCurrTime = 0;
-          oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
-          // oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashChargeStart" + OriPlayer.RandomChar(2), .5f);
-          break;
-        }
-        case State.Active: {
-          break;
-        }
-        default:
-          return;
-      }
-      if (chargeDashCurrNPC < Main.maxNPCs) {
-        Vector2 dir = (Main.npc[chargeDashCurrNPC].position - player.position);
-        dir.Y -= 32f;
-        dir.Normalize();
-        player.maxFallSpeed = chargeDashSpeeds[chargeDashCurrTime];
-        player.velocity = dir * chargeDashSpeeds[chargeDashCurrTime] * 0.8f;
-        player.gravity = 0;
-        if (chargeDashCurrTime != chargeDashDuration - 1 && (player.Bottom - Main.npc[chargeDashCurrNPC].Top).Length() < chargeDashSpeeds[chargeDashCurrTime + 1]) {
-          SetState("ChargeDash", State.Disable);
-          player.position = Main.npc[chargeDashCurrNPC].position;
-          player.position.Y -= 32f;
-          chargeDashCurrNPC = 255;
-          player.velocity = dir * chargeDashSpeeds[chargeDashSpeeds.Length - 1];
-        }
-      }
-      else {
-        player.velocity.X = chargeDashSpeeds[chargeDashCurrTime] * chargeDashCurrDirection * 0.8f;
-        player.velocity.Y = oPlayer.isGrounded ? -0.1f : 0.15f * chargeDashCurrTime;
-      }
-      player.runSlowdown = 26f;
+      cDash.Ability();
     }
     public void Grenade(int mouseX=0, int mouseY=0) {
       Grenade(new Vector2(mouseX, mouseY));
@@ -332,35 +277,10 @@ namespace OriMod {
       if (IsUnlocked("ChargeJump")) {
         if (IsInUse("ChargeJump")) {}
       }
-      
+
       dash.Tick();
       
-      if (IsUnlocked("ChargeDash")) {
-        if (IsInUse("ChargeDash")) {
-          SetState("Dash", State.Disable);
-          if (PlayerInput.Triggers.JustPressed.Jump) {
-            SetState("ChargeDash", State.Disable);
-          }
-          chargeDashCurrTime++;
-          if (chargeDashCurrTime > chargeDashDuration || oPlayer.onWall) {
-            SetState("ChargeDash", State.Disable);
-            chargeDashCurrNPC = 255;
-            player.velocity *= 0.2f;
-          }
-          if (IsState("ChargeDash", State.Starting)) {
-            SetState("ChargeDash", State.Active);
-          }
-        }
-        else {
-          chargeDashCurrTime = 0;
-          if (!oPlayer.bashActive /*TODO: Replace with IsInUse */ && !oPlayer.onWall) {
-            SetState("ChargeDash", State.CanUse);
-          }
-          if (CanUse("ChargeDash") && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
-            SetState("ChargeDash", State.Starting);
-          }
-        }
-      }
+      cDash.Tick();
 
       if (IsInUse("Grenade")) {}
       

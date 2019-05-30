@@ -15,6 +15,7 @@ namespace OriMod {
     public Movement stomp;
     public Movement climb;
     public Movement dash;
+    public ChargeDash cDash;
     public MovementHandler(OriPlayer o) {
       oPlayer = o;
       player = o.player;
@@ -39,6 +40,7 @@ namespace OriMod {
       stomp = new Stomp(o, this);
       climb = new Climb(o, this);
       dash = new Dash(o, this);
+      cDash = new ChargeDash(o, this);
     }
     private int GetValue(string move, int idx) {
       int[] value = new int[1];

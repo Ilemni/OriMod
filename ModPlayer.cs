@@ -264,7 +264,7 @@ namespace OriMod
       }
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>();
 
-      if (movementHandler.airJump.inUse && !(movementHandler.dash.inUse || movementHandler.IsInUse("ChargeDash"))) {
+      if (movementHandler.airJump.inUse && !(movementHandler.dash.inUse || movementHandler.cDash.inUse)) {
         Increment("AirJump");
         AnimRads = AnimTime * 0.8f;
         return;
@@ -275,7 +275,7 @@ namespace OriMod
         else Increment("GlideStart", overrideMeta:new Vector3(0, 0, 3));
         return;
       }
-      if (movementHandler.dash.inUse || movementHandler.IsInUse("ChargeDash")) {
+      if (movementHandler.dash.inUse || movementHandler.cDash.inUse) {
         if (Math.Abs(player.velocity.X) > 18f) {
           Increment("Dash");
         }
@@ -1145,8 +1145,8 @@ namespace OriMod
         if (PlayerInput.Triggers.JustPressed.Jump) {
           movementHandler.AirJump();
         }
-        if (OriMod.DashKey.JustPressed || movementHandler.dash.inUse || movementHandler.IsInUse("ChargeDash")) {
-          if (OriMod.ChargeKey.Current || movementHandler.IsInUse("ChargeDash")) {
+        if (OriMod.DashKey.JustPressed || movementHandler.dash.inUse || movementHandler.cDash.inUse) {
+          if ((OriMod.ChargeKey.Current && movementHandler.cDash.refreshed) || movementHandler.cDash.inUse) {
             movementHandler.ChargeDash();
           }
           else {
