@@ -328,12 +328,12 @@ namespace OriMod
         Increment("Bash");
         return;
       }
-      if (movementHandler.IsState("Stomp", MovementHandler.State.Starting)) {
+      if (movementHandler.stomp.IsState(Movement.State.Starting)) {
         Increment("AirJump");
         AnimRads = AnimTime;
         return;
       }
-      if (movementHandler.IsState("Stomp", MovementHandler.State.Active)) {
+      if (movementHandler.stomp.IsState(Movement.State.Active)) {
         Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideMeta:new Vector3(0,2,0));
         return;
       }
@@ -900,7 +900,7 @@ namespace OriMod
         OriMod.BashKey.JustPressed &&
         bashActivate == 0 &&
         !movementHandler.IsInUse("Dash") && // Bash should be available during Dash
-        !movementHandler.IsInUse("Stomp") &&  // Bash should be available during Stomp
+        !movementHandler.stomp.inUse &&  // Bash should be available during Stomp
         abilityBash
       ) {
         bashActivate = 3;
@@ -1138,7 +1138,7 @@ namespace OriMod
           player.maxFallSpeed = 6f;
           player.jumpSpeedBoost -= 6f;
         }
-        else if (onWall && player.velocity.Y > 0 && !movementHandler.IsInUse("Stomp") && !isGrounded) {
+        else if (onWall && player.velocity.Y > 0 && !movementHandler.stomp.inUse && !isGrounded) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
         }
@@ -1184,7 +1184,7 @@ namespace OriMod
         if (OriMod.ClimbKey.Current && onWall) {
           movementHandler.Climb();
         }
-        if (PlayerInput.Triggers.JustPressed.Down || movementHandler.IsInUse("Stomp")) {
+        if (PlayerInput.Triggers.JustPressed.Down || movementHandler.stomp.inUse) {
           movementHandler.Stomp();
         }
       }
@@ -1245,7 +1245,7 @@ namespace OriMod
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       if (OriSet) {
-        if (movementHandler.IsInUse("Stomp") || chargeJumpAnimTimer > 0) {
+        if (movementHandler.stomp.inUse || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         if (bashActivate > 0 && bashActiveTimer == 0 && !bashActive && !countering) {
@@ -1264,7 +1264,7 @@ namespace OriMod
       if (OriSet && playSound) {
         playSound = false; // stops regular hurt sound from playing
         genGore = false; // stops regular gore from appearing
-        if (bashActiveTimer > 0 || bashActive || movementHandler.IsInUse("Stomp") || chargeJumpAnimTimer > 0) {
+        if (bashActiveTimer > 0 || bashActive || movementHandler.stomp.inUse || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         else {

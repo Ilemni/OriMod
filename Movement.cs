@@ -19,7 +19,7 @@ namespace OriMod {
     public Movement(OriPlayer oriPlayer, MovementHandler handler) {
       player = oriPlayer.player;
       oPlayer = oriPlayer;
-      isLocalPlayer = player.whoAmI == Terraria.Main.myPlayer;
+      isLocalPlayer = player.whoAmI == Main.myPlayer;
       Handler = handler;
     }
     public enum State {
@@ -44,19 +44,27 @@ namespace OriMod {
         return state != State.Inactive;
       }
     }
-    public virtual void Main() {
-      if (!canUse && !inUse) return;
-      Ability();
+    protected virtual bool PreAbility() {
+      if (!canUse && !inUse) return false;
+      return true;
     }
     public virtual bool Ability() {
+      if (!PreAbility()) return false;
       switch (state) {
-        case State.Active: Active();
+        case State.Active:
+          Active();
+          Using();
           return true;
-        case State.Starting: Starting();
+        case State.Starting:
+          Starting();
+          Using();
           return true;
-        case State.Ending: Ending();
+        case State.Ending:
+          Ending();
+          Using();
           return true;
-        case State.Failed: Failed();
+        case State.Failed:
+          Failed();
           return true;
         default:
           return false;
@@ -66,6 +74,7 @@ namespace OriMod {
     public virtual void Active() { }
     public virtual void Ending() { }
     public virtual void Failed() { }
+    public virtual void Using() { }
     public abstract void Tick();
   }
   public partial class MovementHandler {
@@ -124,13 +133,6 @@ namespace OriMod {
     public byte bashCurrNPC = 255;
     public int bashCurrTime = 0;
     public float bashCurrAngle = 0;
-
-    public const int stompStartDur = 24;
-    public const int stompMinDur = 60;
-    public const float stompGrav = 4f;
-    public const float stompMaxFallSpeed = 28f;
-    public int stompCurrDur = 0;
-    public Projectile stompProj;
 
     private const int chargeJumpStartTime = 60;
     public int chargeJumpCurrTime = 0;
@@ -196,49 +198,7 @@ namespace OriMod {
       }
     }
     public void Stomp() {
-      switch (GetState("Stomp")) {
-        case State.Starting: {
-          if (stompCurrDur == 0) {
-            oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + OriPlayer.RandomChar(3), 1f, 0.2f);
-          }
-          player.velocity.X = 0;
-          player.velocity.Y *= 0.9f;
-          player.gravity = -0.1f;
-          break;
-        }
-        case State.Active: {
-          if (stompCurrDur == 0) {
-            oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + OriPlayer.RandomChar(3));
-            stompProj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
-          }
-          player.velocity.X = 0;
-          player.gravity = stompGrav;
-          player.maxFallSpeed = stompMaxFallSpeed;
-          player.immune = true;
-          break;
-        }
-        case State.Ending: {
-          oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + OriPlayer.RandomChar(3));
-          Vector2 position = new Vector2(player.position.X, player.position.Y + 32);
-          for (int i = 0; i < 25; i++) { // does particles
-            Dust dust = Main.dust[Terraria.Dust.NewDust(position, 30, 15, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
-            dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
-            dust.velocity *= new Vector2(2, 0.5f);
-            if (dust.velocity.Y > 0) {
-              dust.velocity.Y = -dust.velocity.Y;
-            }
-          }
-          stompProj.width = 600;
-          stompProj.height = 320;
-          break;
-        }
-        default:
-          return;
-      }
-      player.controlUp = false;
-      player.controlDown = false;
-      player.controlLeft = false;
-      player.controlRight = false;
+      stomp.Ability();
     }
     public void Glide() {
       glide.Ability();
@@ -401,34 +361,7 @@ namespace OriMod {
         if (IsInUse("Bash")) {}
       }
       
-      if (IsUnlocked("Stomp")) {
-        if (!oPlayer.isGrounded && !IsInUse("Stomp") && !IsInUse("Dash") && !IsInUse("ChargeDash") && !glide.inUse) {
-          SetState("Stomp", State.CanUse);
-        }
-        if (PlayerInput.Triggers.JustPressed.Down && CanUse("Stomp")) {
-          SetState("Stomp", State.Starting);
-          stompCurrDur = 0;
-        }
-        else if (IsState("Stomp", State.Starting)) {
-          stompCurrDur++;
-          if (stompCurrDur > stompStartDur) {
-            stompCurrDur = 0;
-            SetState("Stomp", State.Active);
-          }
-        }
-        else if (IsState("Stomp", State.Active)) {
-          stompCurrDur++;
-          if (stompCurrDur > stompMinDur && !PlayerInput.Triggers.Current.Down) {
-            SetState("Stomp", State.CanUse);
-          }
-          if (oPlayer.isGrounded) {
-            SetState("Stomp", State.Ending);
-          }
-        }
-        else if (IsState("Stomp", State.Ending)) {
-          SetState("Stomp", State.Disable);
-        }
-      }
+      stomp.Tick();
 
       glide.Tick();
 
