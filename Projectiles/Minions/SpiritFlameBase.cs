@@ -26,7 +26,7 @@ namespace OriMod.Projectiles.Minions {
 		protected Color color;
 		protected float lightStrength;
 
-    public void Init(int upgradeID) {
+    internal void Init(int upgradeID) {
 			SeinUpgrade u = OriMod.SeinUpgrades[upgradeID];
 			
 			projectile.knockBack = u.knockback;
@@ -57,7 +57,7 @@ namespace OriMod.Projectiles.Minions {
 			dustWidth = 10;
 			dustHeight = 10;
 		}
-		public void CreateDust() {
+		private void CreateDust() {
 			int dust = Dust.NewDust(projectile.position, dustWidth, dustHeight, dustType);
 			Main.dust[dust].scale = dustScale;
 			if (projectile.velocity == Vector2.Zero) {

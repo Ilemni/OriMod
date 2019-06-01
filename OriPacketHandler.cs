@@ -5,14 +5,14 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod {
-  public class OriPlayerPacketHandler : PacketHandler
+  internal class OriPlayerPacketHandler : PacketHandler
   {
-    public OriPlayerPacketHandler(byte handlerType) : base(handlerType)
+    internal OriPlayerPacketHandler(byte handlerType) : base(handlerType)
 		{
 			HandlerType = handlerType;
 		}
-    public const byte OriState = 1;
-    public override void HandlePacket(BinaryReader reader, int fromWho) {
+    internal const byte OriState = 1;
+    internal override void HandlePacket(BinaryReader reader, int fromWho) {
       byte packetType = reader.ReadByte();
       if (Main.netMode == NetmodeID.MultiplayerClient) {
 		    fromWho = reader.ReadUInt16();
@@ -26,7 +26,7 @@ namespace OriMod {
           break;
       }
     }
-    public void SendOriState(int toWho, int fromWho) {
+    internal void SendOriState(int toWho, int fromWho) {
       ModPacket packet = GetPacket(OriState, fromWho);
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
 
@@ -46,7 +46,7 @@ namespace OriMod {
       packet.Send(toWho, fromWho);
     }
 
-    public void ReceiveOriState(BinaryReader r, int fromWho) {
+    internal void ReceiveOriState(BinaryReader r, int fromWho) {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       BitsByte flags = r.ReadByte();
       bool oriSet = flags[0];

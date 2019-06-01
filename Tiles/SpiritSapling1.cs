@@ -34,7 +34,6 @@ namespace OriMod.Tiles {
       Tile tile = Main.tile[i, j];
       Main.mouseRightRelease = false;
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-      if (oPlayer.animatedTransform) {
         if (!oPlayer.OriSet && !oPlayer.transforming) {
           oPlayer.blockLocation = new Vector2(i, j) * 16;
           oPlayer.DoTransformation(player);
@@ -54,7 +53,6 @@ namespace OriMod.Tiles {
             dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
           }
         }
-      }
       else {
         if (!oPlayer.OriSet) {
           oPlayer.OriSet = true;

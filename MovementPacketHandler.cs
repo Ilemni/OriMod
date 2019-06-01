@@ -8,12 +8,12 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   partial class MovementPacketHandler : PacketHandler {
-    public MovementPacketHandler(byte handlerType) : base(handlerType)
+    internal MovementPacketHandler(byte handlerType) : base(handlerType)
 		{
 			HandlerType = handlerType;
 		}
-    public const byte MovementState = 1;
-    public override void HandlePacket(System.IO.BinaryReader reader, int fromWho) {
+    internal const byte MovementState = 1;
+    internal override void HandlePacket(System.IO.BinaryReader reader, int fromWho) {
       int packetType = reader.ReadByte();
       if (Main.netMode == NetmodeID.MultiplayerClient) {
 		    fromWho = reader.ReadUInt16();
@@ -27,13 +27,13 @@ namespace OriMod {
           break;
       }
     }
-    public void SendMovementState(int toWho, int fromWho, List<string> changes) {
+    internal void SendMovementState(int toWho, int fromWho, List<string> changes) {
       ModPacket packet = GetPacket(MovementState, fromWho);
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       packet.Write((byte)changes.Count);
       foreach(string move in changes) {
         // packet.Write((byte)(int)Enum.Parse(typeof(MovementHandler.MoveType), move)); // FIXME
-        packet.Write((byte)fromPlayer.movementHandler.GetState(move));
+        // packet.Write((byte)fromPlayer.movementHandler.GetState(move));
         switch (move) {
           case "Bash":
             packet.Write(fromPlayer.movementHandler.bashCurrNPC);
@@ -43,14 +43,14 @@ namespace OriMod {
             packet.Write((int)fromPlayer.movementHandler.grenadePos.Y);
             break;
           case "ChargeDash":
-            packet.Write(fromPlayer.movementHandler.cDash.npc);
+            packet.Write(fromPlayer.movementHandler.cDash.Npc);
             break;
         }
       }
       Main.NewText("Sending Movement State Packet from " + fromWho + " [" + Main.player[fromWho].name + "]");
       packet.Send(toWho, fromWho);
     }
-    public void ReceiveMovementState(BinaryReader r, int fromWho) {
+    internal void ReceiveMovementState(BinaryReader r, int fromWho) {
       Main.NewText("Receiving Movement State Packet from " + fromWho + " [" + Main.player[fromWho].name + "]");
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       int length = r.ReadByte();

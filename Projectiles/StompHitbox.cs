@@ -25,15 +25,19 @@ namespace OriMod.Projectiles {
     }
     public override void AI() {
       projectile.Center = Main.player[projectile.owner].Center;
-      if (Owner().movementHandler.stomp.inUse) {
-        if (!Owner().movementHandler.stomp.IsState(Movement.State.Ending)) {
+      switch (Owner().movementHandler.stomp.State) {
+        case Ability.States.Starting:
+        case Ability.States.Active:
           projectile.width = 150;
           projectile.position.Y += 10;
-        }
+          break;
+        case Ability.States.Ending:
+          break;
+        default:
+          projectile.Kill();
+          break;
       }
-      else {
-        projectile.Kill();
-      }
+      if (!Owner().movementHandler.stomp.IsState(Ability.States.Starting, Ability.States.Active)) { }
     }
     public override bool ShouldUpdatePosition() {
       return false;

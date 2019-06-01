@@ -20,7 +20,7 @@ namespace OriMod.Items {
 			item.UseSound = SoundID.Item44;
 			item.buffTime = 3600;				//The duration of the buff, here is 60 seconds
 		}
-		public void Init(int upgradeID) {
+		internal void Init(int upgradeID) {
 			SeinUpgrade u = OriMod.SeinUpgrades[upgradeID - 1];
 			item.damage = u.damage;
 			item.rare = u.rarity;

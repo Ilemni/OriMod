@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace OriMod {
-  public static partial class AnimationHandler {
+  internal static partial class AnimationHandler {
     private enum incrementType {
       Range = 1, // Animation is between a start and end point, going downwards (Used for track initialization)
       Select = 2, // Animation is a series of explicitly specified frames
@@ -25,7 +25,7 @@ namespace OriMod {
     private static Vector3 h(incrementType i=incrementType.Range, loop l=loop.Always, playbackMode p=playbackMode.Normal) { return new Vector3((int)i, (int)l, (int)p); }
     
     // First Vector3 in the Vector3[] properties are not frames, headers consisting of these enums
-    public static Dictionary<string, Vector3[]> tracks = new Dictionary<string, Vector3[]> {
+    private static Dictionary<string, Vector3[]> tracks = new Dictionary<string, Vector3[]> {
       {"Default", new Vector3[] {
         h(incrementType.Single),
         f(0, 0)
@@ -125,6 +125,6 @@ namespace OriMod {
       }},
     };
     
-    public static string[] names = tracks.Keys.ToArray();
+    private static string[] Names = tracks.Keys.ToArray();
   }
 }

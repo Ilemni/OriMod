@@ -174,7 +174,7 @@ namespace OriMod.Projectiles.Minions {
       float length2 = (Main.npc[id2].position - playerPos).Length();
       return length1.CompareTo(length2);
     }
-    public override void CheckActive() {
+    internal override void CheckActive() {
       Player player = Main.player[projectile.owner];
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
       if (player.dead) {
@@ -323,7 +323,7 @@ namespace OriMod.Projectiles.Minions {
       Main.projectile[proj].penetrate = pierce;
       projectile.netUpdate = true;
     }
-    public override void Behavior() {
+    internal override void Behavior() {
       if (!projectile.active) { return; }
       SeinMovement();
       UpdateTargetsPos();

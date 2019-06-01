@@ -2,69 +2,75 @@ using Terraria;
 using Terraria.GameInput;
 
 namespace OriMod.Movements {
-  public class Glide : Movement {
-    public Glide(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
+  public class Glide : Ability {
+    internal Glide(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
 
-    public const float glideMaxFallSpeed = 2f;
-    public const float glideRunSlowdown = 0.125f;
-    public const float glideRunAcceleration = 0.2f;
-    private const int glideStartDuration = 8;
-    private const int glideEndDuration = 10;
-    public int glideCurrTime = 0;
+    private const float MaxFallSpeed = 2f;
+    private const float RunSlowdown = 0.125f;
+    private const float RunAcceleration = 0.2f;
+    private const int StartDuration = 8;
+    private const int EndDuration = 10;
+    private int CurrTime = 0;
 
-    public override void Active() {
-      if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
-        oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + OriPlayer.RandomChar(5), 0.45f);
+    internal override bool CanUse {
+      get {
+        return State != States.Ending && !Handler.dash.InUse && !Handler.cDash.InUse && player.velocity.Y > 0;
       }
-      player.maxFallSpeed = glideMaxFallSpeed;
-      player.runSlowdown = glideRunSlowdown;
-      player.runAcceleration = glideRunAcceleration;
     }
-    public override void Starting() {
-      if (glideCurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
-      Active();
+
+    protected override void UpdateActive() {
+      if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
+        OPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + OriPlayer.RandomChar(5), 0.45f);
+      }
+      player.maxFallSpeed = MaxFallSpeed;
+      player.runSlowdown = RunSlowdown;
+      player.runAcceleration = RunAcceleration;
     }
-    public override void Ending() {
-      if (glideCurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGildeEnd" + OriPlayer.RandomChar(3), 0.8f);
-      Active();
+    protected override void UpdateStarting() {
+      if (CurrTime == 0) OPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
+      UpdateActive();
     }
-    public override void Tick() {
+    protected override void UpdateEnding() {
+      if (CurrTime == 0) OPlayer.PlayNewSound("Ori/Glide/seinGildeEnd" + OriPlayer.RandomChar(3), 0.8f);
+      UpdateActive();
+    }
+    internal override void Tick() {
       if (!unlocked) return;
-      if (Handler.dash.inUse) {
-        state = State.Inactive;
-        canUse = false;
-        glideCurrTime = 0;
+      if (Handler.dash.InUse) {
+        State = States.Inactive;
+        CanUse = false;
+        CurrTime = 0;
         return;
       }
-      if (inUse) {
-        if (IsState(State.Starting)) {
-          glideCurrTime++;
-          if (glideCurrTime > glideStartDuration) {
-            state = State.Active;
-            glideCurrTime = 0;
+      if (InUse) {
+        if (State == States.Starting) {
+          CurrTime++;
+          if (CurrTime > StartDuration) {
+            State = States.Active;
+            CurrTime = 0;
           }
         }
-        else if (IsState(State.Ending)) {
-          glideCurrTime++;
-          if (glideCurrTime > glideEndDuration) {
-            state = State.Inactive;
-            canUse = true;
+        else if (State == States.Ending) {
+          CurrTime++;
+          if (CurrTime > EndDuration) {
+            State = States.Inactive;
+            CanUse = true;
           }
         }
-        if (player.velocity.Y < 0 || oPlayer.onWall || oPlayer.isGrounded) {
-          state = inUse ? State.Ending : State.Inactive;
-          canUse = false;
+        if (player.velocity.Y < 0 || OPlayer.onWall || OPlayer.isGrounded) {
+          State = InUse ? States.Ending : States.Inactive;
+          CanUse = false;
         }
         
         else if (OriMod.FeatherKey.JustReleased) {
-          state = State.Ending;
-          glideCurrTime = 0;
+          State = States.Ending;
+          CurrTime = 0;
         }
       }
       else {
-        if (player.velocity.Y > 0 && !oPlayer.onWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
-          state = State.Starting;
-          glideCurrTime = 0;
+        if (player.velocity.Y > 0 && !OPlayer.onWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
+          State = States.Starting;
+          CurrTime = 0;
         }
       }
     }

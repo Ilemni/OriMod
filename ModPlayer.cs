@@ -18,20 +18,20 @@ using System.Linq;
 
 namespace OriMod
 {
-  public class OriPlayer : ModPlayer {
+  public sealed class OriPlayer : ModPlayer {
     
     #region Variables
-    public MovementHandler movementHandler; // Class used for all of Ori's movements
+    public MovementHandler movementHandler { get; private set; } // Class used for all of Ori's movements
 
     // OriSet, detecting whether or not Ori is active or not. The name is a remnant of when Ori was activated using the accessory located in Items/Ori/OriAccessory
     public bool OriSet = false;
 
     // Transform variables used to hasten additional transforms
-    public bool hasTransformedOnce = false;
-    public readonly float repeatedTransformRate = 2.5f;
+    private bool hasTransformedOnce = false;
+    private const float repeatedTransformRate = 2.5f;
 
     // Variables relating to fixing movement when Ori is active, such that you aren't slowed down mid-air after bashing.
-    public bool isGrounded = false;
+    public bool isGrounded { get; private set; }
     public bool unrestrictedMovement = false;
 
     // Variables relating to Bash
@@ -43,35 +43,29 @@ namespace OriMod
     public bool bashFrameUp = false;
     public float bashNPCAngle = 0;
     public Vector2 bashPosition = new Vector2(0, 0);
-    public bool abilityBash = true;
     public bool countering = false;
     public int counterTimer = 0;
     public static readonly List<int> CannotBash = new List<int> {
       NPCID.BlazingWheel, NPCID.SpikeBall
     };
-    public int bashNPC = 0;
-    public bool tempInvincibility = false;
-    public int immuneTimer = 0;
+    public int bashNPC { get; private set; }
+    public bool tempInvincibility { get; internal set; }
+    public int immuneTimer { get; internal set; }
     public Vector2 bashNPCPosition = Vector2.Zero;
 
     // Variables relating to Air Jumping
-    public int oriAirJumps = 2; // Only used in Save/Load
 
     // Variables relating to Dashing
-    public bool abilityDash = true; // Only used in Save/Load
 
     // Variables relating to Wall Jumping
-    public bool abilityWallJump = true; // Only used in Save/Load
-    public bool onWall = false;
+    public bool onWall { get; private set; }
 
     // Variables relating to Climbing
-    public bool canClimb = true; // Only used in Save/Load
 
     // Variables relating to Charge Jumping
     public bool charged = false;
     public int chargeTimer = 0;
     public int chargeUpTimer = 40;
-    public bool abilityChargeJump = true;
     public int chargeJumpAnimTimer = 0;
     public bool upRefresh = false;
 
@@ -84,7 +78,6 @@ namespace OriMod
     public int outLookUpTimer = 0;
 
     // Variables relating to Stomping
-    public bool waterBreath = false; // Only used in Save/Load
 
     // Variables relating to Crouching
     public bool crouching = false;
@@ -97,24 +90,22 @@ namespace OriMod
     public bool backflipping = false;
 
     // Variables relating to Kuro's Feather
-    public bool hasFeather = true; // Only used in Save/Load
 
     // Variables relating to visual or audible effects
     public bool doOriDeathParticles = true;
-    public string floorMaterial = "Grass";
-    public string wallMaterial = "Grass";
+    public string floorMaterial { get; private set; }
+    public string wallMaterial { get; private set; }
     
 
     // Variables relating to Sein
-    public bool seinMinionActive;
-    public int seinMinionUpgrade;
+    public bool seinMinionActive { get; internal set; }
+    public int seinMinionUpgrade { get; internal set; }
 
     // Variables relating to Transforming
-    public float transformTimer = 0;
-    public bool transforming = false;
-    public Vector2 blockLocation = Vector2.Zero;
-    public int transformDirection = 1;
-    public bool animatedTransform = true;
+    internal float transformTimer = 0;
+    public bool transforming { get; internal set; }
+    public Vector2 blockLocation { get; internal set; }
+    public int transformDirection { get; internal set; }
 
     // Footstep materials
     public List<int> grassFloorMaterials;
@@ -135,30 +126,30 @@ namespace OriMod
     public List<int> woodWallMaterials;
 
     // Trail variables, for the trails Ori creates
-    public List<Vector2> trailPos;
-    public List<Vector2> trailFrame;
-    public List<float> trailAlpha;
-    public List<float> trailRotation;
-    public List<int> trailDirection;
-    public int trailUpdate = 0;
+    private List<Vector2> trailPos;
+    private List<Vector2> trailFrame;
+    private List<float> trailAlpha;
+    private List<float> trailRotation;
+    private List<int> trailDirection;
+    private int trailUpdate = 0;
 
-    public int featherTrailTimer = 0;
+    private int featherTrailTimer = 0;
 
     // Animation Variables
-    public const int spriteWidth = 104;
-    public const int spriteHeight = 76;
-    public Vector2 AnimFrame = Vector2.Zero;
+    internal const int spriteWidth = 104;
+    internal const int spriteHeight = 76;
+    private Vector2 AnimFrame = Vector2.Zero;
     public Vector2 AnimTile {
       get { return PixelToTile(AnimFrame); }
-      set { AnimFrame = TileToPixel(value); }
+      internal set { AnimFrame = TileToPixel(value); }
     }
-    public string AnimName = "Default";
-    public int AnimIndex = 0;
-    public float AnimTime = 0; // Intentionally a float
-    public float AnimRads = 0f;
-    public bool AnimReversed = false;
-    public bool flashing = false;
-    public int flashTimer = 0;
+    public string AnimName { get; private set; }
+    internal int AnimIndex { get; private set; }
+    internal float AnimTime { get; private set; } // Intentionally a float
+    internal float AnimRads { get; private set; }
+    internal bool AnimReversed = false;
+    internal bool flashing = false;
+    internal int flashTimer = 0;
     private static readonly int[] flashPattern = new int[] {
       53,52,51,50,45,
       44,43,38,37,36,
@@ -169,49 +160,35 @@ namespace OriMod
     private int footstepRand = 0;
 
     #endregion
-    public Vector2 PixelToTile(Vector2 pixel) {
+    private Vector2 PixelToTile(Vector2 pixel) {
       pixel.X = (int)(pixel.X / spriteWidth);
       pixel.Y = (int)(pixel.Y / spriteHeight);
       return pixel;
     }
-    public static Vector2 TileToPixel(int x, int y) {
-      return TileToPixel(new Vector2(x, y));
-    }
-    public static Vector2 TileToPixel(Vector2 tile) {
+    private static Vector2 TileToPixel(Vector2 tile) {
       tile.X *= spriteWidth;
       tile.Y *= spriteHeight;
       return tile;
     }
     // basic sound playing method, with paths starting after NewSFX in the file structure
-    public SoundEffectInstance PlayNewSound(string Path) {
+    internal SoundEffectInstance PlayNewSound(string Path) {
       return PlayNewSound(Path, 1, 0);
     }
-    public SoundEffectInstance PlayNewSound(string Path, float Volume) {
+    internal SoundEffectInstance PlayNewSound(string Path, float Volume) {
       return PlayNewSound(Path, Volume, 0);
     }
-    public SoundEffectInstance PlayNewSound(string Path, float Volume, float Pitch) {
+    internal SoundEffectInstance PlayNewSound(string Path, float Volume, float Pitch) {
       return Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
     }
-    public SoundEffectInstance PlayFootstep(string Material, int rand, float Volume, float Pitch) {
+    internal SoundEffectInstance PlayFootstep(string Material, int rand, float Volume, float Pitch) {
       char randChar = RandomChar(rand, ref footstepRand);
       return PlayNewSound("Ori/Footsteps/" + Material + "/" + Material + randChar, Volume, Pitch);
     }
 
-    public void DoCounter() {
+    private void DoCounter() {
       countering = true;
       counterTimer = 15;
       PlayNewSound("ori/Grenade/seinGrenadeExplode" + RandomChar(2));
-    }
-
-    private float DegreeToRadian(float angle) { // i dont know why i put this here
-      angle = angle % 360;
-      if (angle < 0) {
-        angle += 360;
-      }
-      return (float)(Math.PI * angle) / 180.0f;
-    }
-    private float RadianToDegree(float rad) {
-      return (float)(rad * 180 / Math.PI);
     }
 
     public static char RandomChar(int length) { // Returns random letter based on length. Primarily used for sound effects
@@ -240,22 +217,23 @@ namespace OriMod
     }
     
     // Class with all necessary animation frame info, should make frame work much more managable
-    public void Increment(string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Vector3 overrideMeta=new Vector3(), Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
+    internal void Increment(string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Vector3 overrideMeta=new Vector3(), Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
       // Main.NewText("Frame called: " + AnimName + ", Time: " + AnimTime + ", AnimIndex: " + AnimIndex); // Debug
       AnimationHandler.IncrementFrame(this, anim, overrideFrame, overrideTime, overrideDur, overrideMeta, drawOffset, rotDegrees);
     }
     
-    public void SetFrame(string name, int frameIndex, float time, Vector3 frame) {
-      SetFrame(name, frameIndex, time, new Vector2(frame.X, frame.Y));
+    internal void SetFrame(string name, int frameIndex, float time, Vector3 frame, float animRads) {
+      SetFrame(name, frameIndex, time, new Vector2(frame.X, frame.Y), animRads);
     }
-    public void SetFrame(string name, int frameIndex, float time, Vector2 frame) {
+    internal void SetFrame(string name, int frameIndex, float time, Vector2 frame, float animRads) {
       AnimName = name;
       AnimIndex = frameIndex;
       AnimTime = time;
       AnimFrame = TileToPixel(frame);
+      AnimRads = animRads;
     }
 
-    public void UpdateFrame(Player drawPlayer) {
+    private void UpdateFrame(Player drawPlayer) {
       if (!OriSet || transforming) return;
       AnimTime++;
       if (player.whoAmI != Main.myPlayer) {
@@ -264,18 +242,22 @@ namespace OriMod
       }
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>();
 
-      if (movementHandler.airJump.inUse && !(movementHandler.dash.inUse || movementHandler.cDash.inUse)) {
+      if (movementHandler.airJump.InUse && !(movementHandler.dash.InUse || movementHandler.cDash.InUse)) {
         Increment("AirJump");
         AnimRads = AnimTime * 0.8f;
         return;
       }
-      if (movementHandler.glide.inUse) {
-        if (movementHandler.glide.IsState(Movement.State.Starting)) Increment("GlideStart");
-        else if (movementHandler.glide.IsState(Movement.State.Active)) Increment("Glide");
-        else Increment("GlideStart", overrideMeta:new Vector3(0, 0, 3));
-        return;
+      if (movementHandler.glide.InUse) {
+        switch (movementHandler.glide.State) {
+          case Ability.States.Starting: Increment("GlideStart");
+            return;
+          case Ability.States.Active: Increment("Glide");
+            return;
+          case Ability.States.Ending: Increment("GlideStart", overrideMeta:new Vector3(0, 0, 3));
+            return;
+        }
       }
-      if (movementHandler.dash.inUse || movementHandler.cDash.inUse) {
+      if (movementHandler.dash.InUse || movementHandler.cDash.InUse) {
         if (Math.Abs(player.velocity.X) > 18f) {
           Increment("Dash");
         }
@@ -284,10 +266,10 @@ namespace OriMod
         }
         return;
       }
-      if (movementHandler.IsInUse("WallJump")) {
-        Increment("WallJump");
-        return;
-      }
+      // if (movementHandler.wJump.InUse) {
+      //   Increment("WallJump");
+      //   return;
+      // }
       if (OriSet && !transforming && !hasTransformedOnce) {
         hasTransformedOnce = true;
       }
@@ -328,12 +310,12 @@ namespace OriMod
         Increment("Bash");
         return;
       }
-      if (movementHandler.stomp.IsState(Movement.State.Starting)) {
+      if (movementHandler.stomp.State == Ability.States.Starting) {
         Increment("AirJump");
         AnimRads = AnimTime;
         return;
       }
-      if (movementHandler.stomp.IsState(Movement.State.Active)) {
+      if (movementHandler.stomp.State == Ability.States.Active) {
         Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideMeta:new Vector3(0,2,0));
         return;
       }
@@ -346,7 +328,7 @@ namespace OriMod
         return;
       }
       if (onWall && !isGrounded) {
-        if (movementHandler.climb.inUse && player.velocity.Y < 0) {
+        if (movementHandler.climb.InUse && player.velocity.Y < 0) {
           Increment("Climb", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
         }
         else {
@@ -367,7 +349,7 @@ namespace OriMod
         }
         return;
       }
-      if (!isGrounded && !movementHandler.glide.inUse) {
+      if (!isGrounded && !movementHandler.glide.InUse) {
         Increment(drawPlayer.velocity.Y < 0 ? "Jump" : "Falling");
         return;
       }
@@ -376,7 +358,7 @@ namespace OriMod
         return;
       }
       if (drawPlayer.velocity.X != 0 && isGrounded &&
-        !movementHandler.dash.inUse &&
+        !movementHandler.dash.InUse &&
         !bashActive &&
         !onWall && (
           PlayerInput.Triggers.Current.Left ||
@@ -424,12 +406,12 @@ namespace OriMod
         }
       }
     }
-    public void DoTransformation(Player player) {
+    internal void DoTransformation(Player player) {
       transforming = true;
       transformDirection = player.direction;
       transformTimer = 627;
     }
-    public void InitTestMaterial() {
+    private void InitTestMaterial() {
       grassFloorMaterials = new List<int>();
       lightDarkFloorMaterials = new List<int>();
       mushroomFloorMaterials = new List<int>();
@@ -556,23 +538,23 @@ namespace OriMod
     }
     
     // Gets the tile that's a given offset from player.Center.X, player.position.Y + player.height
-    public Tile getTile(float offsetX, float offsetY) {
+    private Tile GetTile(float offsetX, float offsetY) {
       Vector2 pos = new Vector2(player.Center.X + offsetX, (player.position.Y + player.height) + offsetY);
       Vector2 tilepos = new Vector2(pos.ToTileCoordinates().X, pos.ToTileCoordinates().Y);
       return Main.tile[(int)tilepos.X, (int)tilepos.Y];
     }
-    public virtual void TestStepMaterial(Player player) { // oh yeah good luck understanding what this is
-      Tile tile = getTile(-12f, 4f);
+    private void TestStepMaterial(Player player) { // oh yeah good luck understanding what this is
+      Tile tile = GetTile(-12f, 4f);
       if (tile.liquid > 0f && tile.liquidType() == 0) {
         floorMaterial = "Water";
       }
       else {
-        tile = getTile(-12f, -4f);
+        tile = GetTile(-12f, -4f);
         if (tile.liquid > 0f && tile.liquidType() == 0) {
           floorMaterial = "Water";
         }
         else {
-          tile = getTile(-12f, 8);
+          tile = GetTile(-12f, 8);
           if (tile.active()) {
             if (grassFloorMaterials.Contains(tile.type)) {
               floorMaterial = "Grass";
@@ -603,7 +585,7 @@ namespace OriMod
             }
           }
           else {
-            tile = getTile(-12, 24);
+            tile = GetTile(-12, 24);
             if (tile.active()) {
               if (grassFloorMaterials.Contains(tile.type)) {
                 floorMaterial = "Grass";
@@ -640,8 +622,8 @@ namespace OriMod
         }
       }
     }
-    public virtual void TestWallMaterial(Player player) { // or this, im too tired to comment them
-      Tile tile = getTile(-2f, 34f);
+    private void TestWallMaterial(Player player) { // or this, im too tired to comment them
+      Tile tile = GetTile(-2f, 34f);
       if (tile.active()) {
         if (grassWallMaterials.Contains(tile.type)) {
           wallMaterial = "Grass";
@@ -663,7 +645,7 @@ namespace OriMod
         wallMaterial = "Grass";
       }
     }
-    public void RemoveSeinBuffs(int exclude=0) {
+    internal void RemoveSeinBuffs(int exclude=0) {
       for (int u = 1; u <= OriMod.SeinUpgrades.Count; u++) {
         if (u != exclude) {
           player.ClearBuff(mod.GetBuff("SeinBuff" + u).Type);
@@ -752,7 +734,7 @@ namespace OriMod
             OriMod.BashKey.JustPressed ||
             OriMod.DashKey.JustPressed ||
             PlayerInput.Triggers.Current.Down ||
-            movementHandler.dash.inUse
+            movementHandler.dash.InUse
           ) {
             intoLookUpTimer = 0;
             intoLookUp = false;
@@ -772,7 +754,7 @@ namespace OriMod
             OriMod.BashKey.JustPressed ||
             OriMod.DashKey.JustPressed ||
             !isGrounded ||
-            movementHandler.dash.inUse
+            movementHandler.dash.InUse
           ) {
             lookUp = false;
           }
@@ -791,7 +773,7 @@ namespace OriMod
             OriMod.BashKey.JustPressed ||
             OriMod.DashKey.JustPressed ||
             !isGrounded ||
-            movementHandler.dash.inUse ||
+            movementHandler.dash.InUse ||
             outLookUpTimer == 0
           ) {
             outLookUp = false;
@@ -899,9 +881,8 @@ namespace OriMod
       if (
         OriMod.BashKey.JustPressed &&
         bashActivate == 0 &&
-        !movementHandler.dash.inUse && // Bash should be available during Dash
-        !movementHandler.stomp.inUse &&  // Bash should be available during Stomp
-        abilityBash
+        !movementHandler.dash.InUse && // Bash should be available during Dash
+        !movementHandler.stomp.InUse  // Bash should be available during Stomp
       ) {
         bashActivate = 3;
         Projectile.NewProjectile(player.Center, new Vector2(0, 0), mod.ProjectileType("BashHitbox"), 1, 0f, player.whoAmI, 0, 1);
@@ -1108,12 +1089,12 @@ namespace OriMod
           player.maxRunSpeed += 2f;
         }
         Main.SetCameraLerp(0.05f, 1);
-        if (onWall && (isGrounded || player.velocity.Y < 0) && !movementHandler.climb.inUse) {
+        if (onWall && (isGrounded || player.velocity.Y < 0) && !movementHandler.climb.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
           player.jumpSpeedBoost -= 6f;
         }
-        else if (onWall && player.velocity.Y > 0 && !movementHandler.stomp.inUse && !isGrounded) {
+        else if (onWall &&  !isGrounded && player.velocity.Y > 0 && !movementHandler.stomp.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
         }
@@ -1145,21 +1126,21 @@ namespace OriMod
         if (PlayerInput.Triggers.JustPressed.Jump) {
           movementHandler.AirJump();
         }
-        if (OriMod.DashKey.JustPressed || movementHandler.dash.inUse || movementHandler.cDash.inUse) {
-          if ((OriMod.ChargeKey.Current && movementHandler.cDash.refreshed) || movementHandler.cDash.inUse) {
+        if (OriMod.DashKey.JustPressed || movementHandler.dash.InUse || movementHandler.cDash.InUse) {
+          if ((OriMod.ChargeKey.Current && movementHandler.cDash.Refreshed) || movementHandler.cDash.InUse) {
             movementHandler.ChargeDash();
           }
           else {
             movementHandler.Dash();
           }
         }
-        if ((PlayerInput.Triggers.JustPressed.Jump && onWall && !isGrounded) || movementHandler.IsInUse("WallJump")) {
+        if ((PlayerInput.Triggers.JustPressed.Jump && onWall && !isGrounded) /*|| movementHandler.wJump.InUse*/) {
           movementHandler.WallJump();
         }
         if (OriMod.ClimbKey.Current && onWall) {
           movementHandler.Climb();
         }
-        if (PlayerInput.Triggers.JustPressed.Down || movementHandler.stomp.inUse) {
+        if (PlayerInput.Triggers.JustPressed.Down || movementHandler.stomp.InUse) {
           movementHandler.Stomp();
         }
       }
@@ -1195,15 +1176,15 @@ namespace OriMod
           dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
           dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
           dust.noGravity = false;
-          featherTrailTimer = movementHandler.dash.inUse ? Main.rand.Next(2, 4) : Main.rand.Next(10, 15);
+          featherTrailTimer = movementHandler.dash.InUse ? Main.rand.Next(2, 4) : Main.rand.Next(10, 15);
         }
       }
-      else if (movementHandler.dash.inUse && featherTrailTimer > 4) {
+      else if (movementHandler.dash.InUse && featherTrailTimer > 4) {
         featherTrailTimer = Main.rand.Next(2, 4);
       }
       flashing = flashPattern.Contains(flashTimer);
     }
-    public void BashEffects(NPC target) {
+    internal void BashEffects(NPC target) {
       bashActiveTimer = 100;
       bashActivate = 0;
       bashActive = true;
@@ -1220,7 +1201,7 @@ namespace OriMod
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       if (OriSet) {
-        if (movementHandler.stomp.inUse || chargeJumpAnimTimer > 0) {
+        if (movementHandler.stomp.InUse || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         if (bashActivate > 0 && bashActiveTimer == 0 && !bashActive && !countering) {
@@ -1239,7 +1220,7 @@ namespace OriMod
       if (OriSet && playSound) {
         playSound = false; // stops regular hurt sound from playing
         genGore = false; // stops regular gore from appearing
-        if (bashActiveTimer > 0 || bashActive || movementHandler.stomp.inUse || chargeJumpAnimTimer > 0) {
+        if (bashActiveTimer > 0 || bashActive || movementHandler.stomp.InUse || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         else {
@@ -1255,28 +1236,10 @@ namespace OriMod
     public override TagCompound Save() {
       return new TagCompound {
         {"OriSet", OriSet},
-        {"OriSetPrevious", OriSet},
-        {"bash", abilityBash},
-        {"jumps", oriAirJumps},
-        {"feather", hasFeather},
-        {"water", waterBreath},
-        {"climb", canClimb},
-        {"dash", abilityDash},
-        {"chargejump", abilityChargeJump},
-        {"walljump", abilityWallJump},
       };
     }
     public override void Load(TagCompound tag) {
       OriSet = tag.GetBool("OriSet");
-      OriSet = tag.GetBool("OriSetPrevious");
-      abilityBash = tag.GetBool("bash");
-      oriAirJumps = tag.GetInt("oriAirJumps");
-      hasFeather = tag.GetBool("feather");
-      waterBreath = tag.GetBool("water");
-      canClimb = tag.GetBool("climb");
-      abilityDash = tag.GetBool("dash");
-      abilityChargeJump = tag.GetBool("chargejump");
-      abilityWallJump = tag.GetBool("walljump");
     }
     public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // similar to prehurt, but for death
       if (OriSet) {
@@ -1356,7 +1319,7 @@ namespace OriMod
       }
       return offset;
     }
-    public readonly PlayerLayer OriTrail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
+    internal readonly PlayerLayer OriTrail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
       Player drawPlayer = drawInfo.drawPlayer;
       Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
@@ -1424,8 +1387,8 @@ namespace OriMod
       }
       // public DrawData(Texture2D texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effect, int inactiveLayerDepth);
     });
-    public static PlayerDrawInfo dInfo;
-    public static readonly PlayerLayer oriPlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
+    internal static PlayerDrawInfo dInfo;
+    internal static readonly PlayerLayer oriPlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
       Player drawPlayer = drawInfo.drawPlayer;
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
@@ -1459,7 +1422,7 @@ namespace OriMod
       Main.playerDrawData.Add(data);
       // public DrawData(Texture2D texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effect, int inactiveLayerDepth);
     });
-    public static readonly PlayerLayer oriTransformSprite = new PlayerLayer("OriMod", "OriTransform", delegate (PlayerDrawInfo drawInfo) {
+    internal static readonly PlayerLayer oriTransformSprite = new PlayerLayer("OriMod", "OriTransform", delegate (PlayerDrawInfo drawInfo) {
       Player drawPlayer = drawInfo.drawPlayer;
       Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
@@ -1513,7 +1476,7 @@ namespace OriMod
       Main.playerDrawData.Add(data);
       // public DrawData(Texture2D texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effect, int inactiveLayerDepth);
     });
-    public static readonly PlayerLayer oriBashArrow = new PlayerLayer("OriMod", "bashArrow", delegate (PlayerDrawInfo drawInfo) {
+    internal static readonly PlayerLayer oriBashArrow = new PlayerLayer("OriMod", "bashArrow", delegate (PlayerDrawInfo drawInfo) {
       Player drawPlayer = drawInfo.drawPlayer;
       Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);

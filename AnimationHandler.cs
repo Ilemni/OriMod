@@ -16,17 +16,12 @@ using Microsoft.Xna.Framework.Audio;
 using System.Linq;
 
 namespace OriMod {
-  public static partial class AnimationHandler {
+  internal static partial class AnimationHandler {
     
     private static Vector3 OverrideMeta = new Vector3();
-    public static Vector3[] GetTrack(string str) {
-      Vector3[] value;
-      bool b = tracks.TryGetValue(str, out value);
-      return b ? value : null;
-    }
     
     // Set oPlayer and autofill tracks set to Range
-    public static void Init() {
+    internal static void Init() {
       List<Vector3[]> newTracks = new List<Vector3[]>();
       string[] keys = tracks.Keys.ToArray();
       foreach(string key in keys) {
@@ -54,16 +49,17 @@ namespace OriMod {
         }
       }
     }
-    public static void IncrementFrame(OriPlayer oPlayer, string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Vector3 overrideMeta=new Vector3(), Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
+    internal static void IncrementFrame(OriPlayer oPlayer, string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Vector3 overrideMeta=new Vector3(), Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
       if (oPlayer == null || oPlayer.player.whoAmI != Main.myPlayer) {
         return;
       }
-      if (!names.Contains(anim)) {
+      float rotRads = (float)(rotDegrees / 180 * Math.PI);
+      if (!Names.Contains(anim)) {
         Main.NewText("Error with animation: The animation sequence \"" + anim + "\" does not exist.", Color.Red);
         anim = "Default";
         Vector3[] fr = tracks[anim];
         oPlayer.AnimReversed = false;
-        oPlayer.SetFrame(anim, 1, overrideTime, fr[1]);
+        oPlayer.SetFrame(anim, 1, overrideTime, fr[1], rotRads);
         return;
       }
       // Main.NewText("Active animation: " + anim + " frame " + oPlayer.currFrameIndex + " [" + oPlayer.currFrameTime + "]"); // Debug only
@@ -87,12 +83,12 @@ namespace OriMod {
       if (overrideFrame != 0 && overrideFrame < frames.Length) { // If override frame, just set frame
         newFrame = frames[overrideFrame];
         oPlayer.AnimReversed = (int)meta.Z == (int)playbackMode.Reverse;
-        oPlayer.SetFrame(anim, overrideFrame, 0, newFrame);
+        oPlayer.SetFrame(anim, overrideFrame, 0, newFrame, rotRads);
       }
       else if ((int)meta.Z == (int)playbackMode.Random) { // If random, just set frame to random frame
         int rand = (int)Main.rand.Next(frames.Length - 1) + 1;
         newFrame = frames[rand];
-        oPlayer.SetFrame(anim, rand, overrideTime, newFrame);
+        oPlayer.SetFrame(anim, rand, overrideTime, newFrame, rotRads);
       }
       else { // Else actually do work
         int frameIndex = oPlayer.AnimIndex; // frameIndex's lowest value is 1, as frames[0] contains header data for the track
@@ -175,8 +171,7 @@ namespace OriMod {
           }
         }
         newFrame = frames[frameIndex];
-        oPlayer.SetFrame(anim, frameIndex, time, newFrame);
-        oPlayer.AnimRads = (float)(rotDegrees / 180 * Math.PI);
+        oPlayer.SetFrame(anim, frameIndex, time, newFrame, rotRads);
       }
     }
   }

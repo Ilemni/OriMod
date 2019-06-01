@@ -5,19 +5,19 @@ using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OriMod.Movements {
-  public class ChargeDash : Movement {
-    public ChargeDash(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { npc = 255; }
+  public class ChargeDash : Ability {
+    internal ChargeDash(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { Npc = 255; }
     
-    private static readonly float[] speeds = new float[] {
+    private static readonly float[] Speeds = new float[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     };
-    private const int duration = 14;
+    private const int Duration = 14;
     
-    private int currTime = 0;
-    public byte npc = 255;
-    public int currDirection = 1;
+    private int CurrTime = 0;
+    public byte Npc { get; internal set; }
+    internal int CurrDirection = 1;
     
-    public override void Starting() {
+    protected override void UpdateStarting() {
       float tempDist = 720f;
       int tempNPC = -1;
       for (int n = 0; n < Main.maxNPCs; n++) {
@@ -30,67 +30,67 @@ namespace OriMod.Movements {
         }
       }
       if (tempNPC != -1) {
-        npc = (byte)tempNPC;
-        currDirection = player.direction = player.position.X - Main.npc[npc].position.X < 0 ? 1 : -1;
+        Npc = (byte)tempNPC;
+        CurrDirection = player.direction = player.position.X - Main.npc[Npc].position.X < 0 ? 1 : -1;
       }
       else {
-        currDirection = player.direction;
+        CurrDirection = player.direction;
       }
-      oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
+      OPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
       // oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashChargeStart" + OriPlayer.RandomChar(2), .5f);
     }
-    public override void Using() {
-      float speed = speeds[currTime];
+    protected override void UpdateUsing() {
+      float speed = Speeds[CurrTime];
       player.gravity = 0;
-      if (npc < Main.maxNPCs && Main.npc[npc].active) {
+      if (Npc < Main.maxNPCs && Main.npc[Npc].active) {
         player.maxFallSpeed = speed;
-        Vector2 dir = (Main.npc[npc].position - player.position);
+        Vector2 dir = (Main.npc[Npc].position - player.position);
         dir.Y -= 32f;
         dir.Normalize();
         player.velocity = dir * speed * 0.8f;
-        if (currTime < duration && (player.position - Main.npc[npc].position).Length() < speed) {
-          state = State.Inactive;
-          currTime = duration;
-          player.position = Main.npc[npc].position;
+        if (CurrTime < Duration && (player.position - Main.npc[Npc].position).Length() < speed) {
+          State = States.Inactive;
+          CurrTime = Duration;
+          player.position = Main.npc[Npc].position;
           player.position.Y -= 32f;
-          npc = 255;
+          Npc = 255;
           player.velocity *= speed < 50 ? 0.5f : 0.25f;
         }
       }
       else {
-        player.velocity.X = speed * currDirection * 0.8f;
-        player.velocity.Y = oPlayer.isGrounded ? -0.1f : 0.15f * currTime;
+        player.velocity.X = speed * CurrDirection * 0.8f;
+        player.velocity.Y = OPlayer.isGrounded ? -0.1f : 0.15f * CurrTime;
       }
       player.runSlowdown = 26f;
     }
 
-    public override void Tick() {
-      if (!refreshed && !OriMod.ChargeKey.Current) {
-        refreshed = true;
+    internal override void Tick() {
+      if (!Refreshed && !OriMod.ChargeKey.Current) {
+        Refreshed = true;
       }
-      if (inUse) {
-        Handler.dash.state = State.Inactive;
-        Handler.dash.refreshed = false;
-        currTime++;
-        if (currTime > duration || oPlayer.onWall || oPlayer.bashActive || PlayerInput.Triggers.JustPressed.Jump) {
-          state = State.Inactive;
-          if ((npc == 255 || currTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
-            Vector2 newVel = npc == 255 && !Handler.airJump.inUse ? new Vector2(currDirection, 0) : player.velocity;
+      if (InUse) {
+        Handler.dash.State = States.Inactive;
+        Handler.dash.Refreshed = false;
+        CurrTime++;
+        if (CurrTime > Duration || OPlayer.onWall || OPlayer.bashActive || PlayerInput.Triggers.JustPressed.Jump) {
+          State = States.Inactive;
+          if ((Npc == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
+            Vector2 newVel = Npc == 255 && !Handler.airJump.InUse ? new Vector2(CurrDirection, 0) : player.velocity;
             newVel.Normalize();
-            newVel *= speeds[speeds.Length - 1];
+            newVel *= Speeds[Speeds.Length - 1];
             player.velocity = newVel;
           }
-          npc = 255;
+          Npc = 255;
         }
       }
       else {
-        canUse = refreshed && !oPlayer.onWall && !Handler.stomp.inUse && !oPlayer.bashActive /*TODO: Replace with IsInUse */;
-        if (canUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
-          state = State.Active;
-          currTime = 0;
-          canUse = false;
-          refreshed = false;
-          Starting();
+        CanUse = Refreshed && !OPlayer.onWall && !Handler.stomp.InUse && !OPlayer.bashActive /*TODO: Replace with IsInUse */;
+        if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
+          State = States.Active;
+          CurrTime = 0;
+          CanUse = false;
+          Refreshed = false;
+          UpdateStarting();
         }
       }
     }

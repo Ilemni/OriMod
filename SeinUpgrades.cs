@@ -40,8 +40,8 @@ namespace OriMod {
   }
   partial class OriMod
   {
-    public static List<SeinUpgrade> SeinUpgrades = new List<SeinUpgrade>();
-    private void AddNewSein(SeinUpgrade newSein) {
+    internal static List<SeinUpgrade> SeinUpgrades = new List<SeinUpgrade>();
+    internal void AddNewSein(SeinUpgrade newSein) {
       SeinUpgrade defaultSein = new SeinUpgrade();
       SeinUpgrade lastSein = new SeinUpgrade();
       if (SeinUpgrades.Count != 0) {
@@ -59,7 +59,7 @@ namespace OriMod {
       }
       SeinUpgrades.Add(newSein);
     }
-    void LoadSeinUpgrades() {
+    private void LoadSeinUpgrades() {
       AddNewSein(new SeinUpgrade()); // Tier 1 (Silver)
       AddNewSein(new SeinUpgrade{    // Tier 2 (Demonite/Crimsane)
         rarity = 2,
@@ -141,8 +141,10 @@ namespace OriMod {
         shotsToPrimaryTarget = 3,
         shotsPerTarget = 2,
         maxShotsPerVolley = 8,
+        homingIncreaseRate = 0.025f, 
         projectileSpeedStart = 16f, 
         targetMaxDist = 670f,
+        randDegrees = 120,
         dustScale = 3f,
         lightStrength = 4.5f,
       });
@@ -161,7 +163,6 @@ namespace OriMod {
         shortCooldown = 18f, 
         longCooldown = 45f, 
         homingStrengthStart = 0.05f, 
-        homingIncreaseRate = 0.025f, 
         homingIncreaseDelay = 15f, 
         projectileSpeedStart = 20f, 
         projectileSpeedIncreaseRate = 1f, 

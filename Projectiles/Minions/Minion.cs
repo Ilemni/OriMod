@@ -7,8 +7,8 @@ namespace OriMod.Projectiles.Minions {
 			Behavior();
 		}
 
-		public abstract void CheckActive();
+		internal abstract void CheckActive();
 
-		public abstract void Behavior();
+		internal abstract void Behavior();
 	}
 }

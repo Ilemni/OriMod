@@ -11,77 +11,77 @@ using Terraria.ModLoader;
 namespace OriMod {
   
   // This partial class is for Movement-specific implementations
-  public abstract class Movement {
+  public abstract class Ability {
     protected Player player;
-    protected OriPlayer oPlayer;
+    protected OriPlayer OPlayer;
     protected bool isLocalPlayer;
     protected MovementHandler Handler;
-    public Movement(OriPlayer oriPlayer, MovementHandler handler) {
+    internal Ability(OriPlayer oriPlayer, MovementHandler handler) {
       player = oriPlayer.player;
-      oPlayer = oriPlayer;
+      OPlayer = oriPlayer;
       isLocalPlayer = player.whoAmI == Main.myPlayer;
       Handler = handler;
     }
-    public enum State {
+    public enum States {
       Inactive = 0,
       Starting = 1,
       Active = 2,
       Ending = 3,
       Failed = 4
     }
-    public State state = State.Inactive;
-    public bool unlocked = true;
-    public bool canUse = false;
-    public bool refreshed = false;
-    public bool IsState(params State[] stat) {
+    public States State { get; internal set; }
+    public bool unlocked { get; internal set; }
+    internal virtual bool CanUse { get; set; }
+    internal virtual bool Refreshed { get; set; }
+    protected int currRand = 0; // Used for random sounds that don't repeat
+    public bool IsState(params States[] stat) {
       foreach(int s in stat) {
-        State v = (State)s;
-        if (state == v) return true;
+        States v = (States)s;
+        if (State == v) return true;
       }
       return false;
     }
-    public bool inUse {
+    public bool InUse {
       get {
-        return state != State.Inactive;
+        return State != States.Inactive;
       }
     }
-    protected virtual bool PreAbility() {
-      if (!canUse && !inUse) return false;
+    protected virtual bool PreUpdate() {
+      if (!CanUse && !InUse) return false;
       return true;
     }
-    public virtual bool Ability() {
-      if (!PreAbility()) return false;
-      switch (state) {
-        case State.Active:
-          Active();
-          Using();
+    internal virtual bool Update() {
+      if (!PreUpdate()) return false;
+      switch (State) {
+        case States.Active:
+          UpdateActive();
+          UpdateUsing();
           return true;
-        case State.Starting:
-          Starting();
-          Using();
+        case States.Starting:
+          UpdateStarting();
+          UpdateUsing();
           return true;
-        case State.Ending:
-          Ending();
-          Using();
+        case States.Ending:
+          UpdateEnding();
+          UpdateUsing();
           return true;
-        case State.Failed:
-          Failed();
+        case States.Failed:
+          UpdateFailed();
           return true;
         default:
           return false;
       }
     }
-    public virtual void Starting() { }
-    public virtual void Active() { }
-    public virtual void Ending() { }
-    public virtual void Failed() { }
-    public virtual void Using() { }
-    public abstract void Tick();
+    protected virtual void UpdateStarting() { }
+    protected virtual void UpdateActive() { }
+    protected virtual void UpdateEnding() { }
+    protected virtual void UpdateFailed() { }
+    protected virtual void UpdateUsing() { }
+    internal abstract void Tick();
   }
-  public partial class MovementHandler {
+  public sealed partial class MovementHandler {
     #region Variables
 
-    public Dictionary<string, int[]> movementStates;
     
     // Starting, Active, and Ending state all depend on how the move implements those three states
     //   Glide is fairly straightforward and uses all three for the purpose of different animations and sounds
@@ -108,10 +108,6 @@ namespace OriMod {
     public int soulLinkCurrTime = 0;
     public int soulLinkCurrRecharge = 0;
 
-    private static readonly Vector2 wallJumpVelocity = new Vector2(4, -7.2f);
-    private const int wallJumpEndDur = 12;
-    public int wallJumpCurrDur = 0;
-
     private const int bashMinTime = 40;
     private const int bashMaxTime = 150;
     private const int doubleBashWindow = 2;
@@ -126,58 +122,42 @@ namespace OriMod {
     #endregion
   
     public void SoulLink() {
-      // soulLink.Ability();
+      // soulLink.Update();
     }
     public void WallJump() {
-      switch (GetState("WallJump")) {
-        case State.Active: {
-          player.velocity.Y = wallJumpVelocity.Y;
-          oPlayer.onWall = false;
-          oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + OriPlayer.RandomChar(5));
-          break;
-        }
-        case State.Ending: {
-          if (oPlayer.onWall) player.velocity.Y--;
-          break;
-        }
-        default:
-          return;
-      }
-      player.velocity.X = wallJumpVelocity.X * -player.direction;
-      oPlayer.unrestrictedMovement = true;
-      return;
+      // wJump.Update();
     }
     public void ChargeFlame() {
-      // cFlame.Ability();
+      // cFlame.Update();
     }
     public void AirJump() {
-      airJump.Ability();
+      airJump.Update();
     }
     public void Bash() {
     }
     public void Stomp() {
-      stomp.Ability();
+      stomp.Update();
     }
     public void Glide() {
-      glide.Ability();
+      glide.Update();
     }
     public void Climb() {
-      climb.Ability();
+      climb.Update();
     }
     public void ChargeJump() {
-      // cJump.Ability();
+      // cJump.Update();
     }
     public void Dash() {
-      dash.Ability();
+      dash.Update();
     }
     public void ChargeDash() {
-      cDash.Ability();
+      cDash.Update();
     }
     public void Grenade(int mouseX=0, int mouseY=0) {
       Grenade(new Vector2(mouseX, mouseY));
     }
     public void Grenade(Vector2 mousePos) {
-      // grenade.Ability();
+      // grenade.Update();
     }
     public void Tick() {
       if (oPlayer == null || player.whoAmI != Main.myPlayer) {
@@ -189,32 +169,9 @@ namespace OriMod {
       // foreach(string str in eNames) {
       //   prevStates.Add((int)GetState(str));
       // }
-      
-      // soulLink.Tick();
-
-      if (IsUnlocked("WallJump")) {
-        if (IsState("WallJump", State.Ending)) {
-          wallJumpCurrDur++;
-          if (wallJumpCurrDur > wallJumpEndDur || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.isGrounded) {
-            SetState("WallJump", State.Disable);
-          }
-        }
-        else if (IsState("WallJump", State.Active)) {
-          SetState("WallJump", State.Ending);
-          wallJumpCurrDur = 0;
-        }
-        if (oPlayer.onWall && !oPlayer.isGrounded && !IsInUse("WallJump")) {
-          SetState("WallJump", State.CanUse);
-        }
-        else {
-          SetState("WallJump", State.Disable);
-        }
-        if (CanUse("WallJump") && PlayerInput.Triggers.JustPressed.Jump) {
-          SetState("WallJump", State.Active);
-        }
-      }
 
       // soulLink.Tick();
+      // wJump.Tick();
       // cFlame.Tick();
       airJump.Tick();
       // bash.Tick();
@@ -228,15 +185,15 @@ namespace OriMod {
       
       // List of things Minecart should disable
       if (player.mount.Cart) {
-        // soulLink.canUse = false;
-        // wJump.canUse = false;
-        airJump.canUse = false;
-        stomp.canUse = false;
-        glide.canUse = false;
-        climb.canUse = false;
-        // cJump.canUse = false;
-        dash.canUse = false;
-        cDash.canUse = false;
+        // soulLink.CanUse = false;
+        // wJump.CanUse = false;
+        airJump.CanUse = false;
+        stomp.CanUse = false;
+        glide.CanUse = false;
+        climb.CanUse = false;
+        // cJump.CanUse = false;
+        dash.CanUse = false;
+        cDash.CanUse = false;
       }
       List<string> changes = new List<string>();
       // for (int e = 0; e < prevStates.Count; e++) { // TODO: Replace with Movements
@@ -252,7 +209,7 @@ namespace OriMod {
       }
     }
     public void TickOtherClient() {
-      if (glide.inUse) {
+      if (glide.InUse) {
         Glide();
       }
     }

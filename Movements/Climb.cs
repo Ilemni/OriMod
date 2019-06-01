@@ -1,10 +1,10 @@
 using Terraria.GameInput;
 
 namespace OriMod.Movements {
-  public class Climb : Movement {
-    public Climb(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
+  public class Climb : Ability {
+    internal Climb(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
 
-    public override void Active() {
+    protected override void UpdateActive() {
       player.gravity = 0;
       player.runAcceleration = 0;
       player.maxRunSpeed = 0;
@@ -27,16 +27,16 @@ namespace OriMod.Movements {
       }
     }
 
-    public override void Tick() {
-      canUse = oPlayer.onWall;
-      if (inUse) {
-        if (!oPlayer.onWall) {
-          state = State.Inactive;
+    internal override void Tick() {
+      CanUse = OPlayer.onWall;
+      if (InUse) {
+        if (!OPlayer.onWall) {
+          State = States.Inactive;
         }
       }
       else {
-        if (canUse && OriMod.ClimbKey.Current) {
-          state = State.Active;
+        if (CanUse && OriMod.ClimbKey.Current) {
+          State = States.Active;
         }
       }
     }
