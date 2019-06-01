@@ -125,7 +125,7 @@ namespace OriMod {
       // soulLink.Update();
     }
     public void WallJump() {
-      // wJump.Update();
+      wJump.Update();
     }
     public void ChargeFlame() {
       // cFlame.Update();
@@ -171,7 +171,7 @@ namespace OriMod {
       // }
 
       // soulLink.Tick();
-      // wJump.Tick();
+      wJump.Tick();
       // cFlame.Tick();
       airJump.Tick();
       // bash.Tick();
@@ -186,7 +186,7 @@ namespace OriMod {
       // List of things Minecart should disable
       if (player.mount.Cart) {
         // soulLink.CanUse = false;
-        // wJump.CanUse = false;
+        wJump.CanUse = false;
         airJump.CanUse = false;
         stomp.CanUse = false;
         glide.CanUse = false;

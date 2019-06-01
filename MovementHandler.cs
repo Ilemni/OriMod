@@ -22,7 +22,7 @@ namespace OriMod {
       oPlayer = o;
       player = o.player;
       Movements = new List<Ability> {
-        // { wJump = new WallJump(o, this) },
+        { wJump = new WallJump(o, this) },
         { airJump = new AirJump(o, this) },
         { glide = new Glide(o, this) },
         { stomp = new Stomp(o, this) },

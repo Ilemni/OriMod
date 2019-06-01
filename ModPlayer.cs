@@ -266,10 +266,10 @@ namespace OriMod
         }
         return;
       }
-      // if (movementHandler.wJump.InUse) {
-      //   Increment("WallJump");
-      //   return;
-      // }
+      if (movementHandler.wJump.InUse) {
+        Increment("WallJump");
+        return;
+      }
       if (OriSet && !transforming && !hasTransformedOnce) {
         hasTransformedOnce = true;
       }
