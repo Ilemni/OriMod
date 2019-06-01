@@ -10,6 +10,7 @@ namespace OriMod {
   public partial class MovementHandler {
     public OriPlayer oPlayer;
     public Player player;
+    public List<Movement> Movements;
     public Movement airJump;
     public Movement glide;
     public Movement stomp;
@@ -20,27 +21,17 @@ namespace OriMod {
       oPlayer = o;
       player = o.player;
       movementStates  = new Dictionary<string, int[]> {
-        { "SoulLink", new int[] { 1, 0 } },
         { "WallJump", new int[] { 1, 0 } },
-        { "ChargeFlame", new int[] { 1, 0 } },
-        { "AirJump", new int[] { 1, 0 } },
-        { "Bash", new int[] { 1, 0 } },
-        { "Stomp", new int[] { 1, 0 } },
-        { "Glide", new int[] { 1, 0 } },
-        { "Climb", new int[] { 1, 0 } },
         { "ChargeJump", new int[] { 1, 0 } },
-        { "Dash", new int[] { 1, 0 } },
-        { "ChargeDash", new int[] { 1, 0 } },
-        { "Grenade", new int[] { 1, 0 } },
-        { "Crouch", new int[] { 1, 0 } },
-        { "LookUp", new int[] { 1, 0 } },
       };
-      airJump = new AirJump(o, this);
-      glide = new Glide(o, this);
-      stomp = new Stomp(o, this);
-      climb = new Climb(o, this);
-      dash = new Dash(o, this);
-      cDash = new ChargeDash(o, this);
+      Movements = new List<Movement> {
+        { airJump = new AirJump(o, this) },
+        { glide = new Glide(o, this) },
+        { stomp = new Stomp(o, this) },
+        { climb = new Climb(o, this) },
+        { dash = new Dash(o, this) },
+        { cDash = new ChargeDash(o, this) }
+      };
     }
     private int GetValue(string move, int idx) {
       int[] value = new int[1];

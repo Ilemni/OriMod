@@ -32,7 +32,7 @@ namespace OriMod {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       packet.Write((byte)changes.Count);
       foreach(string move in changes) {
-        packet.Write((byte)(int)Enum.Parse(typeof(MovementHandler.MoveType), move));
+        // packet.Write((byte)(int)Enum.Parse(typeof(MovementHandler.MoveType), move)); // FIXME
         packet.Write((byte)fromPlayer.movementHandler.GetState(move));
         switch (move) {
           case "Bash":
@@ -56,23 +56,23 @@ namespace OriMod {
       int length = r.ReadByte();
       List<string> changes = new List<string>();
       for (int m = 0; m < length; m++) {
-        string move = Enum.GetName(typeof(MovementHandler.MoveType), r.ReadByte());
-        changes.Add(move);
-        int state = r.ReadByte();
-        fromPlayer.movementHandler.SetState(move, state);
-        switch (move) {
-          case "Bash":
-            fromPlayer.movementHandler.bashCurrNPC = r.ReadByte();
-            break;
-          case "Grenade":
-            fromPlayer.movementHandler.grenadePos.X = r.ReadInt32();
-            fromPlayer.movementHandler.grenadePos.Y = r.ReadInt32();
-            break;
-          case "ChargeDash":
-            fromPlayer.movementHandler.cDash.npc = r.ReadByte();
-            break;
-        }
-        if (Main.netMode == NetmodeID.MultiplayerClient) fromPlayer.movementHandler.UseMovement(move);
+        // string move = Enum.GetName(typeof(MovementHandler.MoveType), r.ReadByte()); // FIXME
+        // changes.Add(move);
+        // int state = r.ReadByte();
+        // fromPlayer.movementHandler.SetState(move, state);
+        // switch (move) {
+        //   case "Bash":
+        //     fromPlayer.movementHandler.bashCurrNPC = r.ReadByte();
+        //     break;
+        //   case "Grenade":
+        //     fromPlayer.movementHandler.grenadePos.X = r.ReadInt32();
+        //     fromPlayer.movementHandler.grenadePos.Y = r.ReadInt32();
+        //     break;
+        //   case "ChargeDash":
+        //     fromPlayer.movementHandler.cDash.npc = r.ReadByte();
+        //     break;
+        // }
+        // if (Main.netMode == NetmodeID.MultiplayerClient) fromPlayer.movementHandler.UseMovement(move);
       }
       if (Main.netMode == NetmodeID.Server) {
         SendMovementState(-1, fromWho, changes);

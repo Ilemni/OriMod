@@ -82,22 +82,6 @@ namespace OriMod {
     #region Variables
 
     public Dictionary<string, int[]> movementStates;
-    public enum MoveType {
-      SoulLink = 1,
-      WallJump = 2,
-      ChargeFlame = 3,
-      AirJump = 4,
-      Bash = 5,
-      Stomp = 6,
-      Glide = 7,
-      Climb = 8,
-      ChargeJump = 9,
-      Dash = 10,
-      ChargeDash = 11,
-      Grenade = 12,
-      Crouch = 13,
-      LookUp = 14
-    }
     
     // Starting, Active, and Ending state all depend on how the move implements those three states
     //   Glide is fairly straightforward and uses all three for the purpose of different animations and sounds
@@ -142,10 +126,7 @@ namespace OriMod {
     #endregion
   
     public void SoulLink() {
-      switch (GetState("SoulLink")) {
-        default:
-          return;
-      }
+      // soulLink.Ability();
     }
     public void WallJump() {
       switch (GetState("WallJump")) {
@@ -167,19 +148,12 @@ namespace OriMod {
       return;
     }
     public void ChargeFlame() {
-      switch (GetState("ChargeFlame")) {
-        default:
-          return;
-      }
+      // cFlame.Ability();
     }
     public void AirJump() {
       airJump.Ability();
     }
     public void Bash() {
-      switch (GetState("Bash")) {
-        default:
-          return;
-      }
     }
     public void Stomp() {
       stomp.Ability();
@@ -189,52 +163,34 @@ namespace OriMod {
     }
     public void Climb() {
       climb.Ability();
-      switch (GetState("Climb")) {
-        case State.Active: {
-          
-          break;
-        }
-      }
     }
     public void ChargeJump() {
-      switch (GetState("ChargeJump")) {
-        default:
-          return;
-      }
+      // cJump.Ability();
     }
     public void Dash() {
       dash.Ability();
     }
     public void ChargeDash() {
-      // Funny story. I was going to implement rocket jumping later...
-      // ...but it so happens that this code already has rocket jumping as a side effect
-      // So no need to bother with that, huh?
-      //   Edit: no longer the case, somehow :/
       cDash.Ability();
     }
     public void Grenade(int mouseX=0, int mouseY=0) {
       Grenade(new Vector2(mouseX, mouseY));
     }
     public void Grenade(Vector2 mousePos) {
-      switch (GetState("Grenade")) {
-        default:
-          return;
-      }
+      // grenade.Ability();
     }
     public void Tick() {
       if (oPlayer == null || player.whoAmI != Main.myPlayer) {
         return;
       }
       List<int> prevStates = new List<int>();
-      string[] eNames = Enum.GetNames(typeof(MoveType));
-      int[] eValues = (int[])Enum.GetValues(typeof(MoveType));
-      foreach(string str in eNames) {
-        prevStates.Add((int)GetState(str));
-      }
+      // string[] eNames = Enum.GetNames(typeof(MoveType)); // TODO: Replace with Movements
+      // int[] eValues = (int[])Enum.GetValues(typeof(MoveType));
+      // foreach(string str in eNames) {
+      //   prevStates.Add((int)GetState(str));
+      // }
       
-      if (IsUnlocked("SoulLink")) {
-        if (IsInUse("SoulLink")) {}
-      }
+      // soulLink.Tick();
 
       if (IsUnlocked("WallJump")) {
         if (IsState("WallJump", State.Ending)) {
@@ -258,51 +214,37 @@ namespace OriMod {
         }
       }
 
-      if (IsUnlocked("ChargeFlame")) {
-        if (IsInUse("ChargeFlame")) {}
-      }
-      
+      // soulLink.Tick();
+      // cFlame.Tick();
       airJump.Tick();
-      
-      if (IsUnlocked("Bash")) {
-        if (IsInUse("Bash")) {}
-      }
-      
+      // bash.Tick();
       stomp.Tick();
-
       glide.Tick();
-
       climb.Tick();
-
-      if (IsUnlocked("ChargeJump")) {
-        if (IsInUse("ChargeJump")) {}
-      }
-
+      // cJump.Tick();
       dash.Tick();
-      
       cDash.Tick();
-
-      if (IsInUse("Grenade")) {}
+      // grenade.Tick();
       
       // List of things Minecart should disable
       if (player.mount.Cart) {
-        SetState("SoulLink", State.Disable);
-        SetState("WallJump", State.Disable);
-        SetState("AirJump", State.Disable);
-        SetState("Stomp", State.Disable);
-        SetState("Glide", State.Disable);
-        SetState("Climb", State.Disable);
-        SetState("ChargeJump", State.Disable);
-        SetState("Dash", State.Disable);
-        SetState("ChargeDash", State.Disable);
+        // soulLink.canUse = false;
+        // wJump.canUse = false;
+        airJump.canUse = false;
+        stomp.canUse = false;
+        glide.canUse = false;
+        climb.canUse = false;
+        // cJump.canUse = false;
+        dash.canUse = false;
+        cDash.canUse = false;
       }
       List<string> changes = new List<string>();
-      for (int e = 0; e < prevStates.Count; e++) {
-        int newState = (byte)GetState(eNames[e]);
-        if (newState != prevStates[e]) {
-          changes.Add(eNames[e]);
-        }
-      }
+      // for (int e = 0; e < prevStates.Count; e++) { // TODO: Replace with Movements
+      //   int newState = (byte)GetState(eNames[e]);
+      //   if (newState != prevStates[e]) {
+      //     changes.Add(eNames[e]);
+      //   }
+      // }
       if (changes.Count > 0) {
         if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer) {
           ModNetHandler.movementPacketHandler.SendMovementState(255, player.whoAmI, changes);
@@ -310,7 +252,7 @@ namespace OriMod {
       }
     }
     public void TickOtherClient() {
-      if (IsInUse("Glide")) {
+      if (glide.inUse) {
         Glide();
       }
     }

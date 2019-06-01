@@ -36,7 +36,7 @@ namespace OriMod.Movements {
         if (airJumpCurrCount <= airJumpsMax && !oPlayer.isGrounded) {
           canUse = true;
         }
-        if (oPlayer.isGrounded || Handler.IsInUse("Bash") || oPlayer.bashActive || oPlayer.onWall) {
+        if (oPlayer.isGrounded || /*Handler.bash.inUse ||*/ oPlayer.bashActive || oPlayer.onWall) {
           airJumpCurrCount = 0;
           state = State.Inactive;
           canUse = false;
