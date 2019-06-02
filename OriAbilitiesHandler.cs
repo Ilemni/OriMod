@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OriMod.Movements;
+using OriMod.Abilities;
 
 namespace OriMod {
   // This partial class is for how abilities are handled.

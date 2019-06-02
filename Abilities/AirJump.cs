@@ -1,6 +1,6 @@
 using Terraria.GameInput;
 
-namespace OriMod.Movements {
+namespace OriMod.Abilities {
   public class AirJump : Ability {
     internal AirJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     
@@ -12,10 +12,10 @@ namespace OriMod.Movements {
 
     protected override void UpdateActive() {
       if (CurrCount == MaxJumps) {
-        OPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + OriPlayer.RandomChar(5), 0.7f);
+        oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + OriPlayer.RandomChar(5), 0.7f);
       }
       else {
-        OPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + OriPlayer.RandomChar(5), 0.75f);
+        oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + OriPlayer.RandomChar(5), 0.75f);
       }
       if (player.velocity.Y > JumpVelocity) player.velocity.Y = JumpVelocity;
     }
@@ -32,10 +32,10 @@ namespace OriMod.Movements {
       if (IsState(States.Active)) {
         State = States.Ending;
       }
-      if (CurrCount <= MaxJumps && !OPlayer.IsGrounded) {
+      if (CurrCount <= MaxJumps && !oPlayer.IsGrounded) {
         CanUse = true;
       }
-      if (OPlayer.IsGrounded || /*Handler.bash.inUse ||*/ OPlayer.bashActive || OPlayer.OnWall) {
+      if (oPlayer.IsGrounded || /*Handler.bash.inUse ||*/ oPlayer.bashActive || oPlayer.OnWall) {
         CurrCount = 0;
         State = States.Inactive;
         CanUse = false;

@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria.GameInput;
 
-namespace OriMod.Movements {
+namespace OriMod.Abilities {
   public class WallJump : Ability {
     internal WallJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
@@ -11,20 +11,20 @@ namespace OriMod.Movements {
 
     protected override void UpdateActive() {
       player.velocity.Y = WallJumpVelocity.Y;
-      OPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + OriPlayer.RandomChar(5, ref currRand));
+      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + OriPlayer.RandomChar(5, ref currRand));
     }
     protected override void UpdateEnding() {
-      if (OPlayer.OnWall) player.velocity.Y--;
+      if (oPlayer.OnWall) player.velocity.Y--;
     }
     protected override void UpdateUsing() {
       player.velocity.X = WallJumpVelocity.X * -player.direction;
-      OPlayer.UnrestrictedMovement = true;
+      oPlayer.UnrestrictedMovement = true;
     }
 
     internal override void Tick() {
       if (IsState(States.Ending)) {
         CurrTime++;
-        if (CurrTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || OPlayer.IsGrounded) {
+        if (CurrTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
           State = States.Inactive;
           CanUse = false;
         }
@@ -34,7 +34,7 @@ namespace OriMod.Movements {
         CurrTime = 0;
       }
       else {
-        CanUse = OPlayer.OnWall && !OPlayer.IsGrounded && !InUse;
+        CanUse = oPlayer.OnWall && !oPlayer.IsGrounded && !InUse;
         if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
           State = States.Active;
         }

@@ -4,12 +4,12 @@ namespace OriMod {
   public abstract class Ability {
     internal byte id = 255;
     protected Player player;
-    protected OriPlayer OPlayer;
+    protected OriPlayer oPlayer;
     protected bool isLocalPlayer;
     protected OriAbilities Handler;
     internal Ability(OriPlayer oriPlayer, OriAbilities handler) {
       player = oriPlayer.player;
-      OPlayer = oriPlayer;
+      oPlayer = oriPlayer;
       isLocalPlayer = player.whoAmI == Main.myPlayer;
       Handler = handler;
     }

@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 
-namespace OriMod.Movements {
+namespace OriMod.Abilities {
   public class ChargeDash : Ability {
     internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { Npc = 255; }
     
@@ -40,7 +40,7 @@ namespace OriMod.Movements {
       else {
         CurrDirection = player.direction;
       }
-      OPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
+      oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
       // oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashChargeStart" + OriPlayer.RandomChar(2), .5f);
     }
     protected override void UpdateUsing() {
@@ -63,7 +63,7 @@ namespace OriMod.Movements {
       }
       else {
         player.velocity.X = speed * CurrDirection * 0.8f;
-        player.velocity.Y = OPlayer.IsGrounded ? -0.1f : 0.15f * CurrTime;
+        player.velocity.Y = oPlayer.IsGrounded ? -0.1f : 0.15f * CurrTime;
       }
       player.runSlowdown = 26f;
     }
@@ -76,7 +76,7 @@ namespace OriMod.Movements {
         Handler.dash.State = States.Inactive;
         Handler.dash.Refreshed = false;
         CurrTime++;
-        if (CurrTime > Duration || OPlayer.OnWall || OPlayer.bashActive || PlayerInput.Triggers.JustPressed.Jump) {
+        if (CurrTime > Duration || oPlayer.OnWall || oPlayer.bashActive || PlayerInput.Triggers.JustPressed.Jump) {
           State = States.Inactive;
           if ((Npc == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
             Vector2 newVel = Npc == 255 && !Handler.airJump.InUse ? new Vector2(CurrDirection, 0) : player.velocity;
@@ -88,7 +88,7 @@ namespace OriMod.Movements {
         }
       }
       else {
-        CanUse = Refreshed && !OPlayer.OnWall && !Handler.stomp.InUse && !OPlayer.bashActive /*TODO: Replace with IsInUse */;
+        CanUse = Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !oPlayer.bashActive /*TODO: Replace with IsInUse */;
         if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
           State = States.Active;
           CurrTime = 0;

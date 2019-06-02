@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.GameInput;
 
-namespace OriMod.Movements {
+namespace OriMod.Abilities {
   public class Dash : Ability {
     internal Dash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     private static readonly float[] Speeds = new float[] {
@@ -16,12 +16,12 @@ namespace OriMod.Movements {
     
     internal override bool CanUse {
       get {
-        return !InUse && Refreshed && !OPlayer.OnWall && !Handler.stomp.InUse && !OPlayer.bashActive /* TODO: Replace with bash.inUse */;
+        return !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !oPlayer.bashActive /* TODO: Replace with bash.inUse */;
       }
     }
     private void StartDash() {
       CurrDirection = player.direction;
-      OPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3), 0.2f);
+      oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3), 0.2f);
       player.pulley = false;
     }
 
@@ -31,12 +31,12 @@ namespace OriMod.Movements {
       if (CurrTime > 20) player.runSlowdown = 26f;
     }
     internal override void Tick() {
-      if (!Refreshed && (OPlayer.IsGrounded || OPlayer.OnWall || OPlayer.bashActive /* TODO: Replace with bash.inUse */)) {
+      if (!Refreshed && (oPlayer.IsGrounded || oPlayer.OnWall || oPlayer.bashActive /* TODO: Replace with bash.inUse */)) {
         Refreshed = true;
       }
       if (InUse) {
         CurrTime++;
-        if (CurrTime > Duration || OPlayer.OnWall || OPlayer.bashActive) {
+        if (CurrTime > Duration || oPlayer.OnWall || oPlayer.bashActive) {
           State = States.Inactive;
         }
       }

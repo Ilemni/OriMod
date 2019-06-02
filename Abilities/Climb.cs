@@ -1,6 +1,6 @@
 using Terraria.GameInput;
 
-namespace OriMod.Movements {
+namespace OriMod.Abilities {
   public class Climb : Ability {
     internal Climb(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
@@ -28,9 +28,9 @@ namespace OriMod.Movements {
     }
 
     internal override void Tick() {
-      CanUse = OPlayer.OnWall;
+      CanUse = oPlayer.OnWall;
       if (InUse) {
-        if (!OPlayer.OnWall) {
+        if (!oPlayer.OnWall) {
           State = States.Inactive;
         }
       }

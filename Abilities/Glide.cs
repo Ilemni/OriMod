@@ -1,7 +1,7 @@
 using Terraria;
 using Terraria.GameInput;
 
-namespace OriMod.Movements {
+namespace OriMod.Abilities {
   public class Glide : Ability {
     internal Glide(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
@@ -20,18 +20,18 @@ namespace OriMod.Movements {
 
     protected override void UpdateActive() {
       if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
-        OPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + OriPlayer.RandomChar(5), 0.45f);
+        oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + OriPlayer.RandomChar(5), 0.45f);
       }
       player.maxFallSpeed = MaxFallSpeed;
       player.runSlowdown = RunSlowdown;
       player.runAcceleration = RunAcceleration;
     }
     protected override void UpdateStarting() {
-      if (CurrTime == 0) OPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
+      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
       UpdateActive();
     }
     protected override void UpdateEnding() {
-      if (CurrTime == 0) OPlayer.PlayNewSound("Ori/Glide/seinGildeEnd" + OriPlayer.RandomChar(3), 0.8f);
+      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGildeEnd" + OriPlayer.RandomChar(3), 0.8f);
       UpdateActive();
     }
     internal override void Tick() {
@@ -56,7 +56,7 @@ namespace OriMod.Movements {
             CanUse = true;
           }
         }
-        if (player.velocity.Y < 0 || OPlayer.OnWall || OPlayer.IsGrounded) {
+        if (player.velocity.Y < 0 || oPlayer.OnWall || oPlayer.IsGrounded) {
           State = InUse ? States.Ending : States.Inactive;
           CanUse = false;
         }
@@ -67,7 +67,7 @@ namespace OriMod.Movements {
         }
       }
       else {
-        if (player.velocity.Y > 0 && !OPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
+        if (player.velocity.Y > 0 && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
           State = States.Starting;
           CurrTime = 0;
         }

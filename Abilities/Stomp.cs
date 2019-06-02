@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.GameInput;
 
-namespace OriMod.Movements {
+namespace OriMod.Abilities {
   public class Stomp : Ability {
     internal Stomp(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
@@ -20,13 +20,13 @@ namespace OriMod.Movements {
 
     internal override bool CanUse {
       get {
-        return !OPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.InUse && !Handler.climb.InUse;
+        return !oPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.InUse && !Handler.climb.InUse;
       }
     }
 
     protected override void UpdateStarting() {
       if (CurrDur == 0) {
-        OPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + OriPlayer.RandomChar(3), 1f, 0.2f);
+        oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + OriPlayer.RandomChar(3), 1f, 0.2f);
       }
       player.velocity.X = 0;
       player.velocity.Y *= 0.9f;
@@ -35,8 +35,8 @@ namespace OriMod.Movements {
 
     protected override void UpdateActive() {
       if (CurrDur == 0) {
-        OPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + OriPlayer.RandomChar(3));
-        Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), OPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
+        oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + OriPlayer.RandomChar(3));
+        Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
       }
       player.velocity.X = 0;
       player.gravity = Gravity;
@@ -45,7 +45,7 @@ namespace OriMod.Movements {
     }
 
     protected override void UpdateEnding() {
-      OPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + OriPlayer.RandomChar(3));
+      oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + OriPlayer.RandomChar(3));
       Vector2 position = new Vector2(player.position.X, player.position.Y + 32);
       for (int i = 0; i < 25; i++) { // does particles
         Dust dust = Main.dust[Terraria.Dust.NewDust(position, 30, 15, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
@@ -82,7 +82,7 @@ namespace OriMod.Movements {
         if (CurrDur > MinDuration && !PlayerInput.Triggers.Current.Down) {
           State = States.Inactive;
         }
-        if (OPlayer.IsGrounded) {
+        if (oPlayer.IsGrounded) {
           State = States.Ending;
         }
       }
