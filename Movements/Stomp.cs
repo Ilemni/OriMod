@@ -12,6 +12,10 @@ namespace OriMod.Movements {
     private const float Gravity = 4f;
     private const float MaxFallSpeed = 28f;
     private int CurrDur = 0;
+    /// <summary>
+    /// Projectile used by Stomp to damage enemies during Stomp and when it ends
+    /// </summary>
+    /// <value>Valid Projectile if stomping, null if no longer stomping</value>
     public Projectile Proj { get; private set; }
 
     internal override bool CanUse {

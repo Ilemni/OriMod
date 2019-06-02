@@ -5,43 +5,98 @@ using Terraria;
 
 namespace OriMod {
   public class SeinUpgrade {
+    /// <summary>
+    /// Damage of the projectile
+    /// </summary>
     public int damage = 8;
+    /// <summary>
+    /// Multiplier of damage dealt to the primary target
+    /// </summary>
     public float primaryDamageMultiplier = 1;
+    /// <summary>
+    /// Number of NPCs that can be targeted at once
+    /// </summary>
     public int targets = 1;
+    /// <summary>
+    /// Maximum times the minion can fire with a delay of <c>minCooldown</c> before having a delay of <c>longCooldown</c>
+    /// 
+    /// <seealso cref="minCooldown" />
+    /// <seealso cref="shortCooldown" />
+    /// <seealso cref="longCooldown" />
+    /// </summary>
     public int shotsPerBurst = 1;
+    /// <summary>
+    /// Maximum number of shots that can be fired at each target
+    /// 
+    /// <seealso cref="shotsToPrimaryTarget" />
+    /// </summary>
     public int shotsPerTarget = 1;
+    /// <summary>
+    /// Maximum number of shots that can be fired at the primary target at once
+    /// </summary>
     public int shotsToPrimaryTarget = 1;
+    /// <summary>
+    /// Maximum number of shots that can be fired at once
+    /// </summary>
     public int maxShotsPerVolley = 1;
+    /// <summary>
+    /// Delay between each shot in <c>shotsPerBurst</c>
+    /// </summary>
     public float minCooldown = 12f;
+    /// <summary>
+    /// Shortest time to wait during <c>shotsPerBurst</c> to reset burst count
+    /// </summary>
     public float shortCooldown = 18f;
+    /// <summary>
+    /// Delay between each series of shots, incurred when shots reaches <c>shotsPerBurst</c>
+    /// </summary>
     public float longCooldown = 60f;
+    /// <summary>
+    /// Determines if Spirit Flame shots collide with or ignore tiles
+    /// </summary>
     public bool tileCollide = true;
-    public int randDegrees = 40;
+    internal int randDegrees = 40;
+    /// <summary>
+    /// NPCs this distance from the player can be targeted by the minion, if there is line of sight between it and the player
+    /// 
+    /// <seealso cref="targetThroughWallDist" />
+    /// </summary>
     public float targetMaxDist = 240f;
+    /// <summary>
+    /// NPCs this distance from the player can be targeted by the minion, regardless of line of sight
+    /// </summary>
     public float targetThroughWallDist = 0f;
-
+    /// <summary>
+    /// The amount of times Spirit Flame can hit enemies before disappearing
+    /// </summary>
     public int pierce = 1;
+    /// <summary>
+    /// The knockback of Spirit Flame
+    /// </summary>
     public float knockback = 0f;
-    public float homingStrengthStart = 0.07f;
-    public float homingIncreaseRate = 0.03f;
-    public float homingIncreaseDelay = 20f;
-    public float projectileSpeedStart = 5f;
-    public float projectileSpeedIncreaseRate = 0.5f;
-    public int projectileSpeedIncreaseDelay = 20;
-    public int minionWidth = 10;
-    public int minionHeight = 11;
-    public int flameWidth = 12;
-    public int flameHeight = 12;
+    internal float homingStrengthStart = 0.07f;
+    internal float homingIncreaseRate = 0.03f;
+    internal float homingIncreaseDelay = 20f;
+    internal float projectileSpeedStart = 5f;
+    internal float projectileSpeedIncreaseRate = 0.5f;
+    internal int projectileSpeedIncreaseDelay = 20;
+    internal int minionWidth = 10;
+    internal int minionHeight = 11;
+    internal int flameWidth = 12;
+    internal int flameHeight = 12;
+    /// <summary>
+    /// The size of the dust trail emitted from Spirit Flame
+    /// </summary>
     public float dustScale = 0.8f;
-    public int rarity = 1;
-    public int value = 1000;
-    public Color color;
-    public float lightStrength;
+    internal int rarity = 1;
+    internal int value = 1000;
+    internal Color color;
+    internal float lightStrength;
   }
   partial class OriMod
   {
     internal static List<SeinUpgrade> SeinUpgrades = new List<SeinUpgrade>();
-    internal void AddNewSein(SeinUpgrade newSein) {
+    private void AddNewSein(SeinUpgrade newSein) {
       SeinUpgrade defaultSein = new SeinUpgrade();
       SeinUpgrade lastSein = new SeinUpgrade();
       if (SeinUpgrades.Count != 0) {

@@ -14,6 +14,10 @@ namespace OriMod.Movements {
     private const int Duration = 14;
     
     private int CurrTime = 0;
+    /// <summary>
+    /// The ID of the NPC currently targeted by this player's Charge Dash.
+    /// </summary>
+    /// <value><c>0</c>-<c>200</c> if there is a target NPC, <c>255</c> if no NPC is targeted</value>
     public byte Npc { get; internal set; }
     internal int CurrDirection = 1;
     
