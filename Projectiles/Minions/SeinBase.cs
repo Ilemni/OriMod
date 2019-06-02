@@ -60,21 +60,14 @@ namespace OriMod.Projectiles.Minions {
     protected float shootSpeed = 50f;
     protected int pierce = 1;
     protected float primaryDamageMultiplier = 1;
-    // Max distance between minion and target
-    protected float minionSpacing = 1f;
     // Max rotation of randomness from target the projectile fires
     protected int randDegrees = 75;
     protected float maxTargetDist = 300f;
     protected float maxTargetThroughWallDist = 0f;
-    protected float idleDist = 50f;
-    protected float idleAcceleration = 0.5f;
-    protected float chaseDist = 200f;
-    protected float chaseAcceleration = 6f;
-    protected float inertia = 20f;
 
     protected Color color;
     protected float lightStrength;
-    public void Init(int upgradeID) {
+    internal void Init(int upgradeID) {
       SeinUpgrade u = OriMod.SeinUpgrades[upgradeID - 1];
       maxShotsPerBurst = u.shotsPerBurst;
       maxShotsPerVolley = u.maxShotsPerVolley;
@@ -100,11 +93,9 @@ namespace OriMod.Projectiles.Minions {
       color = u.color;
       lightStrength = u.lightStrength;
     }
-    public virtual void CreateDust() {
+    protected virtual void CreateDust() { }
 
-    }
-
-    public virtual void SelectFrame() {}
+    protected virtual void SelectFrame() {}
     
     private float Lerp(float firstFloat, float secondFloat, float by) {
      return firstFloat * (1 - by) + secondFloat * by;
@@ -132,10 +123,10 @@ namespace OriMod.Projectiles.Minions {
     protected float triggerTargetMove = 0.5f;
     protected float maxDistFromPlayer = 240f;
     protected float minDistFromNPC = 64f;
-    public SoundEffectInstance PlayNewSound(string Path, float Volume) {
-      return Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, ("Sounds/Custom/NewSFX/" + Path)).WithVolume(Volume), projectile.Center);
+    protected SoundEffectInstance PlaySpiritFlameSound(string Path, float Volume) {
+      return Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, ("Sounds/Custom/NewSFX/Ori/SpiritFlame/" + Path)).WithVolume(Volume), projectile.Center);
     }
-    public int excludeRand = 0;
+    private int excludeRand = 0;
     private static readonly Vector2[] TargetPositions = new Vector2[] {
       new Vector2(-24, 7),
       new Vector2(24, -7),
@@ -144,7 +135,7 @@ namespace OriMod.Projectiles.Minions {
       new Vector2(-24, -7),
       new Vector2(24, -2),
     };
-    public static readonly Vector2 bounds = new Vector2(68f, 32f);
+    private static readonly Vector2 bounds = new Vector2(68f, 32f);
     private int targetPosIndex = 0;
     private List<int> targetIDs = new List<int>(0);
     private static Vector2 Normalize(Vector2 vec2) {
@@ -481,7 +472,7 @@ namespace OriMod.Projectiles.Minions {
             upgrade == 1 || upgrade == 2 ? "" :
             upgrade == 3 || upgrade == 4 ? "LevelB" :
             upgrade == 5 || upgrade == 6 ? "LevelC" : "LevelD";
-          PlayNewSound("Ori/SpiritFlame/Throw" + c + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
+          PlaySpiritFlameSound("Throw" + c + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
         }
       }
     }
