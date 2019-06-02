@@ -32,9 +32,8 @@ namespace OriMod {
 
       BitsByte flags = new BitsByte();
       flags[0] = fromPlayer.OriSet;
-      flags[1] = fromPlayer.OriSet;
-      flags[2] = fromPlayer.flashing;
-      flags[3] = fromPlayer.transforming;
+      flags[1] = fromPlayer.flashing;
+      flags[2] = fromPlayer.transforming;
       packet.Write((byte)flags);
       if (fromPlayer.transforming) {
         packet.Write((short)fromPlayer.transformTimer);
@@ -50,9 +49,8 @@ namespace OriMod {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       BitsByte flags = r.ReadByte();
       bool oriSet = flags[0];
-      bool oriSetPrevious = flags[1];
-      bool flashing = flags[2];
-      bool transforming = flags[3];
+      bool flashing = flags[1];
+      bool transforming = flags[2];
       short transformTimer = 0;
       if (transforming) {
         transformTimer = r.ReadInt16();
@@ -60,7 +58,6 @@ namespace OriMod {
       Vector2 animTile = new Vector2(r.ReadByte(), r.ReadByte());
 
       fromPlayer.OriSet = oriSet;
-      fromPlayer.OriSet = oriSetPrevious;
       fromPlayer.flashing = flashing;
       fromPlayer.transforming = transforming;
       fromPlayer.transformTimer = transformTimer;

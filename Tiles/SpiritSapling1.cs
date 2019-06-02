@@ -42,7 +42,6 @@ namespace OriMod.Tiles {
         }
         else if (!oPlayer.transforming) {
           oPlayer.OriSet = false;
-          oPlayer.OriSet = false;
           oPlayer.counterTimer = 0;
           oPlayer.countering = false;
           for (int m = 0; m < 100; m++) { //does particles
@@ -56,10 +55,8 @@ namespace OriMod.Tiles {
       else {
         if (!oPlayer.OriSet) {
           oPlayer.OriSet = true;
-          oPlayer.OriSet = true;
         }
         else {
-          oPlayer.OriSet = false;
           oPlayer.OriSet = false;
           oPlayer.counterTimer = 0;
           oPlayer.countering = false;
