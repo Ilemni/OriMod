@@ -11,6 +11,7 @@ namespace OriMod {
     public OriPlayer oPlayer { get; private set; }
     public Player player { get; private set; }
     public List<Ability> Abilities { get; private set; }
+
     public WallJump wJump { get; private set; }
     public AirJump airJump { get; private set; }
     public Glide glide { get; private set; }
@@ -18,6 +19,8 @@ namespace OriMod {
     public Climb climb { get; private set; }
     public Dash dash { get; private set; }
     public ChargeDash cDash { get; private set; }
+    public LookUp lookUp { get; private set; }
+    public Crouch crouch { get; private set; }
     internal OriAbilities(OriPlayer o) {
       oPlayer = o;
       player = o.player;
@@ -28,7 +31,9 @@ namespace OriMod {
         { stomp = new Stomp(o, this) },
         { climb = new Climb(o, this) },
         { dash = new Dash(o, this) },
-        { cDash = new ChargeDash(o, this) }
+        { cDash = new ChargeDash(o, this) },
+        { crouch = new Crouch(o, this) },
+        { lookUp = new LookUp(o, this) },
       };
       for (int i = 0; i < Abilities.Count; i++) {
         Abilities[i].id = (byte)i;

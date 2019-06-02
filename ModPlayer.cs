@@ -81,24 +81,12 @@ namespace OriMod
     public bool upRefresh = false;
 
     // Variables relating to looking up
-    public bool intoLookUp = false;
-    public int intoLookUpTimer = 0;
-    public bool lookUp = false;
-    public int lookUpTimer = 0;
-    public bool outLookUp = false;
-    public int outLookUpTimer = 0;
 
     // Variables relating to Stomping
 
     // Variables relating to Crouching
-    public bool crouching = false;
-    public bool intoCrouch = false;
-    public int intoCrouchTimer = 0;
-    public bool outCrouch = false;
-    public int outCrouchTimer = 0;
-
+    
     // Variables relating to Back Flipping
-    public bool backflipping = false;
 
     // Variables relating to Kuro's Feather
 
@@ -262,6 +250,7 @@ namespace OriMod
        9, 8, 3, 2, 1
     };
     private int FootstepRand = 0;
+    private int JumpSoundRand = 0;
 
     #endregion
     private Vector2 PixelToTile(Vector2 pixel) {
@@ -385,40 +374,40 @@ namespace OriMod
         Increment("WallJump");
         return;
       }
+      if (Abilities.lookUp.InUse) {
+        switch (Abilities.lookUp.State) {
+          case Ability.States.Starting:
+            Increment("LookUpStart");
+        return;
+          case Ability.States.Active:
+            Increment("LookUp");
+            return;
+          case Ability.States.Ending:
+            Increment("LookUpStart", overrideMeta:new Vector3(0, 2, 0));
+            return;
+      }
+      }
+      if (Abilities.crouch.InUse) {
+        switch (Abilities.crouch.State) {
+          case Ability.States.Starting:
+        Increment("CrouchStart");
+        return;
+          case Ability.States.Active:
+        Increment("Crouch");
+        return;
+          case Ability.States.Ending:
+            Increment("CrouchStart", overrideMeta:new Vector3(0, 2, 0));
+        return;
+      }
+      }
       if (OriSet && !Transforming && !HasTransformedOnce) {
         HasTransformedOnce = true;
-      }
+        }
       // this controls animation frames. have fun trying to figure out how it works
       
       if (drawPlayer.mount.Cart) {
         Increment("Default");
         // TODO: Minecart animation?
-        return;
-      }
-      if (intoCrouch || outCrouch) {
-        Increment("CrouchStart");
-        return;
-      }
-      if (crouching) {
-        Increment("Crouch");
-        return;
-      }
-      if (intoLookUp) {
-        Increment("LookUpStart");
-        return;
-      }
-      if (outLookUp) {
-        Increment("LookUpStart", overrideMeta:new Vector3(0, 2, 0));
-        return;
-      }
-      if (lookUp) {
-        if (lookUpTimer < 10) {
-          Increment("LookUpStart");
-        }
-        else {
-          Increment("LookUp");
-        }
-        lookUpTimer++;
         return;
       }
       if (bashFrameUp && bashActive) {
@@ -810,188 +799,6 @@ namespace OriMod
       }
 
       if (!OriSet) { return; }
-      // Moves that shouldn't execute when doing other broad specified actions
-      if (!player.pulley && !player.minecartLeft && !player.mount.Active && !player.mount.Cart) {
-        // Climbing
-        // Stomp
-        // Crouch
-        if (
-          PlayerInput.Triggers.JustPressed.Down &&
-          IsGrounded &&
-          !intoCrouch &&
-          !PlayerInput.Triggers.Current.Up
-        ) {
-          intoCrouch = true;
-          intoCrouchTimer = 5;
-        }
-        // Looking Up
-        if (
-          PlayerInput.Triggers.Current.Up &&
-          IsGrounded &&
-          !intoLookUp &&
-          !PlayerInput.Triggers.Current.Down &&
-          !PlayerInput.Triggers.Current.Left &&
-          !PlayerInput.Triggers.Current.Right
-        ) {
-          intoLookUp = true;
-          intoLookUpTimer = 5;
-        }
-        // some misc stuff i dont care about
-        if (intoLookUp) {
-          intoLookUpTimer--;
-          player.velocity.X = 0;
-          if (
-            PlayerInput.Triggers.JustPressed.Left ||
-            PlayerInput.Triggers.JustPressed.Right ||
-            PlayerInput.Triggers.JustPressed.Jump ||
-            !PlayerInput.Triggers.Current.Up ||
-            !IsGrounded ||
-            OriMod.BashKey.JustPressed ||
-            OriMod.DashKey.JustPressed ||
-            PlayerInput.Triggers.Current.Down ||
-            Abilities.dash.InUse
-          ) {
-            intoLookUpTimer = 0;
-            intoLookUp = false;
-          }
-          else if (intoCrouchTimer == 0) {
-            lookUp = true;
-            intoLookUp = false;
-          }
-        }
-        if (lookUp) {
-          player.velocity.X = 0;
-          if (
-            PlayerInput.Triggers.JustPressed.Left ||
-            PlayerInput.Triggers.JustPressed.Right ||
-            PlayerInput.Triggers.JustPressed.Jump ||
-            PlayerInput.Triggers.Current.Down ||
-            OriMod.BashKey.JustPressed ||
-            OriMod.DashKey.JustPressed ||
-            !IsGrounded ||
-            Abilities.dash.InUse
-          ) {
-            lookUp = false;
-          }
-          else if (!PlayerInput.Triggers.Current.Up) {
-            outLookUp = true;
-            outLookUpTimer = 5;
-            lookUp = false;
-          }
-        }
-        if (outLookUp) {
-          outLookUpTimer--;
-          if (
-            PlayerInput.Triggers.JustPressed.Left ||
-            PlayerInput.Triggers.JustPressed.Right ||
-            PlayerInput.Triggers.Current.Down ||
-            OriMod.BashKey.JustPressed ||
-            OriMod.DashKey.JustPressed ||
-            !IsGrounded ||
-            Abilities.dash.InUse ||
-            outLookUpTimer == 0
-          ) {
-            outLookUp = false;
-            outLookUpTimer = 0;
-          }
-        }
-        if (intoCrouch) {
-          intoCrouchTimer--;
-          player.velocity.X = 0;
-          if (PlayerInput.Triggers.JustPressed.Left) {
-            player.controlLeft = false;
-            player.direction = -1;
-          }
-          else if (PlayerInput.Triggers.JustPressed.Right) {
-            player.controlRight = false;
-            player.direction = 1;
-          }
-          if (PlayerInput.Triggers.JustPressed.Jump) {
-            Vector2 pos = player.position;
-            pos = new Vector2(pos.X + 4, pos.Y + 52);
-            pos.ToWorldCoordinates();
-            if (
-              !TileID.Sets.Platforms[Main.tile[(int)pos.X, (int)pos.Y].type] &&
-              !TileID.Sets.Platforms[Main.tile[(int)pos.X, (int)pos.Y + 1].type]
-            ) {
-              backflipping = true;
-            }
-            intoCrouch = false;
-          }
-          else if (
-            !PlayerInput.Triggers.Current.Down ||
-            PlayerInput.Triggers.Current.Up ||
-            OriMod.BashKey.JustPressed ||
-            OriMod.DashKey.JustPressed ||
-            !IsGrounded
-          ) {
-            intoCrouch = false;
-            intoCrouchTimer = 0;
-          }
-          else if (intoCrouchTimer == 0) {
-            crouching = true;
-            intoCrouch = false;
-          }
-        }
-        if (crouching) {
-          player.velocity.X = 0;
-          if (PlayerInput.Triggers.JustPressed.Left) {
-            player.controlLeft = false;
-            player.direction = -1;
-          }
-          else if (PlayerInput.Triggers.JustPressed.Right) {
-            player.controlRight = false;
-            player.direction = 1;
-          }
-          if (PlayerInput.Triggers.JustPressed.Jump) {
-            /*Vector2 pos = player.position;
-            pos = new Vector2(pos.X + 4, pos.Y + 52);
-            pos.ToWorldCoordinates();
-            if (!TileID.Sets.Platforms[Main.tile[(int)pos.X, (int)pos.Y].type] && !TileID.Sets.Platforms[Main.tile[(int)pos.X, (int)pos.Y + 1].type]) {
-              backflipping = true;
-            }*/
-            crouching = false;
-          }
-          else if (
-            !PlayerInput.Triggers.Current.Down ||
-            PlayerInput.Triggers.Current.Up ||
-            OriMod.BashKey.JustPressed ||
-            OriMod.DashKey.JustPressed ||
-            !IsGrounded
-          ) {
-            if (
-              !PlayerInput.Triggers.Current.Left &&
-              !PlayerInput.Triggers.Current.Right &&
-              !OriMod.BashKey.Current &&
-              IsGrounded
-            ) {
-              crouching = false;
-              outCrouch = true;
-              outCrouchTimer = 5;
-            }
-            else {
-              if (OriMod.BashKey.JustPressed) {
-                player.position.Y -= 1;
-                player.velocity.Y -= 3;
-              }
-              crouching = false;
-            }
-          }
-        }
-        if (outCrouch) {
-          outCrouchTimer--;
-          if (
-            PlayerInput.Triggers.Current.Up ||
-            OriMod.BashKey.JustPressed ||
-            OriMod.DashKey.JustPressed ||
-            outCrouchTimer == 0 ||
-            !IsGrounded
-          ) {
-            outCrouch = false;
-            outCrouchTimer = 0;
-          }
-        }
-      }
       // Bashing
       if (
         OriMod.BashKey.JustPressed &&
@@ -1004,7 +811,7 @@ namespace OriMod
       }
       // Jump Effects
       if (player.justJumped) {
-        PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5), 0.75f);
+        PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
       // Curently Bashing
       if (bashActive) {
@@ -1183,23 +990,12 @@ namespace OriMod
         }
         player.noFallDmg = true;
         if (UnrestrictedMovement) {
-          player.runSlowdown = 0f;
           if (PlayerInput.Triggers.Current.Left || PlayerInput.Triggers.Current.Right || IsGrounded) {
             UnrestrictedMovement = false;
           }
         }
-        else if (UnrestrictedMovement) {
-          player.runSlowdown = 0;
-        }
-        else {
-          player.runSlowdown = 1f;
-        }
-        if (intoCrouch || outCrouch || crouching || intoLookUp || lookUp || outLookUp) {
-          player.runAcceleration = 0;
-          player.maxRunSpeed = 0;
-          player.velocity.X = 0;
-        }
-        else {
+        player.runSlowdown = UnrestrictedMovement ? 0 : 1;
+        if (!Abilities.crouch.InUse) {
           player.runAcceleration = 0.5f;
           player.maxRunSpeed += 2f;
         }
@@ -1257,6 +1053,12 @@ namespace OriMod
         }
         if (PlayerInput.Triggers.JustPressed.Down || Abilities.stomp.InUse) {
           Abilities.stomp.Update();
+        }
+        if (PlayerInput.Triggers.Current.Up || Abilities.lookUp.InUse) {
+          Abilities.lookUp.Update();
+        }
+        if (PlayerInput.Triggers.Current.Down || Abilities.crouch.InUse) {
+          Abilities.crouch.Update();
         }
       }
       else if (Transforming) {
@@ -1639,7 +1441,6 @@ namespace OriMod
         if (bashActiveTimer < 0) { bashActiveTimer = 0; }
         if (FlashTimer > 0) { FlashTimer--; }
         if (TeatherTrailTimer > 0) { TeatherTrailTimer--; }
-        if (!lookUp) { lookUpTimer = 1; }
 
         if (chargeJumpAnimTimer > 0) {
           chargeJumpAnimTimer--;

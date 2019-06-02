@@ -56,6 +56,8 @@ namespace OriMod {
       dash.Tick();
       cDash.Tick();
       // grenade.Tick();
+      lookUp.Tick();
+      crouch.Tick();
       
       // List of things Minecart should disable
       if (player.mount.Cart) {
