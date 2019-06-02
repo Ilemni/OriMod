@@ -1,8 +1,8 @@
 namespace OriMod.Dusts {
-	public class SFDustTrail1 : SFDustTrail {
+	public sealed class SFDustTrail1 : SFDustTrail {
   
   }
-  public class SFDustTrail8 : SFDustTrail {
+  public sealed class SFDustTrail8 : SFDustTrail {
     
   }
 }
