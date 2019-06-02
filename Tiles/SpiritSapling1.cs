@@ -34,13 +34,13 @@ namespace OriMod.Tiles {
       Tile tile = Main.tile[i, j];
       Main.mouseRightRelease = false;
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-        if (!oPlayer.OriSet && !oPlayer.transforming) {
-          oPlayer.blockLocation = new Vector2(i, j) * 16;
+        if (!oPlayer.OriSet && !oPlayer.Transforming) {
+          oPlayer.TransformBlockLocation = new Vector2(i, j) * 16;
           oPlayer.DoTransformation(player);
           oPlayer.PlayNewSound("AbilityPedestal/abilityPedestalMusic");
           oPlayer.PlayNewSound("AbilityPedestal/abilityPedestalStart");
         }
-        else if (!oPlayer.transforming) {
+        else if (!oPlayer.Transforming) {
           oPlayer.OriSet = false;
           oPlayer.counterTimer = 0;
           oPlayer.countering = false;

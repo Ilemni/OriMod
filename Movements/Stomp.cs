@@ -20,7 +20,7 @@ namespace OriMod.Movements {
 
     internal override bool CanUse {
       get {
-        return !OPlayer.isGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.InUse && !Handler.climb.InUse;
+        return !OPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.InUse && !Handler.climb.InUse;
       }
     }
 
@@ -57,6 +57,7 @@ namespace OriMod.Movements {
       }
       Proj.width = 600;
       Proj.height = 320;
+      Proj = null;
     }
     protected override void UpdateUsing() {
       player.controlUp = false;
@@ -81,7 +82,7 @@ namespace OriMod.Movements {
         if (CurrDur > MinDuration && !PlayerInput.Triggers.Current.Down) {
           State = States.Inactive;
         }
-        if (OPlayer.isGrounded) {
+        if (OPlayer.IsGrounded) {
           State = States.Ending;
         }
       }

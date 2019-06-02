@@ -28,9 +28,9 @@ namespace OriMod.Movements {
     }
 
     internal override void Tick() {
-      CanUse = OPlayer.onWall;
+      CanUse = OPlayer.OnWall;
       if (InUse) {
-        if (!OPlayer.onWall) {
+        if (!OPlayer.OnWall) {
           State = States.Inactive;
         }
       }

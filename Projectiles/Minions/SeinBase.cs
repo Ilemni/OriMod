@@ -10,13 +10,13 @@ using Terraria.ModLoader;
 
 namespace OriMod.Projectiles.Minions {
   public abstract class SeinBase : Minion {
-    protected int upgrade;
+    protected int Upgrade;
     public override void SetStaticDefaults() {
 			Main.projFrames[projectile.type] = 3;
 			Main.projPet[projectile.type] = true;
-			ProjectileID.Sets.MinionSacrificable[projectile.type] = true;
-			ProjectileID.Sets.Homing[projectile.type] = true;
-			ProjectileID.Sets.MinionTargettingFeature[projectile.type] = true; //This is necessary for right-click targeting
+      ProjectileID.Sets.MinionSacrificable[projectile.type] = true;
+      ProjectileID.Sets.Homing[projectile.type] = true;
+      ProjectileID.Sets.MinionTargettingFeature[projectile.type] = true; //This is necessary for right-click targeting
     }
     public override void SetDefaults() {
 			projectile.netImportant = true;
@@ -40,58 +40,58 @@ namespace OriMod.Projectiles.Minions {
     //  1f+ = on cooldown
 
     // ID of projectile to shoot
-    protected int shoot;
+    protected int ShootID;
     // Number of shots that can be used before triggering longCooldown
-    protected int maxShotsPerBurst = 2;
+    protected int MaxShotsPerBurst = 2;
     // Max number of shots that can be fired at once
-    protected int maxShotsPerVolley = 1;
-    protected int shotsPerTarget = 1;
-    protected int shotsToPrimaryTarget = 1;
+    protected int MaxShotsPerVolley = 1;
+    protected int ShotsToTarget = 1;
+    protected int ShotsToPrimaryTarget = 1;
     private int currShots = 1;
     // Maximum number of targets that can be fired upon at once
-    protected int maxTargets = 3;
+    protected int MaxTargets = 3;
     // Shortest cooldown between individual shots
-    protected float minCooldown = 12f;
+    protected float MinCooldown = 12f;
     // Shortest cooldown to count as a seperate burst and not be punished by longCooldown
-    protected float shortCooldown = 18f;
+    protected float ShortCooldown = 18f;
     // Cooldown between bursts of shots dictated by numShots
-    protected float longCooldown = 60f;
+    protected float LongCooldown = 60f;
     // Speed of the created projectile
-    protected float shootSpeed = 50f;
-    protected int pierce = 1;
-    protected float primaryDamageMultiplier = 1;
+    protected float ShootSpeed = 50f;
+    protected int Pierce = 1;
+    protected float PrimaryDamageMultiplier = 1;
     // Max rotation of randomness from target the projectile fires
-    protected int randDegrees = 75;
-    protected float maxTargetDist = 300f;
-    protected float maxTargetThroughWallDist = 0f;
+    protected int RandDegrees = 75;
+    protected float MaxTargetDist = 300f;
+    protected float MaxTargetThroughWallDist = 0f;
 
-    protected Color color;
-    protected float lightStrength;
+    protected Color Color;
+    protected float LightStrength;
     internal void Init(int upgradeID) {
       SeinUpgrade u = OriMod.SeinUpgrades[upgradeID - 1];
-      maxShotsPerBurst = u.shotsPerBurst;
-      maxShotsPerVolley = u.maxShotsPerVolley;
-      shotsPerTarget = u.shotsPerTarget;
-      shotsToPrimaryTarget = u.shotsToPrimaryTarget;
-      primaryDamageMultiplier = u.primaryDamageMultiplier;
-      pierce = u.pierce;
-      maxTargets = u.targets;
-      minCooldown = u.minCooldown;
-      shortCooldown = u.shortCooldown;
-      longCooldown = u.longCooldown;
-      randDegrees = u.randDegrees;
-      maxTargetDist = u.targetMaxDist;
-      if (maxDistFromPlayer < maxTargetDist * 0.8f) { 
-        maxDistFromPlayer = maxTargetDist * 0.8f;
+      MaxShotsPerBurst = u.shotsPerBurst;
+      MaxShotsPerVolley = u.maxShotsPerVolley;
+      ShotsToTarget = u.shotsPerTarget;
+      ShotsToPrimaryTarget = u.shotsToPrimaryTarget;
+      PrimaryDamageMultiplier = u.primaryDamageMultiplier;
+      Pierce = u.pierce;
+      MaxTargets = u.targets;
+      MinCooldown = u.minCooldown;
+      ShortCooldown = u.shortCooldown;
+      LongCooldown = u.longCooldown;
+      RandDegrees = u.randDegrees;
+      MaxTargetDist = u.targetMaxDist;
+      if (maxDistFromPlayer < MaxTargetDist * 0.8f) { 
+        maxDistFromPlayer = MaxTargetDist * 0.8f;
       }
-      maxTargetThroughWallDist = u.targetThroughWallDist;
+      MaxTargetThroughWallDist = u.targetThroughWallDist;
       projectile.width = u.minionWidth;
       projectile.height = u.minionHeight;
 
-      upgrade = upgradeID;
-      shoot = mod.ProjectileType("SpiritFlame" + (upgradeID));
-      color = u.color;
-      lightStrength = u.lightStrength;
+      Upgrade = upgradeID;
+      ShootID = mod.ProjectileType("SpiritFlame" + (upgradeID));
+      Color = u.color;
+      LightStrength = u.lightStrength;
     }
     protected virtual void CreateDust() { }
 
@@ -169,10 +169,10 @@ namespace OriMod.Projectiles.Minions {
       Player player = Main.player[projectile.owner];
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
       if (player.dead) {
-        oPlayer.seinMinionActive = false;
+        oPlayer.SeinMinionActive = false;
       }
 
-      if (!oPlayer.seinMinionActive || upgrade != oPlayer.seinMinionUpgrade) {
+      if (!oPlayer.SeinMinionActive || Upgrade != oPlayer.SeinMinionUpgrade) {
         projectile.active = false;
       }
       else {
@@ -258,7 +258,7 @@ namespace OriMod.Projectiles.Minions {
       Vector2 dir = Normalize(offset);
       float dist = offset.Length();
 
-      if (dist > maxTargetDist) { // Cannot reach targeted NPC
+      if (dist > MaxTargetDist) { // Cannot reach targeted NPC
         if (targetIDs.Count == 1 || Main.player[projectile.owner].HasMinionAttackTargetNPC) {
           UpdateTargetPosIdle();
           return;
@@ -270,7 +270,7 @@ namespace OriMod.Projectiles.Minions {
           offset.Y -= 12f;
           dist = offset.Length();
           dir = Normalize(offset);
-          if (dist > maxTargetDist) {
+          if (dist > MaxTargetDist) {
             UpdateTargetPosIdle();
             return;
           }
@@ -305,20 +305,20 @@ namespace OriMod.Projectiles.Minions {
         shootVel = new Vector2(0f, 1f);
       }
       shootVel.Normalize();
-      shootVel = Utils.RotatedBy(shootVel, (float)Main.rand.Next(-randDegrees, randDegrees) / 180f * (float)Math.PI);
-      shootVel *= shootSpeed;
-      int proj = Projectile.NewProjectile(projectile.Center, shootVel, shoot, (int)(projectile.damage * (t == 0 ? primaryDamageMultiplier : 1)), projectile.knockBack, Main.myPlayer, targetIDs[t], 0f);
+      shootVel = Utils.RotatedBy(shootVel, (float)Main.rand.Next(-RandDegrees, RandDegrees) / 180f * (float)Math.PI);
+      shootVel *= ShootSpeed;
+      int proj = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, (int)(projectile.damage * (t == 0 ? PrimaryDamageMultiplier : 1)), projectile.knockBack, Main.myPlayer, targetIDs[t], 0f);
       projectile.velocity += (shootVel * -0.005f);
       Main.projectile[proj].timeLeft = 300;
       Main.projectile[proj].netUpdate = true;
-      Main.projectile[proj].penetrate = pierce;
+      Main.projectile[proj].penetrate = Pierce;
       projectile.netUpdate = true;
     }
     internal override void Behavior() {
       if (!projectile.active) { return; }
       SeinMovement();
       UpdateTargetsPos();
-      Lighting.AddLight(projectile.Center, color.ToVector3() * lightStrength);
+      Lighting.AddLight(projectile.Center, Color.ToVector3() * LightStrength);
       
       Player player = Main.player[projectile.owner];
       
@@ -336,10 +336,10 @@ namespace OriMod.Projectiles.Minions {
         if (npc.CanBeChasedBy(this, false)) {
           float distance = Vector2.Distance(projectile.Center, npc.Center);
           if (
-            distance < maxTargetDist && 
+            distance < MaxTargetDist && 
             (
               Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height) || 
-              distance < maxTargetThroughWallDist
+              distance < MaxTargetThroughWallDist
             )
           ) {
             targeting = true;
@@ -354,10 +354,10 @@ namespace OriMod.Projectiles.Minions {
         if (npc.CanBeChasedBy(this, false)) {
           float distance = Vector2.Distance(projectile.Center, npc.Center);
           if (
-            distance < maxTargetDist && 
+            distance < MaxTargetDist && 
             (
               Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height) || 
-              distance < maxTargetThroughWallDist
+              distance < MaxTargetThroughWallDist
             )
           ) {
             targeting = true;
@@ -391,9 +391,9 @@ namespace OriMod.Projectiles.Minions {
         targetIDs.Clear();
         if (mainTargetNPC != null && mainTargetNPC.active) {
           targetIDs.Add(mainTargetNPC.whoAmI);
-          targetIDs.AddRange(newTargetIDs.GetRange(0, newTargetIDs.Count > maxTargets - 1 ? maxTargets - 1 : newTargetIDs.Count));
+          targetIDs.AddRange(newTargetIDs.GetRange(0, newTargetIDs.Count > MaxTargets - 1 ? MaxTargets - 1 : newTargetIDs.Count));
         }
-        targetIDs.AddRange(newTargetIDs.GetRange(0, newTargetIDs.Count > maxTargets ? maxTargets : newTargetIDs.Count));
+        targetIDs.AddRange(newTargetIDs.GetRange(0, newTargetIDs.Count > MaxTargets ? MaxTargets : newTargetIDs.Count));
       }
       
       // If not in idle box, no collision
@@ -416,26 +416,26 @@ namespace OriMod.Projectiles.Minions {
         projectile.ai[1] += 1f;
 
         // If below max shots, allow firing
-        if (currShots < maxShotsPerBurst && projectile.ai[1] > minCooldown) {
+        if (currShots < MaxShotsPerBurst && projectile.ai[1] > MinCooldown) {
           // Reset shot group
           projectile.ai[1] = 0f;
-          if (projectile.ai[1] > shortCooldown) {
+          if (projectile.ai[1] > ShortCooldown) {
             currShots = 1;
           }
           else {
             currShots++;
           }
         }
-        if (currShots >= maxShotsPerBurst) {
-          if (targeting && projectile.ai[1] > longCooldown) {
+        if (currShots >= MaxShotsPerBurst) {
+          if (targeting && projectile.ai[1] > LongCooldown) {
             projectile.ai[1] = 0f;
             currShots = 1;
           }
         }
       }
-      if (targeting && projectile.ai[1] > minCooldown) { // Finished min cooldown
-        if (currShots >= maxShotsPerBurst) {
-          if (projectile.ai[1] < longCooldown) { // Finished long cooldown
+      if (targeting && projectile.ai[1] > MinCooldown) { // Finished min cooldown
+        if (currShots >= MaxShotsPerBurst) {
+          if (projectile.ai[1] < LongCooldown) { // Finished long cooldown
             projectile.ai[0] = 0f;
             projectile.netUpdate = true;
           }
@@ -459,9 +459,9 @@ namespace OriMod.Projectiles.Minions {
         if (Main.myPlayer == projectile.owner) { // Fire
           int usedShots = 0;
           int loopCount = 0;
-          while (usedShots < maxShotsPerVolley && loopCount < shotsToPrimaryTarget) {
+          while (usedShots < MaxShotsPerVolley && loopCount < ShotsToPrimaryTarget) {
             for (int t = 0; t < targetIDs.Count; t++) {
-              if (loopCount < (t == 0 ? shotsToPrimaryTarget : shotsPerTarget)) {
+              if (loopCount < (t == 0 ? ShotsToPrimaryTarget : ShotsToTarget)) {
                 Fire(t);
                 usedShots++;
               }
@@ -469,9 +469,9 @@ namespace OriMod.Projectiles.Minions {
             loopCount ++;
           }
           string c =
-            upgrade == 1 || upgrade == 2 ? "" :
-            upgrade == 3 || upgrade == 4 ? "LevelB" :
-            upgrade == 5 || upgrade == 6 ? "LevelC" : "LevelD";
+            Upgrade == 1 || Upgrade == 2 ? "" :
+            Upgrade == 3 || Upgrade == 4 ? "LevelB" :
+            Upgrade == 5 || Upgrade == 6 ? "LevelC" : "LevelD";
           PlaySpiritFlameSound("Throw" + c + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
         }
       }

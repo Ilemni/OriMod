@@ -56,7 +56,7 @@ namespace OriMod.Movements {
             CanUse = true;
           }
         }
-        if (player.velocity.Y < 0 || OPlayer.onWall || OPlayer.isGrounded) {
+        if (player.velocity.Y < 0 || OPlayer.OnWall || OPlayer.IsGrounded) {
           State = InUse ? States.Ending : States.Inactive;
           CanUse = false;
         }
@@ -67,7 +67,7 @@ namespace OriMod.Movements {
         }
       }
       else {
-        if (player.velocity.Y > 0 && !OPlayer.onWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
+        if (player.velocity.Y > 0 && !OPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
           State = States.Starting;
           CurrTime = 0;
         }

@@ -38,14 +38,14 @@ namespace OriMod.Items {
 			if (player.altFunctionUse == 2) {
 				return false;
 			}
-			if (oPlayer.seinMinionActive && oPlayer.seinMinionUpgrade == upgrade) return false;
+			if (oPlayer.SeinMinionActive && oPlayer.SeinMinionUpgrade == upgrade) return false;
 			return true;
 		}
 		public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack) {
 			OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
 			oPlayer.RemoveSeinBuffs(exclude:upgrade);
-			oPlayer.seinMinionUpgrade = upgrade;
-			oPlayer.seinMinionActive = true;
+			oPlayer.SeinMinionUpgrade = upgrade;
+			oPlayer.SeinMinionActive = true;
 			return true;
 		}
 		public override bool UseItem(Player player) {

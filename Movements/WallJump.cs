@@ -14,17 +14,17 @@ namespace OriMod.Movements {
       OPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + OriPlayer.RandomChar(5, ref currRand));
     }
     protected override void UpdateEnding() {
-      if (OPlayer.onWall) player.velocity.Y--;
+      if (OPlayer.OnWall) player.velocity.Y--;
     }
     protected override void UpdateUsing() {
       player.velocity.X = WallJumpVelocity.X * -player.direction;
-      OPlayer.unrestrictedMovement = true;
+      OPlayer.UnrestrictedMovement = true;
     }
 
     internal override void Tick() {
       if (IsState(States.Ending)) {
         CurrTime++;
-        if (CurrTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || OPlayer.isGrounded) {
+        if (CurrTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || OPlayer.IsGrounded) {
           State = States.Inactive;
           CanUse = false;
         }
@@ -34,7 +34,7 @@ namespace OriMod.Movements {
         CurrTime = 0;
       }
       else {
-        CanUse = OPlayer.onWall && !OPlayer.isGrounded && !InUse;
+        CanUse = OPlayer.OnWall && !OPlayer.IsGrounded && !InUse;
         if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
           State = States.Active;
         }

@@ -32,10 +32,10 @@ namespace OriMod.Movements {
       if (IsState(States.Active)) {
         State = States.Ending;
       }
-      if (CurrCount <= MaxJumps && !OPlayer.isGrounded) {
+      if (CurrCount <= MaxJumps && !OPlayer.IsGrounded) {
         CanUse = true;
       }
-      if (OPlayer.isGrounded || /*Handler.bash.inUse ||*/ OPlayer.bashActive || OPlayer.onWall) {
+      if (OPlayer.IsGrounded || /*Handler.bash.inUse ||*/ OPlayer.bashActive || OPlayer.OnWall) {
         CurrCount = 0;
         State = States.Inactive;
         CanUse = false;

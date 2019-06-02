@@ -16,7 +16,7 @@ namespace OriMod.Movements {
     
     internal override bool CanUse {
       get {
-        return !InUse && Refreshed && !OPlayer.onWall && !Handler.stomp.InUse && !OPlayer.bashActive /* TODO: Replace with bash.inUse */;
+        return !InUse && Refreshed && !OPlayer.OnWall && !Handler.stomp.InUse && !OPlayer.bashActive /* TODO: Replace with bash.inUse */;
       }
     }
     private void StartDash() {
@@ -31,12 +31,12 @@ namespace OriMod.Movements {
       if (CurrTime > 20) player.runSlowdown = 26f;
     }
     internal override void Tick() {
-      if (!Refreshed && (OPlayer.isGrounded || OPlayer.onWall || OPlayer.bashActive /* TODO: Replace with bash.inUse */)) {
+      if (!Refreshed && (OPlayer.IsGrounded || OPlayer.OnWall || OPlayer.bashActive /* TODO: Replace with bash.inUse */)) {
         Refreshed = true;
       }
       if (InUse) {
         CurrTime++;
-        if (CurrTime > Duration || OPlayer.onWall || OPlayer.bashActive) {
+        if (CurrTime > Duration || OPlayer.OnWall || OPlayer.bashActive) {
           State = States.Inactive;
         }
       }

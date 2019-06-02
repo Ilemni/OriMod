@@ -32,11 +32,11 @@ namespace OriMod {
 
       BitsByte flags = new BitsByte();
       flags[0] = fromPlayer.OriSet;
-      flags[1] = fromPlayer.flashing;
-      flags[2] = fromPlayer.transforming;
+      flags[1] = fromPlayer.Flashing;
+      flags[2] = fromPlayer.Transforming;
       packet.Write((byte)flags);
-      if (fromPlayer.transforming) {
-        packet.Write((short)fromPlayer.transformTimer);
+      if (fromPlayer.Transforming) {
+        packet.Write((short)fromPlayer.TransformTimer);
       }
       Vector2 animTile = fromPlayer.AnimTile;
       packet.Write((byte)animTile.X);
@@ -58,9 +58,9 @@ namespace OriMod {
       Vector2 animTile = new Vector2(r.ReadByte(), r.ReadByte());
 
       fromPlayer.OriSet = oriSet;
-      fromPlayer.flashing = flashing;
-      fromPlayer.transforming = transforming;
-      fromPlayer.transformTimer = transformTimer;
+      fromPlayer.Flashing = flashing;
+      fromPlayer.Transforming = transforming;
+      fromPlayer.TransformTimer = transformTimer;
       fromPlayer.AnimTile = animTile;
       
       if (Main.netMode == NetmodeID.Server) {
