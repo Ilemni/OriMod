@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace OriMod.Movements {
   public class ChargeDash : Ability {
-    internal ChargeDash(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { Npc = 255; }
+    internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { Npc = 255; }
     
     private static readonly float[] Speeds = new float[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f

@@ -5,7 +5,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Movements {
   public class Stomp : Ability {
-    internal Stomp(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
+    internal Stomp(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
     private const int StartDuration = 24;
     private const int MinDuration = 60;

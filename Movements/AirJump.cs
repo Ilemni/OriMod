@@ -2,7 +2,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Movements {
   public class AirJump : Ability {
-    internal AirJump(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
+    internal AirJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     
     private const float JumpVelocity = -8.8f;
     private const int EndDuration = 32;

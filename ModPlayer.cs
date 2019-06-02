@@ -21,7 +21,7 @@ namespace OriMod
   public sealed class OriPlayer : ModPlayer {
     
     #region Variables
-    public MovementHandler movementHandler { get; private set; } // Class used for all of Ori's movements
+    public OriAbilities Abilities { get; private set; } // Class used for all of Ori's movements
 
     // OriSet, detecting whether or not Ori is active or not. The name is a remnant of when Ori was activated using the accessory located in Items/Ori/OriAccessory
     public bool OriSet = false;
@@ -242,13 +242,13 @@ namespace OriMod
       }
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>();
 
-      if (movementHandler.airJump.InUse && !(movementHandler.dash.InUse || movementHandler.cDash.InUse)) {
+      if (Abilities.airJump.InUse && !(Abilities.dash.InUse || Abilities.cDash.InUse)) {
         Increment("AirJump");
         AnimRads = AnimTime * 0.8f;
         return;
       }
-      if (movementHandler.glide.InUse) {
-        switch (movementHandler.glide.State) {
+      if (Abilities.glide.InUse) {
+        switch (Abilities.glide.State) {
           case Ability.States.Starting: Increment("GlideStart");
             return;
           case Ability.States.Active: Increment("Glide");
@@ -257,7 +257,7 @@ namespace OriMod
             return;
         }
       }
-      if (movementHandler.dash.InUse || movementHandler.cDash.InUse) {
+      if (Abilities.dash.InUse || Abilities.cDash.InUse) {
         if (Math.Abs(player.velocity.X) > 18f) {
           Increment("Dash");
         }
@@ -266,7 +266,7 @@ namespace OriMod
         }
         return;
       }
-      if (movementHandler.wJump.InUse) {
+      if (Abilities.wJump.InUse) {
         Increment("WallJump");
         return;
       }
@@ -310,12 +310,12 @@ namespace OriMod
         Increment("Bash");
         return;
       }
-      if (movementHandler.stomp.State == Ability.States.Starting) {
+      if (Abilities.stomp.State == Ability.States.Starting) {
         Increment("AirJump");
         AnimRads = AnimTime;
         return;
       }
-      if (movementHandler.stomp.State == Ability.States.Active) {
+      if (Abilities.stomp.State == Ability.States.Active) {
         Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideMeta:new Vector3(0,2,0));
         return;
       }
@@ -328,7 +328,7 @@ namespace OriMod
         return;
       }
       if (onWall && !isGrounded) {
-        if (movementHandler.climb.InUse && player.velocity.Y < 0) {
+        if (Abilities.climb.InUse && player.velocity.Y < 0) {
           Increment("Climb", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
         }
         else {
@@ -349,7 +349,7 @@ namespace OriMod
         }
         return;
       }
-      if (!isGrounded && !movementHandler.glide.InUse) {
+      if (!isGrounded && !Abilities.glide.InUse) {
         Increment(drawPlayer.velocity.Y < 0 ? "Jump" : "Falling");
         return;
       }
@@ -358,7 +358,7 @@ namespace OriMod
         return;
       }
       if (drawPlayer.velocity.X != 0 && isGrounded &&
-        !movementHandler.dash.InUse &&
+        !Abilities.dash.InUse &&
         !bashActive &&
         !onWall && (
           PlayerInput.Triggers.Current.Left ||
@@ -734,7 +734,7 @@ namespace OriMod
             OriMod.BashKey.JustPressed ||
             OriMod.DashKey.JustPressed ||
             PlayerInput.Triggers.Current.Down ||
-            movementHandler.dash.InUse
+            Abilities.dash.InUse
           ) {
             intoLookUpTimer = 0;
             intoLookUp = false;
@@ -754,7 +754,7 @@ namespace OriMod
             OriMod.BashKey.JustPressed ||
             OriMod.DashKey.JustPressed ||
             !isGrounded ||
-            movementHandler.dash.InUse
+            Abilities.dash.InUse
           ) {
             lookUp = false;
           }
@@ -773,7 +773,7 @@ namespace OriMod
             OriMod.BashKey.JustPressed ||
             OriMod.DashKey.JustPressed ||
             !isGrounded ||
-            movementHandler.dash.InUse ||
+            Abilities.dash.InUse ||
             outLookUpTimer == 0
           ) {
             outLookUp = false;
@@ -881,8 +881,8 @@ namespace OriMod
       if (
         OriMod.BashKey.JustPressed &&
         bashActivate == 0 &&
-        !movementHandler.dash.InUse && // Bash should be available during Dash
-        !movementHandler.stomp.InUse  // Bash should be available during Stomp
+        !Abilities.dash.InUse && // Bash should be available during Dash
+        !Abilities.stomp.InUse  // Bash should be available during Stomp
       ) {
         bashActivate = 3;
         Projectile.NewProjectile(player.Center, new Vector2(0, 0), mod.ProjectileType("BashHitbox"), 1, 0f, player.whoAmI, 0, 1);
@@ -1053,10 +1053,10 @@ namespace OriMod
     public override void PostUpdateRunSpeeds() {
       if (OriSet) {
         if (player.whoAmI == Main.myPlayer) {
-          movementHandler.Tick();
+          Abilities.Tick();
         }
         else {
-          movementHandler.TickOtherClient();
+          Abilities.TickOtherClient();
         }
 
         if (tempInvincibility && immuneTimer > 0) {
@@ -1089,12 +1089,12 @@ namespace OriMod
           player.maxRunSpeed += 2f;
         }
         Main.SetCameraLerp(0.05f, 1);
-        if (onWall && (isGrounded || player.velocity.Y < 0) && !movementHandler.climb.InUse) {
+        if (onWall && (isGrounded || player.velocity.Y < 0) && !Abilities.climb.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
           player.jumpSpeedBoost -= 6f;
         }
-        else if (onWall &&  !isGrounded && player.velocity.Y > 0 && !movementHandler.stomp.InUse) {
+        else if (onWall &&  !isGrounded && player.velocity.Y > 0 && !Abilities.stomp.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
         }
@@ -1121,27 +1121,27 @@ namespace OriMod
           player.jumpSpeedBoost += 2f;
         }
         if (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased) {
-          movementHandler.Glide();
+          Abilities.glide.Update();
         }
         if (PlayerInput.Triggers.JustPressed.Jump) {
-          movementHandler.AirJump();
+          Abilities.airJump.Update();
         }
-        if (OriMod.DashKey.JustPressed || movementHandler.dash.InUse || movementHandler.cDash.InUse) {
-          if ((OriMod.ChargeKey.Current && movementHandler.cDash.Refreshed) || movementHandler.cDash.InUse) {
-            movementHandler.ChargeDash();
+        if (OriMod.DashKey.JustPressed || Abilities.dash.InUse || Abilities.cDash.InUse) {
+          if ((OriMod.ChargeKey.Current && Abilities.cDash.Refreshed) || Abilities.cDash.InUse) {
+            Abilities.cDash.Update();
           }
           else {
-            movementHandler.Dash();
+            Abilities.dash.Update();
           }
         }
         if ((PlayerInput.Triggers.JustPressed.Jump && onWall && !isGrounded) /*|| movementHandler.wJump.InUse*/) {
-          movementHandler.WallJump();
+          Abilities.wJump.Update();
         }
         if (OriMod.ClimbKey.Current && onWall) {
-          movementHandler.Climb();
+          Abilities.climb.Update();
         }
-        if (PlayerInput.Triggers.JustPressed.Down || movementHandler.stomp.InUse) {
-          movementHandler.Stomp();
+        if (PlayerInput.Triggers.JustPressed.Down || Abilities.stomp.InUse) {
+          Abilities.stomp.Update();
         }
       }
       else if (transforming) {
@@ -1176,10 +1176,10 @@ namespace OriMod
           dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
           dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
           dust.noGravity = false;
-          featherTrailTimer = movementHandler.dash.InUse ? Main.rand.Next(2, 4) : Main.rand.Next(10, 15);
+          featherTrailTimer = Abilities.dash.InUse ? Main.rand.Next(2, 4) : Main.rand.Next(10, 15);
         }
       }
-      else if (movementHandler.dash.InUse && featherTrailTimer > 4) {
+      else if (Abilities.dash.InUse && featherTrailTimer > 4) {
         featherTrailTimer = Main.rand.Next(2, 4);
       }
       flashing = flashPattern.Contains(flashTimer);
@@ -1201,7 +1201,7 @@ namespace OriMod
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       if (OriSet) {
-        if (movementHandler.stomp.InUse || chargeJumpAnimTimer > 0) {
+        if (Abilities.stomp.InUse || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         if (bashActivate > 0 && bashActiveTimer == 0 && !bashActive && !countering) {
@@ -1220,7 +1220,7 @@ namespace OriMod
       if (OriSet && playSound) {
         playSound = false; // stops regular hurt sound from playing
         genGore = false; // stops regular gore from appearing
-        if (bashActiveTimer > 0 || bashActive || movementHandler.stomp.InUse || chargeJumpAnimTimer > 0) {
+        if (bashActiveTimer > 0 || bashActive || Abilities.stomp.InUse || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         else {

@@ -2,7 +2,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Movements {
   public class Climb : Ability {
-    internal Climb(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
+    internal Climb(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
     protected override void UpdateActive() {
       player.gravity = 0;

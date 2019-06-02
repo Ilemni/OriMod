@@ -3,7 +3,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Movements {
   public class WallJump : Ability {
-    internal WallJump(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
+    internal WallJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private const int EndTime = 12;

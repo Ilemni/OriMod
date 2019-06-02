@@ -3,7 +3,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Movements {
   public class Glide : Ability {
-    internal Glide(OriPlayer oriPlayer, MovementHandler handler) : base(oriPlayer, handler) { }
+    internal Glide(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
     private const float MaxFallSpeed = 2f;
     private const float RunSlowdown = 0.125f;
@@ -35,7 +35,6 @@ namespace OriMod.Movements {
       UpdateActive();
     }
     internal override void Tick() {
-      if (!unlocked) return;
       if (Handler.dash.InUse) {
         State = States.Inactive;
         CanUse = false;

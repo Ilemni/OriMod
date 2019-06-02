@@ -25,7 +25,7 @@ namespace OriMod.Projectiles {
     }
     public override void AI() {
       projectile.Center = Main.player[projectile.owner].Center;
-      switch (Owner().movementHandler.stomp.State) {
+      switch (Owner.Abilities.stomp.State) {
         case Ability.States.Starting:
         case Ability.States.Active:
           projectile.width = 150;
