@@ -7,8 +7,14 @@ using System;
 
 namespace OriMod.Projectiles {
 	public class StompHitbox : ModProjectile {
-    public OriPlayer Owner() {
-      return Main.player[projectile.owner].GetModPlayer<OriPlayer>();
+    private OriPlayer _owner;
+    public OriPlayer Owner {
+      get {
+        if (_owner == null) {
+          _owner = Main.player[projectile.owner].GetModPlayer<OriPlayer>();
+        }
+        return _owner;
+      }
     }
 
     public override void SetStaticDefaults() { }
@@ -37,7 +43,6 @@ namespace OriMod.Projectiles {
           projectile.Kill();
           break;
       }
-      if (!Owner().movementHandler.stomp.IsState(Ability.States.Starting, Ability.States.Active)) { }
     }
     public override bool ShouldUpdatePosition() {
       return false;

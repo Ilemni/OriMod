@@ -7,8 +7,14 @@ using System;
 
 namespace OriMod.Projectiles {
 	public class BashHitbox : ModProjectile {
-    public OriPlayer Owner() {
-      return Main.player[projectile.owner].GetModPlayer<OriPlayer>();
+    private OriPlayer _owner;
+    public OriPlayer Owner {
+      get {
+        if (_owner == null) {
+          _owner = Main.player[projectile.owner].GetModPlayer<OriPlayer>();
+        }
+        return _owner;
+      }
     }
 
     public override void SetStaticDefaults() { }
@@ -24,11 +30,11 @@ namespace OriMod.Projectiles {
     }
     public override void AI() {
       projectile.Center = Main.player[projectile.owner].Center;
-      if (Owner().bashActivate > 0 || Owner().bashActiveTimer > 5) {
+      if (Owner.bashActivate > 0 || Owner.bashActiveTimer > 5) {
         projectile.Center = Main.player[projectile.owner].Center;
       }
       else {
-        Owner().PlayNewSound("Ori/Bash/bashNoTargetB");
+        Owner.PlayNewSound("Ori/Bash/bashNoTargetB");
         projectile.Kill();
       }
     }
@@ -39,10 +45,10 @@ namespace OriMod.Projectiles {
       return false;
     }
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-      if (Owner().bashActivate > 0 && Owner().bashActiveTimer == 0 && Owner().bashActive == false) {
-        Owner().tempInvincibility = true;
-        Owner().immuneTimer = 15;
-        Owner().BashEffects(target);
+      if (Owner.bashActivate > 0 && Owner.bashActiveTimer == 0 && Owner.bashActive == false) {
+        Owner.tempInvincibility = true;
+        Owner.immuneTimer = 15;
+        Owner.BashEffects(target);
       }
     }
   }

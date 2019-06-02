@@ -7,9 +7,6 @@ using System;
 
 namespace OriMod.Projectiles {
 	public class bigflash : ModProjectile {
-    public OriPlayer Owner() {
-      return Main.player[projectile.owner].GetModPlayer<OriPlayer>();
-    }
     public override void SetStaticDefaults() { }
 
 		public override void SetDefaults() {
