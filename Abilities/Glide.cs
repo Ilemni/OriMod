@@ -18,21 +18,21 @@ namespace OriMod.Abilities {
       }
     }
 
-    protected override void UpdateActive() {
+    protected override void UpdateUsing() {
       if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
         oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + OriPlayer.RandomChar(5), 0.45f);
       }
       player.maxFallSpeed = MaxFallSpeed;
-      player.runSlowdown = RunSlowdown;
-      player.runAcceleration = RunAcceleration;
+      if (!oPlayer.UnrestrictedMovement) {
+        player.runSlowdown = RunSlowdown;
+        player.runAcceleration = RunAcceleration;
+      }
     }
     protected override void UpdateStarting() {
       if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
-      UpdateActive();
     }
     protected override void UpdateEnding() {
       if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGildeEnd" + OriPlayer.RandomChar(3), 0.8f);
-      UpdateActive();
     }
     internal override void Tick() {
       if (Handler.dash.InUse) {
