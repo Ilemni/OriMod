@@ -36,7 +36,7 @@ namespace OriMod {
         // packet.Write((byte)fromPlayer.movementHandler.GetState(move));
         switch (move) {
           case "Bash":
-            packet.Write(fromPlayer.Abilities.bashCurrNPC);
+            packet.Write(fromPlayer.Abilities.bash.BashNpcID);
             break;
           case "Grenade":
             packet.Write((int)fromPlayer.Abilities.grenadePos.X);

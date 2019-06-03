@@ -35,7 +35,7 @@ namespace OriMod.Abilities {
       if (CurrCount <= MaxJumps && !oPlayer.IsGrounded) {
         CanUse = true;
       }
-      if (oPlayer.IsGrounded || /*Handler.bash.inUse ||*/ oPlayer.bashActive || oPlayer.OnWall) {
+      if (oPlayer.IsGrounded || Handler.bash.InUse || oPlayer.OnWall) {
         CurrCount = 0;
         State = States.Inactive;
         CanUse = false;

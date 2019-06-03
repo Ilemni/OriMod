@@ -21,13 +21,6 @@ namespace OriMod {
     public int soulLinkCurrTime = 0;
     public int soulLinkCurrRecharge = 0;
 
-    private const int bashMinTime = 40;
-    private const int bashMaxTime = 150;
-    private const int doubleBashWindow = 2;
-    public byte bashCurrNPC = 255;
-    public int bashCurrTime = 0;
-    public float bashCurrAngle = 0;
-
     private const int chargeJumpStartTime = 60;
     public int chargeJumpCurrTime = 0;
 
@@ -48,7 +41,7 @@ namespace OriMod {
       wJump.Tick();
       // cFlame.Tick();
       airJump.Tick();
-      // bash.Tick();
+      bash.Tick();
       stomp.Tick();
       glide.Tick();
       climb.Tick();

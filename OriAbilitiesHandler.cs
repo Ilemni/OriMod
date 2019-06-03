@@ -14,8 +14,9 @@ namespace OriMod {
 
     public WallJump wJump { get; private set; }
     public AirJump airJump { get; private set; }
-    public Glide glide { get; private set; }
+    public Bash bash { get; private set; }
     public Stomp stomp { get; private set; }
+    public Glide glide { get; private set; }
     public Climb climb { get; private set; }
     public Dash dash { get; private set; }
     public ChargeDash cDash { get; private set; }
@@ -27,8 +28,9 @@ namespace OriMod {
       Abilities = new List<Ability> {
         { wJump = new WallJump(o, this) },
         { airJump = new AirJump(o, this) },
-        { glide = new Glide(o, this) },
+        { bash = new Bash(o, this) },
         { stomp = new Stomp(o, this) },
+        { glide = new Glide(o, this) },
         { climb = new Climb(o, this) },
         { dash = new Dash(o, this) },
         { cDash = new ChargeDash(o, this) },

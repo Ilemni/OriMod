@@ -5,11 +5,9 @@ namespace OriMod
 {
   public class BashNPC : GlobalNPC {
     public override bool PreAI(NPC npc) { // TODO: Multiplayer sync
-      if (npc.boss || npc.immortal || OriPlayer.CannotBash.Contains(npc.type)) return true;
-      return !(
-        Main.LocalPlayer.GetModPlayer<OriPlayer>().bashActive &&
-        Main.LocalPlayer.GetModPlayer<OriPlayer>().bashNPC == npc.whoAmI 
-      );
+      if (npc.boss || npc.immortal || Abilities.Bash.CannotBash.Contains(npc.type)) return true;
+      OriPlayer oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
+      return !(oPlayer.Abilities.bash.InUse && oPlayer.Abilities.bash.BashNpcID == npc.whoAmI);
     }
   }
 }
