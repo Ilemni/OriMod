@@ -16,12 +16,12 @@ namespace OriMod.Abilities {
     
     internal override bool CanUse {
       get {
-        return !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !oPlayer.bashActive /* TODO: Replace with bash.inUse */;
+        return !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse;
       }
     }
     private void StartDash() {
       CurrDirection = player.direction;
-      oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3), 0.2f);
+      oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3, ref currRand), 0.2f);
       player.pulley = false;
     }
 
@@ -31,12 +31,12 @@ namespace OriMod.Abilities {
       if (CurrTime > 20) player.runSlowdown = 26f;
     }
     internal override void Tick() {
-      if (!Refreshed && (oPlayer.IsGrounded || oPlayer.OnWall || oPlayer.bashActive /* TODO: Replace with bash.inUse */)) {
+      if (!Refreshed && (oPlayer.IsGrounded || oPlayer.OnWall || Handler.bash.InUse)) {
         Refreshed = true;
       }
       if (InUse) {
         CurrTime++;
-        if (CurrTime > Duration || oPlayer.OnWall || oPlayer.bashActive) {
+        if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse) {
           State = States.Inactive;
         }
       }

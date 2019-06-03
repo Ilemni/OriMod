@@ -8,6 +8,11 @@ namespace OriMod.Abilities {
   public class ChargeDash : Ability {
     internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { Npc = 255; }
     
+    internal override bool CanUse {
+      get {
+        return Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse;
+      }
+    }
     private static readonly float[] Speeds = new float[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     };
@@ -76,7 +81,7 @@ namespace OriMod.Abilities {
         Handler.dash.State = States.Inactive;
         Handler.dash.Refreshed = false;
         CurrTime++;
-        if (CurrTime > Duration || oPlayer.OnWall || oPlayer.bashActive || PlayerInput.Triggers.JustPressed.Jump) {
+        if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           State = States.Inactive;
           if ((Npc == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
             Vector2 newVel = Npc == 255 && !Handler.airJump.InUse ? new Vector2(CurrDirection, 0) : player.velocity;
@@ -88,7 +93,6 @@ namespace OriMod.Abilities {
         }
       }
       else {
-        CanUse = Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !oPlayer.bashActive /*TODO: Replace with IsInUse */;
         if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
           State = States.Active;
           CurrTime = 0;

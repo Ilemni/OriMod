@@ -44,25 +44,8 @@ namespace OriMod
     /// When true, sets player.runSlowDown to 0
     /// </summary>
     public bool UnrestrictedMovement = false;
-
-    // Variables relating to Bash
-    public int bashActivate = 0;
-    public int bashActiveTimer = 0;
-    public float bashAngle = 0;
-    public float bashDistance = 20f;
-    public bool bashActive = false;
-    public bool bashFrameUp = false;
-    public float bashNPCAngle = 0;
-    public Vector2 bashPosition = new Vector2(0, 0);
-    public bool countering = false;
-    public int counterTimer = 0;
-    public static readonly List<int> CannotBash = new List<int> {
-      NPCID.BlazingWheel, NPCID.SpikeBall
-    };
-    public int bashNPC { get; private set; }
     public bool tempInvincibility { get; internal set; }
     public int immuneTimer { get; internal set; }
-    public Vector2 bashNPCPosition = Vector2.Zero;
 
     // Variables relating to Air Jumping
 
@@ -277,12 +260,6 @@ namespace OriMod
       char randChar = RandomChar(rand, ref FootstepRand);
       return PlayNewSound("Ori/Footsteps/" + Material + "/" + Material + randChar, Volume, Pitch);
     }
-
-    private void DoCounter() {
-      countering = true;
-      counterTimer = 15;
-      PlayNewSound("ori/Grenade/seinGrenadeExplode" + RandomChar(2));
-    }
     /// <summary>
     /// Retrieves a random character of an alphabet between indices 0 and <c>length</c>
     /// </summary>
@@ -353,11 +330,14 @@ namespace OriMod
       }
       if (Abilities.glide.InUse) {
         switch (Abilities.glide.State) {
-          case Ability.States.Starting: Increment("GlideStart");
+          case Ability.States.Starting:
+            Increment("GlideStart");
             return;
-          case Ability.States.Active: Increment("Glide");
+          case Ability.States.Active:
+            Increment("Glide");
             return;
-          case Ability.States.Ending: Increment("GlideStart", overrideMeta:new Vector3(0, 0, 3));
+          case Ability.States.Ending:
+            Increment("GlideStart", overrideMeta:new Vector3(0, 0, 3));
             return;
         }
       }
@@ -378,40 +358,36 @@ namespace OriMod
         switch (Abilities.lookUp.State) {
           case Ability.States.Starting:
             Increment("LookUpStart");
-        return;
+            return;
           case Ability.States.Active:
             Increment("LookUp");
             return;
           case Ability.States.Ending:
             Increment("LookUpStart", overrideMeta:new Vector3(0, 2, 0));
             return;
-      }
+        }
       }
       if (Abilities.crouch.InUse) {
         switch (Abilities.crouch.State) {
           case Ability.States.Starting:
-        Increment("CrouchStart");
-        return;
+            Increment("CrouchStart");
+            return;
           case Ability.States.Active:
-        Increment("Crouch");
-        return;
+            Increment("Crouch");
+            return;
           case Ability.States.Ending:
             Increment("CrouchStart", overrideMeta:new Vector3(0, 2, 0));
-        return;
-      }
+            return;
+        }
       }
       if (OriSet && !Transforming && !HasTransformedOnce) {
         HasTransformedOnce = true;
-        }
+      }
       // this controls animation frames. have fun trying to figure out how it works
       
       if (drawPlayer.mount.Cart) {
         Increment("Default");
         // TODO: Minecart animation?
-        return;
-      }
-      if (bashFrameUp && bashActive) {
-        Increment("Bash");
         return;
       }
       if (Abilities.stomp.State == Ability.States.Starting) {
@@ -423,7 +399,7 @@ namespace OriMod
         Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideMeta:new Vector3(0,2,0));
         return;
       }
-      if (bashActive) {
+      if (Abilities.bash.InUse) {
         Increment("Bash");
         return;
       }
@@ -440,12 +416,6 @@ namespace OriMod
         }
         return;
       }
-      if (countering) {
-        // TODO: Figure out what countering is
-        Increment("Default");
-        // PlayerFrame(0, 5);
-        return;
-      }
       if (chargeJumpAnimTimer > 0) {
         Increment("ChargeJump");
         if (chargeJumpAnimTimer > 17) {
@@ -453,60 +423,52 @@ namespace OriMod
         }
         return;
       }
-      if (!IsGrounded && !Abilities.glide.InUse) {
+      if (!IsGrounded) {
         Increment(drawPlayer.velocity.Y < 0 ? "Jump" : "Falling");
         return;
       }
-      if (IsGrounded && Math.Abs(drawPlayer.velocity.X) < 0.2f) {
+      if (Math.Abs(drawPlayer.velocity.X) < 0.2f) {
         Increment(OnWall ? "IdleAgainst" : "Idle");
         return;
       }
-      if (drawPlayer.velocity.X != 0 && IsGrounded &&
-        !Abilities.dash.InUse &&
-        !bashActive &&
-        !OnWall && (
-          PlayerInput.Triggers.Current.Left ||
-          PlayerInput.Triggers.Current.Right)
-      ) {
-        Increment("Running", overrideTime:AnimTime+(int)Math.Abs(player.velocity.X) / 3);
-        if (AnimIndex == 4 || AnimIndex == 9) {
-          TestStepMaterial(drawPlayer);
-          switch (FloorMaterial) {
-            case "Grass":
-            case "Mushroom":
-              PlayFootstep(FloorMaterial, 5, 0.15f, 0.1f);
-              break;
-            case "Water":
-              PlayFootstep(FloorMaterial, 4, 1f, 0.1f);
-              break;
-            case "SpiritTreeRock":
-            case "SpiritTreeWood":
-            case "Rock":
-              PlayFootstep(FloorMaterial, 5, 1f, 0.1f);
-              break;
-            case "Snow":
-            case "LightDark":
-              PlayFootstep(FloorMaterial, 10, 0.85f, 0.1f);
-              break;
-            case "Wood":
-              PlayFootstep(FloorMaterial, 5, 0.85f, 0.1f);
-              break;
-            case "Sand":
-              PlayFootstep(FloorMaterial, 8, 0.85f, 0.1f);
-              break;
-          }
+      Increment("Running", overrideTime:AnimTime+(int)Math.Abs(player.velocity.X) / 3);
+      if (AnimIndex == 4 || AnimIndex == 9) {
+        TestStepMaterial(drawPlayer);
+        switch (FloorMaterial) {
+          case "Grass":
+          case "Mushroom":
+            PlayFootstep(FloorMaterial, 5, 0.15f, 0.1f);
+            break;
+          case "Water":
+            PlayFootstep(FloorMaterial, 4, 1f, 0.1f);
+            break;
+          case "SpiritTreeRock":
+          case "SpiritTreeWood":
+          case "Rock":
+            PlayFootstep(FloorMaterial, 5, 1f, 0.1f);
+            break;
+          case "Snow":
+          case "LightDark":
+            PlayFootstep(FloorMaterial, 10, 0.85f, 0.1f);
+            break;
+          case "Wood":
+            PlayFootstep(FloorMaterial, 5, 0.85f, 0.1f);
+            break;
+          case "Sand":
+            PlayFootstep(FloorMaterial, 8, 0.85f, 0.1f);
+            break;
+        }
 
-          Vector2 position = new Vector2(
-            drawPlayer.Center.X + (drawPlayer.direction == -1 ? -4 : 2),
-            drawPlayer.position.Y + drawPlayer.height - 2);
-          for (int i = 0; i < 4; i++) {
-            Dust dust = Main.dust[Terraria.Dust.NewDust(position, 2, 2, 111, 0f, -2.7f, 0, new Color(255, 255, 255), 1f)];
-            dust.noGravity = true;
-            dust.scale = 0.75f;
-            dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
-            dust.shader.UseColor(Color.White);
-            dust.fadeIn = 0.03947368f;
-          }
+        Vector2 position = new Vector2(
+          drawPlayer.Center.X + (drawPlayer.direction == -1 ? -4 : 2),
+          drawPlayer.position.Y + drawPlayer.height - 2);
+        for (int i = 0; i < 4; i++) {
+          Dust dust = Main.dust[Terraria.Dust.NewDust(position, 2, 2, 111, 0f, -2.7f, 0, new Color(255, 255, 255), 1f)];
+          dust.noGravity = true;
+          dust.scale = 0.75f;
+          dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
+          dust.shader.UseColor(Color.White);
+          dust.fadeIn = 0.03947368f;
         }
       }
     }
@@ -799,97 +761,10 @@ namespace OriMod
       }
 
       if (!OriSet) { return; }
-      // Bashing
-      if (
-        OriMod.BashKey.JustPressed &&
-        bashActivate == 0 &&
-        !Abilities.dash.InUse && // Bash should be available during Dash
-        !Abilities.stomp.InUse  // Bash should be available during Stomp
-      ) {
-        bashActivate = 3;
-        Projectile.NewProjectile(player.Center, new Vector2(0, 0), mod.ProjectileType("BashHitbox"), 1, 0f, player.whoAmI, 0, 1);
-      }
       // Jump Effects
       if (player.justJumped) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
-      // Curently Bashing
-      if (bashActive) {
-        player.velocity.X = 0;
-        player.velocity.Y = 0 - player.gravity;
-        // Allow only quick heal and quick mana
-        player.controlJump = false;
-        player.controlUp = false;
-        player.controlDown = false;
-        player.controlLeft = false;
-        player.controlRight = false;
-        player.controlHook = false;
-        player.controlInv = false;
-        player.controlMount = false;
-        player.controlSmart = false;
-        player.controlThrow = false;
-        player.controlTorch = false;
-        player.controlUseItem = false;
-        player.controlUseTile = false;
-        player.immune = true;
-        player.buffImmune[BuffID.CursedInferno] = true;
-        player.buffImmune[BuffID.Dazed] = true;
-        player.buffImmune[BuffID.Frozen] = true;
-        player.buffImmune[BuffID.Frostburn] = true;
-        player.buffImmune[BuffID.MoonLeech] = true;
-        player.buffImmune[BuffID.Obstructed] = true;
-        player.buffImmune[BuffID.OnFire] = true;
-        player.buffImmune[BuffID.Poisoned] = true;
-        player.buffImmune[BuffID.ShadowFlame] = true;
-        player.buffImmune[BuffID.Silenced] = true;
-        player.buffImmune[BuffID.Slow] = true;
-        player.buffImmune[BuffID.Stoned] = true;
-        player.buffImmune[BuffID.Suffocation] = true;
-        player.buffImmune[BuffID.Venom] = true;
-        player.buffImmune[BuffID.Weak] = true;
-        player.buffImmune[BuffID.WitheredArmor] = true;
-        player.buffImmune[BuffID.WitheredWeapon] = true;
-        player.buffImmune[BuffID.WindPushed] = true;
-        tempInvincibility = true;
-        immuneTimer = 15;
-        // Bash Sound
-        if (bashActiveTimer == 75) {
-          PlayNewSound("Ori/Bash/seinBashLoopA", /*0.7f*/ Main.soundVolume);
-        }
-        if (Main.npc[bashNPC].active) {
-          Main.npc[bashNPC].velocity = Vector2.Zero;
-        }
-      }
-      // Freezing Bash
-      if (bashActive && bashActiveTimer < 97) {
-        player.Center = bashPosition;
-      }
-      // Releasing Bash
-      if (
-        (
-          !OriMod.BashKey.Current ||
-          OriMod.BashKey.JustReleased ||
-          bashActiveTimer == 5 ||
-          !Main.npc[bashNPC].active
-        ) &&
-        bashActive
-      ) {
-        bashActive = false;
-        bashActiveTimer = 4;
-        bashAngle = player.AngleFrom(Main.MouseWorld);
-        // Main.NewText(bashAngle);
-        PlayNewSound("Ori/Bash/seinBashEnd" + RandomChar(3), /*0.7f*/ Main.soundVolume);
-        UnrestrictedMovement = true;
-        player.velocity = new Vector2((float)(0 - (Math.Cos(bashAngle) * bashDistance)), (float)(0 - (Math.Sin(bashAngle) * bashDistance)));
-        player.velocity.Y /= 1.3f;
-        bashActivate = 50;
-        tempInvincibility = true;
-        immuneTimer = 15;
-        Main.npc[bashNPC].velocity = new Vector2(-(float)(0 - (Math.Cos(bashAngle) * (bashDistance / 1.5f))), -(float)(0 - (Math.Sin(bashAngle) * (bashDistance / 1.5f))));
-        Main.npc[bashNPC].Center = bashNPCPosition;
-        player.ApplyDamageToNPC(Main.npc[bashNPC], 15, 0, 1, false);
-      }
-      // Wall Jump
       
       // tempinvincibility
       if (tempInvincibility && immuneTimer > 0) {
@@ -1060,6 +935,9 @@ namespace OriMod
         if (PlayerInput.Triggers.Current.Down || Abilities.crouch.InUse) {
           Abilities.crouch.Update();
         }
+        if (OriMod.BashKey.Current || Abilities.bash.InUse) {
+          Abilities.bash.Update();
+        }
       }
       else if (Transforming) {
         if (TransformTimer > 235) {
@@ -1101,35 +979,10 @@ namespace OriMod
       }
       Flashing = flashPattern.Contains(FlashTimer);
     }
-    internal void BashEffects(NPC target) {
-      bashActiveTimer = 100;
-      bashActivate = 0;
-      bashActive = true;
-      PlayNewSound("Ori/Bash/seinBashStartA", /*0.7f*/ Main.soundVolume);
-      bashPosition = player.Center;
-      player.pulley = false;
-      bashNPC = target.whoAmI;
-      bashNPCPosition = target.Center;
-      bashFrameUp = (bashNPCAngle < 2.0f && bashNPCAngle > 1.3f);
-      if (bashActiveTimer == 6) {
-        target.HitEffect(dmg: 15);
-        target.velocity = new Vector2((float)(Math.Cos(bashAngle) * bashDistance), (float)(Math.Sin(bashAngle) * bashDistance));
-      }
-    }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       if (OriSet) {
-        if (Abilities.stomp.InUse || chargeJumpAnimTimer > 0) {
+        if (Abilities.stomp.InUse || chargeJumpAnimTimer > 0 || Abilities.bash.InUse) {
           damage = 0;
-        }
-        if (bashActivate > 0 && bashActiveTimer == 0 && !bashActive && !countering) {
-          if ((CannotBash.Contains(npc.type) || npc.boss == true || npc.immortal) && !countering) {
-            DoCounter();
-            damage = 0;
-          }
-          else {
-            BashEffects(npc);
-            damage = 0;
-          }
         }
       }
     }
@@ -1137,7 +990,7 @@ namespace OriMod
       if (OriSet && playSound) {
         playSound = false; // stops regular hurt sound from playing
         genGore = false; // stops regular gore from appearing
-        if (bashActiveTimer > 0 || bashActive || Abilities.stomp.InUse || chargeJumpAnimTimer > 0) {
+        if (Abilities.bash.InUse || Abilities.stomp.InUse || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         else {
@@ -1183,7 +1036,7 @@ namespace OriMod
       return true;
     }
     public override void ModifyDrawLayers(List<PlayerLayer> layers) {
-      if (bashActive) {
+      if (Abilities.bash.InUse) {
         layers.Insert(0, oriBashArrow);
         oriBashArrow.visible = true;
       }
@@ -1403,16 +1256,16 @@ namespace OriMod
 
       int frameY = 0;
 
-      if (oPlayer.bashActiveTimer < 55) {
-        frameY = oPlayer.bashActiveTimer > 45 ? 1 : 2;
+      if (oPlayer.Abilities.bash.CurrDuration > 40) {
+        frameY = oPlayer.Abilities.bash.CurrDuration < 50 ? 1 : 2;
       }
       DrawData data = new DrawData(texture,
         new Vector2(
-          (Main.npc[oPlayer.bashNPC].Center.X - Main.screenPosition.X),
-          (Main.npc[oPlayer.bashNPC].Center.Y - Main.screenPosition.Y)
+          (oPlayer.Abilities.bash.BashNpc.Center.X - Main.screenPosition.X),
+          (oPlayer.Abilities.bash.BashNpc.Center.Y - Main.screenPosition.Y)
         ),
         new Rectangle(0, frameY * 20, 152, 20),
-        Color.White, Main.npc[oPlayer.bashNPC].AngleTo(Main.MouseWorld),
+        Color.White, oPlayer.Abilities.bash.BashNpc.AngleTo(Main.MouseWorld),
         new Vector2(76, 10), 1, effect, 0);
       Main.playerDrawData.Add(data);
       // public DrawData(Texture2D texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effect, int inactiveLayerDepth);
@@ -1436,19 +1289,11 @@ namespace OriMod
       }
       
       if (OriSet) {
-        if (bashActivate > 0) { bashActivate--; }
-        if (bashActiveTimer > 0) { bashActiveTimer--; }
-        if (bashActiveTimer < 0) { bashActiveTimer = 0; }
         if (FlashTimer > 0) { FlashTimer--; }
         if (TeatherTrailTimer > 0) { TeatherTrailTimer--; }
 
         if (chargeJumpAnimTimer > 0) {
           chargeJumpAnimTimer--;
-        }
-
-        if (counterTimer > 0) {
-          counterTimer--;
-          if (counterTimer == 0) { countering = false; }
         }
       }
       if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer) {
