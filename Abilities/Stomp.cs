@@ -8,7 +8,7 @@ namespace OriMod.Abilities {
     internal Stomp(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
     private const int StartDuration = 24;
-    private const int MinDuration = 60;
+    private const int MinDuration = 30;
     private const float Gravity = 4f;
     private const float MaxFallSpeed = 28f;
     private int CurrDur = 0;
@@ -34,6 +34,7 @@ namespace OriMod.Abilities {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + OriPlayer.RandomChar(3));
         Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
       }
+      if (Handler.airJump.State == States.Active) return;
       player.velocity.X = 0;
       player.gravity = Gravity;
       player.maxFallSpeed = MaxFallSpeed;
