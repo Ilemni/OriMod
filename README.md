@@ -6,8 +6,8 @@ Terraria mod that introduces the Ori franchise
 ## v2.2
 ### Additions
 - Added the Spirit Orb
-    - The Spirit Orb is used to summon Sein
-    - This item can be upgraded throughout your playthrough
+    - The Spirit Orb is used to summon Sein.
+    - This item can be upgraded throughout your playthrough.
 - Added the minion Sein
     - Moves like Sein
     - Shoots like Sein... sorta
@@ -19,7 +19,8 @@ Terraria mod that introduces the Ori franchise
 ### Bug Fixes
 - The Spirit Guardian state is now properly synced among clients.
 - Lunar armors no longer caused Spirit Guardian animations to animate at unintended speeds.
-- Double Jump is now usable after Bashing or Wall Jumping
+- Double Jump is now usable after Bashing or Wall Jumping.
+- Many other bug fixes.
 ---
 ## Known Issues
 - Multiplayer syncing for movement is a work in progress. Netcode is hard.
@@ -32,7 +33,7 @@ Terraria mod that introduces the Ori franchise
 - Due to the change to the backend, many previous bugs that were fixed may have been reintroduced.
 
 ## To be added
-- Spirit Light ability upgrade system
+- Spirit Light ability upgrade system.
     - This is intended to change progression for the Spirit Guardian's and Sein's abilities.
 - Swimming mechanics akin to Blind Forest's.
 ---
