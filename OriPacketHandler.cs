@@ -21,7 +21,8 @@ namespace OriMod {
           ReceiveOriState(reader, fromWho);
           break;
         default:
-          Main.NewText("Unknown OriStateHandler byte " + packetType);
+          Main.NewText("Unknown OriStateHandler byte " + packetType, Color.Red);
+          ErrorLogger.Log("Unknown OriStateHandler byte " + packetType);
           break;
       }
     }

@@ -36,21 +36,25 @@
     - Uses 0 Minion slots
     - Maximum 1 active per player
     - Upgraded versions of the Spirit Orb summon a stronger variant of Sein.
-        - There is little balancing done for Sein. The damage and other factors may be adjusted in the future.
+### Changes
+- Massive overhaul of the mod's backend
 ### Bug Fixes
 - The Spirit Guardian state is now properly synced among clients.
 - Lunar armors no longer caused Spirit Guardian animations to animate at unintended speeds.
 - Double Jump is now usable after Bashing or Wall Jumping
 
 ## Known Issues
-- Multiplayer syncing for movement doesn't account for Double or Triple Jumping.
-- Lunar armors cause the Spirit Guardian's trails to animate improperly.
+- Multiplayer syncing for movement is a work in progress. Netcode is hard.
 - Other mods may cause Spirit Guardian movement to behave abnormally.
-- Ori is not properly affected by the Mighty Winds debuff.
-- Sein may occasionally disappear unexpectedly. The cause for this is currently unknown. Simply cancel your Sein buff and resummon.
+- Spirit Guardians are not properly affected by the Mighty Winds debuff.
+- Bash does not properly affect Worm-type enemies.
+- Sein may occasionally disappear unexpectedly. The cause for this is currently unknown. If this happens, simply cancel your Sein buff and resummon.
+- Sein has not been balanced, so may be too weak or too strong in some cases.
+    - This is especially true against Worm-like enemies.
+- Due to the change to the backend, many previous bugs that were fixed may have been reintroduced.
 
 ## To be added
 - Spirit Light ability upgrade system
-    - This is intended to change how progression for Ori's and Sein's abilities interact.
-- Swimming mechanics akin to Blind Forest's
+    - This is intended to change progression for the Spirit Guardian's and Sein's abilities.
+- Swimming mechanics akin to Blind Forest's.
 

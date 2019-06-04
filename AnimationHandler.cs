@@ -53,7 +53,10 @@ namespace OriMod {
       if (oPlayer == null) return;
       float rotRads = (float)(rotDegrees / 180 * Math.PI);
       if (!Names.Contains(anim)) {
-        Main.NewText("Error with animation: The animation sequence \"" + anim + "\" does not exist.", Color.Red);
+        if (anim != "") {
+          Main.NewText("Error with animation: The animation sequence \"" + anim + "\" does not exist.", Color.Red);
+          ErrorLogger.Log("Error with animation: The animation sequence \"" + anim + "\" does not exist.");
+        }
         anim = "Default";
         Vector3[] fr = tracks[anim];
         oPlayer.AnimReversed = false;
@@ -97,6 +100,7 @@ namespace OriMod {
           int testFrame = Array.FindIndex(frames.Skip(1).ToArray(), f => (f.X == currFrame.X && f.Y == currFrame.Y)); // Check if this frame already exists
           if (testFrame == -1) {
             Main.NewText("Invalid frame for \"" + anim + "\": " + currFrame, Color.Red);
+            ErrorLogger.Log("Invalid frame for \"" + anim + "\": " + currFrame);
             frameIndex = meta.Z == 3 ? frames.Length - 1 : 1;
           }
         }

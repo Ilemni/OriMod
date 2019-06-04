@@ -40,11 +40,10 @@ namespace OriMod.Items {
 		public override void AddRecipes() {
 			ModRecipe recipe = new ModRecipe(mod);
       recipe.AddIngredient(ItemID.Bottle);
-      recipe.AddRecipeGroup("OriMod:MovementAccessories", 1);
       recipe.AddIngredient(ItemID.Moonglow);
       recipe.AddIngredient(ItemID.Shiverthorn);
       recipe.AddIngredient(ItemID.Fireblossom);
-      recipe.AddTile(TileID.Bottles);
+      recipe.AddTile(null, "SpiritSapling1");
 			recipe.SetResult(this, 1);
 			recipe.AddRecipe();
 

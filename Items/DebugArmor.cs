@@ -21,8 +21,7 @@ namespace OriMod.Items {
       item.value = 90000000;
 		}
 
-		public override void UpdateEquip(Player player)
-		{
+		public override void UpdateEquip(Player player) {
       player.noKnockback = true;
 			player.maxMinions++;
 			player.immune = true;
@@ -31,12 +30,11 @@ namespace OriMod.Items {
       player.statLife = player.statLifeMax;
     }
 
-		public override void AddRecipes()
-		{
-			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock, 1);
-			recipe.SetResult(this);
-			recipe.AddRecipe();
-		}
+		// public override void AddRecipes() {
+		// 	ModRecipe recipe = new ModRecipe(mod);
+		// 	recipe.AddIngredient(ItemID.DirtBlock, 1);
+		// 	recipe.SetResult(this);
+		// 	recipe.AddRecipe();
+		// }
 	}
 }

@@ -31,7 +31,6 @@ namespace OriMod.Abilities {
     internal override bool CanUse => Refreshed && State == States.Inactive && !Handler.stomp.InUse /*&& Handler.cJump.InUse*/;
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
-      Main.NewText("Receiving packet w/ ID " + NpcID);
       if (InUse) {
         NpcID = r.ReadByte();
         if (State == States.Starting) {
@@ -42,7 +41,6 @@ namespace OriMod.Abilities {
       }
     }
     protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
-      Main.NewText("Sending packet w/ ID " + NpcID);
       if (InUse) {
         packet.Write((byte)NpcID);
         if (State == States.Starting) {

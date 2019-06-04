@@ -32,6 +32,9 @@ namespace OriMod {
         ItemID.Arkhalis
       });
       RecipeGroup group2 = new RecipeGroup(() => "Any Basic Movement Accessories", new int[] {
+        ItemID.Aglet,
+        ItemID.AnkletoftheWind,
+        ItemID.RocketBoots,
         ItemID.HermesBoots,
         ItemID.CloudinaBottle,
         ItemID.FlurryBoots,
@@ -86,7 +89,8 @@ namespace OriMod {
           abilityPacketHandler.HandlePacket(r, fromWho);
           break;
         default:
-          Main.NewText("Unknown Packet " + packetClass);
+          Main.NewText("Unknown Packet " + packetClass, Color.Red);
+          ErrorLogger.Log("Unknown Packet " + packetClass);
           break;
       }
     }

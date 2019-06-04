@@ -19,10 +19,10 @@ namespace OriMod.Items {
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 
-			recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock);
-			recipe.SetResult(this);
-			recipe.AddRecipe();
+			// recipe = new ModRecipe(mod);
+			// recipe.AddIngredient(ItemID.DirtBlock);
+			// recipe.SetResult(this);
+			// recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb2 : SpiritOrbBase {
@@ -45,10 +45,10 @@ namespace OriMod.Items {
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 
-			recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock);
-			recipe.SetResult(this);
-			recipe.AddRecipe();
+			// recipe = new ModRecipe(mod);
+			// recipe.AddIngredient(ItemID.DirtBlock);
+			// recipe.SetResult(this);
+			// recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb3 : SpiritOrbBase {
@@ -64,10 +64,10 @@ namespace OriMod.Items {
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 
-			recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock);
-			recipe.SetResult(this);
-			recipe.AddRecipe();
+			// recipe = new ModRecipe(mod);
+			// recipe.AddIngredient(ItemID.DirtBlock);
+			// recipe.SetResult(this);
+			// recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb4 : SpiritOrbBase {
@@ -92,10 +92,10 @@ namespace OriMod.Items {
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 
-			recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock);
-			recipe.SetResult(this);
-			recipe.AddRecipe();
+			// recipe = new ModRecipe(mod);
+			// recipe.AddIngredient(ItemID.DirtBlock);
+			// recipe.SetResult(this);
+			// recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb5 : SpiritOrbBase {
@@ -112,10 +112,10 @@ namespace OriMod.Items {
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 
-			recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock);
-			recipe.SetResult(this);
-			recipe.AddRecipe();
+			// recipe = new ModRecipe(mod);
+			// recipe.AddIngredient(ItemID.DirtBlock);
+			// recipe.SetResult(this);
+			// recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb6 : SpiritOrbBase {
@@ -132,10 +132,10 @@ namespace OriMod.Items {
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 
-			recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock);
-			recipe.SetResult(this);
-			recipe.AddRecipe();
+			// recipe = new ModRecipe(mod);
+			// recipe.AddIngredient(ItemID.DirtBlock);
+			// recipe.SetResult(this);
+			// recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb7 : SpiritOrbBase {
@@ -155,10 +155,10 @@ namespace OriMod.Items {
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 
-			recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock);
-			recipe.SetResult(this);
-			recipe.AddRecipe();
+			// recipe = new ModRecipe(mod);
+			// recipe.AddIngredient(ItemID.DirtBlock);
+			// recipe.SetResult(this);
+			// recipe.AddRecipe();
 		}
   }
 	public class SpiritOrb8 : SpiritOrbBase {
@@ -179,10 +179,10 @@ namespace OriMod.Items {
 			recipe.SetResult(this);
 			recipe.AddRecipe();
 
-			recipe = new ModRecipe(mod);
-			recipe.AddIngredient(ItemID.DirtBlock);
-			recipe.SetResult(this);
-			recipe.AddRecipe();
+			// recipe = new ModRecipe(mod);
+			// recipe.AddIngredient(ItemID.DirtBlock);
+			// recipe.SetResult(this);
+			// recipe.AddRecipe();
 		}
   }
 }

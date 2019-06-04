@@ -23,6 +23,7 @@ namespace OriMod {
           break;
         default:
           Main.NewText("Unknown AbilityPacket type" + packetType, Color.Red);
+          ErrorLogger.Log("Unknown AbilityPacket type" + packetType);
           break;
       }
     }
@@ -34,11 +35,9 @@ namespace OriMod {
         packet.Write((byte)id);
         fromPlayer.Abilities[id].PreWritePacket(packet);
       }
-      Main.NewText("Sending Ability State Packet from " + fromWho + " [" + Main.player[fromWho].name + "]");
       packet.Send(toWho, fromWho);
     }
     internal void ReceiveAbilityState(BinaryReader r, int fromWho) {
-      Main.NewText("Receiving Ability State Packet from " + fromWho + " [" + Main.player[fromWho].name + "]");
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       int length = r.ReadByte();
       List<byte> changes = new List<byte>();
@@ -46,7 +45,6 @@ namespace OriMod {
         byte id = r.ReadByte();
         changes.Add(id);
         fromPlayer.Abilities[id].PreReadPacket(r);
-        Main.NewText("Calling update on ability " + fromPlayer.Abilities[id].id);
         fromPlayer.Abilities[id].Update();
       }
       if (Main.netMode == NetmodeID.Server) {

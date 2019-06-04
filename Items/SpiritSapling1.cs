@@ -36,10 +36,10 @@ namespace OriMod.Items
 			recipe2.AddRecipe();
 
 			// Debug
-			ModRecipe debugRecipe = new ModRecipe(mod);
-			debugRecipe.AddIngredient(ItemID.DirtBlock, 1);
-			debugRecipe.SetResult(this);
-			debugRecipe.AddRecipe();
+			// ModRecipe debugRecipe = new ModRecipe(mod);
+			// debugRecipe.AddIngredient(ItemID.DirtBlock, 1);
+			// debugRecipe.SetResult(this);
+			// debugRecipe.AddRecipe();
 		}
 	}
 }

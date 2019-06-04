@@ -20,7 +20,6 @@ namespace OriMod.Abilities {
         oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + OriPlayer.RandomChar(5), 0.75f);
       }
       float newVel = -JumpVelocity * ((EndDuration - CurrTime) / EndDuration);
-      Main.NewText("newVel: " + (int)newVel);
       if (player.velocity.Y > newVel) player.velocity.Y = newVel;
       Handler.stomp.State = States.Inactive;
       // if (CurrTime == 0) player.gravity = -JumpVelocity;
