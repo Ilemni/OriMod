@@ -3,33 +3,6 @@ Terraria mod that introduces the Ori franchise
 
 # Changelog
 
-## v1.0
-### Release
-## v1.1
-### Bug Fixes
-- Fixed issues pertaining to minecarts
-- Ori now dies properly
-## v1.2
-### Bug Fixes
-- Version number actually updates ingame
-## v1.3
-#### Mod browser release
-## v1.4
-### Bug Fixes
--Multiplayer fixes pertaining to people not looking like Ori
-(it apparently doesnt actually work, ill be investigating this)
-## v2.0
-### Changes
-- Charge Dash was tweaked
--- Distance is two blocks further
-### Bug Fixes
-- More bugfixes
-## v2.1
-### Additions
-- Proper Water Walking mechanics
-- Spirit potion was added
--- Can be used to remotely transform into Ori
-- Reduced .tmod size
 ## v2.2
 ### Additions
 - Added the Spirit Orb
@@ -47,7 +20,7 @@ Terraria mod that introduces the Ori franchise
 - The Spirit Guardian state is now properly synced among clients.
 - Lunar armors no longer caused Spirit Guardian animations to animate at unintended speeds.
 - Double Jump is now usable after Bashing or Wall Jumping
-
+---
 ## Known Issues
 - Multiplayer syncing for movement is a work in progress. Netcode is hard.
 - Other mods may cause Spirit Guardian movement to behave abnormally.
@@ -62,3 +35,31 @@ Terraria mod that introduces the Ori franchise
 - Spirit Light ability upgrade system
     - This is intended to change progression for the Spirit Guardian's and Sein's abilities.
 - Swimming mechanics akin to Blind Forest's.
+---
+## v2.1
+### Additions
+- Proper Water Walking mechanics
+- Spirit potion was added
+-- Can be used to remotely transform into Ori
+- Reduced .tmod size
+## v2.0
+### Changes
+- Charge Dash was tweaked
+-- Distance is two blocks further
+### Bug Fixes
+- More bugfixes
+## v1.4
+### Bug Fixes
+-Multiplayer fixes pertaining to people not looking like Ori
+(it apparently doesnt actually work, ill be investigating this)
+## v1.3
+#### Mod browser release
+## v1.2
+### Bug Fixes
+- Version number actually updates ingame
+## v1.1
+### Bug Fixes
+- Fixed issues pertaining to minecarts
+- Ori now dies properly
+## v1.0
+### Release
