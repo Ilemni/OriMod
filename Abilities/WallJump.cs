@@ -19,7 +19,8 @@ namespace OriMod.Abilities {
       if (oPlayer.OnWall) player.velocity.Y--;
     }
     protected override void UpdateUsing() {
-      player.velocity.X = WallJumpVelocity.X * -player.direction;
+      player.velocity.X = WallJumpVelocity.X * -Handler.climb.WallDir;
+      player.direction = Handler.climb.WallDir;
       oPlayer.UnrestrictedMovement = true;
     }
 
@@ -38,6 +39,7 @@ namespace OriMod.Abilities {
       else {
         if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
           State = States.Active;
+          Handler.climb.State = States.Inactive;
         }
       }
     }
