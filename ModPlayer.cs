@@ -1182,18 +1182,27 @@ namespace OriMod
       oPlayer.UpdateFrame(drawPlayer);
       Vector2 position = drawPlayer.position;
       dInfo = drawInfo;
-      Texture2D texture = mod.GetTexture("PlayerEffects/OriPlayer");
+      Texture2D spriteTexture;
+      Color spriteColor;
+      switch (drawPlayer.name) {
+        case "TwiliChaos":
+        case "Fro Zen":
+          spriteTexture = mod.GetTexture("PlayerEffects/OriPlayer");
+          spriteColor = Color.LightCyan;
+          break;
+        default:
+          spriteTexture = mod.GetTexture("PlayerEffects/OriPlayer");
+          spriteColor = Color.White;
+          break;
+      }
       SpriteEffects effect = SpriteEffects.None;
 
-      if (oPlayer.Transforming) {
-        oPlayer.Increment(oPlayer.TransformTimer > 0 ? "TransformEnd" : "Idle");
-      }
       if (drawPlayer.direction == -1) {
         effect = SpriteEffects.FlipHorizontally;
       }
 
       DrawData data = new DrawData(
-        texture,
+        spriteTexture,
         new Vector2(
           (drawPlayer.position.X - Main.screenPosition.X) + 10,
           (drawPlayer.position.Y - Main.screenPosition.Y) + 8
@@ -1201,7 +1210,7 @@ namespace OriMod
         new Rectangle(
           (int)(oPlayer.AnimFrame.X),
           (int)(oPlayer.AnimFrame.Y), 104, 76),
-        Color.White,
+        spriteColor,
         drawPlayer.direction * oPlayer.AnimRads,
         new Vector2(52, 38), 1, effect, 0
       );
