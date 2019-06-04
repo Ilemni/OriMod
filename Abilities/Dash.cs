@@ -14,9 +14,10 @@ namespace OriMod.Abilities {
     private int CurrTime = 0;
     internal int Direction = 1;
     
+    internal override bool CanUse => !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Cart;
     protected override void ReadPacket(System.IO.BinaryReader r) {
       Direction = r.ReadByte();
-      }
+    }
     protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
       packet.Write((byte)Direction);
     }

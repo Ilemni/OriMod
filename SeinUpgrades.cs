@@ -6,7 +6,7 @@ using Terraria;
 namespace OriMod {
   public class SeinUpgrade {
     /// <summary>
-    /// Damage of the projectile
+    /// Damage of Spirit Flame
     /// </summary>
     public int damage = 8;
     /// <summary>
@@ -20,10 +20,10 @@ namespace OriMod {
     /// <summary>
     /// Maximum times the minion can fire with a delay of <c>minCooldown</c> before having a delay of <c>longCooldown</c>
     /// 
+    /// </summary>
     /// <seealso cref="minCooldown" />
     /// <seealso cref="shortCooldown" />
     /// <seealso cref="longCooldown" />
-    /// </summary>
     public int shotsPerBurst = 1;
     /// <summary>
     /// Maximum number of shots that can be fired at each target
@@ -55,6 +55,9 @@ namespace OriMod {
     /// Determines if Spirit Flame shots collide with or ignore tiles
     /// </summary>
     public bool tileCollide = true;
+    /// <summary>
+    /// Maximum angle that fired Spirit Flames will be away from the target
+    /// </summary>
     internal int randDegrees = 40;
     /// <summary>
     /// NPCs this distance from the player can be targeted by the minion, if there is line of sight between it and the player
@@ -74,11 +77,29 @@ namespace OriMod {
     /// The knockback of Spirit Flame
     /// </summary>
     public float knockback = 0f;
+    /// <summary>
+    /// Default homing strength of Spirit Flame
+    /// </summary>
     internal float homingStrengthStart = 0.07f;
+    /// <summary>
+    /// Rate to increase homing strength every frame after <c>homingIncreaseDelay</c>
+    /// </summary>
     internal float homingIncreaseRate = 0.03f;
+    /// <summary>
+    /// Time to wait before increasing homing strength by <c>homingIncreaseRate</c>
+    /// </summary>
     internal float homingIncreaseDelay = 20f;
+    /// <summary>
+    /// Speed of Spirit Flame when it is fired
+    /// </summary>
     internal float projectileSpeedStart = 5f;
+    /// <summary>
+    /// Acceleration of Spirit Flame after waiting for <c>projectileSpeedIncreaseDelay</c>
+    /// </summary>
     internal float projectileSpeedIncreaseRate = 0.5f;
+    /// <summary>
+    /// Time to wait before increasing Spirit Flame speed by <c>projectileSpeedIncreaseRate</c>
+    /// </summary>
     internal int projectileSpeedIncreaseDelay = 20;
     internal int minionWidth = 10;
     internal int minionHeight = 11;
@@ -88,13 +109,24 @@ namespace OriMod {
     /// The size of the dust trail emitted from Spirit Flame
     /// </summary>
     public float dustScale = 0.8f;
+    /// <summary>
+    /// Rarity of the Spirit Orb
+    /// </summary>
     internal int rarity = 1;
+    /// <summary>
+    /// Buy value of the Spirit Orb
+    /// </summary>
     internal int value = 1000;
+    /// <summary>
+    /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights
+    /// </summary>
     internal Color color;
+    /// <summary>
+    /// Strength of the light emitted from Sein and Spirit Flame
+    /// </summary>
     internal float lightStrength;
   }
-  partial class OriMod
-  {
+  partial class OriMod {
     internal static List<SeinUpgrade> SeinUpgrades = new List<SeinUpgrade>();
     private void AddNewSein(SeinUpgrade newSein) {
       SeinUpgrade defaultSein = new SeinUpgrade();

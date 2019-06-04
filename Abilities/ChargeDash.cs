@@ -8,11 +8,7 @@ namespace OriMod.Abilities {
   public class ChargeDash : Ability {
     internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { Npc = 255; }
     
-    internal override bool CanUse {
-      get {
-        return Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse;
-      }
-    }
+    internal override bool CanUse => Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Cart;
     private static readonly float[] Speeds = new float[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     };
@@ -24,6 +20,7 @@ namespace OriMod.Abilities {
     /// </summary>
     /// <value><c>0</c>-<c>200</c> if there is a target NPC, <c>255</c> if no NPC is targeted</value>
     public byte Npc { get; internal set; }
+    internal int Direction = 1;
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
       Npc = r.ReadByte();
@@ -46,10 +43,10 @@ namespace OriMod.Abilities {
       }
       if (tempNPC != -1) {
         Npc = (byte)tempNPC;
-        CurrDirection = player.direction = player.position.X - Main.npc[Npc].position.X < 0 ? 1 : -1;
+        Direction = player.direction = player.position.X - Main.npc[Npc].position.X < 0 ? 1 : -1;
       }
       else {
-        CurrDirection = player.direction;
+        Direction = (Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
       }
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
       // oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashChargeStart" + OriPlayer.RandomChar(2), .5f);
@@ -73,7 +70,7 @@ namespace OriMod.Abilities {
         }
       }
       else {
-        player.velocity.X = speed * CurrDirection * 0.8f;
+        player.velocity.X = speed * Direction * 0.8f;
         player.velocity.Y = oPlayer.IsGrounded ? -0.1f : 0.15f * CurrTime;
       }
       player.runSlowdown = 26f;
@@ -90,7 +87,7 @@ namespace OriMod.Abilities {
         if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           State = States.Inactive;
           if ((Npc == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
-            Vector2 newVel = Npc == 255 && !Handler.airJump.InUse ? new Vector2(CurrDirection, 0) : player.velocity;
+            Vector2 newVel = Npc == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
             newVel.Normalize();
             newVel *= Speeds[Speeds.Length - 1];
             player.velocity = newVel;

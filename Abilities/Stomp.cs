@@ -13,16 +13,12 @@ namespace OriMod.Abilities {
     private const float MaxFallSpeed = 28f;
     private int CurrDur = 0;
     /// <summary>
-    /// Projectile used by Stomp to damage enemies during Stomp and when it ends
+    /// Projectile used by Stomp to damage enemies during and at the end of Stomp
     /// </summary>
     /// <value>Valid Projectile if stomping, null if no longer stomping</value>
     public Projectile Proj { get; private set; }
 
-    internal override bool CanUse {
-      get {
-        return !oPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.InUse && !Handler.climb.InUse;
-      }
-    }
+    internal override bool CanUse => !oPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.IsState(States.Active) && !Handler.climb.InUse && !Handler.stomp.IsState(States.Active) && !player.mount.Cart;
 
     protected override void UpdateStarting() {
       if (CurrDur == 0) {

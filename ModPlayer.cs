@@ -27,7 +27,7 @@ namespace OriMod
     /// </summary>
     /// <value></value>
     internal OriAbilities Abilities { get; set; } // Class used for all of Ori's movements
-
+    
     public WallJump wJump => Abilities.wJump;
     public AirJump airJump => Abilities.airJump;
     public Bash bash => Abilities.bash;
@@ -68,7 +68,7 @@ namespace OriMod
     /// <summary>
     /// When true, sets player.runSlowDown to 0 every frame until set to false
     /// </summary>
-
+    
     public bool UnrestrictedMovement {
       get {
         return _unrestrictedMovement;
@@ -287,18 +287,13 @@ namespace OriMod
     #endregion
     
     // basic sound playing method, with paths starting after NewSFX in the file structure
-    internal SoundEffectInstance PlayNewSound(string Path) {
-      return PlayNewSound(Path, 1, 0);
-    }
-    internal SoundEffectInstance PlayNewSound(string Path, float Volume) {
-      return PlayNewSound(Path, Volume, 0);
-    }
-    internal SoundEffectInstance PlayNewSound(string Path, float Volume, float Pitch) {
-      return Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
-    }
-    internal SoundEffectInstance PlayFootstep(string Material, int rand, float Volume, float Pitch) {
+    internal SoundEffectInstance PlayNewSound(string Path) => PlayNewSound(Path, 1, 0);
+    internal SoundEffectInstance PlayNewSound(string Path, float Volume) => PlayNewSound(Path, Volume, 0);
+    internal SoundEffectInstance PlayNewSound(string Path, float Volume, float Pitch) =>
+      Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
+    internal SoundEffectInstance PlayFootstep(string Material, int rand, float Volume) {
       char randChar = RandomChar(rand, ref FootstepRand);
-      return PlayNewSound("Ori/Footsteps/" + Material + "/" + Material + randChar, Volume, Pitch);
+      return PlayNewSound("Ori/Footsteps/" + Material + "/" + Material + randChar, Volume, 0.1f);
     }
     /// <summary>
     /// Retrieves a random character of an alphabet between indices 0 and <c>length</c>
@@ -343,9 +338,8 @@ namespace OriMod
       AnimationHandler.IncrementFrame(this, anim, overrideFrame, overrideTime, overrideDur, overrideMeta, drawOffset, rotDegrees);
     }
     
-    internal void SetFrame(string name, int frameIndex, float time, Vector3 frame, float animRads) {
+    internal void SetFrame(string name, int frameIndex, float time, Vector3 frame, float animRads) =>
       SetFrame(name, frameIndex, time, new Vector2(frame.X, frame.Y), animRads);
-    }
     internal void SetFrame(string name, int frameIndex, float time, Vector2 frame, float animRads) {
       AnimName = name;
       AnimIndex = frameIndex;
@@ -362,13 +356,41 @@ namespace OriMod
         HasTransformedOnce = true;
       }
 
-      if (Abilities.airJump.InUse && !(Abilities.dash.InUse || Abilities.cDash.InUse)) {
+      if (Transforming) {
+        Increment("TransformEnd");
+        return;
+      }
+      if (drawPlayer.mount.Cart) {
+        Increment("Default");
+        // TODO: Minecart animation?
+        return;
+      }
+      if (wJump.InUse) {
+        Increment("WallJump");
+        return;
+      }
+      if (airJump.InUse && !(dash.InUse || cDash.InUse)) {
         Increment("AirJump");
         AnimRads = AnimTime * 0.8f;
         return;
       }
-      if (Abilities.glide.InUse) {
-        switch (Abilities.glide.State) {
+      if (bash.InUse) {
+        Increment("Bash");
+        return;
+      }
+      if (stomp.InUse) {
+        switch (stomp.State) {
+          case Ability.States.Starting:
+            Increment("AirJump");
+            AnimRads = AnimTime;
+            return;
+          case Ability.States.Active:
+            Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideMeta:new Vector3(0,2,0));
+            return;
+        }
+      }
+      if (glide.InUse) {
+        switch (glide.State) {
           case Ability.States.Starting:
             Increment("GlideStart");
             return;
@@ -380,7 +402,25 @@ namespace OriMod
             return;
         }
       }
-      if (Abilities.dash.InUse || Abilities.cDash.InUse) {
+      if (climb.InUse) {
+        if (Math.Abs(player.velocity.Y) < 0.1f) {
+          Increment("ClimbIdle");
+        }
+        else {
+          Increment("Climb", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
+        }
+        return;
+      }
+      if (OnWall && !IsGrounded) {
+        if (player.velocity.Y < 0) {
+          Increment("Climb", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
+        }
+        else {
+          Increment("WallSlide");
+        }
+        return;
+      }
+      if (dash.InUse || cDash.InUse) {
         if (Math.Abs(player.velocity.X) > 18f) {
           Increment("Dash");
         }
@@ -389,12 +429,8 @@ namespace OriMod
         }
         return;
       }
-      if (Abilities.wJump.InUse) {
-        Increment("WallJump");
-        return;
-      }
-      if (Abilities.lookUp.InUse) {
-        switch (Abilities.lookUp.State) {
+      if (lookUp.InUse) {
+        switch (lookUp.State) {
           case Ability.States.Starting:
             Increment("LookUpStart");
             return;
@@ -406,8 +442,8 @@ namespace OriMod
             return;
         }
       }
-      if (Abilities.crouch.InUse) {
-        switch (Abilities.crouch.State) {
+      if (crouch.InUse) {
+        switch (crouch.State) {
           case Ability.States.Starting:
             Increment("CrouchStart");
             return;
@@ -419,42 +455,7 @@ namespace OriMod
             return;
         }
       }
-      if (OriSet && !Transforming && !HasTransformedOnce) {
-        HasTransformedOnce = true;
-      }
-      // this controls animation frames. have fun trying to figure out how it works
-      
-      if (drawPlayer.mount.Cart) {
-        Increment("Default");
-        // TODO: Minecart animation?
-        return;
-      }
-      if (Abilities.stomp.State == Ability.States.Starting) {
-        Increment("AirJump");
-        AnimRads = AnimTime;
-        return;
-      }
-      if (Abilities.stomp.State == Ability.States.Active) {
-        Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideMeta:new Vector3(0,2,0));
-        return;
-      }
-      if (Abilities.bash.InUse) {
-        Increment("Bash");
-        return;
-      }
-      if (OriMod.ClimbKey.Current && OnWall && !PlayerInput.Triggers.Current.Up && !PlayerInput.Triggers.Current.Down) {
-        Increment("ClimbIdle");
-        return;
-      }
-      if (OnWall && !IsGrounded) {
-        if (Abilities.climb.InUse && player.velocity.Y < 0) {
-          Increment("Climb", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
-        }
-        else {
-          Increment("WallSlide");
-        }
-        return;
-      }
+          
       if (chargeJumpAnimTimer > 0) {
         Increment("ChargeJump");
         if (chargeJumpAnimTimer > 17) {
@@ -463,7 +464,8 @@ namespace OriMod
         return;
       }
       if (!IsGrounded) {
-        Increment(drawPlayer.velocity.Y < 0 ? "Jump" : "Falling");
+        // XOR so opposite signs means jumping
+        Increment(((int)drawPlayer.velocity.Y ^ (int)drawPlayer.gravity) <= 0 ? "Jump" : "Falling");
         return;
       }
       if (Math.Abs(drawPlayer.velocity.X) < 0.2f) {
@@ -476,25 +478,25 @@ namespace OriMod
         switch (FloorMaterial) {
           case "Grass":
           case "Mushroom":
-            PlayFootstep(FloorMaterial, 5, 0.15f, 0.1f);
+            PlayFootstep(FloorMaterial, 5, 0.15f);
             break;
           case "Water":
-            PlayFootstep(FloorMaterial, 4, 1f, 0.1f);
+            PlayFootstep(FloorMaterial, 4, 1f);
             break;
           case "SpiritTreeRock":
           case "SpiritTreeWood":
           case "Rock":
-            PlayFootstep(FloorMaterial, 5, 1f, 0.1f);
+            PlayFootstep(FloorMaterial, 5, 1f);
             break;
           case "Snow":
           case "LightDark":
-            PlayFootstep(FloorMaterial, 10, 0.85f, 0.1f);
+            PlayFootstep(FloorMaterial, 10, 0.85f);
             break;
           case "Wood":
-            PlayFootstep(FloorMaterial, 5, 0.85f, 0.1f);
+            PlayFootstep(FloorMaterial, 5, 0.85f);
             break;
           case "Sand":
-            PlayFootstep(FloorMaterial, 8, 0.85f, 0.1f);
+            PlayFootstep(FloorMaterial, 8, 0.85f);
             break;
         }
 
@@ -511,7 +513,7 @@ namespace OriMod
         }
       }
     }
-    internal void DoTransformation(Player player) {
+    internal void DoTransformation() {
       Transforming = true;
       TransformDirection = player.direction;
       TransformTimer = 627;
@@ -879,38 +881,24 @@ namespace OriMod
     }
     public override void PostUpdateRunSpeeds() {
       if (OriSet) {
-        if (player.whoAmI == Main.myPlayer) {
-          Abilities.Tick();
-        }
-        else {
-          Abilities.TickOtherClient();
-        }
+        Abilities.Tick();
 
-        if (tempInvincibility && immuneTimer > 0) {
-          player.immune = true;
-        }
-        else {
-          tempInvincibility = false;
-          immuneTimer = 0;
-        }
         player.noFallDmg = true;
-        if (UnrestrictedMovement) {
-          if (PlayerInput.Triggers.Current.Left || PlayerInput.Triggers.Current.Right || IsGrounded) {
-            UnrestrictedMovement = false;
-          }
+        if (PlayerInput.Triggers.Current.Left || PlayerInput.Triggers.Current.Right || IsGrounded) {
+          UnrestrictedMovement = false;
         }
         player.runSlowdown = UnrestrictedMovement ? 0 : 1;
-        if (!Abilities.crouch.InUse) {
+        if (!crouch.InUse) {
           player.runAcceleration = 0.5f;
           player.maxRunSpeed += 2f;
         }
         Main.SetCameraLerp(0.05f, 1);
-        if (OnWall && (IsGrounded || player.velocity.Y < 0) && !Abilities.climb.InUse) {
+        if (OnWall && (IsGrounded || player.velocity.Y < 0) && !climb.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
           player.jumpSpeedBoost -= 6f;
         }
-        else if (OnWall &&  !IsGrounded && player.velocity.Y > 0 && !Abilities.stomp.InUse) {
+        else if (OnWall &&  !IsGrounded && player.velocity.Y > 0 && !stomp.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
         }
@@ -936,36 +924,36 @@ namespace OriMod
           player.jumpSpeedBoost += 2f;
         }
         if (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased) {
-          Abilities.glide.Update();
+          glide.Update();
         }
-        if (PlayerInput.Triggers.JustPressed.Jump) {
-          Abilities.airJump.Update();
+        if (PlayerInput.Triggers.JustPressed.Jump || airJump.InUse) {
+          airJump.Update();
         }
-        if (OriMod.DashKey.JustPressed || Abilities.dash.InUse || Abilities.cDash.InUse) {
-          if ((OriMod.ChargeKey.Current && Abilities.cDash.Refreshed) || Abilities.cDash.InUse) {
-            Abilities.cDash.Update();
+        if (OriMod.DashKey.JustPressed || dash.InUse || cDash.InUse) {
+          if ((OriMod.ChargeKey.Current && cDash.Refreshed) || cDash.InUse) {
+            cDash.Update();
           }
           else {
-            Abilities.dash.Update();
+            dash.Update();
           }
         }
-        if ((PlayerInput.Triggers.JustPressed.Jump && OnWall && !IsGrounded) /*|| movementHandler.wJump.InUse*/) {
-          Abilities.wJump.Update();
+        if ((PlayerInput.Triggers.JustPressed.Jump && OnWall && !IsGrounded) || wJump.InUse) {
+          wJump.Update();
         }
         if (OriMod.ClimbKey.Current && OnWall) {
-          Abilities.climb.Update();
+          climb.Update();
         }
-        if (PlayerInput.Triggers.JustPressed.Down || Abilities.stomp.InUse) {
-          Abilities.stomp.Update();
+        if (PlayerInput.Triggers.JustPressed.Down || stomp.InUse) {
+          stomp.Update();
         }
-        if (PlayerInput.Triggers.Current.Up || Abilities.lookUp.InUse) {
-          Abilities.lookUp.Update();
+        if (PlayerInput.Triggers.Current.Up || lookUp.InUse) {
+          lookUp.Update();
         }
-        if (PlayerInput.Triggers.Current.Down || Abilities.crouch.InUse) {
-          Abilities.crouch.Update();
+        if (PlayerInput.Triggers.Current.Down || crouch.InUse) {
+          crouch.Update();
         }
-        if (OriMod.BashKey.Current || Abilities.bash.InUse) {
-          Abilities.bash.Update();
+        if (OriMod.BashKey.Current || bash.InUse) {
+          bash.Update();
         }
       }
       else if (Transforming) {
@@ -1000,17 +988,17 @@ namespace OriMod
           dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
           dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
           dust.noGravity = false;
-          TeatherTrailTimer = Abilities.dash.InUse ? Main.rand.Next(2, 4) : Main.rand.Next(10, 15);
+          TeatherTrailTimer = dash.InUse ? Main.rand.Next(2, 4) : Main.rand.Next(10, 15);
         }
       }
-      else if (Abilities.dash.InUse && TeatherTrailTimer > 4) {
+      else if (dash.InUse && TeatherTrailTimer > 4) {
         TeatherTrailTimer = Main.rand.Next(2, 4);
       }
       Flashing = flashPattern.Contains(FlashTimer);
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       if (OriSet) {
-        if (Abilities.stomp.InUse || chargeJumpAnimTimer > 0 || Abilities.bash.InUse) {
+        if (stomp.InUse || chargeJumpAnimTimer > 0 || bash.InUse) {
           damage = 0;
         }
       }
@@ -1019,7 +1007,7 @@ namespace OriMod
       if (OriSet && playSound) {
         playSound = false; // stops regular hurt sound from playing
         genGore = false; // stops regular gore from appearing
-        if (Abilities.bash.InUse || Abilities.stomp.InUse || chargeJumpAnimTimer > 0) {
+        if (bash.InUse || stomp.InUse || chargeJumpAnimTimer > 0) {
           damage = 0;
         }
         else {
@@ -1065,7 +1053,7 @@ namespace OriMod
       return true;
     }
     public override void ModifyDrawLayers(List<PlayerLayer> layers) {
-      if (Abilities.bash.InUse) {
+      if (bash.InUse && bash.Npc != null) {
         layers.Insert(0, oriBashArrow);
         oriBashArrow.visible = true;
       }
@@ -1285,16 +1273,16 @@ namespace OriMod
 
       int frameY = 0;
 
-      if (oPlayer.Abilities.bash.CurrDuration > 40) {
-        frameY = oPlayer.Abilities.bash.CurrDuration < 50 ? 1 : 2;
+      if (oPlayer.bash.CurrDuration > 40) {
+        frameY = oPlayer.bash.CurrDuration < 50 ? 1 : 2;
       }
       DrawData data = new DrawData(texture,
         new Vector2(
-          (oPlayer.Abilities.bash.BashNpc.Center.X - Main.screenPosition.X),
-          (oPlayer.Abilities.bash.BashNpc.Center.Y - Main.screenPosition.Y)
+          (oPlayer.bash.Npc.Center.X - Main.screenPosition.X),
+          (oPlayer.bash.Npc.Center.Y - Main.screenPosition.Y)
         ),
         new Rectangle(0, frameY * 20, 152, 20),
-        Color.White, oPlayer.Abilities.bash.BashNpc.AngleTo(Main.MouseWorld),
+        Color.White, oPlayer.bash.Npc.AngleTo(Main.MouseWorld),
         new Vector2(76, 10), 1, effect, 0);
       Main.playerDrawData.Add(data);
       // public DrawData(Texture2D texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effect, int inactiveLayerDepth);

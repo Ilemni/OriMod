@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.GameInput;
 
@@ -6,12 +7,8 @@ namespace OriMod.Abilities {
   public class Climb : Ability {
     internal Climb(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
-    private int WallDir = 0;
-    internal override bool CanUse {
-      get {
-        return oPlayer.OnWall;
-      }
-    }
+    internal int WallDir = 0;
+    internal override bool CanUse => oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Cart && !Handler.wJump.InUse;
     private void StartClimb() {
       WallDir = player.direction;
     }
@@ -32,15 +29,8 @@ namespace OriMod.Abilities {
         player.velocity.Y += player.velocity.Y < 4 ? 1 : -1;
       }
       if (
-        (player.velocity.Y > 1 && !PlayerInput.Triggers.Current.Down) ||
-        (player.velocity.Y < 1 && !PlayerInput.Triggers.Current.Up)) {
-        player.velocity.Y /= 3;
-      }
-      if (
-        player.velocity.Y > -1 && !PlayerInput.Triggers.Current.Down &&
-        player.velocity.Y < 1 && !PlayerInput.Triggers.Current.Up
-      ) {
-        player.velocity.Y = 0;
+        (!PlayerInput.Triggers.Current.Down) && !PlayerInput.Triggers.Current.Up) {
+        player.velocity.Y *= Math.Abs(player.velocity.Y) > 1 ? 0.35f : 0;
       }
       if ((WallDir == 1 && PlayerInput.Triggers.Current.Left) || (WallDir == -1 && PlayerInput.Triggers.Current.Right)) {
         player.velocity.Y = 0;

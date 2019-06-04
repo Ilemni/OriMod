@@ -36,7 +36,7 @@ namespace OriMod.Tiles {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       if (!oPlayer.OriSet && !oPlayer.Transforming) {
         oPlayer.TransformBlockLocation = new Vector2(i, j) * 16;
-        oPlayer.DoTransformation(player);
+        oPlayer.DoTransformation();
         oPlayer.PlayNewSound("AbilityPedestal/abilityPedestalMusic");
         oPlayer.PlayNewSound("AbilityPedestal/abilityPedestalStart");
       }

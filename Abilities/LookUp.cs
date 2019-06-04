@@ -5,11 +5,7 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class LookUp : Ability {
     internal LookUp(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-    internal override bool CanUse {
-      get {
-        return oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !Handler.crouch.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
-      }
-    }
+    internal override bool CanUse => oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !Handler.crouch.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
     private const int StartDuration = 12;
     private const int EndDuration = 8;
     private int CurrTime = 0;
