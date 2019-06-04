@@ -7,7 +7,7 @@ If you enjoy this mod, we strongly urge you purchase Ori and the Blind Forest, a
 
 # Changelog
 
-## v2.2
+## v2.2 (Unreleased)
 ### Additions
 - Added the Spirit Orb
     - The Spirit Orb is used to summon Sein.
