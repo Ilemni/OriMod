@@ -2,6 +2,7 @@
 **/bin/
 **/obj/
 **/vs/
+**/Sounds/
 *.txt
 !build.txt
 !description.txt
