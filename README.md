@@ -1,5 +1,5 @@
 # OriMod
-Terraria mod that introduces the Ori franchise
+Terraria mod that introduces the Ori franchise. Created by Fro Zen and TwiliChaos
 
 The Ori franchise is the property of Microsoft. This mod and its creators are in no way affiliated with Microsoft or Moon Studios.
 
