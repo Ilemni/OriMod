@@ -13,12 +13,12 @@ namespace OriMod.Abilities {
       NPCID.BlazingWheel, NPCID.SpikeBall
     };
     private const int BashDamage = 15;
-    private const float BashPlayerStrength = 10f;
-    private const float BashNpcStrength = 8f;
-    private const float BashRange = 175f;
-    private const int MinBashDuration = 20;
+    private const float BashPlayerStrength = 12f;
+    private const float BashNpcStrength = 10f;
+    private const float BashRange = 120f;
+    private const int MinBashDuration = 30;
     private const int MaxBashDuration = 85;
-    private const int Cooldown = 20;
+    private const int Cooldown = 5;
     internal int CurrDuration { get; private set; }
     private Vector2 playerStartPos;
     private Vector2 npcStartPos;
