@@ -12,21 +12,22 @@ namespace OriMod.Abilities {
     };
     private const int Duration = 24;
     private int CurrTime = 0;
-    internal int CurrDirection = 1;
+    internal int Direction = 1;
     
-    internal override bool CanUse {
-      get {
-        return !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse;
+    protected override void ReadPacket(System.IO.BinaryReader r) {
+      Direction = r.ReadByte();
       }
+    protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
+      packet.Write((byte)Direction);
     }
     private void StartDash() {
-      CurrDirection = player.direction;
+      Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction;
       oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3, ref currRand), 0.2f);
       player.pulley = false;
     }
 
     protected override void UpdateActive() {
-      player.velocity.X = Speeds[CurrTime] * CurrDirection * 0.65f;
+      player.velocity.X = Speeds[CurrTime] * Direction * 0.65f;
       player.velocity.Y = 0.25f * CurrTime;
       if (CurrTime > 20) player.runSlowdown = 26f;
     }

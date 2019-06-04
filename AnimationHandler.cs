@@ -50,9 +50,7 @@ namespace OriMod {
       }
     }
     internal static void IncrementFrame(OriPlayer oPlayer, string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Vector3 overrideMeta=new Vector3(), Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
-      if (oPlayer == null || oPlayer.player.whoAmI != Main.myPlayer) {
-        return;
-      }
+      if (oPlayer == null) return;
       float rotRads = (float)(rotDegrees / 180 * Math.PI);
       if (!Names.Contains(anim)) {
         Main.NewText("Error with animation: The animation sequence \"" + anim + "\" does not exist.", Color.Red);

@@ -1,4 +1,6 @@
+using System.IO;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace OriMod {
   public abstract class Ability {
@@ -66,12 +68,24 @@ namespace OriMod {
     /// Checks if the ability is active
     /// </summary>
     /// <value>True if the state is neither Inactive nor Failed</value>
-    public bool InUse {
-      get {
-        return State != States.Inactive && State != States.Failed;
+    public bool InUse => State != States.Inactive && State != States.Failed;
+    
+    internal void PreReadPacket(BinaryReader r) {
+      State = (States)r.ReadByte();
+      ReadPacket(r);
+      if (Main.netMode == Terraria.ID.NetmodeID.MultiplayerClient) {
+        Update();
       }
     }
+    internal void PreWritePacket(ModPacket packet) {
+      packet.Write((byte)State);
+      WritePacket(packet);
+    }
+    protected virtual void ReadPacket(BinaryReader r) { }
+    protected virtual void WritePacket(ModPacket packet) { }
+    
     protected virtual bool PreUpdate() {
+      if (!isLocalPlayer) return true;
       if (!CanUse && !InUse) return false;
       return true;
     }

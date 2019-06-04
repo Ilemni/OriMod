@@ -73,17 +73,17 @@ namespace OriMod {
   }
   internal class ModNetHandler {
     internal const byte OriState = 1;
-    internal const byte Movement = 2;
+    internal const byte Ability = 2;
     internal static OriPlayerPacketHandler oriPlayerHandler = new OriPlayerPacketHandler(OriState);
-    internal static MovementPacketHandler movementPacketHandler = new MovementPacketHandler(Movement);
+    internal static AbilityPacketHandler abilityPacketHandler = new AbilityPacketHandler(Ability);
     internal static void HandlePacket(BinaryReader r, int fromWho) {
       byte packetClass = r.ReadByte();
       switch (packetClass) {
         case OriState:
           oriPlayerHandler.HandlePacket(r, fromWho);
           break;
-        case Movement:
-          movementPacketHandler.HandlePacket(r, fromWho);
+        case Ability:
+          abilityPacketHandler.HandlePacket(r, fromWho);
           break;
         default:
           Main.NewText("Unknown Packet " + packetClass);

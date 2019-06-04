@@ -24,7 +24,13 @@ namespace OriMod.Abilities {
     /// </summary>
     /// <value><c>0</c>-<c>200</c> if there is a target NPC, <c>255</c> if no NPC is targeted</value>
     public byte Npc { get; internal set; }
-    internal int CurrDirection = 1;
+
+    protected override void ReadPacket(System.IO.BinaryReader r) {
+      Npc = r.ReadByte();
+    }
+    protected override void WritePacket(ModPacket packet) {
+      packet.Write((byte)Npc);
+    }
     
     protected override void UpdateStarting() {
       float tempDist = 720f;

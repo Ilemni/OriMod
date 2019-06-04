@@ -22,39 +22,59 @@ namespace OriMod.Abilities {
     internal int CurrDuration { get; private set; }
     private Vector2 playerStartPos;
     private Vector2 npcStartPos;
-    public byte BashNpcID { get; internal set; }
-    public NPC BashNpc {
+    public byte NpcID { get; internal set; }
+    public NPC Npc {
       get {
-        return Main.npc[BashNpcID];
-      }
-      internal set {
-        BashNpcID = (byte)value.whoAmI;
+        return NpcID < Main.maxNPCs ? Main.npc[NpcID] : null;
       }
     }
-    internal override bool CanUse {
-      get {
-        return Refreshed && State == States.Inactive && !Handler.stomp.InUse /*&& Handler.cJump.InUse*/;
+    internal override bool CanUse => Refreshed && State == States.Inactive && !Handler.stomp.InUse /*&& Handler.cJump.InUse*/;
+
+    protected override void ReadPacket(System.IO.BinaryReader r) {
+      Main.NewText("Receiving packet w/ ID " + NpcID);
+      if (InUse) {
+        NpcID = r.ReadByte();
+        if (State == States.Starting) {
+          npcStartPos = r.ReadVector2();
+          Npc.GetGlobalNPC<BashNPC>().BashPos = Npc.Center = npcStartPos;
+          playerStartPos = r.ReadVector2();
+        }
+      }
+    }
+    protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
+      Main.NewText("Sending packet w/ ID " + NpcID);
+      if (InUse) {
+        packet.Write((byte)NpcID);
+        if (State == States.Starting) {
+          packet.WriteVector2(npcStartPos);
+          packet.WriteVector2(playerStartPos);
+        }
       }
     }
     
     private bool BashStart() {
-      NPC tempNPC = null;
+      byte tempNpcID = 255;
       float currDist = BashRange;
       for (int n = 0; n < Main.maxNPCs; n++) {
-        if (!Main.npc[n].active) continue;
-        float newDist = (player.position - Main.npc[n].position).Length();
+        NPC localNpc = Main.npc[n];
+        if (localNpc == null || !localNpc.active || CannotBash.Contains(localNpc.type) || localNpc.boss || localNpc.immortal) continue;
+        float newDist = (player.position - localNpc.position).Length();
         if (newDist < currDist) {
-          tempNPC = Main.npc[n];
+          tempNpcID = (byte)n;
           currDist = newDist;
         }
       }
-      if (tempNPC == null || CannotBash.Contains(tempNPC.type) || tempNPC.boss == true || tempNPC.immortal) {
-        BashNpcID = 255;
+      if (tempNpcID == 255) {
+        NpcID = 255;
         return false;
       }
-      BashNpc = tempNPC;
+      NpcID = (byte)tempNpcID;
+      BashNPC bashNpc = Npc.GetGlobalNPC<BashNPC>();
+      bashNpc.IsBashed = true;
+      bashNpc.BashPos = Npc.Center;
+
       playerStartPos = player.Center;
-      npcStartPos = BashNpc.Center;
+      npcStartPos = Npc.Center;
       oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", /*0.7f*/ Main.soundVolume);
       return true;
     }
@@ -68,24 +88,21 @@ namespace OriMod.Abilities {
       oPlayer.UnrestrictedMovement = true;
       Vector2 bashVector = new Vector2((float)(0 - (Math.Cos(bashAngle))), (float)(0 - (Math.Sin(bashAngle))));
       player.velocity = bashVector * BashPlayerStrength;
-      player.velocity.Y *= 0.8f;
-      BashNpc.velocity = -bashVector * BashNpcStrength;
+      Npc.velocity = -bashVector * BashNpcStrength;
+      Npc.GetGlobalNPC<BashNPC>().IsBashed = false;
       if (oPlayer.IsGrounded) {
         player.position.Y -= 1f;
       }
-      player.ApplyDamageToNPC(BashNpc, BashDamage, 0, 1, false);
-      BashNpcID = 255;
+      player.ApplyDamageToNPC(Npc, BashDamage, 0, 1, false);
     }
     protected override void UpdateUsing() {
-      player.Center = playerStartPos;
-      BashNpc.Center = npcStartPos;
-
       if (State != States.Ending) {
-        player.velocity.X = 0;
-        player.velocity.Y = 0 - player.gravity;
+        if (Npc != null) Npc.Center = npcStartPos;
+        player.velocity = Vector2.Zero;
+        player.gravity = 0;
       }
-
-      // Allow only quick heal and quick mana
+      Npc.netUpdate2 = true;
+      // // Allow only quick heal and quick mana
       player.controlJump = false;
       player.controlUp = false;
       player.controlDown = false;
@@ -133,7 +150,7 @@ namespace OriMod.Abilities {
             }
             return;
           case States.Active:
-            if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || !BashNpc.active) {
+            if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || Npc == null || !Npc.active) {
               State = States.Ending;
             }
             return;

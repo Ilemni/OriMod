@@ -1,10 +1,12 @@
+using Terraria;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class AirJump : Ability {
     internal AirJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     
-    private const float JumpVelocity = -8.8f;
+    internal override bool CanUse => !oPlayer.IsGrounded && !oPlayer.OnWall && CurrCount < MaxJumps && State != States.Active && !Handler.bash.InUse && !player.mount.Cart;
+    private const float JumpVelocity = 8.8f;
     private const int EndDuration = 32;
     private const int MaxJumps = 2;
     private int CurrCount = 0;
@@ -17,7 +19,11 @@ namespace OriMod.Abilities {
       else {
         oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + OriPlayer.RandomChar(5), 0.75f);
       }
-      if (player.velocity.Y > JumpVelocity) player.velocity.Y = JumpVelocity;
+      float newVel = -JumpVelocity * ((EndDuration - CurrTime) / EndDuration);
+      Main.NewText("newVel: " + (int)newVel);
+      if (player.velocity.Y > newVel) player.velocity.Y = newVel;
+      Handler.stomp.State = States.Inactive;
+      // if (CurrTime == 0) player.gravity = -JumpVelocity;
     }
 
     internal override void Tick() {
@@ -32,24 +38,18 @@ namespace OriMod.Abilities {
       if (IsState(States.Active)) {
         State = States.Ending;
       }
-      if (CurrCount <= MaxJumps && !oPlayer.IsGrounded) {
-        CanUse = true;
-      }
       if (oPlayer.IsGrounded || Handler.bash.InUse || oPlayer.OnWall) {
         CurrCount = 0;
         State = States.Inactive;
-        CanUse = false;
       }
-      if ((IsState(States.Ending) || CanUse) && CurrCount < MaxJumps && PlayerInput.Triggers.JustPressed.Jump) {
+      if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
         if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Cart)) {
           State = States.Active;
           if (Handler.dash.InUse) {
-            Handler.dash.CanUse = false;
             Handler.dash.State = States.Inactive;
           }
           CurrTime = 0;
           CurrCount++;
-          CanUse = false;
         }
       }
     }

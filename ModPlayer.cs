@@ -15,6 +15,7 @@ using Terraria.Graphics;
 using Terraria.World;
 using Microsoft.Xna.Framework.Audio;
 using System.Linq;
+using OriMod.Abilities;
 
 namespace OriMod
 {
@@ -25,14 +26,38 @@ namespace OriMod
     /// Class that contains all of OriPlayer's abilities
     /// </summary>
     /// <value></value>
-    public OriAbilities Abilities { get; private set; } // Class used for all of Ori's movements
+    internal OriAbilities Abilities { get; set; } // Class used for all of Ori's movements
+
+    public WallJump wJump => Abilities.wJump;
+    public AirJump airJump => Abilities.airJump;
+    public Bash bash => Abilities.bash;
+    public Stomp stomp => Abilities.stomp;
+    public Glide glide => Abilities.glide;
+    public Climb climb => Abilities.climb;
+    public Dash dash => Abilities.dash;
+    public ChargeDash cDash => Abilities.cDash;
+    public Crouch crouch => Abilities.crouch;
+    public LookUp lookUp => Abilities.lookUp;
+
+    internal bool doNetUpdate = false;
 
     /// <summary>
     /// When set to true, uses custom movement and player sprites.
     /// 
     /// External mods that attempt to be compatible with this one will need to use this property.
     /// </summary>
-    public bool OriSet = false;
+    public bool OriSet {
+      get {
+        return _oriSet;
+      }
+      set {
+        if (value != _oriSet) {
+          doNetUpdate = true;
+          _oriSet = value;
+        }
+      }
+    }
+    private bool _oriSet;
 
     // Transform variables used to hasten additional transforms
     private bool HasTransformedOnce = false;
@@ -41,20 +66,22 @@ namespace OriMod
     // Variables relating to fixing movement when Ori is active, such that you aren't slowed down mid-air after bashing.
     public bool IsGrounded { get; private set; }
     /// <summary>
-    /// When true, sets player.runSlowDown to 0
+    /// When true, sets player.runSlowDown to 0 every frame until set to false
     /// </summary>
-    public bool UnrestrictedMovement = false;
-    public bool tempInvincibility { get; internal set; }
-    public int immuneTimer { get; internal set; }
 
-    // Variables relating to Air Jumping
-
-    // Variables relating to Dashing
-
-    // Variables relating to Wall Jumping
+    public bool UnrestrictedMovement {
+      get {
+        return _unrestrictedMovement;
+      }
+      set {
+        if (value != _unrestrictedMovement) {
+          doNetUpdate = true;
+          _unrestrictedMovement = value;
+        }
+      }
+    }
+    private bool _unrestrictedMovement = false;
     public bool OnWall { get; private set; }
-
-    // Variables relating to Climbing
 
     // Variables relating to Charge Jumping
     public bool charged = false;
@@ -62,16 +89,6 @@ namespace OriMod
     public int chargeUpTimer = 40;
     public int chargeJumpAnimTimer = 0;
     public bool upRefresh = false;
-
-    // Variables relating to looking up
-
-    // Variables relating to Stomping
-
-    // Variables relating to Crouching
-    
-    // Variables relating to Back Flipping
-
-    // Variables relating to Kuro's Feather
 
     // Variables relating to visual or audible effects
     public bool doOriDeathParticles = true;
@@ -117,7 +134,18 @@ namespace OriMod
     /// While transforming, all player input is disabled.
     /// </summary>
     /// <value></value>
-    public bool Transforming { get; internal set; }
+    public bool Transforming {
+      get {
+        return _transforming;
+      }
+      internal set {
+        if (value != _transforming) {
+          doNetUpdate = true;
+          _transforming = value;
+        }
+      }
+    }
+    private bool _transforming = false;
     /// <summary>
     /// Location of the Spirit Sapling that transformed Ori.
     /// 
@@ -203,7 +231,18 @@ namespace OriMod
     // Animation Variables
     internal const int SpriteWidth = 104;
     internal const int SpriteHeight = 76;
-    private Vector2 AnimFrame = Vector2.Zero;
+    private Vector2 _animFrame;
+    private Vector2 AnimFrame {
+      get {
+        return _animFrame;
+      }
+      set {
+        if (value != _animFrame) {
+          doNetUpdate = true;
+          _animFrame = value;
+        }
+      }
+    }
     /// <summary>
     /// The current sprite tile of the player in Ori state
     /// 
@@ -234,8 +273,6 @@ namespace OriMod
     };
     private int FootstepRand = 0;
     private int JumpSoundRand = 0;
-
-    #endregion
     private Vector2 PixelToTile(Vector2 pixel) {
       pixel.X = (int)(pixel.X / SpriteWidth);
       pixel.Y = (int)(pixel.Y / SpriteHeight);
@@ -246,6 +283,9 @@ namespace OriMod
       tile.Y *= SpriteHeight;
       return tile;
     }
+
+    #endregion
+    
     // basic sound playing method, with paths starting after NewSFX in the file structure
     internal SoundEffectInstance PlayNewSound(string Path) {
       return PlayNewSound(Path, 1, 0);
@@ -315,13 +355,12 @@ namespace OriMod
     }
 
     private void UpdateFrame(Player drawPlayer) {
-      if (!OriSet || Transforming) return;
+      if (!OriSet) return;
       AnimTime++;
-      if (player.whoAmI != Main.myPlayer) {
-        // Increment(AnimName);
-        return;
+      
+      if (!Transforming && !HasTransformedOnce) {
+        HasTransformedOnce = true;
       }
-      OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>();
 
       if (Abilities.airJump.InUse && !(Abilities.dash.InUse || Abilities.cDash.InUse)) {
         Increment("AirJump");
@@ -765,15 +804,6 @@ namespace OriMod
       if (player.justJumped) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
-      
-      // tempinvincibility
-      if (tempInvincibility && immuneTimer > 0) {
-        player.immune = true;
-      }
-      else {
-        tempInvincibility = false;
-        immuneTimer = 0;
-      }
       // Charging
       if (
         ( // Ground CJump
@@ -890,8 +920,7 @@ namespace OriMod
           if (chargeJumpAnimTimer == 18) {
             player.controlJump = false;
           }
-          tempInvincibility = true;
-          immuneTimer = 15;
+          player.immune = true;
         }
         else {
           player.gravity = 0.35f;
@@ -1296,8 +1325,9 @@ namespace OriMod
           chargeJumpAnimTimer--;
         }
       }
-      if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer) {
+      if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer && doNetUpdate) {
         ModNetHandler.oriPlayerHandler.SendOriState(255, player.whoAmI);
+        doNetUpdate = false;
       }
     }
     public override void Initialize() {

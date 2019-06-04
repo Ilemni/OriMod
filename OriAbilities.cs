@@ -7,74 +7,82 @@ using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OriMod.Abilities;
 
 namespace OriMod {
   
-  // This partial class is for Movement-specific implementations
-  
+  // This partial class is for Ability-specific implementations    
   public sealed partial class OriAbilities {
-    #region Variables
-    private const float defaultFallSpeed = 16f;
-    
-    private const int soulLinkActivateTime = 48;
-    private const int soulLinkRechargeTime = 60 * 60;
-    public int soulLinkCurrTime = 0;
-    public int soulLinkCurrRecharge = 0;
+    public OriPlayer oPlayer { get; private set; }
+    public Player player { get; private set; }
+    public List<Ability> Abilities { get; private set; }
 
-    private const int chargeJumpStartTime = 60;
-    public int chargeJumpCurrTime = 0;
-
-    public Vector2 grenadePos = Vector2.Zero;
-    #endregion
+    public WallJump wJump { get; private set; }
+    public AirJump airJump { get; private set; }
+    public Bash bash { get; private set; }
+    public Stomp stomp { get; private set; }
+    public Glide glide { get; private set; }
+    public Climb climb { get; private set; }
+    public Dash dash { get; private set; }
+    public ChargeDash cDash { get; private set; }
+    public LookUp lookUp { get; private set; }
+    public Crouch crouch { get; private set; }
+    internal OriAbilities(OriPlayer o) {
+      oPlayer = o;
+      player = o.player;
+      Abilities = new List<Ability> {
+        { wJump = new WallJump(o, this) },
+        { stomp = new Stomp(o, this) },
+        { airJump = new AirJump(o, this) },
+        { bash = new Bash(o, this) },
+        { glide = new Glide(o, this) },
+        { climb = new Climb(o, this) },
+        { dash = new Dash(o, this) },
+        { cDash = new ChargeDash(o, this) },
+        { crouch = new Crouch(o, this) },
+        { lookUp = new LookUp(o, this) },
+      };
+      for (int i = 0; i < Abilities.Count; i++) {
+        Abilities[i].id = (byte)i;
+      }
+    }
+    public Ability this[int index] => Abilities[index];
     internal void Tick() {
-      if (oPlayer == null || player.whoAmI != Main.myPlayer) {
+      if (oPlayer == null) return;
+
+      if (player.whoAmI != Main.myPlayer) {
+        TickOtherClient();
         return;
       }
-      List<int> prevStates = new List<int>();
-      // string[] eNames = Enum.GetNames(typeof(MoveType)); // TODO: Replace with Movements
-      // int[] eValues = (int[])Enum.GetValues(typeof(MoveType));
-      // foreach(string str in eNames) {
-      //   prevStates.Add((int)GetState(str));
-      // }
 
-      // soulLink.Tick();
-      wJump.Tick();
-      // cFlame.Tick();
-      airJump.Tick();
-      bash.Tick();
-      stomp.Tick();
-      glide.Tick();
-      climb.Tick();
-      // cJump.Tick();
-      dash.Tick();
-      cDash.Tick();
-      // grenade.Tick();
-      lookUp.Tick();
-      crouch.Tick();
-      
-      // List of things Minecart should disable
-      if (player.mount.Cart) {
-        // soulLink.CanUse = false;
-        wJump.CanUse = false;
-        airJump.CanUse = false;
-        stomp.CanUse = false;
-        glide.CanUse = false;
-        climb.CanUse = false;
-        // cJump.CanUse = false;
-        dash.CanUse = false;
-        cDash.CanUse = false;
+      byte[] prevStates = new byte[Abilities.Count];
+      for (int a = 0; a < Abilities.Count; a++) {
+        prevStates[a] = ((byte)Abilities[a].State);
       }
-      List<string> changes = new List<string>();
+
+      Abilities.ForEach(ability => {
+        ability.Tick();
+      });
+
+      List<byte> changes = new List<byte>();
+      for (int a = 0; a < Abilities.Count; a++) {
+        if ((byte)Abilities[a].State != prevStates[a]) {
+          changes.Add((byte)a);
+        }
+      }
+
       if (changes.Count > 0) {
         if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer) {
-          ModNetHandler.movementPacketHandler.SendMovementState(255, player.whoAmI, changes);
+          ModNetHandler.abilityPacketHandler.SendAbilityState(255, player.whoAmI, changes);
         }
       }
     }
     internal void TickOtherClient() {
-      if (glide.InUse) {
-        glide.Update();
-      }
+      Abilities.ForEach(ability => {
+        if (ability.InUse) {
+          ability.Tick();
+        }
+      });
     }
   }
 }

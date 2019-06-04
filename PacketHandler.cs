@@ -9,7 +9,7 @@ namespace OriMod {
     internal byte HandlerType { get; set; }
 		
 		internal const byte OriStatus = 1;
-    internal const byte MovementPacket = 2;
+    internal const byte AbilityPacket = 2;
 		
 		internal abstract void HandlePacket(BinaryReader reader, int fromWho);
 
