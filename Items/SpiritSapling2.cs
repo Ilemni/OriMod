@@ -25,7 +25,7 @@ namespace OriMod.Items
 		public override void AddRecipes()
 		{
 			ModRecipe recipe = new ModRecipe(mod);
-			recipe.AddIngredient(mod.ItemType("SpiritSapling1"), 1);
+			recipe.AddIngredient(mod.ItemType("SpiritSapling"), 1);
 			recipe.AddIngredient(ItemID.SoulofLight, 30);
 		}
 	}

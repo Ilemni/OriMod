@@ -43,13 +43,13 @@ namespace OriMod.Items {
       recipe.AddIngredient(ItemID.Moonglow);
       recipe.AddIngredient(ItemID.Shiverthorn);
       recipe.AddIngredient(ItemID.Fireblossom);
-      recipe.AddTile(null, "SpiritSapling1");
+      recipe.AddTile(null, "SpiritSapling");
 			recipe.SetResult(this, 1);
 			recipe.AddRecipe();
 
       ModRecipe recipe2 = new ModRecipe(mod);
       recipe2.AddIngredient(null, "OriPotionEmpty", 1);
-      recipe2.AddTile(null, "SpiritSapling1");
+      recipe2.AddTile(null, "SpiritSapling");
       recipe2.SetResult(this, 1);
       recipe2.AddRecipe();
     }

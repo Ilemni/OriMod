@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace OriMod.Items
 {
-	public class SpiritSapling1 : ModItem
+	public class SpiritSapling : ModItem
 	{
 		public override void SetStaticDefaults() { }
 
@@ -19,7 +19,7 @@ namespace OriMod.Items
 			item.useStyle = 1;
 			item.consumable = true;
 			item.value = 150;
-			item.createTile = mod.TileType("SpiritSapling1");
+			item.createTile = mod.TileType("SpiritSapling");
 		}
 		public override void AddRecipes()
 		{

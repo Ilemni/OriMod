@@ -8,7 +8,7 @@ using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace OriMod.Tiles {
-  public class SpiritSapling1 : ModTile {
+  public class SpiritSapling : ModTile {
     public override void SetDefaults() {
       Main.tileFrameImportant[Type] = true;
       Main.tileNoAttach[Type] = true;
@@ -26,7 +26,7 @@ namespace OriMod.Tiles {
     }
 
     public override void KillMultiTile(int i, int j, int frameX, int frameY) {
-      Item.NewItem(i * 16, j * 16, 32, 32, mod.ItemType("SpiritSapling1"));
+      Item.NewItem(i * 16, j * 16, 32, 32, mod.ItemType("SpiritSapling"));
     }
 
     public override void RightClick(int i, int j) {

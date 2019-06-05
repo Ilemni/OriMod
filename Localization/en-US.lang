@@ -48,8 +48,8 @@ ItemTooltip.OriPotion=Remotely change yourself into a Spirit Guardian\nThe bottl
 ItemName.OriPotionEmpty=Spirit Bottle
 ItemTooltip.OriPotionEmpty=Refill at a Spirit Sapling\n"The spirit energy has been all used up."
 
-ItemName.SpiritSapling1=Spirit Sprout
-ItemTooltip.SpiritSapling1=A gift from the Spirit Tree
+ItemName.SpiritSapling=Spirit Sprout
+ItemTooltip.SpiritSapling=A gift from the Spirit Tree
 
 ItemName.SpiritSapling2=Spirit Sapling
 ItemTooltip.SpiritSapling2=A young Spirit Tree still in early growth.
