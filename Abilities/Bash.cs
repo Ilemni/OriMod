@@ -23,11 +23,10 @@ namespace OriMod.Abilities {
     private Vector2 playerStartPos;
     private Vector2 npcStartPos;
     public byte NpcID { get; internal set; }
-    public NPC Npc {
-      get {
-        return NpcID < Main.maxNPCs ? Main.npc[NpcID] : null;
-      }
-    }
+    public byte WormID { get; internal set; }
+    public NPC Npc => NpcID < Main.maxNPCs ? Main.npc[NpcID] : null;
+    public NPC WormNpc => WormID < Main.maxNPCs ? Main.npc[WormID] : null;
+    public bool IsBashingWorm => WormID < Main.maxNPCs;
     internal override bool CanUse => Refreshed && State == States.Inactive && !Handler.stomp.InUse /*&& Handler.cJump.InUse*/;
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
@@ -67,7 +66,8 @@ namespace OriMod.Abilities {
         return false;
       }
       NpcID = (byte)tempNpcID;
-      BashNPC bashNpc = Npc.GetGlobalNPC<BashNPC>();
+      WormID = Npc.aiStyle == 6 ? (byte)Npc.ai[3] : (byte)255; 
+      BashNPC bashNpc = (IsBashingWorm ? WormNpc : Npc).GetGlobalNPC<BashNPC>();
       bashNpc.IsBashed = true;
       bashNpc.BashPos = Npc.Center;
 
@@ -87,7 +87,8 @@ namespace OriMod.Abilities {
       Vector2 bashVector = new Vector2((float)(0 - (Math.Cos(bashAngle))), (float)(0 - (Math.Sin(bashAngle))));
       player.velocity = bashVector * BashPlayerStrength;
       Npc.velocity = -bashVector * BashNpcStrength;
-      Npc.GetGlobalNPC<BashNPC>().IsBashed = false;
+      BashNPC bashNpc = (IsBashingWorm ? WormNpc : Npc).GetGlobalNPC<BashNPC>();
+      bashNpc.IsBashed = false;
       if (oPlayer.IsGrounded) {
         player.position.Y -= 1f;
       }

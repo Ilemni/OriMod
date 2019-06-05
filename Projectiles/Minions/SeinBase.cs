@@ -94,8 +94,7 @@ namespace OriMod.Projectiles.Minions {
       LightStrength = u.lightStrength;
     }
     protected virtual void CreateDust() { }
-
-    protected virtual void SelectFrame() {}
+    protected virtual void SelectFrame() { }
     
     private float Lerp(float firstFloat, float secondFloat, float by) {
      return firstFloat * (1 - by) + secondFloat * by;
@@ -137,7 +136,7 @@ namespace OriMod.Projectiles.Minions {
     };
     private static readonly Vector2 bounds = new Vector2(68f, 32f);
     private int targetPosIndex = 0;
-    private List<int> targetIDs = new List<int>(0);
+    private List<byte> targetIDs = new List<byte>();
     private static Vector2 Normalize(Vector2 vec2) {
         return vec2 / vec2.Length();
     }
@@ -159,7 +158,7 @@ namespace OriMod.Projectiles.Minions {
         p.Y > targetSpawn.Y - bounds.Y
       );
     }
-    private int SortByDistClosest(int id1, int id2) {
+    private int SortByDistClosest(byte id1, byte id2) {
       Vector2 playerPos =  Main.player[projectile.owner].position;
       float length1 = (Main.npc[id1].position - playerPos).Length();
       float length2 = (Main.npc[id2].position - playerPos).Length();
@@ -321,10 +320,10 @@ namespace OriMod.Projectiles.Minions {
       Lighting.AddLight(projectile.Center, Color.ToVector3() * LightStrength);
       
       Player player = Main.player[projectile.owner];
-      
 
-      List<Vector2> targetPositions = new List<Vector2>(0);
-      List<Int32> newTargetIDs = new List<int>(0);
+      List<Vector2> targetPositions = new List<Vector2>();
+      List<byte> newTargetIDs = new List<byte>();
+      List<byte> wormIDs = new List<byte>();
 
       Vector2 targetPos = projectile.position;
       bool targeting = false;
@@ -351,23 +350,30 @@ namespace OriMod.Projectiles.Minions {
       // Otherwise set target based on different enemies, if they can hit
       for (int k = 0; k < Main.maxNPCs; k++) {
         NPC npc = Main.npc[k];
-        if (npc.CanBeChasedBy(this, false)) {
-          float distance = Vector2.Distance(projectile.Center, npc.Center);
-          if (
-            distance < MaxTargetDist && 
-            (
-              Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height) || 
-              distance < MaxTargetThroughWallDist
-            )
-          ) {
-            targeting = true;
-            newTargetIDs.Add(npc.whoAmI);
+        if (!npc.CanBeChasedBy(this, false) || !npc.active) continue;
+        float distance = Vector2.Distance(projectile.Center, npc.Center);
+        if (
+          distance < MaxTargetThroughWallDist || distance < MaxTargetDist &&
+          Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height)
+        ) {
+          if (npc.aiStyle == 6 || npc.aiStyle == 37) { // TODO: Sort targeted worm piece by closest rather than whoAmI
+            if (!wormIDs.Contains((byte)npc.ai[3])) {
+              wormIDs.Add((byte)npc.ai[3]);
+            }
+            else {
+              continue;
+            }
           }
+          targeting = true;
+          newTargetIDs.Add((byte)npc.whoAmI);
         }
       }
       bool doReplace = false;
       int numExcepts = targetIDs.Except(newTargetIDs).Count();
-      if (newTargetIDs.Count == targetIDs.Count && numExcepts == 0) { // See if list needs to be replaced
+      if (newTargetIDs.Count != targetIDs.Count || numExcepts != 0) { // See if list needs to be replaced
+        doReplace = true; // Number of NPCs or the specific NPCs targeted was changed
+      }
+      else {
         float dist = 0;
         for (int t = 0; t < targetIDs.Count; t++) {
           float npcDist = (projectile.position - Main.npc[targetIDs[t]].position).Length();
@@ -380,9 +386,6 @@ namespace OriMod.Projectiles.Minions {
           }
         }
       }
-      else {
-        doReplace = true; // Number of NPCs or the specific NPCs targeted was changed
-      }
 
       if (doReplace) { // Replace list
         if (newTargetIDs.Count > 1) {
@@ -390,7 +393,7 @@ namespace OriMod.Projectiles.Minions {
         }
         targetIDs.Clear();
         if (mainTargetNPC != null && mainTargetNPC.active) {
-          targetIDs.Add(mainTargetNPC.whoAmI);
+          targetIDs.Add((byte)mainTargetNPC.whoAmI);
           targetIDs.AddRange(newTargetIDs.GetRange(0, newTargetIDs.Count > MaxTargets - 1 ? MaxTargets - 1 : newTargetIDs.Count));
         }
         targetIDs.AddRange(newTargetIDs.GetRange(0, newTargetIDs.Count > MaxTargets ? MaxTargets : newTargetIDs.Count));
@@ -411,6 +414,7 @@ namespace OriMod.Projectiles.Minions {
       // else if (projectile.velocity.X < 0f) {
       //   projectile.spriteDirection = (projectile.direction = 1);
       // }
+
       // Manage Cooldown
       if (projectile.ai[1] > 0f) { // If on cooldown, increase cooldown
         projectile.ai[1] += 1f;
@@ -471,7 +475,8 @@ namespace OriMod.Projectiles.Minions {
           string c =
             Upgrade == 1 || Upgrade == 2 ? "" :
             Upgrade == 3 || Upgrade == 4 ? "LevelB" :
-            Upgrade == 5 || Upgrade == 6 ? "LevelC" : "LevelD";
+            Upgrade == 5 || Upgrade == 6 ? "LevelC" :
+            Upgrade == 7 || Upgrade == 8 ? "LevelD" : "";
           PlaySpiritFlameSound("Throw" + c + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
         }
       }
