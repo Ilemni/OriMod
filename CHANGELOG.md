@@ -9,6 +9,9 @@
     - Uses 0 Minion slots
     - Maximum 1 active per player
     - Upgraded versions of the Spirit Orb summon a stronger variant of Sein.
+- You can now change your Spirit Guardian color with /oricolor
+    - Usage: /oricolor <r> <g> <b>
+    - Values are between 0 and 255
 ### Changes
 - Massive overhaul of the mod's backend
 ### Bug Fixes
