@@ -48,7 +48,7 @@ namespace OriMod.Abilities {
       for (int i = 0; i < 25; i++) { // does particles
         Dust dust = Main.dust[Terraria.Dust.NewDust(position, 30, 15, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
-        dust.velocity *= new Vector2(2, 0.5f);
+        dust.velocity *= new Vector2(6, 1.5f);
         if (dust.velocity.Y > 0) {
           dust.velocity.Y = -dust.velocity.Y;
         }
