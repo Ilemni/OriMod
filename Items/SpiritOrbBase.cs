@@ -30,9 +30,7 @@ namespace OriMod.Items {
 			item.color = u.color;
 			upgrade = upgradeID;
 		}
-		public override bool AltFunctionUse(Player player) {
-			return true;
-		}
+		public override bool AltFunctionUse(Player player) => true;
 		public override bool CanUseItem(Player player) {
 			OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
 			if (player.altFunctionUse == 2) {
@@ -46,13 +44,10 @@ namespace OriMod.Items {
 			oPlayer.RemoveSeinBuffs(exclude:upgrade);
 			oPlayer.SeinMinionUpgrade = upgrade;
 			oPlayer.SeinMinionActive = true;
-			return true;
-		}
-		public override bool UseItem(Player player) {
 			if(player.altFunctionUse == 2) {
 				player.MinionNPCTargetAim();
 			}
-			return base.UseItem(player);
+			return true;
 		}
 	}
 }

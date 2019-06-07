@@ -92,6 +92,13 @@ namespace OriMod.Projectiles.Minions {
       ShootID = mod.ProjectileType("SpiritFlame" + (upgradeID));
       Color = u.color;
       LightStrength = u.lightStrength;
+
+      
+      SpiritFlameSound =
+        Upgrade == 1 || Upgrade == 2 ? "" :
+        Upgrade == 3 || Upgrade == 4 ? "LevelB" :
+        Upgrade == 5 || Upgrade == 6 ? "LevelC" :
+        Upgrade == 7 || Upgrade == 8 ? "LevelD" : "";
     }
     protected virtual void CreateDust() { }
     protected virtual void SelectFrame() { }
@@ -122,6 +129,7 @@ namespace OriMod.Projectiles.Minions {
     protected float triggerTargetMove = 0.5f;
     protected float maxDistFromPlayer = 240f;
     protected float minDistFromNPC = 64f;
+    protected string SpiritFlameSound;
     protected SoundEffectInstance PlaySpiritFlameSound(string Path, float Volume) {
       return Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, ("Sounds/Custom/NewSFX/Ori/SpiritFlame/" + Path)).WithVolume(Volume), projectile.Center);
     }
@@ -171,10 +179,7 @@ namespace OriMod.Projectiles.Minions {
         oPlayer.SeinMinionActive = false;
       }
 
-      if (!oPlayer.SeinMinionActive || Upgrade != oPlayer.SeinMinionUpgrade) {
-        projectile.active = false;
-      }
-      else {
+      if (oPlayer.SeinMinionActive && Upgrade == oPlayer.SeinMinionUpgrade) {
         projectile.timeLeft = 2;
       }
     }
@@ -311,7 +316,6 @@ namespace OriMod.Projectiles.Minions {
       Main.projectile[proj].timeLeft = 300;
       Main.projectile[proj].netUpdate = true;
       Main.projectile[proj].penetrate = Pierce;
-      projectile.netUpdate = true;
     }
     internal override void Behavior() {
       if (!projectile.active) { return; }
@@ -478,8 +482,10 @@ namespace OriMod.Projectiles.Minions {
             Upgrade == 5 || Upgrade == 6 ? "LevelC" :
             Upgrade == 7 || Upgrade == 8 ? "LevelD" : "";
           PlaySpiritFlameSound("Throw" + c + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
+          projectile.netUpdate = true;
         }
       }
+      // Main.NewText("Sein Position: [" + (int)projectile.position.X + ", " + (int)projectile.position.Y + "]");
     }
     public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough) {
       fallThrough = true;

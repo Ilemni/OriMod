@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
 using Terraria.ID;
@@ -35,8 +35,10 @@ namespace OriMod {
       flags[1] = fromPlayer.Flashing;
       flags[2] = fromPlayer.Transforming;
       flags[3] = fromPlayer.UnrestrictedMovement;
+      flags[4] = fromPlayer.SeinMinionActive;
       packet.Write((byte)flags);
       if (flags[2]) packet.Write((short)fromPlayer.TransformTimer);
+      if (flags[4]) packet.Write((byte)fromPlayer.SeinMinionUpgrade);
       packet.WriteRGB(fromPlayer.SpriteColor);
 
       packet.Send(toWho, fromWho);
@@ -49,7 +51,9 @@ namespace OriMod {
       bool flashing = flags[1];
       bool transforming = flags[2];
       bool unrestrictedMovement = flags[3];
+      bool seinMinionActive = flags[4];
       short transformTimer = flags[2] ? r.ReadInt16() : (short)0;
+      byte seinMinionUpgrade = flags[4] ? r.ReadByte() : (byte)0;
       Color spriteColor = r.ReadRGB();
 
       fromPlayer.OriSet = oriSet;
@@ -57,6 +61,8 @@ namespace OriMod {
       fromPlayer.Transforming = transforming;
       fromPlayer.UnrestrictedMovement = unrestrictedMovement;
       fromPlayer.TransformTimer = transformTimer;
+      fromPlayer.SeinMinionUpgrade = seinMinionUpgrade;
+      fromPlayer.SeinMinionActive = seinMinionActive;
       fromPlayer.SpriteColor = spriteColor;
       
       if (Main.netMode == NetmodeID.Server) {

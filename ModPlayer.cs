@@ -116,7 +116,18 @@ namespace OriMod
     /// </summary>
     /// <value></value>
     /// <seealso cref="SeinMinionUpgrade" />
-    public bool SeinMinionActive { get; internal set; }
+    public bool SeinMinionActive {
+      get {
+        return _seinMinionActive;
+      }
+      internal set {
+        if (value != _seinMinionActive) {
+          doNetUpdate = true;
+        }
+        _seinMinionActive = value;
+      }
+    }
+    private bool _seinMinionActive = false;
     /// <summary>
     /// The current version of Sein that is summoned
     /// 
@@ -124,7 +135,11 @@ namespace OriMod
     /// </summary>
     /// <value></value>
     /// <seealso cref="SeinMinionActive" />
-    public int SeinMinionUpgrade { get; internal set; }
+    public int SeinMinionUpgrade {
+      get;
+      internal set;
+    }
+    private int seinMinionUpgrade = 0;
 
     // Variables relating to Transforming
     internal float TransformTimer = 0;
@@ -1202,8 +1217,8 @@ namespace OriMod
         effect = SpriteEffects.FlipHorizontally;
       }
       Vector2 pos = new Vector2(
-          (drawPlayer.position.X - Main.screenPosition.X) + 10,
-          (drawPlayer.position.Y - Main.screenPosition.Y) + 8
+        (drawPlayer.position.X - Main.screenPosition.X) + 10,
+        (drawPlayer.position.Y - Main.screenPosition.Y) + 8
       );
       Rectangle rect = new Rectangle((int)(oPlayer.AnimFrame.X), (int)(oPlayer.AnimFrame.Y), 104, 76);
       Vector2 orig = new Vector2(52, 38);
