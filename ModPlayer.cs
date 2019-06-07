@@ -836,13 +836,11 @@ namespace OriMod
       // Charging
       if (
         ( // Ground CJump
-          PlayerInput.Triggers.Current.Up &&
+          OriMod.ChargeKey.Current &&
           !upRefresh &&
           !(OnWall && OriMod.ClimbKey.Current)
         ) || ( // Wall CJump
-          OnWall &&
-          !IsGrounded &&
-          OriMod.ClimbKey.Current &&
+          climb.InUse &&
           (
             (player.direction == 1 && PlayerInput.Triggers.Current.Left) ||
             (player.direction == -1 && PlayerInput.Triggers.Current.Right)
@@ -877,7 +875,7 @@ namespace OriMod
           charged = false;
         }
       }
-      if (!PlayerInput.Triggers.Current.Up && chargeJumpAnimTimer <= 0) {
+      if (!OriMod.ChargeKey.Current && chargeJumpAnimTimer <= 0) {
         upRefresh = false;
       }
 
