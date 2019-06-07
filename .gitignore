@@ -4,6 +4,7 @@
 **/vs/
 **/Sounds/
 *.txt
+SecretClass.cs
 !build.txt
 !description.txt
 *.xcf

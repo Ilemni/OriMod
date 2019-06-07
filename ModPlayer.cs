@@ -1182,19 +1182,13 @@ namespace OriMod
       oPlayer.UpdateFrame(drawPlayer);
       Vector2 position = drawPlayer.position;
       dInfo = drawInfo;
-      Texture2D spriteTexture;
-      Color spriteColor;
-      switch (drawPlayer.name) {
-        case "TwiliChaos":
-        case "Fro Zen":
-          spriteTexture = mod.GetTexture("PlayerEffects/OriPlayer");
-          spriteColor = Color.LightCyan;
-          break;
-        default:
-          spriteTexture = mod.GetTexture("PlayerEffects/OriPlayer");
-          spriteColor = Color.White;
-          break;
-      }
+      Texture2D spriteTexture = mod.GetTexture("PlayerEffects/OriPlayer");
+      Color spriteColor = Color.White;
+      // For integrity and privacy purposes, SecretClass.cs is being kept private
+      // If you are getting build errors, it is due to not having SecretClass.cs.
+      // In that case, comment out the below line
+      SecretClass.SetPlayerColor(oPlayer, out spriteColor, out spriteTexture);
+      
       SpriteEffects effect = SpriteEffects.None;
 
       if (drawPlayer.direction == -1) {
