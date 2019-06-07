@@ -21,6 +21,7 @@ namespace OriMod.Abilities {
     /// <value><c>0</c>-<c>200</c> if there is a target NPC, <c>255</c> if no NPC is targeted</value>
     public byte Npc { get; internal set; }
     internal int Direction = 1;
+    public Projectile Proj;
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
       Npc = r.ReadByte();
@@ -49,6 +50,7 @@ namespace OriMod.Abilities {
         Direction = (Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
       }
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
+      Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1);
       // oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashChargeStart" + OriPlayer.RandomChar(2), .5f);
     }
     protected override void UpdateUsing() {
@@ -92,6 +94,7 @@ namespace OriMod.Abilities {
             newVel *= Speeds[Speeds.Length - 1];
             player.velocity = newVel;
           }
+          Proj = null;
           Npc = 255;
         }
       }

@@ -31,17 +31,26 @@ namespace OriMod.Projectiles {
     }
     public override void AI() {
       projectile.Center = Main.player[projectile.owner].Center;
-      switch (Owner.stomp.State) {
-        case Ability.States.Starting:
-        case Ability.States.Active:
-          projectile.width = 150;
-          projectile.position.Y += 10;
-          break;
-        case Ability.States.Ending:
-          break;
-        default:
-          projectile.Kill();
-          break;
+      if (Owner.stomp.InUse) {
+        switch (Owner.stomp.State) {
+          case Ability.States.Starting:
+          case Ability.States.Active:
+            projectile.width = 150;
+            projectile.position.Y += 10;
+            break;
+          case Ability.States.Ending:
+            break;
+          default:
+            projectile.Kill();
+            break;
+        }
+      }
+      else if (Owner.cDash.InUse) {
+        projectile.width = 80;
+        projectile.height = 80;
+      }
+      else {
+        projectile.Kill();
       }
     }
     public override bool ShouldUpdatePosition() {

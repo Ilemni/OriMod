@@ -869,11 +869,7 @@ namespace OriMod
           upRefresh = true;
           Projectile.NewProjectile(player.Center, new Vector2(0, 0), mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1);
         }
-        if (charged && OriMod.DashKey.Current) {
-          // TODO: Implement the below Projectile into Movement.ChargeDash()
-          Projectile.NewProjectile(player.Center, new Vector2(0, 0), mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1);
         }
-      }
       else {
         chargeTimer = 0;
         if (charged) {
