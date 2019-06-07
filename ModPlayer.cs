@@ -543,6 +543,7 @@ namespace OriMod
         }
       }
     }
+    internal int ImmuneTimer = 0;
     internal void DoTransformation() {
       Transforming = true;
       TransformDirection = player.direction;
@@ -812,7 +813,6 @@ namespace OriMod
           SeinMinionUpgrade = 0;
         }
       }
-
       IsGrounded = false;
       // Check if grounded by means of liquid walking
       if (player.fireWalk || player.waterWalk2 || player.waterWalk) {
@@ -1007,6 +1007,11 @@ namespace OriMod
         player.direction = TransformDirection;
         player.runAcceleration = 0;
         player.maxRunSpeed = 0;
+        player.immune = true;
+      }
+      
+      if (ImmuneTimer > 0) {
+        ImmuneTimer--;
         player.immune = true;
       }
     }

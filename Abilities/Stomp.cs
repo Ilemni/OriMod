@@ -38,7 +38,7 @@ namespace OriMod.Abilities {
       player.velocity.X = 0;
       player.gravity = Gravity;
       player.maxFallSpeed = MaxFallSpeed;
-      player.immune = true;
+      oPlayer.ImmuneTimer = 30;
     }
 
     protected override void UpdateEnding() {

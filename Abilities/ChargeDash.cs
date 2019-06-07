@@ -76,6 +76,7 @@ namespace OriMod.Abilities {
         player.velocity.Y = oPlayer.IsGrounded ? -0.1f : 0.15f * CurrTime;
       }
       player.runSlowdown = 26f;
+      oPlayer.ImmuneTimer = 30;
     }
 
     internal override void Tick() {
