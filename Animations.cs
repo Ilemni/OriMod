@@ -48,7 +48,7 @@ namespace OriMod {
       }},
       {"Bash", new Vector3[] {
         h(incrementType.Select, loop.Once),
-        f(0, 22, 40), f(0, 20)
+        f(0, 22, 40), f(0, 21)
       }},
       {"CrouchStart", new Vector3[] {
         h(incrementType.Single),
