@@ -79,6 +79,7 @@ namespace OriMod.Abilities {
     }
     protected override void UpdateActive() {
       oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
+      oPlayer.ImmuneTimer = 30;
     }
     protected override void UpdateEnding() {
       player.pulley = false;
