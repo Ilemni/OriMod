@@ -8,8 +8,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod {
-	partial class OriMod : Mod
-	{
+  partial class OriMod : Mod
+  {
     public static ModHotKey BashKey;
     public static ModHotKey DashKey;
     public static ModHotKey ClimbKey;
@@ -17,13 +17,13 @@ namespace OriMod {
     public static ModHotKey ChargeKey;
     public static OriMod Instance;
     public OriMod() {
-			Properties = new ModProperties() {
-				Autoload = true,
-				AutoloadGores = true,
-				AutoloadSounds = true
-			};
+      Properties = new ModProperties() {
+        Autoload = true,
+        AutoloadGores = true,
+        AutoloadSounds = true
+      };
       Instance = this;
-		}
+    }
     public override void AddRecipeGroups() {
       // Creates a new recipe group
       RecipeGroup group1 = new RecipeGroup(() => "Any Enchanted Items", new int[] {

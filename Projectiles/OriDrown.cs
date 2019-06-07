@@ -6,17 +6,17 @@ using Terraria.ModLoader;
 using System;
 
 namespace OriMod.Projectiles {
-	public class OriDrown : ModProjectile {
+  public class OriDrown : ModProjectile {
     public OriPlayer Owner() {
       return Main.player[projectile.owner].GetModPlayer<OriPlayer>();
     }
     public override void SetStaticDefaults() { }
-		public override void SetDefaults() {
-			projectile.width = 100;
-			projectile.height = 120;
-			projectile.timeLeft = 800;
-			projectile.tileCollide = false;
-			projectile.ignoreWater = true;
+    public override void SetDefaults() {
+      projectile.width = 100;
+      projectile.height = 120;
+      projectile.timeLeft = 800;
+      projectile.tileCollide = false;
+      projectile.ignoreWater = true;
       projectile.friendly = true;
     }
     public override void AI() { }

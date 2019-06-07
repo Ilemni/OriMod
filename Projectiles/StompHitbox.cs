@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 using System;
 
 namespace OriMod.Projectiles {
-	public class StompHitbox : ModProjectile {
+  public class StompHitbox : ModProjectile {
     private OriPlayer _owner;
     public OriPlayer Owner {
       get {
@@ -19,14 +19,14 @@ namespace OriMod.Projectiles {
 
     public override void SetStaticDefaults() { }
 
-		public override void SetDefaults() {
-			projectile.width = 100;
-			projectile.height = 100;
-			projectile.timeLeft = 40;
+    public override void SetDefaults() {
+      projectile.width = 100;
+      projectile.height = 100;
+      projectile.timeLeft = 40;
       projectile.penetrate = 999;
       projectile.magic = true;
-			projectile.tileCollide = false;
-			projectile.ignoreWater = true;
+      projectile.tileCollide = false;
+      projectile.ignoreWater = true;
       projectile.friendly = true;
     }
     public override void AI() {

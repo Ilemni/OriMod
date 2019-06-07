@@ -7,15 +7,15 @@ using Terraria.ModLoader;
 namespace OriMod {
   internal class OriPlayerPacketHandler : PacketHandler {
     internal OriPlayerPacketHandler(byte handlerType) : base(handlerType)
-		{
-			HandlerType = handlerType;
-		}
+    {
+      HandlerType = handlerType;
+    }
     internal const byte OriState = 1;
     internal override void HandlePacket(BinaryReader reader, int fromWho) {
       byte packetType = reader.ReadByte();
       if (Main.netMode == NetmodeID.MultiplayerClient) {
-		    fromWho = reader.ReadUInt16();
-	    }
+        fromWho = reader.ReadUInt16();
+      }
       switch(packetType) {
         case OriState:
           ReceiveOriState(reader, fromWho);
@@ -66,8 +66,8 @@ namespace OriMod {
       fromPlayer.SpriteColor = spriteColor;
       
       if (Main.netMode == NetmodeID.Server) {
-				SendOriState(-1, fromWho);
-			}
+        SendOriState(-1, fromWho);
+      }
     }
   }
 }

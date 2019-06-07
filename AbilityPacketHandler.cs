@@ -9,14 +9,14 @@ using Terraria.ModLoader;
 namespace OriMod {
   partial class AbilityPacketHandler : PacketHandler {
     internal AbilityPacketHandler(byte handlerType) : base(handlerType) {
-			HandlerType = handlerType;
-		}
+      HandlerType = handlerType;
+    }
     internal const byte AbilityState = 1;
     internal override void HandlePacket(System.IO.BinaryReader reader, int fromWho) {
       int packetType = reader.ReadByte();
       if (Main.netMode == NetmodeID.MultiplayerClient) {
-		    fromWho = reader.ReadUInt16();
-	    }
+        fromWho = reader.ReadUInt16();
+      }
       switch (packetType) {
         case AbilityState:
           ReceiveAbilityState(reader, fromWho);

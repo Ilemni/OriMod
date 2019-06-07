@@ -12,21 +12,21 @@ namespace OriMod.Projectiles.Minions {
   public abstract class SeinBase : Minion {
     protected int Upgrade;
     public override void SetStaticDefaults() {
-			Main.projFrames[projectile.type] = 3;
-			Main.projPet[projectile.type] = true;
+      Main.projFrames[projectile.type] = 3;
+      Main.projPet[projectile.type] = true;
       ProjectileID.Sets.MinionSacrificable[projectile.type] = true;
       ProjectileID.Sets.Homing[projectile.type] = true;
       ProjectileID.Sets.MinionTargettingFeature[projectile.type] = true; //This is necessary for right-click targeting
     }
     public override void SetDefaults() {
-			projectile.netImportant = true;
-			projectile.friendly = true;
-			projectile.minion = true;
-			projectile.minionSlots = 0;
-			projectile.penetrate = -1;
-			projectile.timeLeft = 18000;
-			projectile.tileCollide = false;
-			projectile.ignoreWater = true;
+      projectile.netImportant = true;
+      projectile.friendly = true;
+      projectile.minion = true;
+      projectile.minionSlots = 0;
+      projectile.penetrate = -1;
+      projectile.timeLeft = 18000;
+      projectile.tileCollide = false;
+      projectile.ignoreWater = true;
       projectile.velocity = new Vector2(0, -maxVelocityInBounds);
       projectile.position = PlayerSpace();
       targetSpawn = PlayerSpace(0, -32);
