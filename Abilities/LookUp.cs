@@ -37,7 +37,7 @@ namespace OriMod.Abilities {
         }
       }
       else {
-        if (CanUse && PlayerInput.Triggers.Current.Up) {
+        if (CanUse && (PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current)) {
           State = States.Starting;
           CurrTime = 0;
         }
