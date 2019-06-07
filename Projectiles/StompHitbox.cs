@@ -46,8 +46,8 @@ namespace OriMod.Projectiles {
         }
       }
       else if (Owner.cDash.InUse) {
-        projectile.width = (int)Utils.Clamp(64, 160, (Math.Abs(Owner.player.velocity.X) * 1.5f));
-        projectile.height = (int)Utils.Clamp(64, 160, (Math.Abs(Owner.player.velocity.Y) * 1.5f));
+        projectile.width = (int)Utils.Clamp((Math.Abs(Owner.player.velocity.X) * 1.5f), 64, 160);
+        projectile.height = (int)Utils.Clamp((Math.Abs(Owner.player.velocity.Y) * 1.5f), 64, 160);
       }
       else {
         projectile.Kill();

@@ -92,7 +92,8 @@ namespace OriMod.Abilities {
       if (oPlayer.IsGrounded) {
         player.position.Y -= 1f;
       }
-      player.ApplyDamageToNPC(Npc, BashDamage, 0, 1, false);
+      int damage = BashDamage + oPlayer.SeinMinionUpgrade * 9;
+      player.ApplyDamageToNPC(Npc, damage, 0, 1, false);
     }
     protected override void UpdateUsing() {
       if (State != States.Ending) {
