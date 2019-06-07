@@ -1029,7 +1029,7 @@ namespace OriMod
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       if (OriSet) {
-        if (stomp.InUse || chargeJumpAnimTimer > 0 || bash.InUse) {
+        if (stomp.InUse || chargeJumpAnimTimer > 0 || bash.InUse || cDash.InUse) {
           damage = 0;
         }
       }
@@ -1039,12 +1039,13 @@ namespace OriMod
       if (OriSet && playSound) {
         playSound = false; // stops regular hurt sound from playing
         genGore = false; // stops regular gore from appearing
-        if (bash.InUse || stomp.InUse || chargeJumpAnimTimer > 0) {
+        if (bash.InUse || stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0) {
           damage = 0;
+          return false;
         }
         else {
           FlashTimer = 53;
-          PlayNewSound("Ori/Hurt/seinHurtRegular" + RandomChar(5, ref hurtRand), 0.8f);
+          PlayNewSound("Ori/Hurt/seinHurtRegular" + RandomChar(4, ref hurtRand));
           UnrestrictedMovement = true;
         }
       }
