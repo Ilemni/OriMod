@@ -225,6 +225,7 @@ namespace OriMod
     /// <seealso cref="FloorMaterial" />
     /// </summary>
     public List<int> WoodFloorMaterials;
+    internal List<int> UnassignedTiles;
 
     // Wall materials
     public List<int> GrassWallMaterials;
@@ -560,6 +561,7 @@ namespace OriMod
       MushroomWallMaterials = new List<int>();
       RockWallMaterials = new List<int>();
       WoodWallMaterials = new List<int>();
+      UnassignedTiles = new List<int>();
 
       GrassFloorMaterials.Clear();
       LightDarkFloorMaterials.Clear();
@@ -751,6 +753,10 @@ namespace OriMod
             }
             else {
               FloorMaterial = "Grass";
+              if (!UnassignedTiles.Contains(tile.type)) {
+              // Main.NewText("Tile ID " + tile.type + " is not assigned to a material"); // Debug
+                UnassignedTiles.Add(tile.type);
+              }
             }
           }
         }
@@ -867,7 +873,7 @@ namespace OriMod
           upRefresh = true;
           Projectile.NewProjectile(player.Center, new Vector2(0, 0), mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1);
         }
-        }
+      }
       else {
         chargeTimer = 0;
         if (charged) {
@@ -1312,6 +1318,11 @@ namespace OriMod
     public override void Initialize() {
       Abilities = new OriAbilities(this);
       InitTestMaterial();
+    }
+    public override void OnEnterWorld(Player player) {
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+      oPlayer.SeinMinionActive = false;
+      oPlayer.seinMinionUpgrade = 0;
     }
   }
 }
