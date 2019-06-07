@@ -31,12 +31,24 @@ namespace OriMod.Items {
       upgrade = upgradeID;
     }
     public override bool AltFunctionUse(Player player) => true;
+    public int GetUpgrade() {
+      string name = this.GetType().ToString();
+      string sub = name.Substring(22);
+      int u;
+      bool success = int.TryParse(sub, out u);
+      if (!success) {
+        Main.NewText("Error: Couldn't get number from " + sub, Color.Red);
+        return 0;
+      }
+      return u;
+    }
     public override bool CanUseItem(Player player) {
+      int u = GetUpgrade();
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
       if (player.altFunctionUse == 2) {
         return false;
       }
-      if (oPlayer.SeinMinionActive && oPlayer.SeinMinionUpgrade == upgrade) return false;
+      if (oPlayer.SeinMinionActive && oPlayer.SeinMinionUpgrade == u) return false;
       return true;
     }
     public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack) {
