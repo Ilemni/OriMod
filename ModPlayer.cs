@@ -284,6 +284,18 @@ namespace OriMod
       return tile;
     }
 
+    private Color _spriteColor = Color.LightCyan;
+    internal Color SpriteColor {
+      get {
+        return _spriteColor;
+      }
+      set {
+        if (value != _spriteColor) {
+          doNetUpdate = true;
+        }
+        _spriteColor = value;
+      }
+    }
     #endregion
     
     // basic sound playing method, with paths starting after NewSFX in the file structure
@@ -1183,31 +1195,20 @@ namespace OriMod
       Vector2 position = drawPlayer.position;
       dInfo = drawInfo;
       Texture2D spriteTexture = mod.GetTexture("PlayerEffects/OriPlayer");
-      Color spriteColor = Color.White;
-      // For integrity and privacy purposes, SecretClass.cs is being kept private
-      // If you are getting build errors, it is due to not having SecretClass.cs.
-      // In that case, comment out the below line
-      SecretClass.SetPlayerColor(oPlayer, out spriteColor, out spriteTexture);
       
       SpriteEffects effect = SpriteEffects.None;
 
       if (drawPlayer.direction == -1) {
         effect = SpriteEffects.FlipHorizontally;
       }
-
-      DrawData data = new DrawData(
-        spriteTexture,
-        new Vector2(
+      Vector2 pos = new Vector2(
           (drawPlayer.position.X - Main.screenPosition.X) + 10,
           (drawPlayer.position.Y - Main.screenPosition.Y) + 8
-        ),
-        new Rectangle(
-          (int)(oPlayer.AnimFrame.X),
-          (int)(oPlayer.AnimFrame.Y), 104, 76),
-        spriteColor,
-        drawPlayer.direction * oPlayer.AnimRads,
-        new Vector2(52, 38), 1, effect, 0
       );
+      Rectangle rect = new Rectangle((int)(oPlayer.AnimFrame.X), (int)(oPlayer.AnimFrame.Y), 104, 76);
+      Vector2 orig = new Vector2(52, 38);
+      
+      DrawData data = new DrawData(spriteTexture, pos, rect, oPlayer.SpriteColor, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
       data.position += oPlayer.Offset(oPlayer);
       Main.playerDrawData.Add(data);
       // public DrawData(Texture2D texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effect, int inactiveLayerDepth);
@@ -1227,30 +1228,7 @@ namespace OriMod
       if (oPlayer.TransformTimer > 236) { // Transform Start
         float t = oPlayer.TransformTimer - 235;
         if (t > 0) {
-          if (t > 390) {
-            y = 0;
-          }
-          else if (t > 330) {
-            y = 1;
-          }
-          else if (t > 270) {
-            y = 2;
-          }
-          else if (t > 150) {
-            y = 3;
-          }
-          else if (t > 110) {
-            y = 4;
-          }
-          else if (t > 70) {
-            y = 5;
-          }
-          else if (t > 30) {
-            y = 6;
-          }
-          else {
-            y = 7;
-          }
+          y = t > 390 ? 0 : t > 330 ? 1 : t > 270 ? 2 : t > 150 ? 3 : t > 110 ? 4 : t > 70 ? 5 : t > 30 ? 6 : 7;
         }
       }
       DrawData data = new DrawData(
