@@ -33,6 +33,7 @@ namespace OriMod.Abilities {
       if (CurrDur == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + OriPlayer.RandomChar(3));
         Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
+        Proj.damage = 9 + oPlayer.SeinMinionUpgrade * 8;
       }
       if (Handler.airJump.State == States.Active) return;
       player.velocity.X = 0;
@@ -54,6 +55,7 @@ namespace OriMod.Abilities {
       }
       Proj.width = 600;
       Proj.height = 320;
+      Proj.damage = (int)(Proj.damage * 1.6f);
       Proj = null;
     }
     protected override void UpdateUsing() {
