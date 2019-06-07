@@ -35,7 +35,7 @@ namespace OriMod.Abilities {
       int tempNPC = -1;
       for (int n = 0; n < Main.maxNPCs; n++) {
         NPC localNpc = Main.npc[n];
-        if (!localNpc.active) continue;
+        if (!localNpc.active || localNpc.friendly) continue;
         float dist = (player.position - localNpc.position).Length();
         if (dist < tempDist) {
           tempDist = dist;

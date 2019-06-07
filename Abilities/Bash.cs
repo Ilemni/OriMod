@@ -54,7 +54,7 @@ namespace OriMod.Abilities {
       float currDist = BashRange;
       for (int n = 0; n < Main.maxNPCs; n++) {
         NPC localNpc = Main.npc[n];
-        if (localNpc == null || !localNpc.active || CannotBash.Contains(localNpc.type) || localNpc.boss || localNpc.immortal) continue;
+        if (localNpc == null || !localNpc.active || localNpc.friendly || CannotBash.Contains(localNpc.type) || localNpc.boss || localNpc.immortal) continue;
         float newDist = (player.position - localNpc.position).Length();
         if (newDist < currDist) {
           tempNpcID = (byte)n;
