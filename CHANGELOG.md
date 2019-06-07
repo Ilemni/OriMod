@@ -1,3 +1,14 @@
+## v2.2.1.1
+### Changes
+- Greatly reduced filesize
+- Damage of Stomp, Bash, and Charge Dash now scaled to which Sein is summoned.
+- Stomp, Bash, and Charge Dash now grant temporary invulnerability after ending.
+- Increased volume of certain sounds.
+### Bug Fixes
+- Fixed Bash activating on the Destroyer.
+- Fixed certain armors greatly increasing the speed of animations
+- Actually fixed Sein being able to be spawned endlessly.
+- Remove unintended debug messages.
 ## v2.2.1
 ### Bug Fixes
 - Fixed some texts not displaying properly

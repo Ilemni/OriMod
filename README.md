@@ -6,13 +6,24 @@ The Ori franchise is the property of Microsoft. This mod and its creators are in
 If you enjoy this mod, we strongly urge you purchase Ori and the Blind Forest, as well as Ori and the Will of the Wisps when it releases.
 
 # Changelog
+## v2.2.1.1
+### Changes
+- Greatly reduced filesize
+- Damage of Stomp, Bash, and Charge Dash now scaled to which Sein is summoned.
+- Stomp, Bash, and Charge Dash now grant temporary invulnerability after ending.
+- Increased volume of certain sounds.
+### Bug Fixes
+- Fixed Bash activating on the Destroyer.
+- Fixed certain armors greatly increasing the speed of animations
+- Actually fixed Sein being able to be spawned endlessly.
+- Remove unintended debug messages.
 ## v2.2.1
 ### Bug Fixes
-- Fixed some texts not displaying properly
-- Fixed Sein no longer spawnable after mod reload
-- Fixed Sein being able to be spawned endlessly
-- Fixed Bash and Charge Dash targeting friendly NPCs
-- Fixed Charge Dash not dealing damage to enemies
+- Fixed some texts not displaying properly.
+- Fixed Sein no longer spawnable after mod reload.
+- Fixed Sein being able to be spawned endlessly.
+- Fixed Bash and Charge Dash targeting friendly NPCs.
+- Fixed Charge Dash not dealing damage to enemies.
 ## v2.2
 ### Additions
 - Added the Spirit Orb
