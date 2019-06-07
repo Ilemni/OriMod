@@ -312,6 +312,15 @@ namespace OriMod
         _spriteColor = value;
       }
     }
+    internal bool debugMode = false;
+    internal void Debug(string msg) {
+      Debug(msg, this);
+    }
+    internal static void Debug(string msg, OriPlayer oPlayer) {
+      if (oPlayer.debugMode && oPlayer.player.whoAmI == Main.myPlayer) {
+        Main.NewText(msg);
+      }
+    }
     #endregion
     
     // basic sound playing method, with paths starting after NewSFX in the file structure
