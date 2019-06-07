@@ -55,6 +55,7 @@ namespace OriMod.Abilities {
       for (int n = 0; n < Main.maxNPCs; n++) {
         NPC localNpc = Main.npc[n];
         if (localNpc == null || !localNpc.active || localNpc.friendly || CannotBash.Contains(localNpc.type) || localNpc.boss || localNpc.immortal) continue;
+        if (localNpc.aiStyle == 37) continue; // A Destroyer segment is not considered a boss
         float newDist = (player.position - localNpc.position).Length();
         if (newDist < currDist) {
           tempNpcID = (byte)n;
