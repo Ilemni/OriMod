@@ -53,7 +53,7 @@ namespace OriMod {
       if (oPlayer == null) return;
       float rotRads = (float)(rotDegrees / 180 * Math.PI);
       if (!Names.Contains(anim)) {
-        if (anim != "") {
+        if (anim != null && anim.Length > 0) {
           Main.NewText("Error with animation: The animation sequence \"" + anim + "\" does not exist.", Color.Red);
           ErrorLogger.Log("Error with animation: The animation sequence \"" + anim + "\" does not exist.");
         }
