@@ -37,24 +37,24 @@ namespace OriMod.Items {
       int u;
       bool success = int.TryParse(sub, out u);
       if (!success) {
-        Main.NewText("Error: Couldn't get number from " + sub, Color.Red);
+        Main.NewText("Error with Sein summon: Couldn't get number from " + sub, Color.Red);
         return 0;
       }
       return u;
     }
     public override bool CanUseItem(Player player) {
-      int u = GetUpgrade();
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
       if (player.altFunctionUse == 2) {
         return false;
       }
-      if (oPlayer.SeinMinionActive && oPlayer.SeinMinionUpgrade == u) return false;
+      if (oPlayer.SeinMinionActive && oPlayer.SeinMinionUpgrade == GetUpgrade()) return false;
       return true;
     }
     public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-      oPlayer.RemoveSeinBuffs(exclude:upgrade);
-      oPlayer.SeinMinionUpgrade = upgrade;
+      int u = GetUpgrade();
+      oPlayer.RemoveSeinBuffs(exclude:u);
+      oPlayer.SeinMinionUpgrade = u;
       oPlayer.SeinMinionActive = true;
       if(player.altFunctionUse == 2) {
         player.MinionNPCTargetAim();
