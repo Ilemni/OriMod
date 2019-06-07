@@ -127,7 +127,7 @@ namespace OriMod {
     internal float lightStrength;
   }
   partial class OriMod {
-    internal static List<SeinUpgrade> SeinUpgrades = new List<SeinUpgrade>();
+    internal static List<SeinUpgrade> SeinUpgrades;
     private void AddNewSein(SeinUpgrade newSein) {
       SeinUpgrade defaultSein = new SeinUpgrade();
       SeinUpgrade lastSein = new SeinUpgrade();
@@ -147,6 +147,7 @@ namespace OriMod {
       SeinUpgrades.Add(newSein);
     }
     private void LoadSeinUpgrades() {
+      SeinUpgrades = new List<SeinUpgrade>();
       AddNewSein(new SeinUpgrade()); // Tier 1 (Silver)
       AddNewSein(new SeinUpgrade{    // Tier 2 (Demonite/Crimsane)
         rarity = 2,
