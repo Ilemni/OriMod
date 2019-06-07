@@ -378,6 +378,8 @@ namespace OriMod
 
     private void UpdateFrame(Player drawPlayer) {
       if (!OriSet) return;
+      if (!doUpdateFrame) return;
+      doUpdateFrame = false;
       AnimTime++;
       
       if (!Transforming && !HasTransformedOnce) {
@@ -792,7 +794,9 @@ namespace OriMod
         }
       }
     }
+    internal bool doUpdateFrame = true;
     public override void PostUpdate() {
+      doUpdateFrame = true;
       if (SeinMinionActive) {
         if (!(
           player.HasBuff(mod.GetBuff("SeinBuff1").Type) ||
