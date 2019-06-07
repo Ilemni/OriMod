@@ -28,7 +28,7 @@ namespace OriMod.Abilities {
       if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
     }
     protected override void UpdateEnding() {
-      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGildeEnd" + OriPlayer.RandomChar(3), 0.8f);
+      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + OriPlayer.RandomChar(3), 0.8f);
     }
     internal override void Tick() {
       if (Handler.dash.InUse) {

@@ -52,7 +52,6 @@ namespace OriMod.Abilities {
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
       Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
       Proj.damage = 12 + oPlayer.SeinMinionUpgrade * 11;
-      // oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashChargeStart" + OriPlayer.RandomChar(2), .5f);
     }
     protected override void UpdateUsing() {
       float speed = Speeds[CurrTime];

@@ -74,11 +74,11 @@ namespace OriMod.Abilities {
 
       playerStartPos = player.Center;
       npcStartPos = Npc.Center;
-      oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", /*0.7f*/ Main.soundVolume);
+      oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.7f);
       return true;
     }
     protected override void UpdateActive() {
-      oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", /*0.7f*/ Main.soundVolume);
+      oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
     }
     protected override void UpdateEnding() {
       player.pulley = false;
