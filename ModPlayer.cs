@@ -1026,6 +1026,7 @@ namespace OriMod
         }
       }
     }
+    private int hurtRand = 0;
     public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // effects when character is hurt
       if (OriSet && playSound) {
         playSound = false; // stops regular hurt sound from playing
@@ -1035,7 +1036,7 @@ namespace OriMod
         }
         else {
           FlashTimer = 53;
-          PlayNewSound("Ori/Hurt/seinHurtRegular" + RandomChar(5), /*0.6f*/ Main.soundVolume);
+          PlayNewSound("Ori/Hurt/seinHurtRegular" + RandomChar(5, ref hurtRand), 0.8f);
           UnrestrictedMovement = true;
         }
       }
