@@ -6,8 +6,14 @@ The Ori franchise is the property of Microsoft. This mod and its creators are in
 If you enjoy this mod, we strongly urge you purchase Ori and the Blind Forest, as well as Ori and the Will of the Wisps when it releases.
 
 # Changelog
-
-## v2.2 (Unreleased)
+## v2.2.1
+### Bug Fixes
+- Fixed some texts not displaying properly
+- Fixed Sein no longer spawnable after mod reload
+- Fixed Sein being able to be spawned endlessly
+- Fixed Bash and Charge Dash targeting friendly NPCs
+- Fixed Charge Dash not dealing damage to enemies
+## v2.2
 ### Additions
 - Added the Spirit Orb
     - The Spirit Orb is used to summon Sein.
