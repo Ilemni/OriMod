@@ -1,6 +1,6 @@
 Common.Sein=Sein
 Common.SpiritOrb=Spirit Orb
-Connon.OriPotion=Spirit Potion
+Common.OriPotion=Spirit Potion
 
 ItemName.SpiritOrb1={$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff1={$Mods.OriMod.Common.Sein}
