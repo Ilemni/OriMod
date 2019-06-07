@@ -39,7 +39,7 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (InUse) {
-        if (!oPlayer.OnWall) {
+        if (!oPlayer.OnWall || !OriMod.ClimbKey.Current) {
           State = States.Inactive;
         }
       }

@@ -10,6 +10,7 @@ namespace OriMod.Abilities {
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private const int EndTime = 12;
     private int CurrTime = 0;
+    private int WallDir = 0;
 
     protected override void UpdateActive() {
       player.velocity.Y = WallJumpVelocity.Y;
@@ -19,8 +20,8 @@ namespace OriMod.Abilities {
       if (oPlayer.OnWall) player.velocity.Y--;
     }
     protected override void UpdateUsing() {
-      player.velocity.X = WallJumpVelocity.X * -Handler.climb.WallDir;
-      player.direction = Handler.climb.WallDir;
+      player.velocity.X = WallJumpVelocity.X * -WallDir;
+      player.direction = WallDir;
       oPlayer.UnrestrictedMovement = true;
     }
 
@@ -39,6 +40,7 @@ namespace OriMod.Abilities {
       else {
         if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
           State = States.Active;
+          WallDir = player.direction;
           Handler.climb.State = States.Inactive;
         }
       }
