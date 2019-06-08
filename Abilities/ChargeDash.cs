@@ -75,6 +75,10 @@ namespace OriMod.Abilities {
         player.velocity.X = speed * Direction * 0.8f;
         player.velocity.Y = oPlayer.IsGrounded ? -0.1f : 0.15f * CurrTime;
       }
+      
+      Proj.width = (int)Utils.Clamp((Math.Abs(player.velocity.X) * 2.5f), 96, 250);
+      Proj.height = (int)Utils.Clamp((Math.Abs(player.velocity.Y) * 2.5f), 96, 250);
+      Proj.Center = player.Center;
       player.runSlowdown = 26f;
       oPlayer.ImmuneTimer = 30;
     }
