@@ -34,7 +34,7 @@ namespace OriMod.Abilities {
         NpcID = r.ReadByte();
         if (State == States.Starting) {
           npcStartPos = r.ReadVector2();
-          Npc.GetGlobalNPC<BashNPC>().BashPos = Npc.Center = npcStartPos;
+          Npc.GetGlobalNPC<OriNPC>().BashPos = Npc.Center = npcStartPos;
           playerStartPos = r.ReadVector2();
         }
       }
@@ -68,7 +68,7 @@ namespace OriMod.Abilities {
       }
       NpcID = (byte)tempNpcID;
       WormID = Npc.aiStyle == 6 ? (byte)Npc.ai[3] : (byte)255; 
-      BashNPC bashNpc = (IsBashingWorm ? WormNpc : Npc).GetGlobalNPC<BashNPC>();
+      OriNPC bashNpc = (IsBashingWorm ? WormNpc : Npc).GetGlobalNPC<OriNPC>();
       bashNpc.IsBashed = true;
       bashNpc.BashPos = Npc.Center;
 
@@ -91,7 +91,7 @@ namespace OriMod.Abilities {
       Vector2 bashVector = new Vector2((float)(0 - (Math.Cos(bashAngle))), (float)(0 - (Math.Sin(bashAngle))));
       player.velocity = bashVector * BashPlayerStrength;
       Npc.velocity = -bashVector * BashNpcStrength;
-      BashNPC bashNpc = (IsBashingWorm ? WormNpc : Npc).GetGlobalNPC<BashNPC>();
+      OriNPC bashNpc = (IsBashingWorm ? WormNpc : Npc).GetGlobalNPC<OriNPC>();
       bashNpc.IsBashed = false;
       if (oPlayer.IsGrounded) {
         player.position.Y -= 1f;
