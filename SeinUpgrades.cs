@@ -8,7 +8,7 @@ namespace OriMod {
     /// <summary>
     /// Damage of Spirit Flame
     /// </summary>
-    public int damage = 8;
+    public int damage = 12;
     /// <summary>
     /// Multiplier of damage dealt to the primary target
     /// </summary>
@@ -24,7 +24,7 @@ namespace OriMod {
     /// <seealso cref="minCooldown" />
     /// <seealso cref="shortCooldown" />
     /// <seealso cref="longCooldown" />
-    public int shotsPerBurst = 1;
+    public int shotsPerBurst = 2;
     /// <summary>
     /// Maximum number of shots that can be fired at each target
     /// 
@@ -46,15 +46,11 @@ namespace OriMod {
     /// <summary>
     /// Shortest time to wait during <c>shotsPerBurst</c> to reset burst count
     /// </summary>
-    public float shortCooldown = 18f;
+    public float shortCooldown = 24f;
     /// <summary>
     /// Delay between each series of shots, incurred when shots reaches <c>shotsPerBurst</c>
     /// </summary>
-    public float longCooldown = 60f;
-    /// <summary>
-    /// Determines if Spirit Flame shots collide with or ignore tiles
-    /// </summary>
-    public bool tileCollide = true;
+    public float longCooldown = 40f;
     /// <summary>
     /// Maximum angle that fired Spirit Flames will be away from the target
     /// </summary>
@@ -68,7 +64,7 @@ namespace OriMod {
     /// <summary>
     /// NPCs this distance from the player can be targeted by the minion, regardless of line of sight
     /// </summary>
-    public float targetThroughWallDist = 0f;
+    public float targetThroughWallDist = 80f;
     /// <summary>
     /// The amount of times Spirit Flame can hit enemies before disappearing
     /// </summary>
@@ -84,11 +80,11 @@ namespace OriMod {
     /// <summary>
     /// Rate to increase homing strength every frame after <c>homingIncreaseDelay</c>
     /// </summary>
-    internal float homingIncreaseRate = 0.03f;
+    internal float homingIncreaseRate = 0.04f;
     /// <summary>
     /// Time to wait before increasing homing strength by <c>homingIncreaseRate</c>
     /// </summary>
-    internal float homingIncreaseDelay = 20f;
+    internal float homingIncreaseDelay = 16f;
     /// <summary>
     /// Speed of Spirit Flame when it is fired
     /// </summary>
@@ -100,7 +96,7 @@ namespace OriMod {
     /// <summary>
     /// Time to wait before increasing Spirit Flame speed by <c>projectileSpeedIncreaseRate</c>
     /// </summary>
-    internal int projectileSpeedIncreaseDelay = 20;
+    internal int projectileSpeedIncreaseDelay = 10;
     internal int minionWidth = 10;
     internal int minionHeight = 11;
     internal int flameWidth = 12;
@@ -154,7 +150,7 @@ namespace OriMod {
         value = 3000,
         color = new Color(108, 92, 172),
         damage = 17,
-        shotsPerBurst = 2,
+        shotsPerBurst = 3,
         projectileSpeedStart = 7f,
         homingIncreaseRate = 0.045f,
         dustScale = 1.3f,
@@ -166,8 +162,8 @@ namespace OriMod {
         color = new Color(240, 0, 0, 194),
         damage = 28,
         targets = 2,
-        shotsPerBurst = 3, 
-        tileCollide = false, 
+        maxShotsPerVolley = 2,
+        shotsPerBurst = 3,
         randDegrees = 100,
         projectileSpeedStart = 10.5f, 
         projectileSpeedIncreaseRate = 0.65f, 
@@ -182,7 +178,7 @@ namespace OriMod {
         color = new Color(185, 248, 248),
         damage = 39,
         shotsToPrimaryTarget = 2,
-        maxShotsPerVolley = 2,
+        maxShotsPerVolley = 3,
         randDegrees = 60,
         projectileSpeedStart = 12.5f, 
         homingIncreaseRate = 0.05f, 
@@ -195,7 +191,9 @@ namespace OriMod {
         value = 50000,
         color = new Color(255, 228, 160),
         damage = 52, 
-        shotsToPrimaryTarget = 2,
+        targets = 3,
+        shotsPerTarget = 2,
+        maxShotsPerVolley = 5,
         pierce = 2, 
         homingIncreaseDelay = 17f,
         targetMaxDist = 440f,
@@ -206,10 +204,11 @@ namespace OriMod {
         rarity = 8,
         value = 100000,
         color = new Color(0, 180, 174, 210),
-        damage = 68, 
-        targets = 3,
+        damage = 68,
+        shotsToPrimaryTarget = 3,
+        maxShotsPerVolley = 6,
         minCooldown = 10f, 
-        shortCooldown = 14f, 
+        shortCooldown = 34f, 
         longCooldown = 52f, 
         targetThroughWallDist = 224f, 
         homingIncreaseRate = 0.0625f,
@@ -226,9 +225,8 @@ namespace OriMod {
         color = new Color(78, 38, 102),
         damage = 84,
         targets = 4,
-        shotsToPrimaryTarget = 3,
-        shotsPerTarget = 2,
-        maxShotsPerVolley = 8,
+        shotsPerTarget = 3,
+        maxShotsPerVolley = 9,
         homingIncreaseRate = 0.025f, 
         projectileSpeedStart = 16f, 
         targetMaxDist = 670f,
@@ -240,16 +238,14 @@ namespace OriMod {
         rarity = 10,
         value = 500000,
         color = new Color(220, 220, 220),
-        damage = 114, 
+        damage = 92, 
         pierce = 3,
-        shotsPerBurst = 6, 
+        shotsPerBurst = 4, 
         targets = 6, 
         shotsToPrimaryTarget = 4,
         shotsPerTarget = 2,
-        maxShotsPerVolley = 8,
-        minCooldown = 8f, 
-        shortCooldown = 18f, 
-        longCooldown = 45f, 
+        maxShotsPerVolley = 10,
+        longCooldown = 55f, 
         homingStrengthStart = 0.05f, 
         homingIncreaseDelay = 15f, 
         projectileSpeedStart = 20f, 

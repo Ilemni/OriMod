@@ -343,7 +343,7 @@ namespace OriMod.Projectiles.Minions {
       if (t == 0) dmg = (int)(dmg * PrimaryDamageMultiplier);
       if (!Autoshoot) dmg = (int)(dmg * ManualShootDamageMultiplier);
       int proj = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, 0, 0);
-      projectile.velocity += (shootVel * -0.005f);
+      projectile.velocity += (shootVel * -0.015f);
       if (t == -1) {
         Main.projectile[proj].ai[0] = nonTargetPos.X;
         Main.projectile[proj].ai[1] = nonTargetPos.Y;
@@ -370,13 +370,13 @@ namespace OriMod.Projectiles.Minions {
 
       Vector2 targetPos = projectile.position;
       bool targeting = false;
-      projectile.tileCollide = true;
+      projectile.tileCollide = false;
       
       // If player specifies target, add that target to selection
       if(player.HasMinionAttackTargetNPC) {
         NPC npc = Main.npc[player.MinionAttackTargetNPC];
         if (npc.CanBeChasedBy(this, false)) {
-          float distance = Vector2.Distance(projectile.Center, npc.Center);
+          float distance = Vector2.Distance(player.Center, npc.Center);
           if (
             distance < MaxTargetDist && 
             (
@@ -394,7 +394,7 @@ namespace OriMod.Projectiles.Minions {
       for (int k = 0; k < Main.maxNPCs; k++) {
         NPC npc = Main.npc[k];
         if (!npc.CanBeChasedBy(this, false) || !npc.active) continue;
-        float distance = Vector2.Distance(projectile.Center, npc.Center);
+        float distance = Vector2.Distance(player.Center, npc.Center);
         if (
           distance < MaxTargetThroughWallDist || distance < MaxTargetDist &&
           Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height)
@@ -419,7 +419,7 @@ namespace OriMod.Projectiles.Minions {
       else {
         float dist = 0;
         for (int t = 0; t < targetIDs.Count; t++) {
-          float npcDist = (projectile.position - Main.npc[targetIDs[t]].position).Length();
+          float npcDist = (player.position - Main.npc[targetIDs[t]].position).Length();
           if (npcDist < dist) {
             doReplace = true; // List of NPCs is no longer in order of distance
             break;
@@ -443,9 +443,6 @@ namespace OriMod.Projectiles.Minions {
       }
       
       // If not in idle box, no collision
-      if (!IsInBounds()) {
-        projectile.tileCollide = false;
-      }
       
       projectile.rotation = projectile.velocity.X * 0.05f;
       SelectFrame();
@@ -508,7 +505,9 @@ namespace OriMod.Projectiles.Minions {
     }
     public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough) {
       fallThrough = true;
-      return true;
+      width = 4;
+      height = 4;
+      return false;
     }
   }
 }

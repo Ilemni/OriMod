@@ -46,7 +46,6 @@ namespace OriMod.Projectiles.Minions {
       acceleration = u.projectileSpeedIncreaseRate;
       accelDelay = u.projectileSpeedIncreaseDelay;
       projectile.maxPenetrate = u.pierce;
-      projectile.tileCollide = u.tileCollide;
       projectile.width = u.flameWidth;
       projectile.height = u.flameHeight;
       dustScale = u.dustScale;
@@ -63,6 +62,7 @@ namespace OriMod.Projectiles.Minions {
       projectile.alpha = 32;
       projectile.friendly = true;
       projectile.ignoreWater = true;
+      projectile.tileCollide = false;
       dustWidth = 10;
       dustHeight = 10;
     }
@@ -108,7 +108,7 @@ namespace OriMod.Projectiles.Minions {
       if (currAccelDelay < accelDelay) {
         currAccelDelay++;
       }
-      if (currAccelDelay > accelDelay) {
+      else {
         speed += acceleration;
       }
       if (distance < speed) {
