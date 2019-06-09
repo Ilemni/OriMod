@@ -43,7 +43,7 @@ ItemTooltip.SpiritOrb8=Calls forth the full might of the Spirit Tree.
 BuffDescription.SeinBuff8="The ultimate power of the Spirit Tree."
 
 ItemName.OriPotion={$Mods.OriMod.Common.OriPotion}
-ItemTooltip.OriPotion=Remotely change yourself into a Spirit Guardian\nThe bottle is returned upon use to be refilled\n"Taste the spirit!"
+ItemTooltip.OriPotion=Remotely change yourself into a Spirit Guardian\nAfter use, the bottle can be refilled\n"Taste the spirit!"
 
 ItemName.OriPotionEmpty=Spirit Bottle
 ItemTooltip.OriPotionEmpty=Refill at a Spirit Sapling\n"The spirit energy has been all used up."

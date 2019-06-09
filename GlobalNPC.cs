@@ -84,7 +84,6 @@ namespace OriMod
         case NPCID.Spazmatism:
         case NPCID.Retinazer:
         case NPCID.TheDestroyer:
-          Main.NewText("Killed a mech boss");
           GetDownCount(npc, out oldCount, out newCount, ref NPC.downedMechBoss1, ref NPC.downedMechBoss2, ref NPC.downedMechBoss3);
           if (newCount == 1 && oldCount != 1) {
             upgrade = 5;

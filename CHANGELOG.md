@@ -1,21 +1,46 @@
-## v2.2.1.1
+## v2.2.3
 ### Changes
-- Greatly reduced filesize
+- Spirit Flame can now be used manually
+    - Use Left Mouse button while either holding nothing, the summon item, or an item that doesn't deal damage.
+    - Deals 2x damage compared to auto fire.
+- Balanced Sein to be more viable early game.
+    - Sein and Spirit Flame no longer collide with tiles.
+    - Sein can see enemies a short distance through walls.
+    - Now targets enemies closest to the player, rather than to Sein.
+- Charge Dash now requires 20 mana to use.
+- Ability to toggle player light
+    - Use `/light` to turn on or off.
+- Temporarily disable transformation animation.
+- Slightly reduced filesize further.
+### Bug Fixes
+- Fixed Charge Dash hitbox being too small.
+- Fix mount interaction.
+- Cleaned up some sounds and animations.
+---
+## Known Issues
+- Multiplayer syncing for movement is a work in progress. Netcode is hard.
+- Other mods may cause Spirit Guardian movement to behave abnormally.
+- Spirit Guardians are not properly affected by the Mighty Winds debuff.
+- Due to the change to the backend, many previous bugs that were fixed may have been reintroduced.
+---
+## v2.2.2
+### Changes
+- Greatly reduced filesize.
 - Damage of Stomp, Bash, and Charge Dash now scaled to which Sein is summoned.
 - Stomp, Bash, and Charge Dash now grant temporary invulnerability after ending.
 - Increased volume of certain sounds.
 ### Bug Fixes
 - Fixed Bash activating on the Destroyer.
-- Fixed certain armors greatly increasing the speed of animations
+- Fixed certain armors greatly increasing the speed of animations.
 - Actually fixed Sein being able to be spawned endlessly.
 - Remove unintended debug messages.
 ## v2.2.1
 ### Bug Fixes
-- Fixed some texts not displaying properly
-- Fixed Sein no longer spawnable after mod reload
-- Fixed Sein being able to be spawned endlessly
-- Fixed Bash and Charge Dash targeting friendly NPCs
-- Fixed Charge Dash not dealing damage to enemies
+- Fixed some texts not displaying properly.
+- Fixed Sein no longer spawnable after mod reload.
+- Fixed Sein being able to be spawned endlessly.
+- Fixed Bash and Charge Dash targeting friendly NPCs.
+- Fixed Charge Dash not dealing damage to enemies.
 ## v2.2
 ### Additions
 - Added the Spirit Orb
@@ -37,22 +62,6 @@
 - Lunar armors no longer caused Spirit Guardian animations to animate at unintended speeds.
 - Double Jump is now usable after Bashing or Wall Jumping.
 - Many other bug fixes.
----
-## Known Issues
-- Multiplayer syncing for movement is a work in progress. Netcode is hard.
-- Other mods may cause Spirit Guardian movement to behave abnormally.
-- Spirit Guardians are not properly affected by the Mighty Winds debuff.
-- Bash does not properly affect Worm-type enemies.
-- Sein may occasionally disappear unexpectedly. The cause for this is currently unknown. If this happens, simply cancel your Sein buff and resummon.
-- Sein has not been balanced, so may be too weak or too strong in some cases.
-    - This is especially true against Worm-like enemies.
-- Due to the change to the backend, many previous bugs that were fixed may have been reintroduced.
-
-## To be added
-- Spirit Light ability upgrade system.
-    - This is intended to change progression for the Spirit Guardian's and Sein's abilities.
-- Swimming mechanics akin to Blind Forest's.
----
 ## v2.1
 ### Additions
 - Proper Water Walking mechanics

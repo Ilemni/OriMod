@@ -29,7 +29,7 @@ namespace OriMod {
       GlobalSeinUpgrade = (byte)u;
     }
     public static void UpdateOriPlayerSeinStates(byte upgrade) {
-      Main.NewText("Upgrade from " + GlobalSeinUpgrade + " to " + upgrade);
+      // Main.NewText("Upgrade from " + GlobalSeinUpgrade + " to " + upgrade);
       GlobalSeinUpgrade = upgrade;
       // foreach(Player p in Main.player) {
       //   if (!p.active) continue;
@@ -38,10 +38,10 @@ namespace OriMod {
       // }
       LocalizedText text = Language.GetText("Mods.OriMod.SeinUpgrade.Upgraded" + GlobalSeinUpgrade);
       if (Main.netMode == 0) {
-        Main.NewText(text.ToString(), Color.White);
+        // Main.NewText(text.ToString(), Color.White);
       }
       else if (Main.netMode == 2) {
-        NetMessage.BroadcastChatMessage(text.ToNetworkText(), Color.White);
+        // NetMessage.BroadcastChatMessage(text.ToNetworkText(), Color.White);
       }
     }
     public override TagCompound Save() {
@@ -76,9 +76,9 @@ namespace OriMod {
       if (GlobalSeinUpgrade == 2 && !NPC.downedBoss2) RegressSeinUpgrade(1);
       if (GlobalSeinUpgrade == 1 && !NPC.downedBoss1) RegressSeinUpgrade(0);
       if (GlobalSeinUpgrade != oldUpgrade) {
-        string text = "Due to the world being modified, Sein's upgrade regressed from " + oldUpgrade + " to " + GlobalSeinUpgrade;
-        Main.NewText(text);
-        ErrorLogger.Log(text);
+        // string text = "Due to the world being modified, Sein's upgrade regressed from " + oldUpgrade + " to " + GlobalSeinUpgrade;
+        // Main.NewText(text);
+        // ErrorLogger.Log(text);
       }
     }
     public override void NetSend(BinaryWriter writer) {

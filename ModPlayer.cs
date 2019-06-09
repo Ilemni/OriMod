@@ -23,7 +23,7 @@ namespace OriMod
     internal static TriggersSet JustPressed => PlayerInput.Triggers.JustPressed;
     internal static TriggersSet JustReleased => PlayerInput.Triggers.JustReleased;
     internal static TriggersSet Current => PlayerInput.Triggers.Current;
-    
+
     internal bool Input(bool TriggerKey) {
       return player.whoAmI == Main.myPlayer && TriggerKey;
     }
@@ -142,10 +142,17 @@ namespace OriMod
     /// <value></value>
     /// <seealso cref="SeinMinionActive" />
     public int SeinMinionUpgrade {
-      get;
-      internal set;
+      get {
+        return _seinMinionUpgrade;
+      }
+      internal set {
+        if (value != _seinMinionUpgrade) {
+          doNetUpdate = true;
+        }
+        _seinMinionUpgrade = value;
+      }
     }
-    private int seinMinionUpgrade = 0;
+    private int _seinMinionUpgrade = 0;
 
     // Variables relating to Transforming
     internal float TransformTimer = 0;
@@ -408,6 +415,7 @@ namespace OriMod
         return;
       }
       if (drawPlayer.mount.Active) {
+        Increment("Idle");
         // TODO: Minecart animation?
         return;
       }
@@ -458,7 +466,7 @@ namespace OriMod
         return;
       }
       if (OnWall && !IsGrounded) {
-          Increment("WallSlide");
+        Increment("WallSlide");
         return;
       }
       if (dash.InUse || cDash.InUse) {
@@ -556,6 +564,8 @@ namespace OriMod
     }
     internal int ImmuneTimer = 0;
     internal void DoTransformation() {
+      OriSet = true;
+      return; // Temporarily disable animations
       Transforming = true;
       TransformDirection = player.direction;
       TransformTimer = 627;
@@ -972,8 +982,8 @@ namespace OriMod
           airJump.Update();
         }
         if ((Input(OriMod.DashKey.JustPressed) && !cDash.InUse) || dash.InUse) {
-            dash.Update();
-          }
+          dash.Update();
+        }
         else if ((Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && cDash.Refreshed) || cDash.InUse) {
           cDash.Update();
         }
@@ -1130,7 +1140,7 @@ namespace OriMod
 
         if (OriSet || TransformTimer < 236) {
           oriPlayerSprite.visible = (!player.dead && !player.invis);
-          OriTrail.visible = (!player.dead && !player.invis && !player.mount.Cart);
+          OriTrail.visible = (!player.dead && !player.invis && !player.mount.Active);
         }
       }
       else {
@@ -1342,7 +1352,7 @@ namespace OriMod
     public override void OnEnterWorld(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.SeinMinionActive = false;
-      oPlayer.seinMinionUpgrade = 0;
+      oPlayer.SeinMinionUpgrade = 0;
     }
   }
 }
