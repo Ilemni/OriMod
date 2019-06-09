@@ -340,6 +340,7 @@ namespace OriMod.Projectiles.Minions {
       shootVel = Utils.RotatedBy(shootVel, rand);
       shootVel *= ShootSpeed;
       int dmg = projectile.damage;
+      dmg = (int)(dmg * Main.player[projectile.owner].minionDamage);
       if (t == 0) dmg = (int)(dmg * PrimaryDamageMultiplier);
       if (!Autoshoot) dmg = (int)(dmg * ManualShootDamageMultiplier);
       int proj = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, 0, 0);
