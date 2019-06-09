@@ -9,6 +9,7 @@ namespace OriMod.Abilities {
     internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { Npc = 255; }
     
     internal override bool CanUse => Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Cart;
+    private const int ManaCost = 20;
     private static readonly float[] Speeds = new float[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     };
@@ -105,11 +106,16 @@ namespace OriMod.Abilities {
       }
       else {
         if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
-          State = States.Active;
-          CurrTime = 0;
-          CanUse = false;
-          Refreshed = false;
-          UpdateStarting();
+          if (player.CheckMana(ManaCost, true, true)) {
+            State = States.Active;
+            CurrTime = 0;
+            CanUse = false;
+            Refreshed = false;
+            UpdateStarting();
+          }
+          else if (!Handler.dash.InUse) {
+            Handler.dash.StartDash();
+          }
         }
       }
     }

@@ -972,14 +972,13 @@ namespace OriMod
         if (Input(JustPressed.Jump) || airJump.InUse) {
           airJump.Update();
         }
-        if (Input(OriMod.DashKey.JustPressed) || dash.InUse || cDash.InUse) {
-          if ((Input(OriMod.ChargeKey.Current) && cDash.Refreshed) || cDash.InUse) {
-            cDash.Update();
-          }
-          else {
+        if ((Input(OriMod.DashKey.JustPressed) && !cDash.InUse) || dash.InUse) {
             dash.Update();
           }
+        else if ((Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && cDash.Refreshed) || cDash.InUse) {
+          cDash.Update();
         }
+         
         if ((Input(JustPressed.Jump) && OnWall && !IsGrounded) || wJump.InUse) {
           wJump.Update();
         }
