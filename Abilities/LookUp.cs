@@ -17,7 +17,7 @@ namespace OriMod.Abilities {
           CurrTime = 0;
           return;
         }
-        if (!PlayerInput.Triggers.Current.Up && State != States.Ending) {
+        if (!(PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current) && State != States.Ending) {
           State = State == States.Active ? States.Ending : States.Inactive;
           CurrTime = 0;
           return;
