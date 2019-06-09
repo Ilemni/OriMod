@@ -124,6 +124,9 @@ namespace OriMod
           upgrade = 12;
           doUpdate = DoUpdate(npc, ref NPC.downedMoonlord);
           break;
+        default:
+          npc.NPCLoot();
+          break;
       }
       if (doUpdate) OriWorld.UpdateOriPlayerSeinStates(upgrade);
       return true;
