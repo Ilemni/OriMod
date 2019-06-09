@@ -454,17 +454,12 @@ namespace OriMod
           Increment("ClimbIdle");
         }
         else {
-          Increment("Climb", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
+          Increment(player.velocity.Y < 0 ? "Climb" : "WallSlide", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
         }
         return;
       }
       if (OnWall && !IsGrounded) {
-        if (player.velocity.Y < 0) {
-          Increment("Climb", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
-        }
-        else {
           Increment("WallSlide");
-        }
         return;
       }
       if (dash.InUse || cDash.InUse) {
