@@ -319,6 +319,7 @@ namespace OriMod
       }
     }
     internal bool debugMode = false;
+    internal bool DoPlayerLight = true;
     internal void Debug(string msg) {
       Debug(msg, this);
     }
@@ -327,6 +328,7 @@ namespace OriMod
         Main.NewText(msg);
       }
     }
+    public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
     #endregion
     
     // basic sound playing method, with paths starting after NewSFX in the file structure
@@ -847,7 +849,7 @@ namespace OriMod
 
       // thanks jopo
 
-      Lighting.AddLight(player.Center, 0.4f, 0.8f, 0.8f);
+      if (DoPlayerLight) Lighting.AddLight(player.Center, LightColor.ToVector3());
 
       if (Transforming) {
         player.direction = TransformDirection;
@@ -964,7 +966,7 @@ namespace OriMod
           if (Main.rand.NextFloat() < 0.7f) {
             Dust dust = Main.dust[Terraria.Dust.NewDust(player.position, 30, 30, 172, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
           }
-          Lighting.AddLight((int)player.Center.X / 16, (int)player.Center.Y / 16, 0f, 0.6f, 0.9f);
+          if (DoPlayerLight) Lighting.AddLight(player.Center, LightColor.ToVector3());
         }
         else {
           player.jumpSpeedBoost += 2f;
