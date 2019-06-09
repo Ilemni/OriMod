@@ -15,7 +15,7 @@ namespace OriMod.Projectiles.Minions {
     protected bool Autoshoot {
       get {
         Item heldItem = Main.player[projectile.owner].HeldItem;
-        return !(heldItem.IsAir || heldItem.damage == -1);
+        return !(heldItem.IsAir || heldItem.damage == -1 || heldItem.shoot == projectile.type);
       }
     }
     public override void SetStaticDefaults() {
@@ -461,26 +461,14 @@ namespace OriMod.Projectiles.Minions {
       // Manage Cooldown
       if (Cooldown > 0) { // If on cooldown, increase cooldown
         Cooldown += 1;
-
-        // If below max shots, allow firing
-        if (Cooldown > MinCooldown && currShots < MaxShotsPerBurst) {
-          // Reset shot group
+        if (Cooldown > LongCooldown) {
           Cooldown = 0;
-          if (Cooldown < ShortCooldown) {
-            if (attemptFire) {
-              currShots++;
-            }
-          }
-          else {
-            currShots = 1;
-          }
+          currShots = 1;
         }
-        if (currShots >= MaxShotsPerBurst) {
-          if (Cooldown > LongCooldown) {
-            Cooldown = 0;
-            currShots = 1;
-          }
-        }
+      }
+      if (attemptFire && Cooldown > MinCooldown && currShots < MaxShotsPerBurst) {
+        currShots = Cooldown > ShortCooldown ? 1 : currShots + 1;
+        Cooldown = 0;
       }
       // If autoshoot
       if (Cooldown == 0 && attemptFire) { // Can fire
@@ -495,7 +483,11 @@ namespace OriMod.Projectiles.Minions {
         if (Main.myPlayer == projectile.owner) { // Fire
           PlaySpiritFlameSound("Throw" + SpiritFlameSound + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
           if (!targeting) {
-            Fire(-1);
+            int i = 0;
+            while (i < ShotsToPrimaryTarget) {
+              Fire(-1);
+              i++;
+            }
             return;
           }
           int usedShots = 0;
