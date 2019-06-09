@@ -39,12 +39,17 @@ namespace OriMod.Projectiles.Minions {
       targetSpawn = PlayerSpace(0, -32);
       minionTargetLocation = PlayerSpace(0, -32);
     }
-    // projectile.ai[0] determines if minion can fire
-    //  0f = cannot fire
-    //  1f = can fire
-    // projectile.ai[1] represents current cooldown
-    //  0f = off cooldown
-    //  1f+ = on cooldown
+    protected int Cooldown {
+      get {
+        return (int)projectile.ai[0];
+      }
+      set {
+        if (value != projectile.ai[0]) {
+          projectile.netUpdate = true;
+        }
+        projectile.ai[0] = value;
+      }
+    }
 
     // ID of projectile to shoot
     protected int ShootID;
@@ -107,6 +112,9 @@ namespace OriMod.Projectiles.Minions {
         Upgrade == 3 || Upgrade == 4 ? "LevelB" :
         Upgrade == 5 || Upgrade == 6 ? "LevelC" :
         Upgrade == 7 || Upgrade == 8 ? "LevelD" : "";
+    }
+    public void SetUpgrade(int upgrade) {
+      Init(upgrade);
     }
     protected virtual void CreateDust() { }
     protected virtual void SelectFrame() { }
@@ -312,19 +320,39 @@ namespace OriMod.Projectiles.Minions {
       }
     }
     private void Fire(int t) {
-      Vector2 shootVel = Main.npc[targetIDs[t]].position - projectile.Center;
+      Vector2 shootVel = Vector2.Zero;
+      Vector2 nonTargetPos = projectile.position;
+      float rand;
+      if (t != -1) {
+        shootVel = Main.npc[targetIDs[t]].position - projectile.Center;
+        rand = (float)Main.rand.Next(-RandDegrees, RandDegrees) / 180f * (float)Math.PI;
+      }
+      else {
+        shootVel = new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(24, 48));
+        rand = (float)Main.rand.Next(-180, 180) / 180f * (float)Math.PI;
+        nonTargetPos.Y += Main.rand.Next(8, 48);
+        nonTargetPos = Utils.RotatedBy(nonTargetPos, (float)Main.rand.NextFloat((float)Math.PI * 2));
+      }
       if (shootVel == Vector2.Zero) {
-        shootVel = new Vector2(0f, 1f);
+        shootVel.Y = 1f;
       }
       shootVel.Normalize();
-      shootVel = Utils.RotatedBy(shootVel, (float)Main.rand.Next(-RandDegrees, RandDegrees) / 180f * (float)Math.PI);
+      shootVel = Utils.RotatedBy(shootVel, rand);
       shootVel *= ShootSpeed;
       int dmg = projectile.damage;
       if (t == 0) dmg = (int)(dmg * PrimaryDamageMultiplier);
       if (!Autoshoot) dmg = (int)(dmg * ManualShootDamageMultiplier);
-      int proj = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, targetIDs[t], 0f);
+      int proj = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, 0, 0);
       projectile.velocity += (shootVel * -0.005f);
-      Main.projectile[proj].timeLeft = 300;
+      if (t == -1) {
+        Main.projectile[proj].ai[0] = nonTargetPos.X;
+        Main.projectile[proj].ai[1] = nonTargetPos.Y;
+      }
+      else {
+        Main.projectile[proj].ai[0] = targetIDs[t];
+        Main.projectile[proj].ai[1] = 0;
+      }
+      Main.projectile[proj].timeLeft = t != -1 ? 300 : 15;
       Main.projectile[proj].netUpdate = true;
       Main.projectile[proj].penetrate = Pierce;
     }
@@ -429,44 +457,33 @@ namespace OriMod.Projectiles.Minions {
       // else if (projectile.velocity.X < 0f) {
       //   projectile.spriteDirection = (projectile.direction = 1);
       // }
-
+      bool attemptFire = (Autoshoot && targeting) || (!Autoshoot && PlayerInput.Triggers.JustPressed.MouseLeft);
       // Manage Cooldown
-      if (projectile.ai[1] > 0f) { // If on cooldown, increase cooldown
-        projectile.ai[1] += 1f;
+      if (Cooldown > 0) { // If on cooldown, increase cooldown
+        Cooldown += 1;
 
         // If below max shots, allow firing
-        if (currShots < MaxShotsPerBurst && projectile.ai[1] > MinCooldown) {
+        if (Cooldown > MinCooldown && currShots < MaxShotsPerBurst) {
           // Reset shot group
-          projectile.ai[1] = 0f;
-          if (projectile.ai[1] > ShortCooldown) {
-            currShots = 1;
+          Cooldown = 0;
+          if (Cooldown < ShortCooldown) {
+            if (attemptFire) {
+              currShots++;
+            }
           }
           else {
-            currShots++;
+            currShots = 1;
           }
         }
         if (currShots >= MaxShotsPerBurst) {
-          if (targeting && projectile.ai[1] > LongCooldown) {
-            projectile.ai[1] = 0f;
+          if (Cooldown > LongCooldown) {
+            Cooldown = 0;
             currShots = 1;
           }
         }
       }
-      if (targeting && projectile.ai[1] > MinCooldown) { // Finished min cooldown
-        if (currShots >= MaxShotsPerBurst) {
-          if (projectile.ai[1] < LongCooldown) { // Finished long cooldown
-            projectile.ai[0] = 0f;
-            projectile.netUpdate = true;
-          }
-          else {
-            projectile.ai[0] = 1f;
-            projectile.ai[1] = 0f;
-            projectile.netUpdate = true;
-            currShots = 1;
-          }
-        }
-      } 
-      if (projectile.ai[1] == 0f && ((targeting && Autoshoot) || PlayerInput.Triggers.JustPressed.MouseLeft)) { // Can fire
+      // If autoshoot
+      if (Cooldown == 0 && attemptFire) { // Can fire
         // Orient minion based on target direction (Commnted out bc Sein)
         // if ((targetPos - projectile.Center).X > 0f) {
         //   projectile.spriteDirection = (projectile.direction = -1);
@@ -474,8 +491,13 @@ namespace OriMod.Projectiles.Minions {
         //   projectile.spriteDirection = (projectile.direction = 1);
         // }
 
-        projectile.ai[1] = 1f;
+        Cooldown = 1;
         if (Main.myPlayer == projectile.owner) { // Fire
+          PlaySpiritFlameSound("Throw" + SpiritFlameSound + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
+          if (!targeting) {
+            Fire(-1);
+            return;
+          }
           int usedShots = 0;
           int loopCount = 0;
           while (usedShots < MaxShotsPerVolley && loopCount < ShotsToPrimaryTarget) {
@@ -487,12 +509,6 @@ namespace OriMod.Projectiles.Minions {
             }
             loopCount ++;
           }
-          string c =
-            Upgrade == 1 || Upgrade == 2 ? "" :
-            Upgrade == 3 || Upgrade == 4 ? "LevelB" :
-            Upgrade == 5 || Upgrade == 6 ? "LevelC" :
-            Upgrade == 7 || Upgrade == 8 ? "LevelD" : "";
-          PlaySpiritFlameSound("Throw" + c + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
           projectile.netUpdate = true;
         }
       }

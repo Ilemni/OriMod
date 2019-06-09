@@ -7,6 +7,8 @@ using Terraria.ModLoader;
 namespace OriMod.Projectiles.Minions {
   public class SpiritFlameBase : ModProjectile {
     protected NPC target = null;
+    protected bool isTargetingNPC => projectile.ai[1] == 0;
+    protected Vector2 nonTargetPos => new Vector2(projectile.ai[0], projectile.ai[1]);
     // Initial lerp value: 0 = no homing; 1 = full homing
     protected float lerp;
     // Value added to lerp every frame
@@ -17,8 +19,15 @@ namespace OriMod.Projectiles.Minions {
     protected float acceleration;
     protected float accelDelay;
     private float currAccelDelay;
-
-    private Vector2 lastTargetPos;
+    private Vector2 _lastTargetPos;
+    private Vector2 lastTargetPos {
+      get {
+        return isTargetingNPC ? _lastTargetPos : nonTargetPos;
+      }
+      set {
+        if (isTargetingNPC) _lastTargetPos = value;
+      }
+    }
     protected int dustType; 
     protected int dustWidth;
     protected int dustHeight;
@@ -74,13 +83,15 @@ namespace OriMod.Projectiles.Minions {
     public override void AI() {
       Lighting.AddLight(projectile.Center, color.ToVector3() * lightStrength);
       float distance = Vector2.Distance(lastTargetPos, projectile.position);
-      if (target == null) {
-        target = Main.npc[(int)projectile.ai[0]];
-      }
-      // If target dies before projectile hits, kill projectile when it reaches target
-      else if (target.active == false) {
-        if (distance < speed) {
-          projectile.active = false;
+      if (isTargetingNPC) {
+        if (target == null) {
+          target = Main.npc[(int)projectile.ai[0]];
+        }
+        // If target dies before projectile hits, kill projectile when it reaches target
+        else if (target.active == false) {
+          if (distance < speed) {
+            projectile.active = false;
+          }
         }
       }
       // Increase homing strength over time
@@ -109,16 +120,22 @@ namespace OriMod.Projectiles.Minions {
       float shootToX;
       float shootToY;
       // If target dies before projectile hits, target last live position
-      if (target.active) {
-        lastTargetPos = target.position;
-        shootToX = target.position.X + (float)target.width * 0.5f - projectile.Center.X;
-        shootToY = target.position.Y - projectile.Center.Y;
-      } else {
-        shootToX = lastTargetPos.X - projectile.Center.X;
-        shootToY = lastTargetPos.Y - projectile.Center.Y;
+      if (isTargetingNPC) {
+        if (target.active) {
+          lastTargetPos = target.position;
+          shootToX = target.position.X + (float)target.width * 0.5f - projectile.Center.X;
+          shootToY = target.position.Y - projectile.Center.Y;
+        } else {
+          shootToX = lastTargetPos.X - projectile.Center.X;
+          shootToY = lastTargetPos.Y - projectile.Center.Y;
+        }
       }
-      if (speed > 30) {
-        speed = 30;
+      else {
+        shootToX = projectile.ai[0];
+        shootToY = projectile.ai[1];
+      }
+      if (speed > 60) {
+        speed = 60;
       }
       Vector2 currVelocity = projectile.velocity;
       Vector2 currDist = new Vector2(shootToX, shootToY);
