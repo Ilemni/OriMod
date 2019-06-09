@@ -20,7 +20,13 @@ using OriMod.Abilities;
 namespace OriMod
 {
   public sealed class OriPlayer : ModPlayer {
+    internal static TriggersSet JustPressed => PlayerInput.Triggers.JustPressed;
+    internal static TriggersSet JustReleased => PlayerInput.Triggers.JustReleased;
+    internal static TriggersSet Current => PlayerInput.Triggers.Current;
     
+    internal bool Input(bool TriggerKey) {
+      return player.whoAmI == Main.myPlayer && TriggerKey;
+    }
     #region Variables
     /// <summary>
     /// Class that contains all of OriPlayer's abilities
@@ -855,14 +861,14 @@ namespace OriMod
       // Charging
       if (
         ( // Ground CJump
-          OriMod.ChargeKey.Current &&
+          Input(OriMod.ChargeKey.Current) &&
           !upRefresh &&
-          !(OnWall && OriMod.ClimbKey.Current)
+          !(OnWall && Input(OriMod.ClimbKey.Current))
         ) || ( // Wall CJump
           climb.InUse &&
           (
-            (player.direction == 1 && PlayerInput.Triggers.Current.Left) ||
-            (player.direction == -1 && PlayerInput.Triggers.Current.Right)
+            (player.direction == 1 && Input(Current.Left)) ||
+            (player.direction == -1 && Input(Current.Right))
           )
         )
       ) {
@@ -878,7 +884,7 @@ namespace OriMod
           PlayNewSound("Ori/ChargeDash/seinChargeDashCharged");
           charged = true;
         }
-        if (charged && PlayerInput.Triggers.JustPressed.Jump && IsGrounded) {
+        if (charged && Input(JustPressed.Jump) && IsGrounded) {
           chargeTimer = 0;
           charged = false;
           PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + RandomChar(3));
@@ -894,7 +900,7 @@ namespace OriMod
           charged = false;
         }
       }
-      if (!OriMod.ChargeKey.Current && chargeJumpAnimTimer <= 0) {
+      if (!Input(OriMod.ChargeKey.Current) && chargeJumpAnimTimer <= 0) {
         upRefresh = false;
       }
 
@@ -924,7 +930,7 @@ namespace OriMod
         Abilities.Tick();
 
         player.noFallDmg = true;
-        if (PlayerInput.Triggers.Current.Left || PlayerInput.Triggers.Current.Right || IsGrounded) {
+        if (Input(Current.Left) || Input(Current.Right) || IsGrounded) {
           UnrestrictedMovement = false;
         }
         player.runSlowdown = UnrestrictedMovement ? 0 : 1;
@@ -963,36 +969,36 @@ namespace OriMod
         else {
           player.jumpSpeedBoost += 2f;
         }
-        if (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased) {
+        if (Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased)) {
           glide.Update();
         }
-        if (PlayerInput.Triggers.JustPressed.Jump || airJump.InUse) {
+        if (Input(JustPressed.Jump) || airJump.InUse) {
           airJump.Update();
         }
-        if (OriMod.DashKey.JustPressed || dash.InUse || cDash.InUse) {
-          if ((OriMod.ChargeKey.Current && cDash.Refreshed) || cDash.InUse) {
+        if (Input(OriMod.DashKey.JustPressed) || dash.InUse || cDash.InUse) {
+          if ((Input(OriMod.ChargeKey.Current) && cDash.Refreshed) || cDash.InUse) {
             cDash.Update();
           }
           else {
             dash.Update();
           }
         }
-        if ((PlayerInput.Triggers.JustPressed.Jump && OnWall && !IsGrounded) || wJump.InUse) {
+        if ((Input(JustPressed.Jump) && OnWall && !IsGrounded) || wJump.InUse) {
           wJump.Update();
         }
-        if (OriMod.ClimbKey.Current && OnWall) {
+        if (Input(OriMod.ClimbKey.Current) && OnWall) {
           climb.Update();
         }
-        if (PlayerInput.Triggers.JustPressed.Down || stomp.InUse) {
+        if (Input(JustPressed.Down) || stomp.InUse) {
           stomp.Update();
         }
-        if (PlayerInput.Triggers.Current.Up || lookUp.InUse) {
+        if (Input(Current.Up) || lookUp.InUse) {
           lookUp.Update();
         }
-        if (PlayerInput.Triggers.Current.Down || crouch.InUse) {
+        if (Input(Current.Down) || crouch.InUse) {
           crouch.Update();
         }
-        if (OriMod.BashKey.Current || bash.InUse) {
+        if (Input(OriMod.BashKey.Current) || bash.InUse) {
           bash.Update();
         }
       }
