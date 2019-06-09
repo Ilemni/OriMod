@@ -33,13 +33,13 @@ namespace OriMod.Abilities {
       if (CurrDur == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + OriPlayer.RandomChar(3));
         Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
-        Proj.damage = 9 + oPlayer.SeinMinionUpgrade * 8;
+        Proj.damage = 9 + OriWorld.GlobalSeinUpgrade * 9;
       }
       if (Handler.airJump.State == States.Active) return;
       player.velocity.X = 0;
       player.gravity = Gravity;
       player.maxFallSpeed = MaxFallSpeed;
-      oPlayer.ImmuneTimer = 30;
+      oPlayer.ImmuneTimer = 20;
     }
 
     protected override void UpdateEnding() {

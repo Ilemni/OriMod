@@ -52,7 +52,7 @@ namespace OriMod.Abilities {
       }
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
       Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
-      Proj.damage = 12 + oPlayer.SeinMinionUpgrade * 11;
+      Proj.damage = 12 + OriWorld.GlobalSeinUpgrade * 9;
     }
     protected override void UpdateUsing() {
       float speed = Speeds[CurrTime];
@@ -81,7 +81,7 @@ namespace OriMod.Abilities {
       Proj.height = (int)Utils.Clamp((Math.Abs(player.velocity.Y) * 2.5f), 96, 250);
       Proj.Center = player.Center;
       player.runSlowdown = 26f;
-      oPlayer.ImmuneTimer = 30;
+      oPlayer.ImmuneTimer = 20;
     }
 
     internal override void Tick() {

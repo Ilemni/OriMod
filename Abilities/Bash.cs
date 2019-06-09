@@ -81,7 +81,7 @@ namespace OriMod.Abilities {
       if (CurrDuration == MinBashDuration + 2) {
         oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
       }
-      oPlayer.ImmuneTimer = 30;
+      oPlayer.ImmuneTimer = 20;
     }
     protected override void UpdateEnding() {
       player.pulley = false;
@@ -96,7 +96,7 @@ namespace OriMod.Abilities {
       if (oPlayer.IsGrounded) {
         player.position.Y -= 1f;
       }
-      int damage = BashDamage + oPlayer.SeinMinionUpgrade * 9;
+      int damage = BashDamage + OriWorld.GlobalSeinUpgrade * 9;
       player.ApplyDamageToNPC(Npc, damage, 0, 1, false);
     }
     protected override void UpdateUsing() {
