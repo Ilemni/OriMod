@@ -12,7 +12,7 @@ namespace OriMod.Abilities {
     private const int EndDuration = 10;
     private int CurrTime = 0;
 
-    internal override bool CanUse => State != States.Ending && !Handler.dash.InUse && !Handler.cDash.InUse && player.velocity.Y > 0 && !player.mount.Cart;
+    internal override bool CanUse => State != States.Ending && !Handler.dash.InUse && !Handler.cDash.InUse && player.velocity.Y > 0 && !player.mount.Active;
 
     protected override void UpdateUsing() {
       if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {

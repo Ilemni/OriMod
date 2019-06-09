@@ -5,7 +5,7 @@ namespace OriMod.Abilities {
   public class AirJump : Ability {
     internal AirJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     
-    internal override bool CanUse => !oPlayer.IsGrounded && !oPlayer.OnWall && CurrCount < MaxJumps && State != States.Active && !Handler.bash.InUse && !player.mount.Cart;
+    internal override bool CanUse => !oPlayer.IsGrounded && !oPlayer.OnWall && CurrCount < MaxJumps && State != States.Active && !Handler.bash.InUse && !player.mount.Active;
     private const float JumpVelocity = 8.8f;
     private const int EndDuration = 32;
     private const int MaxJumps = 2;
@@ -44,7 +44,7 @@ namespace OriMod.Abilities {
         State = States.Inactive;
       }
       if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
-        if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Cart)) {
+        if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
           State = States.Active;
           if (Handler.dash.InUse) {
             Handler.dash.State = States.Inactive;

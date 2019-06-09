@@ -8,7 +8,7 @@ namespace OriMod.Abilities {
     internal Climb(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
     internal int WallDir = 0;
-    internal override bool CanUse => oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Cart && !Handler.wJump.InUse;
+    internal override bool CanUse => oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Handler.wJump.InUse;
     private void StartClimb() {
       WallDir = player.direction;
     }

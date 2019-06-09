@@ -407,8 +407,7 @@ namespace OriMod
         Increment("TransformEnd");
         return;
       }
-      if (drawPlayer.mount.Cart) {
-        Increment("Default");
+      if (drawPlayer.mount.Active) {
         // TODO: Minecart animation?
         return;
       }

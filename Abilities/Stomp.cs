@@ -18,7 +18,7 @@ namespace OriMod.Abilities {
     /// <value>Valid Projectile if stomping, null if no longer stomping</value>
     public Projectile Proj { get; private set; }
 
-    internal override bool CanUse => !oPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.IsState(States.Active) && !Handler.climb.InUse && !Handler.stomp.IsState(States.Active) && !player.mount.Cart;
+    internal override bool CanUse => !oPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.IsState(States.Active) && !Handler.climb.InUse && !Handler.stomp.IsState(States.Active) && !player.mount.Active;
 
     protected override void UpdateStarting() {
       if (CurrDur == 0) {
