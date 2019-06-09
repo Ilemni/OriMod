@@ -11,13 +11,15 @@ namespace OriMod.Abilities {
     private const int MaxJumps = 2;
     private int CurrCount = 0;
     private int CurrTime = 0;
+    private int randDoubleJumpSound = 1;
+    private int randTripleJumpSound = 1;
 
     protected override void UpdateActive() {
       if (CurrCount == MaxJumps) {
-        oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + OriPlayer.RandomChar(5), 0.7f);
+        oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + OriPlayer.RandomChar(5, ref randTripleJumpSound), 0.7f);
       }
       else {
-        oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + OriPlayer.RandomChar(5), 0.75f);
+        oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + OriPlayer.RandomChar(4, ref randDoubleJumpSound), 0.75f);
       }
       float newVel = -JumpVelocity * ((EndDuration - CurrTime) / EndDuration);
       if (player.velocity.Y > newVel) player.velocity.Y = newVel;
