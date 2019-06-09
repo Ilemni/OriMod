@@ -14,8 +14,9 @@ namespace OriMod.Projectiles.Minions {
     protected int Upgrade;
     protected bool Autoshoot {
       get {
-        Item heldItem = Main.player[projectile.owner].HeldItem;
-        return !(heldItem.IsAir || heldItem.damage == -1 || heldItem.shoot == projectile.type);
+        Player player = Main.player[projectile.owner];
+        Item heldItem = player.HeldItem;
+        return !(heldItem.IsAir || heldItem.shoot == projectile.type);
       }
     }
     public override void SetStaticDefaults() {
@@ -73,7 +74,7 @@ namespace OriMod.Projectiles.Minions {
     protected int Pierce = 1;
     protected float PrimaryDamageMultiplier = 1;
     // Max rotation of randomness from target the projectile fires
-    protected float ManualShootDamageMultiplier = 2;
+    protected float ManualShootDamageMultiplier = 1.4f;
     protected int RandDegrees = 75;
     protected float MaxTargetDist = 300f;
     protected float MaxTargetThroughWallDist = 0f;
@@ -455,7 +456,7 @@ namespace OriMod.Projectiles.Minions {
       // else if (projectile.velocity.X < 0f) {
       //   projectile.spriteDirection = (projectile.direction = 1);
       // }
-      bool attemptFire = (Autoshoot && targeting) || (!Autoshoot && PlayerInput.Triggers.JustPressed.MouseLeft);
+      bool attemptFire = (Autoshoot && targeting) || (!Autoshoot && PlayerInput.Triggers.JustPressed.MouseLeft && !Main.LocalPlayer.mouseInterface);
       // Manage Cooldown
       if (Cooldown > 0) { // If on cooldown, increase cooldown
         Cooldown += 1;
