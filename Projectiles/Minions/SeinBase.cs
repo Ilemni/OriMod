@@ -7,10 +7,17 @@ using Microsoft.Xna.Framework.Audio;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.GameInput;
 
 namespace OriMod.Projectiles.Minions {
   public abstract class SeinBase : Minion {
     protected int Upgrade;
+    protected bool Autoshoot {
+      get {
+        Item heldItem = Main.player[projectile.owner].HeldItem;
+        return !(heldItem.IsAir || heldItem.damage == -1);
+      }
+    }
     public override void SetStaticDefaults() {
       Main.projFrames[projectile.type] = 3;
       Main.projPet[projectile.type] = true;
@@ -61,6 +68,7 @@ namespace OriMod.Projectiles.Minions {
     protected int Pierce = 1;
     protected float PrimaryDamageMultiplier = 1;
     // Max rotation of randomness from target the projectile fires
+    protected float ManualShootDamageMultiplier = 2;
     protected int RandDegrees = 75;
     protected float MaxTargetDist = 300f;
     protected float MaxTargetThroughWallDist = 0f;
@@ -311,7 +319,10 @@ namespace OriMod.Projectiles.Minions {
       shootVel.Normalize();
       shootVel = Utils.RotatedBy(shootVel, (float)Main.rand.Next(-RandDegrees, RandDegrees) / 180f * (float)Math.PI);
       shootVel *= ShootSpeed;
-      int proj = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, (int)(projectile.damage * (t == 0 ? PrimaryDamageMultiplier : 1)), projectile.knockBack, Main.myPlayer, targetIDs[t], 0f);
+      int dmg = projectile.damage;
+      if (t == 0) dmg = (int)(dmg * PrimaryDamageMultiplier);
+      if (!Autoshoot) dmg = (int)(dmg * ManualShootDamageMultiplier);
+      int proj = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, targetIDs[t], 0f);
       projectile.velocity += (shootVel * -0.005f);
       Main.projectile[proj].timeLeft = 300;
       Main.projectile[proj].netUpdate = true;
@@ -455,7 +466,7 @@ namespace OriMod.Projectiles.Minions {
           }
         }
       } 
-      if (projectile.ai[1] == 0f && targeting) { // Can fire
+      if (projectile.ai[1] == 0f && ((targeting && Autoshoot) || PlayerInput.Triggers.JustPressed.MouseLeft)) { // Can fire
         // Orient minion based on target direction (Commnted out bc Sein)
         // if ((targetPos - projectile.Center).X > 0f) {
         //   projectile.spriteDirection = (projectile.direction = -1);
