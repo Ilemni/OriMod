@@ -1,3 +1,19 @@
+## v2.2.4
+### Changes
+- Sein is set to auto fire rather than manual fire while holding non-damage tiles
+    - To manual fire, you must now either be holding the summon item or nothing
+- Reduced Spirit Flame manual damage multiplier from 2x to 1.4x
+- Increase Bash cooldown to 2.5 seconds
+### Bug Fixes
+- Fix some vanilla bosses and all mod bosses not dropping loot (sorry about that!)
+- Fix Sein firing while performing menu actions
+---
+## Known Issues
+- Multiplayer syncing for movement is a work in progress. Netcode is hard.
+- Other mods may cause Spirit Guardian movement to behave abnormally.
+- Spirit Guardians are not properly affected by the Mighty Winds debuff.
+- Due to the change to the backend, many previous bugs that were fixed may have been reintroduced.
+---
 ## v2.2.3
 ### Changes
 - Spirit Flame can now be used manually
@@ -16,13 +32,6 @@
 - Fixed Charge Dash hitbox being too small.
 - Fix mount interaction.
 - Cleaned up some sounds and animations.
----
-## Known Issues
-- Multiplayer syncing for movement is a work in progress. Netcode is hard.
-- Other mods may cause Spirit Guardian movement to behave abnormally.
-- Spirit Guardians are not properly affected by the Mighty Winds debuff.
-- Due to the change to the backend, many previous bugs that were fixed may have been reintroduced.
----
 ## v2.2.2
 ### Changes
 - Greatly reduced filesize.

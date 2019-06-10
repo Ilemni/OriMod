@@ -18,7 +18,7 @@ namespace OriMod.Abilities {
     private const float BashRange = 120f;
     private const int MinBashDuration = 30;
     private const int MaxBashDuration = 85;
-    private const int Cooldown = 5;
+    protected override int Cooldown => 150;
     internal int CurrDuration { get; private set; }
     private Vector2 playerStartPos;
     private Vector2 npcStartPos;
@@ -54,7 +54,7 @@ namespace OriMod.Abilities {
       float currDist = BashRange;
       for (int n = 0; n < Main.maxNPCs; n++) {
         NPC localNpc = Main.npc[n];
-        if (localNpc == null || !localNpc.active || localNpc.friendly || CannotBash.Contains(localNpc.type) || localNpc.boss || localNpc.immortal) continue;
+        if (localNpc == null || !localNpc.active || localNpc.friendly || CannotBash.Contains(localNpc.type) || localNpc.boss) continue;
         if (localNpc.aiStyle == 37) continue; // A Destroyer segment is not considered a boss
         float newDist = (player.position - localNpc.position).Length();
         if (newDist < currDist) {
@@ -98,6 +98,7 @@ namespace OriMod.Abilities {
       }
       int damage = BashDamage + OriWorld.GlobalSeinUpgrade * 9;
       player.ApplyDamageToNPC(Npc, damage, 0, 1, false);
+      CurrCooldown = Cooldown;
     }
     protected override void UpdateUsing() {
       if (State != States.Ending) {
@@ -165,8 +166,8 @@ namespace OriMod.Abilities {
       }
       else {
         if (!Refreshed) {
-          CurrDuration++;
-          if (CurrDuration > Cooldown) {
+          CurrCooldown--;
+          if (CurrCooldown < 0) {
             Refreshed = true;
             State = States.Inactive;
           }

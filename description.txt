@@ -1,5 +1,22 @@
 Ori and the Blind Forest crossover pack.
 
+v2.2.4
+--- Changes ---
+- Sein is set to auto fire rather than manual fire while
+  holding non-damage tiles
+- To manual fire, you must now either be holding the
+  summon item or nothing
+- Reduced Spirit Flame manual damage multiplier from
+  2x to 1.4x
+- Increase Bash cooldown to 2.5 seconds
+--- Bug Fixes ---
+- Fix some vanilla bosses and all mod bosses not dropping
+  loot (sorry about that!)
+- Fix Sein firing while performing menu actions
+
+To read about previous versions, visit our mod's homepage.
+---
+
 To start, craft a Spirit Sprout using 10 wood and either
 one enchanted weapon (sword, boomerang, arkhalis), or
 three basic movement items (bottle items, climbing items,
