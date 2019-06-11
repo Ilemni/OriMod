@@ -76,7 +76,7 @@ namespace OriMod {
       }},
       {"ClimbIdle", new Vector3[] {
         h(incrementType.Single),
-        f(1, 11)
+        f(1, 10)
       }},
       {"Climb", new Vector3[] {
         h(),
