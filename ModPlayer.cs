@@ -326,7 +326,19 @@ namespace OriMod
       }
     }
     internal bool debugMode = false;
-    internal bool DoPlayerLight = true;
+    private bool _mpcPlayerLight = false;
+    internal bool MpcPlayerLight {
+      get {
+        return _mpcPlayerLight;
+      }
+      set {
+        if (value != _mpcPlayerLight) {
+          doNetUpdate = true;
+        }
+        _mpcPlayerLight = value;
+      }
+    }
+    internal bool DoPlayerLight => Config.GlobalPlayerLight ? Config.DoPlayerLight : MpcPlayerLight;
     internal void Debug(string msg) {
       Debug(msg, this);
     }

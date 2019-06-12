@@ -36,6 +36,7 @@ namespace OriMod {
       flags[2] = fromPlayer.Transforming;
       flags[3] = fromPlayer.UnrestrictedMovement;
       flags[4] = fromPlayer.SeinMinionActive;
+      flags[5] = fromPlayer.MpcPlayerLight;
       packet.Write((byte)flags);
       if (flags[2]) packet.Write((short)fromPlayer.TransformTimer);
       if (flags[4]) packet.Write((byte)fromPlayer.SeinMinionUpgrade);
@@ -52,6 +53,7 @@ namespace OriMod {
       bool transforming = flags[2];
       bool unrestrictedMovement = flags[3];
       bool seinMinionActive = flags[4];
+      bool mpcPlayerLight = flags[5];
       short transformTimer = flags[2] ? r.ReadInt16() : (short)0;
       byte seinMinionUpgrade = flags[4] ? r.ReadByte() : (byte)0;
       Color spriteColor = r.ReadRGB();
@@ -63,6 +65,7 @@ namespace OriMod {
       fromPlayer.TransformTimer = transformTimer;
       fromPlayer.SeinMinionUpgrade = seinMinionUpgrade;
       fromPlayer.SeinMinionActive = seinMinionActive;
+      fromPlayer.MpcPlayerLight = mpcPlayerLight;
       fromPlayer.SpriteColor = spriteColor;
       
       if (Main.netMode == NetmodeID.Server) {

@@ -50,6 +50,7 @@ namespace OriMod {
       RecipeGroup.RegisterGroup("OriMod:MovementAccessories", group2);
     }
     public override void Load() {
+      Config.Load();
       AnimationHandler.Init();
 
       BashKey = RegisterHotKey("Bash", "Mouse2");
