@@ -9,6 +9,7 @@ namespace OriMod {
     public static bool GlobalPlayerLight = true; // If true, sets all players on this side to `DoPlayerLight`
     public static bool DoPlayerLight = true; // If the player should emit light
     public static bool BlindForestMovement = true; // TODO: Movement preset, Blind Forest style vs balanced for Terraria
+    public static bool SmoothCamera = true;
     private static Preferences Prefs = new Preferences(ConfigPath);
     public static void Load() {
       bool success = ReadConfig();
@@ -21,6 +22,7 @@ namespace OriMod {
       if (Prefs.Load()) {
         Prefs.Get("GlobalPlayerLight", ref GlobalPlayerLight);
         Prefs.Get("DoPlayerLight", ref DoPlayerLight);
+        Prefs.Get("SmoothCamera", ref SmoothCamera);
         // Prefs.Get("BlindForestMovement", ref BlindForestMovement);
         return true;
       }
@@ -30,6 +32,7 @@ namespace OriMod {
       Prefs.Clear();
       Prefs.Put("GlobalPlayerLight", GlobalPlayerLight);
       Prefs.Put("DoPlayerLight", DoPlayerLight);
+      Prefs.Put("SmoothCamera", SmoothCamera);
       // Prefs.Put("BlindForestMovement", BlindForestMovement);
       Prefs.Save();
     }

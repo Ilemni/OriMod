@@ -956,7 +956,7 @@ namespace OriMod
           player.runAcceleration = 0.5f;
           player.maxRunSpeed += 2f;
         }
-        Main.SetCameraLerp(0.05f, 1);
+        if (Config.SmoothCamera) Main.SetCameraLerp(0.05f, 1);
         if (OnWall && (IsGrounded || player.velocity.Y < 0) && !climb.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
