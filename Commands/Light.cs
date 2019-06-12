@@ -13,7 +13,7 @@ namespace OriMod.Commands {
     public override CommandType Type => CommandType.Chat;
     public override void Action(CommandCaller caller, string input, string[] args) {
       OriPlayer oPlayer = caller.Player.GetModPlayer<OriPlayer>();
-      oPlayer.DoPlayerLight = !oPlayer.DoPlayerLight;
+      oPlayer.MpcPlayerLight = !oPlayer.MpcPlayerLight;
     }
   }
 }

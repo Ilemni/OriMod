@@ -14,13 +14,14 @@ namespace OriMod {
       bool success = ReadConfig();
       if (!success) {
         ErrorLogger.Log("Could not load configs for OriMod, creating configs.");
+        CreateConfig();
       }
     }
     public static bool ReadConfig() {
       if (Prefs.Load()) {
         Prefs.Get("GlobalPlayerLight", ref GlobalPlayerLight);
         Prefs.Get("DoPlayerLight", ref DoPlayerLight);
-        Prefs.Get("BlindForestMovement", ref BlindForestMovement);
+        // Prefs.Get("BlindForestMovement", ref BlindForestMovement);
         return true;
       }
       return false;
@@ -29,7 +30,7 @@ namespace OriMod {
       Prefs.Clear();
       Prefs.Put("GlobalPlayerLight", GlobalPlayerLight);
       Prefs.Put("DoPlayerLight", DoPlayerLight);
-      Prefs.Put("BlindForestMovement", BlindForestMovement);
+      // Prefs.Put("BlindForestMovement", BlindForestMovement);
       Prefs.Save();
     }
   }
