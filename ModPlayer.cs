@@ -1169,10 +1169,13 @@ namespace OriMod
         return offset;
       }
       switch (oPlayer.AnimName) {
-        case "AirJump": offset.Y = 8;
+        case "AirJump":
+          offset.Y = 8;
         break;
-        // case "ClimbIdle": offset.Y = 24;
-        // break;
+        case "ClimbIdle":
+        case "Climb":
+          offset.Y = 24;
+        break;
       }
       return offset;
     }
