@@ -12,6 +12,7 @@ using Terraria.GameInput;
 namespace OriMod.Projectiles.Minions {
   public abstract class SeinBase : Minion {
     protected int Upgrade;
+    public override bool? CanCutTiles() => false;
     protected bool Autoshoot {
       get {
         Player player = Main.player[projectile.owner];
@@ -30,7 +31,7 @@ namespace OriMod.Projectiles.Minions {
       projectile.netImportant = true;
       projectile.friendly = true;
       projectile.minion = true;
-      projectile.minionSlots = 0;
+      projectile.minionSlots = -0.001f;
       projectile.penetrate = -1;
       projectile.timeLeft = 18000;
       projectile.tileCollide = false;
@@ -458,15 +459,18 @@ namespace OriMod.Projectiles.Minions {
       // }
       bool attemptFire = (Autoshoot && targeting) || (!Autoshoot && PlayerInput.Triggers.JustPressed.MouseLeft && !Main.LocalPlayer.mouseInterface);
       // Manage Cooldown
+      float minCooldown = MinCooldown * (Autoshoot ? 2 : 1);
+      float shortCooldown = ShortCooldown * (Autoshoot ? 2 : 1);
+      float longCooldown = LongCooldown * (Autoshoot ? 1.5f : 1);
       if (Cooldown > 0) { // If on cooldown, increase cooldown
         Cooldown += 1;
-        if (Cooldown > LongCooldown) {
+        if (Cooldown > longCooldown) {
           Cooldown = 0;
           currShots = 1;
         }
       }
-      if (attemptFire && Cooldown > MinCooldown && currShots < MaxShotsPerBurst) {
-        currShots = Cooldown > ShortCooldown ? 1 : currShots + 1;
+      if (attemptFire && Cooldown > minCooldown && currShots < MaxShotsPerBurst) {
+        currShots = Cooldown > shortCooldown ? 1 : currShots + 1;
         Cooldown = 0;
       }
       // If autoshoot
