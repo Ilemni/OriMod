@@ -49,7 +49,9 @@ namespace OriMod {
     /// </summary>
     /// <value></value>
     internal bool Unlocked { get; set; }
-    internal virtual bool CanUse { get; set; }
+    protected virtual int Cooldown { get; }
+    protected int CurrCooldown { get; set; }
+    internal virtual bool CanUse => Unlocked && CurrCooldown >= Cooldown;
     internal virtual bool Refreshed { get; set; }
     protected int currRand = 0; // Used for random sounds that don't repeat
     /// <summary>

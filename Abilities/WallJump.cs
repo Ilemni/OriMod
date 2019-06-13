@@ -5,7 +5,7 @@ namespace OriMod.Abilities {
   public class WallJump : Ability {
     internal WallJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
-    internal override bool CanUse => oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private const int EndTime = 12;
@@ -30,7 +30,6 @@ namespace OriMod.Abilities {
         CurrTime++;
         if (CurrTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
           State = States.Inactive;
-          CanUse = false;
         }
       }
       else if (IsState(States.Active)) {

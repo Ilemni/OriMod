@@ -7,7 +7,7 @@ using Terraria.ID;
 namespace OriMod.Abilities {
   public class Crouch : Ability {
     internal Crouch(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-    internal override bool CanUse => oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
     private const int StartDuration = 10;
     private const int EndDuration = 4;
     private int CurrTime = 0;

@@ -5,7 +5,7 @@ namespace OriMod.Abilities {
   public class AirJump : Ability {
     internal AirJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     
-    internal override bool CanUse => !oPlayer.IsGrounded && !oPlayer.OnWall && CurrCount < MaxJumps && State != States.Active && !Handler.bash.InUse && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrCount < MaxJumps && State != States.Active && !Handler.bash.InUse && !player.mount.Active;
     private const float JumpVelocity = 8.8f;
     private const int EndDuration = 32;
     private const int MaxJumps = 2;
@@ -32,7 +32,6 @@ namespace OriMod.Abilities {
         CurrTime++;
         if (CurrTime > EndDuration) {
           State = States.Inactive;
-          if (CurrCount >= MaxJumps) CanUse = false;
           CurrTime = 0;
         }
       }

@@ -12,7 +12,7 @@ namespace OriMod.Abilities {
     private const int EndDuration = 10;
     private int CurrTime = 0;
 
-    internal override bool CanUse => State != States.Ending && !Handler.dash.InUse && !Handler.cDash.InUse && player.velocity.Y > 0 && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && State != States.Ending && !Handler.dash.InUse && !Handler.cDash.InUse && player.velocity.Y > 0 && !player.mount.Active;
 
     protected override void UpdateUsing() {
       if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
@@ -33,7 +33,6 @@ namespace OriMod.Abilities {
     internal override void Tick() {
       if (Handler.dash.InUse) {
         State = States.Inactive;
-        CanUse = false;
         CurrTime = 0;
         return;
       }
@@ -49,12 +48,10 @@ namespace OriMod.Abilities {
           CurrTime++;
           if (CurrTime > EndDuration) {
             State = States.Inactive;
-            CanUse = true;
           }
         }
         if (player.velocity.Y < 0 || oPlayer.OnWall || oPlayer.IsGrounded) {
           State = InUse ? States.Ending : States.Inactive;
-          CanUse = false;
         }
         
         else if (OriMod.FeatherKey.JustReleased) {
