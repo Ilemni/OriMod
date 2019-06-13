@@ -74,7 +74,7 @@ namespace OriMod.Abilities {
       }
       else {
         player.velocity.X = speed * Direction * 0.8f;
-        player.velocity.Y = oPlayer.IsGrounded ? -0.1f : 0.15f * CurrTime;
+        player.velocity.Y = oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrTime + 1);
       }
       
       Proj.width = (int)Utils.Clamp((Math.Abs(player.velocity.X) * 2.5f), 96, 250);
@@ -109,7 +109,6 @@ namespace OriMod.Abilities {
           if (player.CheckMana(ManaCost, true, true)) {
             State = States.Active;
             CurrTime = 0;
-            CanUse = false;
             Refreshed = false;
             UpdateStarting();
           }

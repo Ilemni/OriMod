@@ -32,7 +32,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateActive() {
       player.velocity.X = Speeds[CurrTime] * Direction * 0.65f;
-      player.velocity.Y = 0.25f * CurrTime;
+      player.velocity.Y = 0.25f * (CurrTime + 1);
       if (CurrTime > 20) player.runSlowdown = 26f;
     }
     internal override void Tick() {
