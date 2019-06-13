@@ -48,7 +48,7 @@ namespace OriMod {
     /// Currently unimplemented
     /// </summary>
     /// <value></value>
-    internal bool Unlocked { get; set; }
+    internal bool Unlocked = true;
     protected virtual int Cooldown { get; }
     protected int CurrCooldown { get; set; }
     internal virtual bool CanUse => Unlocked && CurrCooldown >= Cooldown;

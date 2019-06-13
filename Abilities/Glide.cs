@@ -60,7 +60,7 @@ namespace OriMod.Abilities {
         }
       }
       else {
-        if (player.velocity.Y > 0 && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
+        if (CanUse && player.velocity.Y > 0 && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
           State = States.Starting;
           CurrTime = 0;
         }
