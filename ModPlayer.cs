@@ -348,6 +348,8 @@ namespace OriMod
       }
     }
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
+
+    internal int SpiritLight = 0;
     #endregion
     
     // basic sound playing method, with paths starting after NewSFX in the file structure
@@ -1093,10 +1095,12 @@ namespace OriMod
     public override TagCompound Save() {
       return new TagCompound {
         {"OriSet", OriSet},
+        {"SpiritLight", SpiritLight}
       };
     }
     public override void Load(TagCompound tag) {
       OriSet = tag.GetBool("OriSet");
+      SpiritLight = tag.GetInt("SpiritLight");
     }
     public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // similar to prehurt, but for death
       if (OriSet) {

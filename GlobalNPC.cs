@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
+using System.Collections.Generic;
 
 namespace OriMod
 {
@@ -52,7 +54,29 @@ namespace OriMod
       if (downedBoss3) newCount++;
       if (downedBoss4) newCount++;
     }
+    private void SpawnSpiritLight(NPC npc) {
+      if (Main.netMode != NetmodeID.SinglePlayer && Main.netMode != NetmodeID.Server) return;
+      int amount = (int)Math.Ceiling((double)npc.lifeMax / 10);
+      List<int> digits = new List<int>();
+      
+      while(amount > 0) {
+        digits.Add(amount % 10);
+        amount /= 10;
+      }
+      for (int i = 0; i < digits.Count; i++) {
+        while (digits[i] > 0) {
+          digits[i]--;
+          // Main.NewText("Spawning a Spirit Light! Value: " + Math.Pow(10, i));
+          Vector2 vel = new Vector2(0, (float)Main.rand.Next(3, 7) / 2);
+          vel = vel.RotateRandom(Math.PI * 2);
+          if (vel.Y > 0) vel.Y = -vel.Y;
+          Projectile s = Main.projectile[Projectile.NewProjectile(npc.position, vel, mod.ProjectileType("SpiritLight"), 0, 0, Main.myPlayer, i, npc.boss ? 1 : 0)];
+          s.timeLeft = 1800;
+        }
+      }
+    }
     public override bool SpecialNPCLoot(NPC npc) {
+      SpawnSpiritLight(npc);
       if (!npc.boss) {
         return base.SpecialNPCLoot(npc);
       }
