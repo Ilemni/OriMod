@@ -62,7 +62,7 @@ namespace OriMod
     private bool _oriSet;
 
     // Transform variables used to hasten additional transforms
-    private bool HasTransformedOnce = false;
+    internal bool HasTransformedOnce { get; private set; }
     private const float RepeatedTransformRate = 2.5f;
 
     // Variables relating to fixing movement when Ori is active, such that you aren't slowed down mid-air after bashing.
@@ -408,18 +408,16 @@ namespace OriMod
     }
 
     private void UpdateFrame(Player drawPlayer) {
-      if (!OriSet) return;
-      if (!doUpdateFrame) return;
-      doUpdateFrame = false;
       AnimTime++;
       
-      if (!Transforming && !HasTransformedOnce) {
-        HasTransformedOnce = true;
-      }
-
       if (Transforming) {
+        if (TransformTimer < 235)
         Increment("TransformEnd");
         return;
+      }
+      if (!OriSet) return;
+      if (!HasTransformedOnce) {
+        HasTransformedOnce = true;
       }
       if (drawPlayer.mount.Active) {
         Increment("Idle");
@@ -860,14 +858,14 @@ namespace OriMod
 
       // thanks jopo
 
-      if (DoPlayerLight) Lighting.AddLight(player.Center, LightColor.ToVector3());
-
       if (Transforming) {
         player.direction = TransformDirection;
       }
 
-      if (!OriSet) { return; }
+      UpdateFrame(player);
+      if (!OriSet) return;
       // Jump Effects
+      if (DoPlayerLight) Lighting.AddLight(player.Center, LightColor.ToVector3());
       if (player.justJumped) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
@@ -1247,7 +1245,7 @@ namespace OriMod
       Mod mod = ModLoader.GetMod("OriMod");
       Player drawPlayer = drawInfo.drawPlayer;
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
-      oPlayer.UpdateFrame(drawPlayer);
+      
       Vector2 position = drawPlayer.position;
       dInfo = drawInfo;
       Texture2D spriteTexture = mod.GetTexture("PlayerEffects/OriPlayer");
