@@ -1,8 +1,4 @@
-using Microsoft.Xna.Framework;
-using System;
-using Terraria;
 using Terraria.GameInput;
-using Terraria.ID;
 
 namespace OriMod.Abilities {
   public class Crouch : Ability {

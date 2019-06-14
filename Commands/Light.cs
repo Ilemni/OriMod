@@ -1,10 +1,7 @@
-using Microsoft.Xna.Framework;
-using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Commands {
-  public class OriLight : ModCommand
-  {
+  public class OriLight : ModCommand {
     public override string Command => "light";
 
     public override string Usage => "/light";

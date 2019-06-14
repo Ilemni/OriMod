@@ -1,19 +1,9 @@
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.ModLoader.IO;
-using Terraria.DataStructures;
-using Terraria.GameInput;
+using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
-using Terraria.Graphics.Shaders;
-using Terraria.ID;
-using Terraria.Graphics;
-using Microsoft.Xna.Framework.Audio;
-using System.Linq;
 
 namespace OriMod {
   internal static partial class AnimationHandler {

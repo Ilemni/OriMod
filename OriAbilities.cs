@@ -1,12 +1,6 @@
-using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using Terraria;
-using Terraria.GameInput;
-using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.ModLoader;
 using OriMod.Abilities;
 
 namespace OriMod {

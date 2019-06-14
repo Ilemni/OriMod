@@ -1,6 +1,3 @@
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.Graphics.Shaders;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {

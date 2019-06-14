@@ -1,9 +1,8 @@
+using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using Microsoft.Xna.Framework;
-using Terraria.Graphics.Shaders;
 
 namespace OriMod.Items {
   public class OriPotion : ModItem {

@@ -1,20 +1,16 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.ModLoader.IO;
+using System.Linq;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameInput;
-using Terraria;
-using Terraria.ModLoader;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.Graphics;
-using Terraria.World;
-using Microsoft.Xna.Framework.Audio;
-using System.Linq;
+using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using OriMod.Abilities;
 
 namespace OriMod

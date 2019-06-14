@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using Microsoft.Xna.Framework;
+using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod {
-  partial class OriMod : Mod
-  {
+  partial class OriMod : Mod {
     public static ModHotKey BashKey;
     public static ModHotKey DashKey;
     public static ModHotKey ClimbKey;
