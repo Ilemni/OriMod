@@ -1,9 +1,9 @@
+using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Commands {
   public class OriLight : ModCommand {
     public override string Command => "light";
-
     public override string Usage => "/light";
     public override string Description => "Toggles player light";
 
@@ -11,6 +11,7 @@ namespace OriMod.Commands {
     public override void Action(CommandCaller caller, string input, string[] args) {
       OriPlayer oPlayer = caller.Player.GetModPlayer<OriPlayer>();
       Config.DoPlayerLight = !Config.DoPlayerLight;
+      Main.NewText("Toggled player light to " + Config.DoPlayerLight);
     }
   }
 }
