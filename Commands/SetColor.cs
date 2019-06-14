@@ -3,8 +3,7 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Commands {
-  public class SetColor : ModCommand
-  {
+  public class SetColor : ModCommand {
     public override string Command
       => "oricolor";
 
@@ -24,27 +23,28 @@ namespace OriMod.Commands {
       if (args.Length == 1) {
         string lower = args[0].ToLower();
         if (lower == "clear" || lower == "reset") {
-          oPlayer.SpriteColor = Color.LightCyan;
+          Config.OriColor = Color.LightCyan;
           return;
         }
       }
       if (args.Length != 3) {
         throw new UsageException("Expected 3 arguments, got " + args.Length);
       }
-      int r = 255;
-      int g = 255;
-      int b = 255;
-      int a = 255;
-      if (!int.TryParse(args[0], out r)) {
-        throw new UsageException("Expected a number, got " + args[0]);
+      byte r = 255;
+      byte g = 255;
+      byte b = 255;
+      byte a = 255;
+      if (!byte.TryParse(args[0], out r)) {
+        throw new UsageException("Expected a number between 0 and 255 for red, got " + args[0]);
       }
-      if (!int.TryParse(args[1], out g)) {
-        throw new UsageException("Expected a number, got " + args[1]);
+      if (!byte.TryParse(args[1], out g)) {
+        throw new UsageException("Expected a number between 0 and 255 for green, got " + args[1]);
       }
-      if (!int.TryParse(args[2], out b)) {
-        throw new UsageException("Expected a number, got " + args[2]);
+      if (!byte.TryParse(args[2], out b)) {
+        throw new UsageException("Expected a number between 0 and 255 for blue, got " + args[2]);
       }
-      oPlayer.SpriteColor = new Color(r, g, b, a);
+      Config.OriColor = new Color(r, g, b, a);
+      Main.NewText("Set sprite color to " + Config.OriColor);
     }
   }
 }

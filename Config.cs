@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using System.IO;
 using Terraria;
 using Terraria.IO;
@@ -10,6 +11,7 @@ namespace OriMod {
     public static bool DoPlayerLight = true; // If the player should emit light
     public static bool BlindForestMovement = true; // TODO: Movement preset, Blind Forest style vs balanced for Terraria
     public static bool SmoothCamera = true;
+    public static Color OriColor = Color.LightCyan;
     private static Preferences Prefs = new Preferences(ConfigPath);
     public static void Load() {
       bool success = ReadConfig();
@@ -18,11 +20,27 @@ namespace OriMod {
         CreateConfig();
       }
     }
+    public static void LoadColor(string s) {
+      string[] arr = s.Split(new char[] { ',', ' ' });
+      Main.NewText("Color arr:" + arr);
+      byte r = 255;
+      byte g = 255;
+      byte b = 255;
+      byte a = 255;
+      byte.TryParse(arr[0], out r);
+      byte.TryParse(arr[2], out g);
+      byte.TryParse(arr[4], out b);
+      Main.NewText("Color now " + r + ", " + g + ", " + b + ", " + a);
+      OriColor = new Color(r, g, b, a);
+    }
     public static bool ReadConfig() {
       if (Prefs.Load()) {
         Prefs.Get("GlobalPlayerLight", ref GlobalPlayerLight);
         Prefs.Get("DoPlayerLight", ref DoPlayerLight);
         Prefs.Get("SmoothCamera", ref SmoothCamera);
+        string s = "";
+        Prefs.Get("OriColor", ref s);
+        LoadColor(s);
         // Prefs.Get("BlindForestMovement", ref BlindForestMovement);
         return true;
       }
@@ -33,6 +51,7 @@ namespace OriMod {
       Prefs.Put("GlobalPlayerLight", GlobalPlayerLight);
       Prefs.Put("DoPlayerLight", DoPlayerLight);
       Prefs.Put("SmoothCamera", SmoothCamera);
+      Prefs.Put("OriColor", OriColor);
       // Prefs.Put("BlindForestMovement", BlindForestMovement);
       Prefs.Save();
     }

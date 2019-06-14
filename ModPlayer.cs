@@ -312,13 +312,12 @@ namespace OriMod
     private Color _spriteColor = Color.LightCyan;
     internal Color SpriteColor {
       get {
-        return _spriteColor;
+        return Main.myPlayer == player.whoAmI ? (Color)Config.OriColor : _spriteColor;
       }
       set {
-        if (value != _spriteColor) {
-          doNetUpdate = true;
+        if (Main.myPlayer != player.whoAmI) {
+          _spriteColor = value;
         }
-        _spriteColor = value;
       }
     }
     internal bool debugMode = false;
