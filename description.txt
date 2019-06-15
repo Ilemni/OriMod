@@ -1,5 +1,8 @@
 Ori and the Blind Forest crossover pack.
 
+v2.2.5.1
+--- Bug Fixes ---
+- Fix Bash no longer working.
 v2.2.5
 --- Additions ---
 - Add Config file for lighting, color, and camera
