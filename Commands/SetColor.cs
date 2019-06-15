@@ -5,10 +5,10 @@ using Terraria.ModLoader;
 namespace OriMod.Commands {
   public class SetColor : ModCommand {
     public override string Command
-      => "oricolor";
+      => "color";
 
     public override string Usage
-      => "/oricolor <r> <g> <b>\n" +
+      => "/color <r> <g> <b>\n" +
          "Values between 0 and 255";
     public override string Description => "Set the color of your Ori sprite";
 
