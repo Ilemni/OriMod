@@ -458,9 +458,9 @@ namespace OriMod.Projectiles.Minions {
       // }
       bool attemptFire = (Autoshoot && targeting) || (!Autoshoot && PlayerInput.Triggers.JustPressed.MouseLeft && !Main.LocalPlayer.mouseInterface);
       // Manage Cooldown
-      float minCooldown = MinCooldown * (Autoshoot ? 2 : 1);
-      float shortCooldown = ShortCooldown * (Autoshoot ? 2 : 1);
-      float longCooldown = LongCooldown * (Autoshoot ? 1.5f : 1);
+      float minCooldown = MinCooldown * (Autoshoot ? 1.5f : 1);
+      float shortCooldown = ShortCooldown * (Autoshoot ? 1.5f : 1);
+      float longCooldown = LongCooldown * (Autoshoot ? 2f : 1);
       if (Cooldown > 0) { // If on cooldown, increase cooldown
         Cooldown += 1;
         if (Cooldown > longCooldown) {
