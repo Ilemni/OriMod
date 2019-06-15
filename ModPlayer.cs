@@ -1184,7 +1184,7 @@ namespace OriMod
           oPlayer.TrailFrame.Add(Vector2.Zero);
           oPlayer.TrailRotation.Add(0);
           oPlayer.TrailDirection.Add(1);
-          oPlayer.TrailAlpha.Add((i + 1) * 4);
+          oPlayer.TrailAlpha.Add(1);
         }
       }
 
@@ -1192,7 +1192,7 @@ namespace OriMod
 
       // modPlayer.UpdateTrail(drawPlayer);
       for (int i = 0; i < 26; i++) {
-        oPlayer.TrailAlpha[i] -= 4;
+        oPlayer.TrailAlpha[i] -= 0.00002f;
         if (oPlayer.TrailAlpha[i] < 0) {
           oPlayer.TrailAlpha[i] = 0;
         }
@@ -1205,7 +1205,9 @@ namespace OriMod
         oPlayer.TrailPos[oPlayer.TrailUpdate] = drawPlayer.position;
         oPlayer.TrailFrame[oPlayer.TrailUpdate] = oPlayer.AnimFrame;
         oPlayer.TrailDirection[oPlayer.TrailUpdate] = drawPlayer.direction;
-        oPlayer.TrailAlpha[oPlayer.TrailUpdate] = 2 * (float)(Math.Sqrt(Math.Pow(Math.Abs(drawPlayer.velocity.X), 2) + Math.Pow(Math.Abs(drawPlayer.velocity.Y), 2))) + 44;
+        float alpha = drawPlayer.velocity.Length() * 0.002f;
+        if (alpha > 0.005f) alpha = 0.005f;
+        oPlayer.TrailAlpha[oPlayer.TrailUpdate] = alpha;
         oPlayer.TrailRotation[oPlayer.TrailUpdate] = oPlayer.AnimRads;
         if (oPlayer.TrailAlpha[oPlayer.TrailUpdate] > 104) {
           oPlayer.TrailAlpha[oPlayer.TrailUpdate] = 104;
@@ -1218,8 +1220,10 @@ namespace OriMod
           effect = SpriteEffects.FlipHorizontally;
         }
 
+        Color color = oPlayer.SpriteColor * oPlayer.TrailAlpha[i];
+        color.A = 0;
         DrawData data = new DrawData(
-          mod.GetTexture("PlayerEffects/OriGlowRight"),
+          mod.GetTexture("PlayerEffects/OriGlow"),
           new Vector2(
             (oPlayer.TrailPos[i].X - Main.screenPosition.X) + 10,
             (oPlayer.TrailPos[i].Y - Main.screenPosition.Y) + 8
@@ -1227,7 +1231,7 @@ namespace OriMod
           new Rectangle(
             (int)(oPlayer.TrailFrame[i].X),
             (int)(oPlayer.TrailFrame[i].Y), 104, 76),
-          Color.White * ((oPlayer.TrailAlpha[i] / 2) / 255),
+          color,
           oPlayer.TrailRotation[i],
           new Vector2(52, 38), 1, effect, 0
         );
