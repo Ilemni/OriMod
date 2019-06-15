@@ -569,8 +569,6 @@ namespace OriMod
     }
     internal int ImmuneTimer = 0;
     internal void DoTransformation() {
-      OriSet = true;
-      return; // Temporarily disable animations
       Transforming = true;
       TransformDirection = player.direction;
       TransformTimer = 627;
@@ -821,9 +819,7 @@ namespace OriMod
         }
       }
     }
-    internal bool doUpdateFrame = true;
     public override void PostUpdate() {
-      doUpdateFrame = true;
       if (SeinMinionActive) {
         if (!(
           player.HasBuff(mod.GetBuff("SeinBuff1").Type) ||
@@ -895,7 +891,7 @@ namespace OriMod
           PlayNewSound("Ori/ChargeDash/seinChargeDashCharged");
           charged = true;
         }
-        if (charged && Input(JustPressed.Jump) && IsGrounded) {
+        if (charged && player.justJumped) {
           chargeTimer = 0;
           charged = false;
           PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + RandomChar(3));
@@ -1330,7 +1326,6 @@ namespace OriMod
     }
     */
     public override void ResetEffects() {
-      Increment(this.AnimName);
       if (TransformTimer > 0) {
         TransformTimer -= HasTransformedOnce ? RepeatedTransformRate : 1;
         if (TransformTimer <= 0 || (TransformTimer < 236 - 62 && HasTransformedOnce)) {
