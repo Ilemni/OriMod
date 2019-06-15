@@ -21,16 +21,14 @@ namespace OriMod {
       }
     }
     public static void LoadColor(string s) {
-      string[] arr = s.Split(new char[] { ',', ' ' });
-      Main.NewText("Color arr:" + arr);
+      string[] arr = s.Split(new char[] { ',', ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
       byte r = 255;
       byte g = 255;
       byte b = 255;
       byte a = 255;
       byte.TryParse(arr[0], out r);
-      byte.TryParse(arr[2], out g);
-      byte.TryParse(arr[4], out b);
-      Main.NewText("Color now " + r + ", " + g + ", " + b + ", " + a);
+      byte.TryParse(arr[1], out g);
+      byte.TryParse(arr[2], out b);
       OriColor = new Color(r, g, b, a);
     }
     public static bool ReadConfig() {
