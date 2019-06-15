@@ -1,19 +1,35 @@
-## v2.2.4
+## v2.2.5
+### Additions
+- Add Config file for lighting, color, and camera movement.
+    - GlobalPlayerLight: All other players' lighting looks the same as yours if set to true.
+    - DoPlayerLight: If your player lights up.
+    - OriColor: The color of your sprite.
+    - SmoothCamera: If camera movement is smooth similar to Blind Forest or retains vanilla behavior.
 ### Changes
-- Sein is set to auto fire rather than manual fire while holding non-damage tiles
-    - To manual fire, you must now either be holding the summon item or nothing
-- Reduced Spirit Flame manual damage multiplier from 2x to 1.4x
-- Increase Bash cooldown to 2.5 seconds
+- Reduce speed of Sein's auto fire to 75%.
+- Renamed `/oricolor` to `/color`.
+- Trail color is now based on sprite color.
 ### Bug Fixes
-- Fix some vanilla bosses and all mod bosses not dropping loot (sorry about that!)
-- Fix Sein firing while performing menu actions
+- Fix Dash resetting flight timer.
+- Fix Charge Jump not activating while water walking.
+- Fix wrong animmation playing while water walking.
+- Transform animation now plays properly.
 ---
 ## Known Issues
 - Multiplayer syncing for movement is a work in progress. Netcode is hard.
-- Other mods may cause Spirit Guardian movement to behave abnormally.
-- Spirit Guardians are not properly affected by the Mighty Winds debuff.
-- Due to the change to the backend, many previous bugs that were fixed may have been reintroduced.
+- Charge Dash sometimes causes clipping into the ceiling.
+- Spirit Flame is not considered summon damage in some mods.
+- Movement is not properly affected by Mighty Winds.
 ---
+## v2.2.4
+### Changes
+- Sein is set to auto fire rather than manual fire while holding non-damage tiles.
+    - To manual fire, you must now either be holding the summon item or nothing.
+- Reduced Spirit Flame manual damage multiplier from 2x to 1.4x.
+- Increase Bash cooldown to 2.5 seconds.
+### Bug Fixes
+- Fix some vanilla bosses and all mod bosses not dropping loot (sorry about that!)
+- Fix Sein firing while performing menu actions.
 ## v2.2.3
 ### Changes
 - Spirit Flame can now be used manually

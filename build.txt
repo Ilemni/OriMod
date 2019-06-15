@@ -1,5 +1,5 @@
 author = Fro Zen, TwiliChaos
-version = 2.2.4
+version = 2.2.5
 displayName = Arrival Of The Blind Forest
 homepage = https://forums.terraria.org/index.php?threads/arrival-of-the-blind-forest.72356/
 includePDB = true
@@ -7,4 +7,4 @@ languageVersion = 6
 includeSource = true
 hideCode = false
 hideResources = true
-buildIgnore = build.txt, .gitattributes, .gitignore, .git/, .vs/, .vscode/, .idea/, bin/, obj/, Thumbs.db, *.csproj, .sln, .xcf, .pdn
+buildIgnore = build.txt, .gitattributes, .gitignore, .git/, .vs/, .vscode/, .idea/, bin/, obj/, Thumbs.db, *.csproj, .sln, .xcf, .pdn, SecretClass.cs
