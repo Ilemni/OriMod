@@ -164,7 +164,6 @@ namespace OriMod.Abilities {
         }
       }
       else {
-        Main.NewText("Bash cooldown: " + CurrCooldown);
         if (CurrCooldown > 0 || !Refreshed) {
           CurrCooldown--;
           if (CurrCooldown < 0) {

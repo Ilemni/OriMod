@@ -1,4 +1,4 @@
-## v2.2.5.1
+## v2.2.5.2
 ### Bug Fixes
 - Fix Bash no longer working## v2.2.5
 ### Additions
