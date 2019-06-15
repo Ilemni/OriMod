@@ -8,8 +8,8 @@ namespace OriMod.Commands {
       => "oricolor";
 
     public override string Usage
-      => "/oricolor <r> <g> <b> [a]" +
-         "\nSets the color of your Ori sprite. Accepted values between 0 and 255";
+      => "/oricolor <r> <g> <b>\n" +
+         "Values between 0 and 255";
     public override string Description => "Set the color of your Ori sprite";
 
     public override CommandType Type => CommandType.Chat;
@@ -18,7 +18,8 @@ namespace OriMod.Commands {
     public override void Action(CommandCaller caller, string input, string[] args) {
       OriPlayer oPlayer = caller.Player.GetModPlayer<OriPlayer>();
       if (args.Length == 0) {
-        Main.NewText("Usage: " + Usage);
+        Main.NewTextMultiline("Usage: " + Usage);
+        return;
       }
       if (args.Length == 1) {
         string lower = args[0].ToLower();
