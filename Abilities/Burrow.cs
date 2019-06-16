@@ -7,19 +7,38 @@ using Terraria.ID;
 namespace OriMod.Abilities {
   public class Burrow : Ability {
     public Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-    public readonly int[] Burrowable = new int[] { 0, TileID.Sand, TileID.SnowBlock };
-    public const float Speed = 6f; 
-    public Vector2 Velocity { get; private set; }
+    public static readonly int[] Burrowable = new int[] { 0, TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush };
+    private const float Speed = 6f; 
+    private int Time = 0;
+    internal Vector2 Velocity = Vector2.Zero;
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.dash.InUse && !Handler.cDash.InUse;
     
     protected override void UpdateActive() {
-      Vector2 tilePos = player.position.ToTileCoordinates().ToVector2();
-      Tile tile = Main.tile[(int)tilePos.X, (int)tilePos.Y];
-      if (tile.type == 0 || player.dead) {
-        Main.NewText("No longer burrowing!");
-        State = States.Inactive;
+      Vector2 oldVel = Velocity;
+      Vector2 newVel = Vector2.Zero;
+      if (player.controlLeft) {
+        newVel.X -= 1;
       }
-      player.position.Y += Speed;
+      if (player.controlRight) {
+        newVel.X += 1;
+      }
+      if (player.controlUp) {
+        newVel.Y -= 1;
+      }
+      if (player.controlDown) {
+        newVel.Y += 1;
+      }
+      if (newVel == Vector2.Zero) {
+        if (oldVel == Vector2.Zero) {
+          oldVel = Velocity = new Vector2(0, Speed);
+        }
+        newVel = oldVel;
+      }
+      oldVel.Normalize();
+      newVel.Normalize();
+      newVel = Vector2.Lerp(oldVel, newVel, 0.2f);
+      Velocity = newVel *= Speed;
+      player.position += Velocity;
       player.velocity = Vector2.Zero;
       Main.NewText("Burrowing!");
     }
@@ -37,6 +56,17 @@ namespace OriMod.Abilities {
       player.grapCount = 0;
     }
     internal override void Tick() {
+      if (InUse) {
+        Time++;
+        if (Time > 5) {
+          Vector2 tilePos = player.position.ToTileCoordinates().ToVector2();
+          Tile tile = Main.tile[(int)tilePos.X, (int)tilePos.Y];
+          if (tile.type == 0 || player.dead) {
+            Main.NewText("No longer burrowing!");
+            State = States.Inactive;
+          }
+        }
+      }
       if (CanUse && OriMod.BurrowKey.JustPressed) {
         Vector2 left = new Vector2(player.Left.X, player.Bottom.Y + 4).ToTileCoordinates().ToVector2();
         Vector2 right = new Vector2(player.Right.X, player.Bottom.Y + 4).ToTileCoordinates().ToVector2();
@@ -55,7 +85,8 @@ namespace OriMod.Abilities {
         if (canBurrow && !isAllAir) {
           Main.NewText("Can burrow");
           State = States.Active;
-          player.position.Y += 32;
+          player.position.Y += 48;
+          Velocity = new Vector2(0, 48);
         }
         else {
           Main.NewText("Cannot burrow");
