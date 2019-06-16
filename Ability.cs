@@ -51,8 +51,8 @@ namespace OriMod {
     internal bool Unlocked = true;
     protected virtual int Cooldown { get; }
     protected int CurrCooldown { get; set; }
-    internal virtual bool CanUse => Unlocked && CurrCooldown >= Cooldown;
-    internal virtual bool Refreshed { get; set; }
+    internal virtual bool CanUse => Unlocked && Refreshed;
+    internal bool Refreshed = true;
     protected int currRand = 0; // Used for random sounds that don't repeat
     /// <summary>
     /// Checks the current state of the ability

@@ -17,7 +17,7 @@ namespace OriMod.Abilities {
     private const float BashRange = 120f;
     private const int MinBashDuration = 30;
     private const int MaxBashDuration = 85;
-    protected override int Cooldown => 150;
+    protected override int Cooldown => 120;
     internal int CurrDuration { get; private set; }
     private Vector2 playerStartPos;
     private Vector2 npcStartPos;
@@ -164,7 +164,7 @@ namespace OriMod.Abilities {
         }
       }
       else {
-        if (!Refreshed) {
+        if (CurrCooldown > 0 || !Refreshed) {
           CurrCooldown--;
           if (CurrCooldown < 0) {
             Refreshed = true;

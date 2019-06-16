@@ -1,4 +1,6 @@
-## v2.2.5
+## v2.2.5.2
+### Bug Fixes
+- Fix Bash no longer working## v2.2.5
 ### Additions
 - Add Config file for lighting, color, and camera movement.
     - GlobalPlayerLight: All other players' lighting looks the same as yours if set to true.
