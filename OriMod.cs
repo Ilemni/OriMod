@@ -11,6 +11,7 @@ namespace OriMod {
     public static ModHotKey ClimbKey;
     public static ModHotKey FeatherKey;
     public static ModHotKey ChargeKey;
+    public static ModHotKey BurrowKey;
     public static OriMod Instance;
     public OriMod() {
       Properties = new ModProperties() {
@@ -54,6 +55,7 @@ namespace OriMod {
       ClimbKey = RegisterHotKey("Climbing", "LeftShift");
       FeatherKey = RegisterHotKey("Feather", "LeftShift");
       ChargeKey = RegisterHotKey("Charge", "W");
+      BurrowKey = RegisterHotKey("Burrow", "LeftShift");
       if (!Main.dedServ) {
         // Add certain equip textures
         AddEquipTexture(null, EquipType.Head, "OriHead", "OriMod/PlayerEffects/OriHead");

@@ -40,6 +40,7 @@ namespace OriMod
     public ChargeDash cDash => Abilities.cDash;
     public Crouch crouch => Abilities.crouch;
     public LookUp lookUp => Abilities.lookUp;
+    public Burrow burrow => Abilities.burrow;
 
     internal bool doNetUpdate = false;
 
@@ -1006,6 +1007,9 @@ namespace OriMod
         }
         if (Input(OriMod.BashKey.Current) || bash.InUse) {
           bash.Update();
+        }
+        if (Input(OriMod.BurrowKey.Current) || burrow.InUse) {
+          burrow.Update();
         }
       }
       else if (Transforming) {

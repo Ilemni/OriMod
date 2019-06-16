@@ -21,6 +21,7 @@ namespace OriMod {
     public ChargeDash cDash { get; private set; }
     public LookUp lookUp { get; private set; }
     public Crouch crouch { get; private set; }
+    public Burrow burrow { get; private set; }
     internal OriAbilities(OriPlayer o) {
       oPlayer = o;
       player = o.player;
@@ -35,6 +36,7 @@ namespace OriMod {
         { cDash = new ChargeDash(o, this) },
         { crouch = new Crouch(o, this) },
         { lookUp = new LookUp(o, this) },
+        { burrow = new Burrow(o, this) },
       };
       for (int i = 0; i < Abilities.Count; i++) {
         Abilities[i].id = (byte)i;
