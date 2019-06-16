@@ -410,7 +410,6 @@ namespace OriMod
 
     private void UpdateFrame(Player drawPlayer) {
       AnimTime++;
-      
       if (Transforming) {
         if (TransformTimer < 235)
         Increment("TransformEnd");
@@ -419,6 +418,10 @@ namespace OriMod
       if (!OriSet) return;
       if (!HasTransformedOnce) {
         HasTransformedOnce = true;
+      }
+      if (drawPlayer.pulley) {
+        Increment("Idle");
+        return;
       }
       if (drawPlayer.mount.Active) {
         Increment("Idle");
