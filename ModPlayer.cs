@@ -838,14 +838,14 @@ namespace OriMod
       IsGrounded = false;
       // Check if grounded by means of liquid walking
       if (player.fireWalk || player.waterWalk2 || player.waterWalk) {
-        Vector2 checkPos = new Vector2(player.position.X + (player.width / 2), player.position.Y + player.height + 4);
-        Vector2 check2 = new Vector2(checkPos.ToTileCoordinates().X, checkPos.ToTileCoordinates().Y);
+        Vector2 checkPos = new Vector2(player.Bottom.X, player.Bottom.Y + 4);
+        Vector2 check2 = checkPos.ToTileCoordinates().ToVector2();
         bool testblock =
           Main.tile[(int)check2.X, (int)check2.Y].liquid > 0 &&
           Main.tile[(int)check2.X, (int)check2.Y - 1].liquid == 0;
         if (testblock) {
           Tile liquidTile = Main.tile[(int)check2.X, (int)check2.Y];
-          IsGrounded = liquidTile.lava() ? player.fireWalk : player.waterWalk;
+          IsGrounded = liquidTile.lava() ? player.fireWalk : (player.waterWalk || player.waterWalk2);
         }
       }
       if (!IsGrounded) {
