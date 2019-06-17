@@ -7,12 +7,14 @@ using Terraria.ModLoader;
 namespace OriMod {
   public class OriTile : GlobalTile {
     private void BurrowEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex, OriPlayer oPlayer) {
+      byte oldAlpha = drawColor.A;
       if (Abilities.Burrow.Burrowable.Contains(type)) {
-        drawColor = Color.White * 0.4f;
+        drawColor = Color.White * 0.3f;
       }
-      else {
-        drawColor = Color.White * 0.1f;
+      else if (Main.tileSolid[type]) {
+        drawColor = Color.White * 0.075f;
       }
+      drawColor.A = oldAlpha;
       if (oPlayer.debugMode) {
         Vector2[] posArr = oPlayer.burrow.Hitbox;
         Vector2 pos = new Vector2(i, j);

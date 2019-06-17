@@ -13,13 +13,13 @@ namespace OriMod.Abilities {
     private int TimeUntilCheck = 0;
     private int TimeUntilEnd = 0;
     internal Vector2 Velocity = Vector2.Zero;
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.dash.InUse && !Handler.cDash.InUse;
+    internal override bool CanUse => base.CanUse && !Handler.dash.InUse && !Handler.cDash.InUse;
     private Vector2 Normalize(Vector2 vector) {
       Vector2 v = vector;
       v.Normalize();
       return v;
     }
-    private bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive();
+    internal bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
     private static readonly Vector2[] HitboxPosTemplate = new Vector2[] {
       new Vector2(0, -2), // Top
       new Vector2(0, 2),  // Bottom
@@ -142,6 +142,7 @@ namespace OriMod.Abilities {
     }
     protected override void UpdateEnding() {
       player.position += Velocity;
+      player.direction = Math.Sign(Velocity.X);
       if (!IsSolid(Main.tile[(int)(player.Center.X / 16), (int)(player.Center.Y / 16)])) {
         player.velocity = Velocity * 1.25f;
       }
