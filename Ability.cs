@@ -42,6 +42,58 @@ namespace OriMod {
     /// </summary>
     /// <value></value>
     public States State { get; internal set; }
+    public bool Active {
+      get {
+        return State == States.Active;
+      }
+      internal set {
+        if (value == true) {
+          State = States.Active;
+        }
+        else {
+          ErrorLogger.Log("Error: Cannot directly set Ability.Active to false");
+        }
+      }
+    }
+    public bool Starting {
+      get {
+        return State == States.Starting;
+      }
+      internal set {
+        if (value == true) {
+          State = States.Starting;
+        }
+        else {
+          ErrorLogger.Log("Error: Cannot directly set Ability.Starting to false");
+        }
+      }
+    }
+    public bool Ending {
+      get {
+        return State == States.Ending;
+      }
+      internal set {
+        if (value == true) {
+          State = States.Ending;
+        }
+        else {
+          ErrorLogger.Log("Error: Cannot directly set Ability.Ending to false");
+        }
+      }
+    }
+    public bool Inactive {
+      get {
+        return State == States.Inactive;
+      }
+      internal set {
+        if (value == true) {
+          State = States.Inactive;
+        }
+        else {
+          ErrorLogger.Log("Error: Cannot directly set Ability.Inactive to false");
+        }
+      }
+    }
     /// <summary>
     /// Determines if the ability has been unlocked by the player.
     /// 
