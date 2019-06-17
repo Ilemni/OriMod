@@ -757,6 +757,13 @@ namespace OriMod {
         }
       }
     }
+    internal void RemoveSeinBuffs(int exclude=0) {
+      for (int u = 1; u <= OriMod.SeinUpgrades.Count; u++) {
+        if (u != exclude) {
+          player.ClearBuff(mod.GetBuff("SeinBuff" + u).Type);
+        }
+      }
+    }
     public override void PostUpdate() {
       if (SeinMinionActive) {
         if (!(
