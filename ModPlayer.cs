@@ -1089,10 +1089,12 @@ namespace OriMod
     public override TagCompound Save() {
       return new TagCompound {
         {"OriSet", OriSet},
+        {"Debug", debugMode},
       };
     }
     public override void Load(TagCompound tag) {
       OriSet = tag.GetBool("OriSet");
+      debugMode = tag.GetBool("Debug");
     }
     public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // similar to prehurt, but for death
       if (OriSet) {
