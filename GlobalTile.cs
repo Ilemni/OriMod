@@ -6,15 +6,25 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   public class OriTile : GlobalTile {
-    public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Microsoft.Xna.Framework.Color drawColor, ref int nextSpecialDrawIndex) {
-      if (!Main.LocalPlayer.GetModPlayer<OriPlayer>().burrow.InUse) {
-        return;
-      }
+    private void BurrowEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex, OriPlayer oPlayer) {
       if (Abilities.Burrow.Burrowable.Contains(type)) {
         drawColor = Color.White * 0.4f;
       }
       else {
-        drawColor = Color.White * 0.2f;
+        drawColor = Color.White * 0.1f;
+      }
+      if (oPlayer.debugMode) {
+        Vector2[] posArr = oPlayer.burrow.FrontTilePosArr;
+        Vector2 pos = new Vector2(i, j);
+        if (posArr.Contains(pos)) {
+          drawColor = Color.Red;
+        }
+      }
+    }
+    public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex) {
+      OriPlayer oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
+      if (oPlayer.burrow.InUse) {
+        BurrowEffects(i, j, type, spriteBatch, ref drawColor, ref nextSpecialDrawIndex, oPlayer);
       }
     }
   }

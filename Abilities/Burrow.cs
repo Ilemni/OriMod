@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -7,13 +8,97 @@ using Terraria.ID;
 namespace OriMod.Abilities {
   public class Burrow : Ability {
     public Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-    public static readonly int[] Burrowable = new int[] { 0, TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush };
+    public static readonly int[] Burrowable = new int[] { TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush };
     private const float Speed = 6f; 
-    private int Time = 0;
+    private int TimeUntilCheck = 0;
+    private int TimeUntilEnd = 0;
     internal Vector2 Velocity = Vector2.Zero;
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.dash.InUse && !Handler.cDash.InUse;
+    private Vector2 Normalize(Vector2 vector) {
+      Vector2 v = vector;
+      v.Normalize();
+      return v;
+    }
+    internal Vector2 FrontTilePos {
+      get {
+        Vector2 pos = player.Center + Normalize(Velocity) * (player.height);
+        pos.X = (int)(pos.X / 16);
+        pos.Y = (int)(pos.Y / 16);
+        return pos;
+      }
+    }
+    internal Vector2[] FrontTilePosArr = new Vector2[0];
+    private static readonly Vector2[] HitboxPos = new Vector2[] {
+      new Vector2(0, -2), // Top
+      new Vector2(0, 2),  // Bottom
+      new Vector2(-2, 0), // Left
+      new Vector2(2, 0),  // Right
+      new Vector2(1, 1),  // Corners
+      new Vector2(1, -1),
+      new Vector2(-1, 1),
+      new Vector2(-1, -1),
+    };
+    internal void UpdateFrontTilePosArray() {
+      Vector2 pos = player.Center + Normalize(Velocity) * 16;
+      pos.X = (int)(pos.X / 16);
+      pos.Y = (int)(pos.Y / 16);
+      List<Vector2> posList = new List<Vector2>();
+      foreach(Vector2 v in HitboxPos) {
+        posList.Add(pos + v);
+      }
+      FrontTilePosArr = posList.ToArray();
+    }
+    private void OnBurrowCollision(int hitboxIdx, ref bool didX, ref bool didY) {
+      oPlayer.Debug("Bounce! " + hitboxIdx);
+      switch (hitboxIdx) {
+        case 0: // Top
+        case 1: // Bottom
+          if (!didY) {
+            Velocity.Y = -Velocity.Y;
+            didY = true;
+          }
+          break;
+        case 2: // Left
+        case 3: // Right
+          if (!didX) {
+            Velocity.X = -Velocity.X;
+            didX = true;
+          }
+          break;
+        default: // Corners
+          if (!didX) {
+            Velocity.X = -Velocity.X;
+            didX = true;
+          }
+          if (!didY) {
+            Velocity.Y = -Velocity.Y;
+            didY = true;
+          }
+          break;
+      }
+    }
+    internal Tile FrontTile {
+      get {
+        Vector2 pos = FrontTilePos;
+        return Main.tile[(int)pos.X, (int)pos.Y];
+      }
+    }
+    internal Vector2 BackTilePos {
+      get {
+        Vector2 pos = player.Center - Normalize(Velocity) * (player.height);
+        pos /= 16;
+        return pos;
+      }
+    }
+    internal Tile BackTile {
+      get {
+        Vector2 pos = BackTilePos;
+        return Main.tile[(int)pos.X, (int)pos.Y];
+      }
+    }
     
     protected override void UpdateActive() {
+      UpdateFrontTilePosArray();
       Vector2 oldVel = Velocity;
       Vector2 newVel = Vector2.Zero;
       if (player.controlLeft) {
@@ -38,17 +123,31 @@ namespace OriMod.Abilities {
       newVel.Normalize();
       newVel = Vector2.Lerp(oldVel, newVel, 0.2f);
       Velocity = newVel *= Speed;
+      Vector2[] arr = FrontTilePosArr;
+      bool didX = false;
+      bool didY = false;
+      for (int i = 0; i < arr.Length; i++) {
+        Vector2 v = arr[i];
+        Tile t = Main.tile[(int)v.X, (int)v.Y];
+        if (!Burrowable.Contains(t.type)) {
+          OnBurrowCollision(i, ref didX, ref didY);
+        }
+      }
       player.position += Velocity;
       player.velocity = Vector2.Zero;
-      Main.NewText("Burrowing!");
+    }
+    protected override void UpdateEnding() {
+      player.position += Velocity;
+      if (!BackTile.active()) {
+        player.velocity = Velocity * 1.25f;
+      }
+      oPlayer.UnrestrictedMovement = true;
     }
     protected override void UpdateUsing() {
       player.buffImmune[BuffID.Suffocation] = true;
       player.noItems = true;
       player.gravity = 0;
       player.controlJump = false;
-      player.velocity.X = 0;
-      player.velocity.Y = 0;
       player.controlUseItem = false;
       player.controlUseTile = false;
       player.controlThrow = false;
@@ -57,24 +156,33 @@ namespace OriMod.Abilities {
     }
     internal override void Tick() {
       if (InUse) {
-        Time++;
-        if (Time > 5) {
-          Vector2 tilePos = player.position.ToTileCoordinates().ToVector2();
-          Tile tile = Main.tile[(int)tilePos.X, (int)tilePos.Y];
-          if (tile.type == 0 || player.dead) {
-            Main.NewText("No longer burrowing!");
-            State = States.Inactive;
+        if (Active) {
+          if (TimeUntilCheck > 0) {
+            TimeUntilCheck--;
+          }
+          if (TimeUntilCheck == 0) {
+            Tile tile = FrontTile;
+            if (!tile.active() || player.dead) {
+              oPlayer.Debug("No longer burrowing!");
+              Ending = true;
+              TimeUntilEnd = 10;
+            }
+          }
+        }
+        else if (Ending) {
+          TimeUntilEnd--;
+          if (TimeUntilEnd < 1) {
+            Inactive = true;
           }
         }
       }
-      if (CanUse && OriMod.BurrowKey.JustPressed) {
+      if (CanUse && !InUse && OriMod.BurrowKey.JustPressed) {
         Vector2 left = new Vector2(player.Left.X, player.Bottom.Y + 4).ToTileCoordinates().ToVector2();
         Vector2 right = new Vector2(player.Right.X, player.Bottom.Y + 4).ToTileCoordinates().ToVector2();
         bool canBurrow = true;
         bool isAllAir = true;
         for (int x = (int)left.X; x <= right.X; x++) {
           Tile tile = Main.tile[x, (int)left.Y];
-          if (tile.type == 0) continue;
           if (!tile.active() || !tile.nactive() || tile.inActive()) continue;
           isAllAir = false;
           if (!Burrowable.Contains(tile.type)) {
@@ -83,13 +191,14 @@ namespace OriMod.Abilities {
           }
         }
         if (canBurrow && !isAllAir) {
-          Main.NewText("Can burrow");
-          State = States.Active;
-          player.position.Y += 48;
-          Velocity = new Vector2(0, 48);
+          oPlayer.Debug("Can burrow");
+          Active = true;
+          TimeUntilCheck = 15;
+          player.position.Y += 64;
+          Velocity = new Vector2(0, 64);
         }
         else {
-          Main.NewText("Cannot burrow");
+          oPlayer.Debug("Cannot burrow");
         }
       }
     }

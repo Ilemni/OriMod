@@ -865,7 +865,7 @@ namespace OriMod
       UpdateFrame(player);
       if (!OriSet) return;
       // Jump Effects
-      if (DoPlayerLight) Lighting.AddLight(player.Center, LightColor.ToVector3());
+      if (DoPlayerLight && !burrow.Active) Lighting.AddLight(player.Center, LightColor.ToVector3());
       if (player.justJumped) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
@@ -992,7 +992,6 @@ namespace OriMod
         else if ((Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && cDash.Refreshed) || cDash.InUse) {
           cDash.Update();
         }
-         
         if ((Input(JustPressed.Jump) && OnWall && !IsGrounded) || wJump.InUse) {
           wJump.Update();
         }
