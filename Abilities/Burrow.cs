@@ -181,9 +181,6 @@ namespace OriMod.Abilities {
         }
       }
       if (CanUse && !InUse && OriMod.BurrowKey.JustPressed) {
-        oPlayer.Debug("Can burrow");
-        Active = true;
-        TimeUntilCheck = 15;
         UpdateEnterBurrowBox();
         Vector2 vel = Vector2.Zero;
         for (int i = 0; i < BurrowBoxTemplate.Length; i++) {
@@ -197,6 +194,9 @@ namespace OriMod.Abilities {
           oPlayer.Debug("Cannot burrow");
           return;
         }
+        oPlayer.Debug("Can burrow");
+        Active = true;
+        TimeUntilCheck = 15;
         vel.Normalize();
         vel *= 64;
         player.position += vel;
