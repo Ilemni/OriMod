@@ -32,96 +32,100 @@ namespace OriMod {
       }},
       {"FallNoAnim", new Vector3[] {
         h(incrementType.Single),
-        f(0, 1)
+        f(3, 13)
       }},
       {"Running", new Vector3[] {
         h(),
-        f(0, 2, 4), f(0, 12, 4)
+        f(2, 0, 4), f(2, 10, 4)
       }},
       {"Idle", new Vector3[] {
         h(),
-        f(0, 13, 9), f(0, 20, 9)
+        f(0, 1, 9), f(0, 8, 9)
       }},
       {"Dash", new Vector3[] {
         h(incrementType.Select, loop.Once),
-        f(1, 19, 36), f(0, 21, 12)
+        f(2, 12, 36), f(2, 13, 12)
       }},
       {"Bash", new Vector3[] {
         h(incrementType.Select, loop.Once),
-        f(0, 22, 40), f(0, 21)
+        f(2, 14, 40), f(2, 13)
       }},
       {"CrouchStart", new Vector3[] {
         h(incrementType.Single),
-        f(0, 24)
+        f(1, 8)
       }},
       {"Crouch", new Vector3[] {
         h(incrementType.Single),
-        f(0, 25)
+        f(1, 9)
       }},
       {"WallJump", new Vector3[] {
         h(incrementType.Single),
-        f(1, 0, 12)
+        f(5, 15, 12)
       }},
       {"AirJump", new Vector3[] {
         h(incrementType.Single),
-        f(1, 1)
+        f(3, 0)
       }},
       {"ChargeJump", new Vector3[] {
         h(l:loop.Once, p:playbackMode.PingPong),
-        f(1, 2, 4), f(1, 5, 4)
+        f(3, 5, 4), f(3, 8, 4)
       }},
       {"Falling", new Vector3[] {
         h(),
-        f(1, 6, 4), f(1, 9, 4)
+        f(3, 9, 4), f(3, 12, 4)
       }},
       {"ClimbIdle", new Vector3[] {
         h(incrementType.Single),
-        f(1, 10)
+        f(5, 0)
       }},
       {"Climb", new Vector3[] {
         h(),
-        f(1, 11, 4), f(1, 18, 4)
+        f(5, 1, 4), f(5, 8, 4)
       }},
       {"WallSlide", new Vector3[] {
         h(),
-        f(1, 20, 5), f(1, 23, 5)
+        f(5, 9, 5), f(5, 12, 5)
       }},
       {"IntoJumpBall", new Vector3[] {
         h(incrementType.Select, loop.Once),
-        f(1, 24, 6), f(1, 25, 4)
+        f(3, 3, 6), f(3, 4, 4)
       }},
       {"IdleAgainst", new Vector3[] {
         h(),
-        f(2, 0, 7), f(2, 6, 7)
+        f(0, 9, 7), f(0, 14, 7)
       }},
       {"Jump", new Vector3[] {
         h(incrementType.Select, p:playbackMode.Reverse),
-        f(2, 8), f(2, 9, 14)
+        f(3, 1), f(3, 2, 14)
       }},
       {"GlideStart", new Vector3[] {
         h(l:loop.Once),
-        f(3, 0, 5), f(3, 2, 5)
+        f(4, 0, 5), f(4, 2, 5)
       }},
       {"GlideIdle", new Vector3[] {
         h(incrementType.Single),
-        f(3, 3)
+        f(4, 3)
       }},
       {"Glide", new Vector3[] {
         h(),
-        f(3, 4, 5), f(3, 9, 5)
+        f(4, 4, 5), f(4, 9, 5)
       }},
       {"LookUpStart", new Vector3[] { 
         h(incrementType.Single),
-        f(3, 10)
+        f(1, 0)
       }},
       {"LookUp", new Vector3[] { 
         h(),
-        f(3, 11, 8), f(3, 17, 8)
+        f(1, 1, 8), f(1, 7, 8)
       }},
       {"TransformEnd", new Vector3[] {
         h(incrementType.Select),
-        f(3, 18, 6), f(3, 19, 50), f(3, 20, 6), f(3, 21, 60),
-        f(3, 22, 10), f(3, 23, 40), f(3, 24, 3), f(3, 25, 60)
+        f(15, 8, 6), f(15, 9, 50), f(15, 10, 6), f(15, 11, 60),
+        f(15, 12, 10), f(15, 13, 40), f(15, 14, 3), f(15, 15, 60)
+      }},
+      {"Burrow", new Vector3[] {
+        h(incrementType.Range),
+        f(7, 0, 3), f(7, 7, 3)
       }},
     };
     

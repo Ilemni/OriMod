@@ -255,8 +255,8 @@ namespace OriMod
     private int TeatherTrailTimer = 0;
 
     // Animation Variables
-    internal const int SpriteWidth = 104;
-    internal const int SpriteHeight = 76;
+    internal const int SpriteWidth = 128;
+    internal const int SpriteHeight = 128;
     private Vector2 _animFrame;
     private Vector2 AnimFrame {
       get {
