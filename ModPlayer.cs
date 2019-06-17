@@ -424,9 +424,11 @@ namespace OriMod
         return;
       }
       if (burrow.InUse) {
-        double rad = Math.Atan2(burrow.Velocity.X, burrow.Velocity.Y);
+        double rad = Math.Atan2(burrow.Velocity.X, -burrow.Velocity.Y);
         int deg = (int)(rad * (180 / Math.PI));
+        deg *= drawPlayer.direction;
         Increment("Burrow", rotDegrees:deg);
+        return;
       }
       if (drawPlayer.mount.Active) {
         Increment("Idle");
@@ -875,14 +877,13 @@ namespace OriMod
         PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
       // Charging
-      if (
+      if ( !burrow.InUse &&
         ( // Ground CJump
           Input(OriMod.ChargeKey.Current) &&
           !upRefresh &&
           !(OnWall && Input(OriMod.ClimbKey.Current))
         ) || ( // Wall CJump
-          climb.InUse &&
-          (
+          climb.InUse && (
             (player.direction == 1 && Input(Current.Left)) ||
             (player.direction == -1 && Input(Current.Right))
           )
@@ -911,7 +912,7 @@ namespace OriMod
       }
       else {
         chargeTimer = 0;
-        if (charged) {
+        if (charged && !burrow.InUse) {
           PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
           charged = false;
         }
@@ -1164,21 +1165,7 @@ namespace OriMod
     }
 
     private Vector2 Offset(OriPlayer oPlayer, int x=0, int y=0) {
-      Vector2 offset = new Vector2();
-      if (x != 0 || y != 0) {
-        offset.X = x;
-        offset.Y = y;
-        return offset;
-      }
-      switch (oPlayer.AnimName) {
-        case "AirJump":
-          offset.Y = 8;
-        break;
-        case "ClimbIdle":
-        case "Climb":
-          offset.Y = 24;
-        break;
-      }
+      Vector2 offset = new Vector2(x, y);
       return offset;
     }
     internal readonly PlayerLayer OriTrail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
@@ -1269,11 +1256,11 @@ namespace OriMod
         effect = SpriteEffects.FlipHorizontally;
       }
       Vector2 pos = new Vector2(
-        (drawPlayer.position.X - Main.screenPosition.X) + 10,
-        (drawPlayer.position.Y - Main.screenPosition.Y) + 8
+        (drawPlayer.Center.X - Main.screenPosition.X),
+        (drawPlayer.Center.Y - Main.screenPosition.Y)
       );
-      Rectangle rect = new Rectangle((int)(oPlayer.AnimFrame.X), (int)(oPlayer.AnimFrame.Y), 104, 76);
-      Vector2 orig = new Vector2(52, 38);
+      Rectangle rect = new Rectangle((int)(oPlayer.AnimFrame.X), (int)(oPlayer.AnimFrame.Y), SpriteWidth, SpriteHeight);
+      Vector2 orig = new Vector2(SpriteWidth / 2, SpriteHeight / 2 + 6);
       
       DrawData data = new DrawData(spriteTexture, pos, rect, oPlayer.SpriteColor, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
       data.position += oPlayer.Offset(oPlayer);
@@ -1307,7 +1294,7 @@ namespace OriMod
         new Rectangle(0, y * 76, 104, 76),
         Color.White, drawPlayer.direction * oPlayer.AnimRads,
         new Vector2(52, 38), 1, effect, 0);
-        data.position += oPlayer.Offset(oPlayer);
+      data.position += oPlayer.Offset(oPlayer);
       Main.playerDrawData.Add(data);
       // public DrawData(Texture2D texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effect, int inactiveLayerDepth);
     });
