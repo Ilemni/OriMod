@@ -142,7 +142,7 @@ namespace OriMod.Abilities {
     }
     protected override void UpdateEnding() {
       player.position += Velocity;
-      if (!IsSolid(BackTile)) {
+      if (!IsSolid(Main.tile[(int)(player.Center.X / 16), (int)(player.Center.Y / 16)])) {
         player.velocity = Velocity * 1.25f;
       }
       oPlayer.UnrestrictedMovement = true;
@@ -198,7 +198,7 @@ namespace OriMod.Abilities {
           return;
         }
         vel.Normalize();
-        vel *= Speed * 5;
+        vel *= 64;
         player.position += vel;
         Velocity = vel;
       }

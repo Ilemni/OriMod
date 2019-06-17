@@ -23,15 +23,15 @@ namespace OriMod {
     }
     public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex) {
       OriPlayer oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
+      if (oPlayer.burrow.InUse) {
+        BurrowEffects(i, j, type, spriteBatch, ref drawColor, ref nextSpecialDrawIndex, oPlayer);
+      }
       if (oPlayer.debugMode) {
         Vector2[] posArr = oPlayer.burrow.BurrowBox;
         Vector2 pos = new Vector2(i, j);
         if (posArr.Contains(pos)) {
           drawColor = Color.LimeGreen;
         }
-      }
-      if (oPlayer.burrow.InUse) {
-        BurrowEffects(i, j, type, spriteBatch, ref drawColor, ref nextSpecialDrawIndex, oPlayer);
       }
     }
   }
