@@ -13,16 +13,13 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using OriMod.Abilities;
 
-namespace OriMod
-{
+namespace OriMod {
   public sealed class OriPlayer : ModPlayer {
     internal static TriggersSet JustPressed => PlayerInput.Triggers.JustPressed;
     internal static TriggersSet JustReleased => PlayerInput.Triggers.JustReleased;
     internal static TriggersSet Current => PlayerInput.Triggers.Current;
+    internal bool Input(bool TriggerKey) => player.whoAmI == Main.myPlayer && TriggerKey;
 
-    internal bool Input(bool TriggerKey) {
-      return player.whoAmI == Main.myPlayer && TriggerKey;
-    }
     #region Variables
     /// <summary>
     /// Class that contains all of OriPlayer's abilities
@@ -68,10 +65,10 @@ namespace OriMod
 
     // Variables relating to fixing movement when Ori is active, such that you aren't slowed down mid-air after bashing.
     public bool IsGrounded { get; private set; }
+    
     /// <summary>
     /// When true, sets player.runSlowDown to 0 every frame until set to false
     /// </summary>
-    
     public bool UnrestrictedMovement {
       get {
         return _unrestrictedMovement;
@@ -111,7 +108,6 @@ namespace OriMod
     /// <seealso cref="FloorMaterial" />
     internal string WallMaterial { get; private set; }
     
-
     // Variables relating to Sein
     /// <summary>
     /// Info about if this player has an OriMod Sein minion summoned.
@@ -237,34 +233,15 @@ namespace OriMod
     public List<int> WoodFloorMaterials;
     internal List<int> UnassignedTiles;
 
-    // Wall materials
-    public List<int> GrassWallMaterials;
-    public List<int> LightDarkWallMaterials;
-    public List<int> MushroomWallMaterials;
-    public List<int> RockWallMaterials;
-    public List<int> WoodWallMaterials;
-
     // Trail variables, for the trails Ori creates
     private List<Trail> Trails;
     private int TrailIndex = 0;
-
     private int TeatherTrailTimer = 0;
 
     // Animation Variables
     internal const int SpriteWidth = 128;
     internal const int SpriteHeight = 128;
-    private Vector2 _animFrame;
-    private Vector2 AnimFrame {
-      get {
-        return _animFrame;
-      }
-      set {
-        if (value != _animFrame) {
-          doNetUpdate = true;
-          _animFrame = value;
-        }
-      }
-    }
+    private Vector2 AnimFrame;
     /// <summary>
     /// The current sprite tile of the player in Ori state
     /// 
@@ -334,14 +311,14 @@ namespace OriMod
     internal void Debug(string msg) {
       Debug(msg, this);
     }
+    public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
+    #endregion
+    
     internal static void Debug(string msg, OriPlayer oPlayer) {
       if (oPlayer.debugMode && oPlayer.player.whoAmI == Main.myPlayer) {
         Main.NewText(msg);
       }
     }
-    public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
-    #endregion
-    
     // basic sound playing method, with paths starting after NewSFX in the file structure
     internal SoundEffectInstance PlayNewSound(string Path) => PlayNewSound(Path, 1, 0);
     internal SoundEffectInstance PlayNewSound(string Path, float Volume) => PlayNewSound(Path, Volume, 0);
@@ -356,7 +333,6 @@ namespace OriMod
     /// </summary>
     /// <param name="length">Max letter indice to use</param>
     /// <returns>char between A and <c>alphabet[length]</c></returns>
-
     public static char RandomChar(int length) { // Returns random letter based on length. Primarily used for sound effects
       char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
       return alphabet[Main.rand.Next(length)];
@@ -590,11 +566,6 @@ namespace OriMod
       SpiritTreeRockFloorMaterials = new List<int>();
       SpiritTreeWoodFloorMaterials = new List<int>();
       WoodFloorMaterials = new List<int>();
-      GrassWallMaterials = new List<int>();
-      LightDarkWallMaterials = new List<int>();
-      MushroomWallMaterials = new List<int>();
-      RockWallMaterials = new List<int>();
-      WoodWallMaterials = new List<int>();
       UnassignedTiles = new List<int>();
 
       GrassFloorMaterials.Clear();
@@ -695,16 +666,6 @@ namespace OriMod
       SpiritTreeRockFloorMaterials.AddRange(spiritTreeRockBlocks);
       SpiritTreeWoodFloorMaterials.AddRange(spiritTreeWoodBlocks);
       WoodFloorMaterials.AddRange(woodBlocks);
-
-      GrassWallMaterials.AddRange(grassBlocks);
-      GrassWallMaterials.AddRange(sandBlocks);
-      GrassWallMaterials.AddRange(snowBlocks);
-      LightDarkWallMaterials.AddRange(lightDarkBlocks);
-      MushroomWallMaterials.AddRange(mushroomBlocks);
-      RockWallMaterials.AddRange(rockBlocks);
-      RockWallMaterials.AddRange(spiritTreeRockBlocks);
-      WoodWallMaterials.AddRange(woodBlocks);
-      WoodWallMaterials.AddRange(spiritTreeWoodBlocks);
     }
     
     // Gets the tile that's a given offset from player.Center.X, player.position.Y + player.height
@@ -788,41 +749,11 @@ namespace OriMod
             else {
               FloorMaterial = "Grass";
               if (!UnassignedTiles.Contains(tile.type)) {
-              // Main.NewText("Tile ID " + tile.type + " is not assigned to a material"); // Debug
+                Debug("Tile ID " + tile.type + " is not assigned to a material");
                 UnassignedTiles.Add(tile.type);
               }
             }
           }
-        }
-      }
-    }
-    private void TestWallMaterial(Player player) { // or this, im too tired to comment them
-      Tile tile = GetTile(-2f, 34f);
-      if (tile.active()) {
-        if (GrassWallMaterials.Contains(tile.type)) {
-          WallMaterial = "Grass";
-        }
-        else if (LightDarkWallMaterials.Contains(tile.type)) {
-          WallMaterial = "LightDark";
-        }
-        else if (MushroomWallMaterials.Contains(tile.type)) {
-          WallMaterial = "Mushroom";
-        }
-        else if (RockWallMaterials.Contains(tile.type)) {
-          WallMaterial = "Rock";
-        }
-        else if (WoodWallMaterials.Contains(tile.type)) {
-          WallMaterial = "Wood";
-        }
-      }
-      else {
-        WallMaterial = "Grass";
-      }
-    }
-    internal void RemoveSeinBuffs(int exclude=0) {
-      for (int u = 1; u <= OriMod.SeinUpgrades.Count; u++) {
-        if (u != exclude) {
-          player.ClearBuff(mod.GetBuff("SeinBuff" + u).Type);
         }
       }
     }
@@ -873,8 +804,7 @@ namespace OriMod
         PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
       // Charging
-      if ( !burrow.InUse &&
-        ( // Ground CJump
+      if (!burrow.InUse && ( // Ground CJump
           Input(OriMod.ChargeKey.Current) &&
           !upRefresh &&
           !(OnWall && Input(OriMod.ClimbKey.Current))
@@ -931,10 +861,7 @@ namespace OriMod
       }
       posx /= 16f;
       posy /= 16f;
-      if (
-        WorldGen.SolidTile((int)posx, (int)posy + 1) &&
-        WorldGen.SolidTile((int)posx, (int)posy + 2)
-      ) {
+      if (WorldGen.SolidTile((int)posx, (int)posy + 1) && WorldGen.SolidTile((int)posx, (int)posy + 2)) {
         OnWall = true;
       }
     }
@@ -1048,7 +975,7 @@ namespace OriMod
       dust.noGravity = false;
     }
     public override void FrameEffects() {
-      if (!OriSet) { return; }
+      if (!OriSet) return;
 
       if (player.velocity != Vector2.Zero && TeatherTrailTimer == 0) {
         CreateTeatherDust();
@@ -1060,31 +987,26 @@ namespace OriMod
       Flashing = flashPattern.Contains(FlashTimer);
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
-      if (OriSet) {
-        if (stomp.InUse || chargeJumpAnimTimer > 0 || bash.InUse || cDash.InUse) {
-          damage = 0;
-        }
+      if (OriSet && (bash.InUse || stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0)) {
+        damage = 0;
       }
     }
     private int hurtRand = 0;
     public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // effects when character is hurt
-      if (OriSet && playSound) {
-        playSound = false; // stops regular hurt sound from playing
-        genGore = false; // stops regular gore from appearing
-        if (bash.InUse || stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0) {
-          damage = 0;
-          return false;
-        }
-        else {
-          FlashTimer = 53;
-          PlayNewSound("Ori/Hurt/seinHurtRegular" + RandomChar(4, ref hurtRand));
-          UnrestrictedMovement = true;
-        }
+      if (!OriSet) return true;
+      playSound = false;
+      genGore = false;
+      if (bash.InUse || stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0) {
+        damage = 0;
+        return false;
+      }
+      else {
+        FlashTimer = 53;
+        PlayNewSound("Ori/Hurt/seinHurtRegular" + RandomChar(4, ref hurtRand));
+        UnrestrictedMovement = true;
       }
       return true;
     }
-    public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit) { }
-    public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit) { }
     public override TagCompound Save() {
       return new TagCompound {
         {"OriSet", OriSet},
@@ -1126,10 +1048,9 @@ namespace OriMod
       }
       layers.Insert(9, oriPlayerSprite);
       layers.Insert(0, OriTrail);
-      layers.Insert(0, oriTransformSprite);
-      oriTransformSprite.visible = (Transforming && TransformTimer > 235);
-      if (OriSet) {
-        player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
+      if (Transforming && TransformTimer > 235) {
+        layers.Insert(0, oriTransformSprite);
+        oriTransformSprite.visible = true;
       }
       if (OriSet || Transforming) {
         PlayerLayer.Skin.visible = false;
@@ -1147,7 +1068,8 @@ namespace OriMod
         PlayerLayer.HandOnAcc.visible = false;
         PlayerLayer.HandOffAcc.visible = false;
 
-        if (OriSet || TransformTimer < 236) {
+        if (OriSet) {
+          player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
           oriPlayerSprite.visible = (!player.dead && !player.invis);
           OriTrail.visible = (!player.dead && !player.invis && !player.mount.Active);
         }
@@ -1157,7 +1079,6 @@ namespace OriMod
         oriPlayerSprite.visible = false;
       }
     }
-
     private Vector2 Offset(OriPlayer oPlayer, int x=0, int y=0) {
       Vector2 offset = new Vector2(x, y);
       return offset;
@@ -1226,7 +1147,6 @@ namespace OriMod
       DrawData data = new DrawData(spriteTexture, pos, rect, oPlayer.SpriteColor, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
       data.position += oPlayer.Offset(oPlayer);
       Main.playerDrawData.Add(data);
-      // public DrawData(Texture2D texture, Vector2 position, Rectangle? sourceRect, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effect, int inactiveLayerDepth);
     });
     internal static readonly PlayerLayer oriTransformSprite = new PlayerLayer("OriMod", "OriTransform", delegate (PlayerDrawInfo drawInfo) {
       Player drawPlayer = drawInfo.drawPlayer;
@@ -1235,16 +1155,10 @@ namespace OriMod
       Vector2 position = drawPlayer.position;
       Texture2D texture = mod.GetTexture("PlayerEffects/transform");
       SpriteEffects effect = drawPlayer.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-
-      int y = 0;
-      if (oPlayer.TransformTimer > 236) { // Transform Start
-        float t = oPlayer.TransformTimer - 235;
-        if (t > 0) {
-          y = t > 390 ? 0 : t > 330 ? 1 : t > 270 ? 2 : t > 150 ? 3 : t > 110 ? 4 : t > 70 ? 5 : t > 30 ? 6 : 7;
-        }
-      }
-      DrawData data = new DrawData(
-        texture,
+      float t = oPlayer.TransformTimer - 235;
+      int y = t > 390 ? 0 : t > 330 ? 1 : t > 270 ? 2 : t > 150 ? 3 : t > 110 ? 4 : t > 70 ? 5 : t > 30 ? 6 : 7;
+      
+      DrawData data = new DrawData(texture,
         new Vector2(drawPlayer.position.X - Main.screenPosition.X + 10, drawPlayer.position.Y - Main.screenPosition.Y + 8),
         new Rectangle(0, y * 76, 104, 76),
         Color.White, drawPlayer.direction * oPlayer.AnimRads,
@@ -1267,13 +1181,6 @@ namespace OriMod
         new Vector2(76, 10), 1, effect, 0);
       Main.playerDrawData.Add(data);
     });
-
-    /*public override void clientClone(ModPlayer clientClone) {
-      OriPlayer clone = clientClone as OriPlayer;
-      clone.OriSet = OriSet;
-      clone.OriSetPrevious = OriSetPrevious;
-    }
-    */
     public override void ResetEffects() {
       if (TransformTimer > 0) {
         TransformTimer -= HasTransformedOnce ? RepeatedTransformRate : 1;
@@ -1283,14 +1190,10 @@ namespace OriMod
           OriSet = true;
         }
       }
-      
       if (OriSet) {
-        if (FlashTimer > 0) { FlashTimer--; }
-        if (TeatherTrailTimer > 0) { TeatherTrailTimer--; }
-
-        if (chargeJumpAnimTimer > 0) {
-          chargeJumpAnimTimer--;
-        }
+        if (FlashTimer > 0) FlashTimer--;
+        if (TeatherTrailTimer > 0) TeatherTrailTimer--;
+        if (chargeJumpAnimTimer > 0) chargeJumpAnimTimer--;
       }
       if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer && doNetUpdate) {
         ModNetHandler.oriPlayerHandler.SendOriState(255, player.whoAmI);
