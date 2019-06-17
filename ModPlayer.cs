@@ -423,6 +423,11 @@ namespace OriMod
         Increment("Idle");
         return;
       }
+      if (burrow.InUse) {
+        double rad = Math.Atan2(burrow.Velocity.X, burrow.Velocity.Y);
+        int deg = (int)(rad * (180 / Math.PI));
+        Increment("Burrow", rotDegrees:deg);
+      }
       if (drawPlayer.mount.Active) {
         Increment("Idle");
         // TODO: Minecart animation?
