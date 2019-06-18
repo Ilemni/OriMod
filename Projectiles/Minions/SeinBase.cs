@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.GameInput;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OriMod.Projectiles.Minions {
   public abstract class SeinBase : Minion {
@@ -514,6 +515,25 @@ namespace OriMod.Projectiles.Minions {
       width = 4;
       height = 4;
       return false;
+    }
+    public override void PostDraw(SpriteBatch spriteBatch, Color lightColor) {
+      Texture2D texture = mod.GetTexture("Projectiles/Minions/Sein_Glow");
+      int t = (int)(Main.time % 45);
+      int frame = t < 15 ? 0 : t < 30 ? 1 : 2;
+      spriteBatch.Draw(
+        texture,
+        new Vector2(
+          projectile.Center.X - Main.screenPosition.X + projectile.width * 0.5f,
+          projectile.Center.Y - Main.screenPosition.Y + projectile.height * 0.5f
+        ),
+        new Rectangle(0, frame * texture.Height / 3, texture.Width, texture.Width),
+        Color.White,
+        projectile.rotation,
+        new Vector2(texture.Width, texture.Width) * 0.5f,
+        projectile.scale, 
+        SpriteEffects.None, 
+        0f
+      );
     }
   }
 }
