@@ -17,7 +17,7 @@ namespace OriMod.Abilities {
     private const float BashRange = 120f;
     private const int MinBashDuration = 30;
     private const int MaxBashDuration = 85;
-    protected override int Cooldown => 120;
+    protected override int Cooldown => 90;
     internal int CurrDuration { get; private set; }
     private Vector2 playerStartPos;
     private Vector2 npcStartPos;
@@ -80,7 +80,6 @@ namespace OriMod.Abilities {
       if (CurrDuration == MinBashDuration + 2) {
         oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
       }
-      oPlayer.ImmuneTimer = 20;
     }
     protected override void UpdateEnding() {
       player.pulley = false;

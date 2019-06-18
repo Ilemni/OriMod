@@ -9,6 +9,7 @@ namespace OriMod.Abilities {
 
     private const int StartDuration = 24;
     private const int MinDuration = 30;
+    protected override int Cooldown => 480;
     private const float Gravity = 4f;
     private const float MaxFallSpeed = 28f;
     private int CurrDur = 0;
@@ -39,7 +40,7 @@ namespace OriMod.Abilities {
       player.velocity.X = 0;
       player.gravity = Gravity;
       player.maxFallSpeed = MaxFallSpeed;
-      oPlayer.ImmuneTimer = 20;
+      oPlayer.ImmuneTimer = 12;
     }
 
     protected override void UpdateEnding() {
@@ -57,6 +58,8 @@ namespace OriMod.Abilities {
       Proj.height = 320;
       Proj.damage = (int)(Proj.damage * 1.6f);
       Proj = null;
+      CurrCooldown = Cooldown;
+      Refreshed = false;
     }
     protected override void UpdateUsing() {
       player.controlUp = false;
@@ -92,6 +95,14 @@ namespace OriMod.Abilities {
       }
       else if (Ending) {
         Inactive = true;
+      }
+      else {
+        if (CurrCooldown > 0 || !Refreshed) {
+          CurrCooldown--;
+          if (CurrCooldown < 0) {
+            Refreshed = true;
+          }
+        }
       }
     }
   }

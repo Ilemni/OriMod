@@ -9,6 +9,7 @@ namespace OriMod.Abilities {
     };
     private const int Duration = 24;
     private int CurrTime = 0;
+    protected override int Cooldown => 60;
     internal int Direction = 1;
     
     internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
@@ -37,13 +38,17 @@ namespace OriMod.Abilities {
         StartDash();
         return;
       }
-      if (!Refreshed && (oPlayer.IsGrounded || oPlayer.OnWall || Handler.bash.InUse)) {
-        Refreshed = true;
+      if (!Refreshed) {
+        CurrCooldown--;
+        if (CurrCooldown < 0 && oPlayer.IsGrounded || oPlayer.OnWall || Handler.bash.InUse) {
+          Refreshed = true;
+        }
       }
       if (InUse) {
         CurrTime++;
         if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse) {
           Inactive = true;
+          CurrCooldown = Cooldown;
         }
       }
     }

@@ -14,7 +14,7 @@ namespace OriMod.Abilities {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     };
     private const int Duration = 14;
-    
+    protected override int Cooldown => 180;
     private int CurrTime = 0;
     /// <summary>
     /// The ID of the NPC currently targeted by this player's Charge Dash.
@@ -65,6 +65,7 @@ namespace OriMod.Abilities {
         player.velocity = dir * speed * 0.8f;
         if (CurrTime < Duration && (player.position - Main.npc[Npc].position).Length() < speed) {
           Inactive = true;
+          CurrCooldown = Cooldown;
           CurrTime = Duration;
           player.position = Main.npc[Npc].position;
           player.position.Y -= 32f;
@@ -81,7 +82,7 @@ namespace OriMod.Abilities {
       Proj.height = (int)Utils.Clamp((Math.Abs(player.velocity.Y) * 2.5f), 96, 250);
       Proj.Center = player.Center;
       player.runSlowdown = 26f;
-      oPlayer.ImmuneTimer = 20;
+      oPlayer.ImmuneTimer = 12;
     }
 
     internal override void Tick() {
@@ -97,8 +98,11 @@ namespace OriMod.Abilities {
         }
         return;
       }
-      if (!Refreshed && !OriMod.ChargeKey.Current) {
-        Refreshed = true;
+      if (!Refreshed) {
+        CurrCooldown--;
+        if (CurrCooldown < 0 && !OriMod.ChargeKey.Current) {
+          Refreshed = true;
+        }
       }
       if (InUse) {
         Handler.dash.Inactive = true;
@@ -106,6 +110,7 @@ namespace OriMod.Abilities {
         CurrTime++;
         if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           Inactive = true;
+          CurrCooldown = Cooldown;
           if ((Npc == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
             Vector2 newVel = Npc == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
             newVel.Normalize();
