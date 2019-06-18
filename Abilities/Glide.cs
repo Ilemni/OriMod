@@ -11,7 +11,7 @@ namespace OriMod.Abilities {
     private const int EndDuration = 10;
     private int CurrTime = 0;
 
-    internal override bool CanUse => base.CanUse && State != States.Ending && !Handler.dash.InUse && !Handler.cDash.InUse && player.velocity.Y > 0 && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && !Ending && !Handler.dash.InUse && !Handler.cDash.InUse && player.velocity.Y > 0 && !player.mount.Active;
 
     protected override void UpdateUsing() {
       if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
@@ -30,37 +30,40 @@ namespace OriMod.Abilities {
       if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + OriPlayer.RandomChar(3), 0.8f);
     }
     internal override void Tick() {
-      if (Handler.dash.InUse) {
-        State = States.Inactive;
+      if (!InUse && CanUse && player.velocity.Y > 0 && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
+        Starting = true;
+        CurrTime = 0;
+        return;
+      }
+      if (Handler.dash.InUse || Handler.airJump.InUse) {
+        Inactive = true;
         CurrTime = 0;
         return;
       }
       if (InUse) {
-        if (State == States.Starting) {
+        if (Starting) {
           CurrTime++;
           if (CurrTime > StartDuration) {
-            State = States.Active;
+            Active = true;
             CurrTime = 0;
           }
         }
-        else if (State == States.Ending) {
+        else if (Ending) {
           CurrTime++;
           if (CurrTime > EndDuration) {
-            State = States.Inactive;
+            Inactive = true;
           }
         }
         if (player.velocity.Y < 0 || oPlayer.OnWall || oPlayer.IsGrounded) {
-          State = InUse ? States.Ending : States.Inactive;
-        }
-        
+          if (InUse) {
+            Ending = true;
+          }
+          else {
+            Inactive = true;
+          }
+        } 
         else if (OriMod.FeatherKey.JustReleased) {
-          State = States.Ending;
-          CurrTime = 0;
-        }
-      }
-      else {
-        if (CanUse && player.velocity.Y > 0 && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
-          State = States.Starting;
+          Ending = true;
           CurrTime = 0;
         }
       }

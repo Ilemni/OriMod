@@ -19,7 +19,6 @@ namespace OriMod.Abilities {
       packet.Write((byte)Direction);
     }
     internal void StartDash() {
-      State = States.Active;
       CurrTime = 0;
       Refreshed = false;
       Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction;
@@ -33,18 +32,18 @@ namespace OriMod.Abilities {
       if (CurrTime > 20) player.runSlowdown = 26f;
     }
     internal override void Tick() {
+      if (CanUse && OriMod.DashKey.JustPressed) {
+        Active = true;
+        StartDash();
+        return;
+      }
       if (!Refreshed && (oPlayer.IsGrounded || oPlayer.OnWall || Handler.bash.InUse)) {
         Refreshed = true;
       }
       if (InUse) {
         CurrTime++;
         if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse) {
-          State = States.Inactive;
-        }
-      }
-      else {
-        if (CanUse && OriMod.DashKey.JustPressed) {
-          StartDash();
+          Inactive = true;
         }
       }
     }

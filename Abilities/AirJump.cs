@@ -4,7 +4,7 @@ namespace OriMod.Abilities {
   public class AirJump : Ability {
     internal AirJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrCount < MaxJumps && State != States.Active && !Handler.bash.InUse && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrCount < MaxJumps && !Active && !Handler.bash.InUse && !player.mount.Active;
     private const float JumpVelocity = 8.8f;
     private const int EndDuration = 32;
     private const int MaxJumps = 2;
@@ -22,33 +22,31 @@ namespace OriMod.Abilities {
       }
       float newVel = -JumpVelocity * ((EndDuration - CurrTime) / EndDuration);
       if (player.velocity.Y > newVel) player.velocity.Y = newVel;
-      Handler.stomp.State = States.Inactive;
-      // if (CurrTime == 0) player.gravity = -JumpVelocity;
+      Handler.stomp.Inactive = true;
     }
 
     internal override void Tick() {
-      if (IsState(States.Ending)) {
-        CurrTime++;
-        if (CurrTime > EndDuration) {
-          State = States.Inactive;
+      if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
+        if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
+          Active = true;
+          Handler.dash.Inactive = true;
           CurrTime = 0;
+          CurrCount++;
         }
-      }
-      if (IsState(States.Active)) {
-        State = States.Ending;
+        return;
       }
       if (oPlayer.IsGrounded || Handler.bash.InUse || oPlayer.OnWall) {
         CurrCount = 0;
-        State = States.Inactive;
+        Inactive = true;
       }
-      if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
-        if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
-          State = States.Active;
-          if (Handler.dash.InUse) {
-            Handler.dash.State = States.Inactive;
-          }
+      if (Active) {
+        Ending = true;
+      }
+      else if (Ending) {
+        CurrTime++;
+        if (CurrTime > EndDuration) {
+          Inactive = true;
           CurrTime = 0;
-          CurrCount++;
         }
       }
     }

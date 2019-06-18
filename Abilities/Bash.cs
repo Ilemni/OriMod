@@ -26,12 +26,12 @@ namespace OriMod.Abilities {
     public NPC Npc => NpcID < Main.maxNPCs ? Main.npc[NpcID] : null;
     public NPC WormNpc => WormID < Main.maxNPCs ? Main.npc[WormID] : null;
     public bool IsBashingWorm => WormID < Main.maxNPCs;
-    internal override bool CanUse => base.CanUse && Refreshed && State == States.Inactive && !Handler.stomp.InUse /*&& Handler.cJump.InUse*/;
+    internal override bool CanUse => base.CanUse && Refreshed && Inactive && !Handler.stomp.InUse /*&& Handler.cJump.InUse*/;
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
       if (InUse) {
         NpcID = r.ReadByte();
-        if (State == States.Starting) {
+        if (Starting) {
           npcStartPos = r.ReadVector2();
           Npc.GetGlobalNPC<OriNPC>().BashPos = Npc.Center = npcStartPos;
           playerStartPos = r.ReadVector2();
@@ -41,7 +41,7 @@ namespace OriMod.Abilities {
     protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
       if (InUse) {
         packet.Write((byte)NpcID);
-        if (State == States.Starting) {
+        if (Starting) {
           packet.WriteVector2(npcStartPos);
           packet.WriteVector2(playerStartPos);
         }
@@ -100,7 +100,7 @@ namespace OriMod.Abilities {
       CurrCooldown = Cooldown;
     }
     protected override void UpdateUsing() {
-      if (State != States.Ending) {
+      if (!Ending) {
         if (Npc != null) Npc.Center = npcStartPos;
         player.velocity = Vector2.Zero;
         player.gravity = 0;
@@ -145,22 +145,35 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (InUse) {
+      if (CanUse && OriMod.BashKey.JustPressed) {
+        Refreshed = false;
+        CurrDuration = 0;
+        bool didBash = BashStart();
+        if (!didBash) {
+          Failed = true;
+        }
+        else {
+          Starting = true;
+        }
+        return;
+      }
+      else if (InUse) {
         CurrDuration++;
-        switch (State) {
-          case States.Starting:
-            if (CurrDuration > MinBashDuration) {
-              State = States.Active;
-            }
-            return;
-          case States.Active:
-            if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || Npc == null || !Npc.active) {
-              State = States.Ending;
-            }
-            return;
-          case States.Ending:
-            State = States.Inactive;
-            return;
+        if (Starting) {
+          if (CurrDuration > MinBashDuration) {
+            Active = true;
+          }
+          return;
+        }
+        if (Active) {
+          if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || Npc == null || !Npc.active) {
+            Ending = true;
+          }
+          return;
+        }
+        if (Ending) {
+          Inactive = true;
+          return;
         }
       }
       else {
@@ -168,18 +181,7 @@ namespace OriMod.Abilities {
           CurrCooldown--;
           if (CurrCooldown < 0) {
             Refreshed = true;
-            State = States.Inactive;
           }
-        }
-        if (CanUse && OriMod.BashKey.JustPressed) {
-          Refreshed = false;
-          CurrDuration = 0;
-          bool didBash = BashStart();
-          if (!didBash) {
-            State = States.Failed;
-            return;
-          }
-          State = States.Starting;
         }
       }
     }

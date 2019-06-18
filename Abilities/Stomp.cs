@@ -18,7 +18,7 @@ namespace OriMod.Abilities {
     /// <value>Valid Projectile if stomping, null if no longer stomping</value>
     public Projectile Proj { get; private set; }
 
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.IsState(States.Active) && !Handler.climb.InUse && !Handler.stomp.IsState(States.Active) && !player.mount.Active && player.grapCount == 0;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.Active && !Handler.climb.InUse && !Handler.stomp.Active && !player.mount.Active && player.grapCount == 0;
 
     protected override void UpdateStarting() {
       if (CurrDur == 0) {
@@ -35,7 +35,7 @@ namespace OriMod.Abilities {
         Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
         Proj.damage = 9 + OriWorld.GlobalSeinUpgrade * 9;
       }
-      if (Handler.airJump.State == States.Active) return;
+      if (Handler.airJump.Active) return;
       player.velocity.X = 0;
       player.gravity = Gravity;
       player.maxFallSpeed = MaxFallSpeed;
@@ -71,27 +71,27 @@ namespace OriMod.Abilities {
     }
     internal override void Tick() {
       if (PlayerInput.Triggers.JustPressed.Down && CanUse) {
-        State = States.Starting;
+        Starting = true;
         CurrDur = 0;
       }
-      else if (State == States.Starting) {
+      else if (Starting) {
         CurrDur++;
         if (CurrDur > StartDuration) {
           CurrDur = 0;
-          State = States.Active;
+          Active = true;
         }
       }
-      else if (State == States.Active) {
+      else if (Active) {
         CurrDur++;
         if (CurrDur > MinDuration && !PlayerInput.Triggers.Current.Down) {
-          State = States.Inactive;
+          Inactive = true;
         }
         if (oPlayer.IsGrounded) {
-          State = States.Ending;
+          Ending = true;
         }
       }
-      else if (State == States.Ending) {
-        State = States.Inactive;
+      else if (Ending) {
+        Inactive = true;
       }
     }
   }

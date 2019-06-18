@@ -26,21 +26,19 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (IsState(States.Ending)) {
-        CurrTime++;
-        if (CurrTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
-          State = States.Inactive;
-        }
+      if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
+        Active = true;
+        WallDir = player.direction;
+        Handler.climb.Inactive = true;
       }
-      else if (IsState(States.Active)) {
-        State = States.Ending;
+      else if (Active) {
+        Ending = true;
         CurrTime = 0;
       }
-      else {
-        if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
-          State = States.Active;
-          WallDir = player.direction;
-          Handler.climb.State = States.Inactive;
+      else if (Ending) {
+        CurrTime++;
+        if (CurrTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
+          Inactive = true;
         }
       }
     }

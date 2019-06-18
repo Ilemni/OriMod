@@ -64,7 +64,7 @@ namespace OriMod.Abilities {
         dir.Normalize();
         player.velocity = dir * speed * 0.8f;
         if (CurrTime < Duration && (player.position - Main.npc[Npc].position).Length() < speed) {
-          State = States.Inactive;
+          Inactive = true;
           CurrTime = Duration;
           player.position = Main.npc[Npc].position;
           player.position.Y -= 32f;
@@ -85,15 +85,27 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
+      if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
+        if (player.CheckMana(ManaCost, true, true)) {
+          Active = true;
+          CurrTime = 0;
+          Refreshed = false;
+          UpdateStarting();
+        }
+        else if (!Handler.dash.InUse) {
+          Handler.dash.StartDash();
+        }
+        return;
+      }
       if (!Refreshed && !OriMod.ChargeKey.Current) {
         Refreshed = true;
       }
       if (InUse) {
-        Handler.dash.State = States.Inactive;
+        Handler.dash.Inactive = true;
         Handler.dash.Refreshed = false;
         CurrTime++;
         if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
-          State = States.Inactive;
+          Inactive = true;
           if ((Npc == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
             Vector2 newVel = Npc == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
             newVel.Normalize();
@@ -102,19 +114,6 @@ namespace OriMod.Abilities {
           }
           Proj = null;
           Npc = 255;
-        }
-      }
-      else {
-        if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
-          if (player.CheckMana(ManaCost, true, true)) {
-            State = States.Active;
-            CurrTime = 0;
-            Refreshed = false;
-            UpdateStarting();
-          }
-          else if (!Handler.dash.InUse) {
-            Handler.dash.StartDash();
-          }
         }
       }
     }

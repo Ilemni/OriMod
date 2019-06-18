@@ -10,34 +10,37 @@ namespace OriMod.Abilities {
     private int CurrTime = 0;
 
     internal override void Tick() {
-      if (InUse) {
-        if (!CanUse) {
-          State = States.Inactive;
+      if (!InUse) {
+        if (CanUse && (PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current)) {
+          Starting = true;
           CurrTime = 0;
-          return;
-        }
-        if (!(PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current) && State != States.Ending) {
-          State = State == States.Active ? States.Ending : States.Inactive;
-          CurrTime = 0;
-          return;
-        }
-        CurrTime++;
-        if (State == States.Starting) {
-          if (CurrTime > StartDuration) {
-            State = States.Active;
-            CurrTime = 0;
-          }
-        }
-        else if (State == States.Ending) {
-          if (CurrTime > EndDuration) {
-            State = States.Inactive;
-            CurrTime = 0;
-          }
         }
       }
-      else {
-        if (CanUse && (PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current)) {
-          State = States.Starting;
+      else if (!CanUse) {
+        Inactive = true;
+        CurrTime = 0;
+      }
+      else if (!(PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current) && !Ending) {
+        if (Active) {
+          Ending = true;
+        }
+        else {
+          Inactive = true;
+        }
+        CurrTime = 0;
+        return;
+      }
+      else if (Starting) {
+        CurrTime++;
+        if (CurrTime > StartDuration) {
+          Active = true;
+          CurrTime = 0;
+        }
+      }
+      else if (Ending) {
+        CurrTime++;
+        if (CurrTime > EndDuration) {
+          Inactive = true;
           CurrTime = 0;
         }
       }

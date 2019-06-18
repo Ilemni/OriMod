@@ -36,16 +36,18 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
+      if (!InUse) {
+        if (CanUse && OriMod.ClimbKey.Current) {
+          Active = true;
+          StartClimb();
+        }
+      }
       if (InUse) {
         if (!oPlayer.OnWall || !OriMod.ClimbKey.Current) {
-          State = States.Inactive;
+          Inactive = true;
         }
       }
       else {
-        if (CanUse && OriMod.ClimbKey.Current) {
-          State = States.Active;
-          StartClimb();
-        }
       }
     }
   }

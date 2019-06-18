@@ -94,6 +94,19 @@ namespace OriMod {
         }
       }
     }
+    public bool Failed {
+      get {
+        return State == States.Failed;
+      }
+      internal set {
+        if (value == true) {
+          State = States.Failed;
+        }
+        else {
+          ErrorLogger.Log("Error: Cannot directly set Ability.Failed to false");
+        }
+      }
+    }
     /// <summary>
     /// Determines if the ability has been unlocked by the player.
     /// 
