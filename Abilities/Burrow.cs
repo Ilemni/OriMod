@@ -10,17 +10,13 @@ namespace OriMod.Abilities {
     public Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     public static readonly int[] Burrowable = new int[] { TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush };
     private const float Speed = 8f; 
+    private const float SpeedExitMultiplier = 1.5f;
     private int TimeUntilCheck = 0;
     private int TimeUntilEnd = 0;
     internal Vector2 Velocity = Vector2.Zero;
     internal override bool CanUse => base.CanUse && !Handler.dash.InUse && !Handler.cDash.InUse;
-    private Vector2 Normalize(Vector2 vector) {
-      Vector2 v = vector;
-      v.Normalize();
-      return v;
-    }
     internal bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
-    private static readonly Point[] HitboxPosTemplate = new Point[] {
+    private static readonly Point[] HitboxTemplate = new Point[] {
       new Point(0, -2), // Top
       new Point(0, 2),  // Bottom
       new Point(-2, 0), // Left
@@ -30,7 +26,7 @@ namespace OriMod.Abilities {
       new Point(-1, 1),
       new Point(-1, -1),
     };
-    private static readonly Point[] BurrowBoxTemplate = new Point[] {
+    private static readonly Point[] BurrowEnterTemplate = new Point[] {
       new Point(-1, 1), // Top
       new Point(-1, 0),
       new Point(2, 1), // Bottom
@@ -44,30 +40,40 @@ namespace OriMod.Abilities {
       new Point(-1, 2),
       new Point(-1, -1),
     };
-    internal Point[] Hitbox = new Point[HitboxPosTemplate.Length];
-    internal Point[] BurrowBox = new Point[BurrowBoxTemplate.Length];
-    internal Point FrontTilePos => Hitbox[0];
-    internal Tile FrontTile => Main.tile[(int)FrontTilePos.X, (int)FrontTilePos.Y];
-    internal Point BackTilePos => Hitbox[1];
-    internal Tile BackTile => Main.tile[(int)BackTilePos.X, (int)BackTilePos.Y];
-    internal void UpdateHitbox() {
-      Point pos = (player.Center + Normalize(Velocity) * 16).ToTileCoordinates();
-      List<Point> posList = new List<Point>();
-      foreach(Point v in HitboxPosTemplate) {
-        Point i = v;
-        i.X += pos.X;
-        i.Y += pos.Y;
-        posList.Add(i);
-      }
-      Hitbox = posList.ToArray();
+    private static readonly Point[] BurrowInnerTemplate = new Point[] {
+      new Point(-1, -1),
+      new Point(-1, 0),
+      new Point(-1, 1),
+      new Point(0, -1),
+      new Point(0, 0),
+      new Point(0, 1),
+      new Point(1, -1),
+      new Point(1, 0),
+      new Point(1, 1),
+    };
+    internal Point[] Hitbox = new Point[HitboxTemplate.Length];
+    internal Point[] BurrowEnter = new Point[BurrowEnterTemplate.Length];
+    internal Point[] BurrowInner = new Point[BurrowInnerTemplate.Length];
+    internal void UpdateBox(ref Point[] Box, Point[] Template, Vector2 pos) {
+      UpdateBox(ref Box, Template, pos.ToTileCoordinates());
     }
-    internal void UpdateEnterBurrowBox() {
-      Point pos = player.Center.ToTileCoordinates();
+    internal void UpdateBox(ref Point[] Box, Point[] Template, Point pos) {
       List<Point> posList = new List<Point>();
-      foreach(Point v in BurrowBoxTemplate) {
+      foreach(Point v in Template) {
         posList.Add(pos.Add(v));
       }
-      BurrowBox = posList.ToArray();
+      Box = posList.ToArray();
+    }
+    internal void UpdateHitbox() {
+      Vector2 pos = (player.Center + Velocity.Norm() * 16);
+      UpdateBox(ref Hitbox, HitboxTemplate, pos);
+      List<Point> posList = new List<Point>();
+    }
+    internal void UpdateBurrowEnterBox() {
+      UpdateBox(ref BurrowEnter, BurrowEnterTemplate, player.Center);
+    }
+    internal void UpdateBurrowInnerBox() {
+      UpdateBox(ref BurrowInner, BurrowInnerTemplate, player.Center + Velocity.Norm() * 16);
     }
     private void OnBurrowCollision(int hitboxIdx, ref bool didX, ref bool didY) {
       oPlayer.Debug("Bounce! " + hitboxIdx);
@@ -100,6 +106,7 @@ namespace OriMod.Abilities {
     }
     protected override void UpdateActive() {
       UpdateHitbox();
+      UpdateBurrowInnerBox();
       if (Velocity == Vector2.Zero) {
         Velocity = new Vector2(0, Speed);
       }
@@ -139,11 +146,8 @@ namespace OriMod.Abilities {
       player.velocity = Vector2.Zero;
     }
     protected override void UpdateEnding() {
-      player.position += Velocity;
+      player.velocity = Velocity * SpeedExitMultiplier;
       player.direction = Math.Sign(Velocity.X);
-      if (!IsSolid(Main.tile[(int)(player.Center.X / 16), (int)(player.Center.Y / 16)])) {
-        player.velocity = Velocity * 1.25f;
-      }
       oPlayer.UnrestrictedMovement = true;
     }
     protected override void UpdateUsing() {
@@ -164,11 +168,16 @@ namespace OriMod.Abilities {
             TimeUntilCheck--;
           }
           if (TimeUntilCheck == 0) {
-            Tile tile = FrontTile;
-            if (!tile.active() || player.dead) {
+            bool canBurrow = false;
+            foreach(Point p in BurrowInner) {
+              if (IsSolid(Main.tile[p.X, p.Y])) {
+                canBurrow = true;
+              }
+            }
+            if (!canBurrow || player.dead) {
               oPlayer.Debug("No longer burrowing!");
               Ending = true;
-              TimeUntilEnd = 5;
+              TimeUntilEnd = 2;
             }
           }
         }
@@ -180,13 +189,13 @@ namespace OriMod.Abilities {
         }
       }
       if (CanUse && !InUse && OriMod.BurrowKey.JustPressed) {
-        UpdateEnterBurrowBox();
+        UpdateBurrowEnterBox();
         Vector2 vel = Vector2.Zero;
-        for (int i = 0; i < BurrowBoxTemplate.Length; i++) {
-          Point v = BurrowBox[i];
+        for (int i = 0; i < BurrowEnterTemplate.Length; i++) {
+          Point v = BurrowEnter[i];
           Tile t = Main.tile[(int)v.X, (int)v.Y];
           if (IsSolid(t) && Burrowable.Contains(t.type)) {
-            vel = vel.Add(BurrowBoxTemplate[i]);
+            vel = vel.Add(BurrowEnterTemplate[i]);
           }
         }
         if (vel == Vector2.Zero) {

@@ -24,7 +24,10 @@ namespace OriMod {
       if (oPlayer.debugMode) {
         Point[] posArr = oPlayer.burrow.Hitbox;
         Point pos = new Point(i, j);
-        if (posArr.Contains(pos)) {
+        if (oPlayer.burrow.BurrowInner.Contains(pos)) {
+          drawColor = Color.ForestGreen;
+        }
+        else if (oPlayer.burrow.Hitbox.Contains(pos)) {
           drawColor = Color.Red;
         }
       }
@@ -35,7 +38,7 @@ namespace OriMod {
         BurrowEffects(i, j, type, spriteBatch, ref drawColor, ref nextSpecialDrawIndex, oPlayer);
       }
       if (oPlayer.debugMode) {
-        Point[] posArr = oPlayer.burrow.BurrowBox;
+        Point[] posArr = oPlayer.burrow.BurrowEnter;
         Point pos = new Point(i, j);
         if (posArr.Contains(pos)) {
           drawColor = Color.LimeGreen;
