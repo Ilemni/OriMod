@@ -993,7 +993,8 @@ namespace OriMod {
       Flashing = flashPattern.Contains(FlashTimer);
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
-      if (OriSet && (bash.InUse || stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0)) {
+      OriNPC oNpc = npc.GetGlobalNPC<OriNPC>(mod);
+      if (oNpc.IsBashed || OriSet && (stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0)) {
         damage = 0;
       }
     }
@@ -1002,7 +1003,7 @@ namespace OriMod {
       if (!OriSet) return true;
       playSound = false;
       genGore = false;
-      if (bash.InUse || stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0) {
+      if (stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0) {
         damage = 0;
         return false;
       }
