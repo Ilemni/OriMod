@@ -112,6 +112,10 @@ namespace OriMod.Abilities {
       }
       Vector2 oldVel = Velocity;
       Vector2 newVel = Vector2.Zero;
+      if (Config.BurrowToMouse) {
+        newVel = player.AngleTo(Main.MouseWorld).ToRotationVector2();
+      }
+      else {
       if (player.controlLeft) {
         newVel.X -= 1;
       }
@@ -126,6 +130,7 @@ namespace OriMod.Abilities {
       }
       if (newVel == Vector2.Zero) {
         newVel = oldVel;
+      }
       }
       oldVel.Normalize();
       newVel.Normalize();

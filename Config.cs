@@ -11,6 +11,7 @@ namespace OriMod {
     public static bool DoPlayerLight = true; // If the player should emit light
     public static bool BlindForestMovement = true; // TODO: Movement preset, Blind Forest style vs balanced for Terraria
     public static bool SmoothCamera = true;
+    public static bool BurrowToMouse = false;
     public static Color OriColor = Color.LightCyan;
     private static Preferences Prefs = new Preferences(ConfigPath);
     public static void Load() {
@@ -39,6 +40,7 @@ namespace OriMod {
         string s = "";
         Prefs.Get("OriColor", ref s);
         LoadColor(s);
+        Prefs.Get("BurrowToMouse", ref BurrowToMouse);
         // Prefs.Get("BlindForestMovement", ref BlindForestMovement);
         return true;
       }
@@ -50,6 +52,7 @@ namespace OriMod {
       Prefs.Put("DoPlayerLight", DoPlayerLight);
       Prefs.Put("SmoothCamera", SmoothCamera);
       Prefs.Put("OriColor", OriColor);
+      Prefs.Put("BurrowToMouse", BurrowToMouse);
       // Prefs.Put("BlindForestMovement", BlindForestMovement);
       Prefs.Save();
     }
@@ -59,6 +62,7 @@ namespace OriMod {
       Prefs.Put("DoPlayerLight", true);
       Prefs.Put("SmoothCamera", true);
       Prefs.Put("OriColor", Color.LightCyan);
+      Prefs.Put("BurrowToMouse", false);
       Prefs.Save();
     }
   }
