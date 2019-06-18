@@ -1053,12 +1053,6 @@ namespace OriMod {
         layers.Insert(0, oriBashArrow);
         oriBashArrow.visible = true;
       }
-      layers.Insert(9, oriPlayerSprite);
-      layers.Insert(0, OriTrail);
-      if (Transforming && TransformTimer > 235) {
-        layers.Insert(0, oriTransformSprite);
-        oriTransformSprite.visible = true;
-      }
       if (OriSet || Transforming) {
         PlayerLayer.Skin.visible = false;
         PlayerLayer.Arms.visible = false;
@@ -1075,10 +1069,19 @@ namespace OriMod {
         PlayerLayer.HandOnAcc.visible = false;
         PlayerLayer.HandOffAcc.visible = false;
 
+        if (Transforming && TransformTimer > 235) {
+          layers.Insert(0, oriTransformSprite);
+          oriTransformSprite.visible = true;
+        }
         if (OriSet) {
+          layers.Insert(9, oriPlayerSprite);
+          layers.Insert(0, OriTrail);
           player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
           oriPlayerSprite.visible = (!player.dead && !player.invis);
           OriTrail.visible = (!player.dead && !player.invis && !player.mount.Active);
+          if (glide.InUse) {
+            layers.Insert(0, oriFeatherSprite);
+          }
         }
       }
       else {
@@ -1186,6 +1189,22 @@ namespace OriMod {
         new Rectangle(0, y * 20, 152, 20),
         Color.White, oPlayer.bash.Npc.AngleTo(Main.MouseWorld),
         new Vector2(76, 10), 1, effect, 0);
+      Main.playerDrawData.Add(data);
+    });
+    internal static readonly PlayerLayer oriFeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
+      Mod mod = ModLoader.GetMod("OriMod");
+      Player drawPlayer = drawInfo.drawPlayer;
+      OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
+      Texture2D spriteTexture = mod.GetTexture("PlayerEffects/Feather");
+      Vector2 pos;
+      SpriteEffects effect;
+      Rectangle rect;
+      Vector2 orig;
+      GetSpriteInfo(drawPlayer, oPlayer, out pos, out effect, out rect, out orig);
+      rect.X = 0;
+
+      DrawData data = new DrawData(spriteTexture, pos, rect, oPlayer.SpriteColor, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
+      data.position += oPlayer.Offset(oPlayer);
       Main.playerDrawData.Add(data);
     });
     public override void ResetEffects() {
