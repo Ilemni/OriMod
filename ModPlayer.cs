@@ -308,18 +308,17 @@ namespace OriMod {
       }
     }
     internal bool DoPlayerLight => Config.GlobalPlayerLight ? Config.DoPlayerLight : MpcPlayerLight;
-    internal void Debug(string msg) {
-      Debug(msg, this);
-    }
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
     #endregion
     
+    internal void Debug(string msg) {
+      Debug(msg, this);
+    }
     internal static void Debug(string msg, OriPlayer oPlayer) {
       if (oPlayer.debugMode && oPlayer.player.whoAmI == Main.myPlayer) {
         Main.NewText(msg);
       }
     }
-    // basic sound playing method, with paths starting after NewSFX in the file structure
     internal SoundEffectInstance PlayNewSound(string Path) => PlayNewSound(Path, 1, 0);
     internal SoundEffectInstance PlayNewSound(string Path, float Volume) => PlayNewSound(Path, Volume, 0);
     internal SoundEffectInstance PlayNewSound(string Path, float Volume, float Pitch) =>
