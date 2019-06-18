@@ -15,6 +15,7 @@ namespace OriMod.Abilities {
     };
     private const int Duration = 14;
     protected override int Cooldown => 180;
+    protected override Color RefreshColor => Color.LightBlue;
     private int CurrTime = 0;
     /// <summary>
     /// The ID of the NPC currently targeted by this player's Charge Dash.

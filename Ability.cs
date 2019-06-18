@@ -1,4 +1,5 @@
 using System.IO;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -117,20 +118,19 @@ namespace OriMod {
     protected virtual int Cooldown { get; }
     protected int CurrCooldown { get; set; }
     internal virtual bool CanUse => Unlocked && Refreshed;
-    internal bool Refreshed = true;
-    protected int currRand = 0; // Used for random sounds that don't repeat
-    /// <summary>
-    /// Checks the current state of the ability
-    /// </summary>
-    /// <param name="states">One or more states to match against</param>
-    /// <returns>True if the state matches one of the provided state arguments, otherwise false</returns>
-    public bool IsState(params States[] states) {
-      foreach(int s in states) {
-        States v = (States)s;
-        if (State == v) return true;
+    private bool _refreshed = true;
+    internal bool Refreshed {
+      get {
+        return _refreshed;
       }
-      return false;
+      set {
+        if (!_refreshed && value == true) {
+          OnRefreshed();
+        }
+        _refreshed = value;
+      }
     }
+    protected int currRand = 0; // Used for random sounds that don't repeat
     /// <summary>
     /// Checks if the ability is active
     /// </summary>
@@ -184,5 +184,11 @@ namespace OriMod {
     protected virtual void UpdateFailed() { }
     protected virtual void UpdateUsing() { }
     internal abstract void Tick();
+    protected virtual Color RefreshColor => Color.White;
+    private void OnRefreshed() {
+      for(int i = 0; i < 10; i++) {
+        Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor:RefreshColor)];
+      }
+    }
   }
 }

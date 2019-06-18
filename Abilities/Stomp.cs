@@ -10,6 +10,7 @@ namespace OriMod.Abilities {
     private const int StartDuration = 24;
     private const int MinDuration = 30;
     protected override int Cooldown => 480;
+    protected override Color RefreshColor => Color.Orange;
     private const float Gravity = 4f;
     private const float MaxFallSpeed = 28f;
     private int CurrDur = 0;

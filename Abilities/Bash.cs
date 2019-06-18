@@ -18,6 +18,7 @@ namespace OriMod.Abilities {
     private const int MinBashDuration = 30;
     private const int MaxBashDuration = 85;
     protected override int Cooldown => 90;
+    protected override Color RefreshColor => Color.LightYellow;
     internal int CurrDuration { get; private set; }
     private Vector2 playerStartPos;
     private Vector2 npcStartPos;
