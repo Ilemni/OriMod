@@ -518,22 +518,16 @@ namespace OriMod.Projectiles.Minions {
     }
     public override void PostDraw(SpriteBatch spriteBatch, Color lightColor) {
       Texture2D texture = mod.GetTexture("Projectiles/Minions/Sein_Glow");
-      int t = (int)(Main.time % 45);
-      int frame = t < 15 ? 0 : t < 30 ? 1 : 2;
-      spriteBatch.Draw(
-        texture,
-        new Vector2(
-          projectile.Center.X - Main.screenPosition.X + projectile.width * 0.5f,
-          projectile.Center.Y - Main.screenPosition.Y + projectile.height * 0.5f
-        ),
-        new Rectangle(0, frame * texture.Height / 3, texture.Width, texture.Width),
-        Color.White,
-        projectile.rotation,
-        new Vector2(texture.Width, texture.Width) * 0.5f,
-        projectile.scale, 
-        SpriteEffects.None, 
-        0f
-      );
+      Vector2 pos = new Vector2(projectile.BottomRight.X - Main.screenPosition.X, projectile.BottomRight.Y - Main.screenPosition.Y);
+      Vector2 orig = new Vector2(texture.Width, texture.Width) * 0.5f;
+      for (int i = 0; i < 3; i++) {
+        Color color = this.Color;
+        color.A = 255;
+        if (color == Color.Black) color = Color.White;
+        color.A = (byte)(i == 0 ? 255 : i == 1 ? 200 : 175);
+        Rectangle sourceRect = new Rectangle(0, i * texture.Height / 3, texture.Width, texture.Width);
+        spriteBatch.Draw(texture, pos, sourceRect, color, projectile.rotation, orig, projectile.scale, SpriteEffects.None, 0f);
+      }
     }
   }
 }
