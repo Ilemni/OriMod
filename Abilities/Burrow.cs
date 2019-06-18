@@ -9,7 +9,7 @@ namespace OriMod.Abilities {
   public class Burrow : Ability {
     public Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     public static readonly int[] Burrowable = new int[] { TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush };
-    private const float Speed = 6f; 
+    private const float Speed = 8f; 
     private int TimeUntilCheck = 0;
     private int TimeUntilEnd = 0;
     internal Vector2 Velocity = Vector2.Zero;
@@ -20,56 +20,54 @@ namespace OriMod.Abilities {
       return v;
     }
     internal bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
-    private static readonly Vector2[] HitboxPosTemplate = new Vector2[] {
-      new Vector2(0, -2), // Top
-      new Vector2(0, 2),  // Bottom
-      new Vector2(-2, 0), // Left
-      new Vector2(2, 0),  // Right
-      new Vector2(1, 1),  // Corners
-      new Vector2(1, -1),
-      new Vector2(-1, 1),
-      new Vector2(-1, -1),
+    private static readonly Point[] HitboxPosTemplate = new Point[] {
+      new Point(0, -2), // Top
+      new Point(0, 2),  // Bottom
+      new Point(-2, 0), // Left
+      new Point(2, 0),  // Right
+      new Point(1, 1),  // Corners
+      new Point(1, -1),
+      new Point(-1, 1),
+      new Point(-1, -1),
     };
-    private static readonly Vector2[] BurrowBoxTemplate = new Vector2[] {
-      new Vector2(-1, 1), // Top
-      new Vector2(-1, 0),
-      new Vector2(2, 1), // Bottom
-      new Vector2(2, 0),
-      new Vector2(1, -1), // Left
-      new Vector2(0, -1),
-      new Vector2(1, 2), // Right
-      new Vector2(0, 2),
-      new Vector2(2, 2), // Corners
-      new Vector2(2, -1),
-      new Vector2(-1, 2),
-      new Vector2(-1, -1),
+    private static readonly Point[] BurrowBoxTemplate = new Point[] {
+      new Point(-1, 1), // Top
+      new Point(-1, 0),
+      new Point(2, 1), // Bottom
+      new Point(2, 0),
+      new Point(1, -1), // Left
+      new Point(0, -1),
+      new Point(1, 2), // Right
+      new Point(0, 2),
+      new Point(2, 2), // Corners
+      new Point(2, -1),
+      new Point(-1, 2),
+      new Point(-1, -1),
     };
-    internal Vector2[] Hitbox = new Vector2[HitboxPosTemplate.Length];
-    internal Vector2[] BurrowBox = new Vector2[BurrowBoxTemplate.Length];
-    internal Vector2 FrontTilePos => Hitbox[0];
+    internal Point[] Hitbox = new Point[HitboxPosTemplate.Length];
+    internal Point[] BurrowBox = new Point[BurrowBoxTemplate.Length];
+    internal Point FrontTilePos => Hitbox[0];
     internal Tile FrontTile => Main.tile[(int)FrontTilePos.X, (int)FrontTilePos.Y];
-    internal Vector2 BackTilePos => Hitbox[1];
+    internal Point BackTilePos => Hitbox[1];
     internal Tile BackTile => Main.tile[(int)BackTilePos.X, (int)BackTilePos.Y];
     internal void UpdateHitbox() {
-      Vector2 pos = player.Center + Normalize(Velocity) * 16;
-      pos.X = (int)(pos.X / 16);
-      pos.Y = (int)(pos.Y / 16);
-      List<Vector2> posList = new List<Vector2>();
-      foreach(Vector2 v in HitboxPosTemplate) {
-        posList.Add(pos + v);
+      Point pos = (player.Center + Normalize(Velocity) * 16).ToTileCoordinates();
+      List<Point> posList = new List<Point>();
+      foreach(Point v in HitboxPosTemplate) {
+        Point i = v;
+        i.X += pos.X;
+        i.Y += pos.Y;
+        posList.Add(i);
       }
       Hitbox = posList.ToArray();
     }
     internal void UpdateEnterBurrowBox() {
-      Vector2 pos = player.Center;
-      pos.X = (int)(pos.X / 16);
-      pos.Y = (int)(pos.Y / 16);
-      List<Vector2> posList = new List<Vector2>();
-      foreach(Vector2 v in BurrowBoxTemplate) {
-        posList.Add(pos + v);
+      Point pos = player.Center.ToTileCoordinates();
+      List<Point> posList = new List<Point>();
+      foreach(Point v in BurrowBoxTemplate) {
+        posList.Add(pos.Add(v));
       }
       BurrowBox = posList.ToArray();
-
     }
     private void OnBurrowCollision(int hitboxIdx, ref bool didX, ref bool didY) {
       oPlayer.Debug("Bounce! " + hitboxIdx);
@@ -129,7 +127,7 @@ namespace OriMod.Abilities {
       bool didX = false;
       bool didY = false;
       for (int i = 0; i < Hitbox.Length; i++) {
-        Vector2 v = Hitbox[i];
+        Point v = Hitbox[i];
         Tile t = Main.tile[(int)v.X, (int)v.Y];
         // if (i == 0) oPlayer.Debug(!t.active() + " || " + t.inActive() + " || " + !t.nactive());
         if (!IsSolid(t)) continue;
@@ -170,7 +168,7 @@ namespace OriMod.Abilities {
             if (!tile.active() || player.dead) {
               oPlayer.Debug("No longer burrowing!");
               Ending = true;
-              TimeUntilEnd = 10;
+              TimeUntilEnd = 5;
             }
           }
         }
@@ -185,10 +183,10 @@ namespace OriMod.Abilities {
         UpdateEnterBurrowBox();
         Vector2 vel = Vector2.Zero;
         for (int i = 0; i < BurrowBoxTemplate.Length; i++) {
-          Vector2 v = BurrowBox[i];
+          Point v = BurrowBox[i];
           Tile t = Main.tile[(int)v.X, (int)v.Y];
           if (IsSolid(t) && Burrowable.Contains(t.type)) {
-            vel += BurrowBoxTemplate[i];
+            vel = vel.Add(BurrowBoxTemplate[i]);
           }
         }
         if (vel == Vector2.Zero) {

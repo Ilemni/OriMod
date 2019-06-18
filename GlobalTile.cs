@@ -16,8 +16,8 @@ namespace OriMod {
       }
       drawColor.A = oldAlpha;
       if (oPlayer.debugMode) {
-        Vector2[] posArr = oPlayer.burrow.Hitbox;
-        Vector2 pos = new Vector2(i, j);
+        Point[] posArr = oPlayer.burrow.Hitbox;
+        Point pos = new Point(i, j);
         if (posArr.Contains(pos)) {
           drawColor = Color.Red;
         }
@@ -29,8 +29,8 @@ namespace OriMod {
         BurrowEffects(i, j, type, spriteBatch, ref drawColor, ref nextSpecialDrawIndex, oPlayer);
       }
       if (oPlayer.debugMode) {
-        Vector2[] posArr = oPlayer.burrow.BurrowBox;
-        Vector2 pos = new Vector2(i, j);
+        Point[] posArr = oPlayer.burrow.BurrowBox;
+        Point pos = new Point(i, j);
         if (posArr.Contains(pos)) {
           drawColor = Color.LimeGreen;
         }
