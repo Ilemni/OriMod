@@ -6,6 +6,12 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   partial class OriMod : Mod {
+    public static string GithubUserName => "TwiliChaos";
+    public static string GithubProjectName => "OriMod";
+    public static string ConfigFileRelativePath => "Mod Configs/OriMod.json";
+    public static void ReloadConfigFromFile() { Config.ReadConfig(); }
+    public static void ResetConfigFromDefaults() { Config.ResetConfig(); }
+      
     public static ModHotKey BashKey;
     public static ModHotKey DashKey;
     public static ModHotKey ClimbKey;
@@ -71,6 +77,22 @@ namespace OriMod {
     }
     public override void HandlePacket(BinaryReader reader, int fromWho) {
       ModNetHandler.HandlePacket(reader, fromWho);
+    }
+    public override object Call(params object[] args) {
+      if (args.Length == 2) {
+        string cmd = args[0] as string;
+        if (cmd == "ResetPlayerModData") {
+          Player player = args[1] as Player;
+          if (player != null) {
+            OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+            oPlayer.ResetData();
+          }
+          else {
+            ErrorLogger.Log(this.Name + ".Call() - ResetPlayerModData - Invalid player");
+          }
+        }
+      }
+      return null;
     }
   }
   internal class ModNetHandler {

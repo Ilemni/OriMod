@@ -1220,5 +1220,12 @@ namespace OriMod {
       oPlayer.SeinMinionActive = false;
       oPlayer.SeinMinionUpgrade = 0;
     }
+    internal void ResetData() {
+      OriSet = false;
+      HasTransformedOnce = false;
+      UnrestrictedMovement = false;
+      SeinMinionActive = false;
+      SeinMinionUpgrade = 0;
+    }
   }
 }

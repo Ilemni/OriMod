@@ -18,7 +18,7 @@ namespace OriMod.Commands {
           Main.NewText(success ? "Loaded config." : "Error reading config.");
           break;
         case "save":
-          Config.CreateConfig();
+          Config.SaveConfig();
           Main.NewText("Saved config.");
           break;
         default:

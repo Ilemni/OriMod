@@ -17,7 +17,7 @@ namespace OriMod {
       bool success = ReadConfig();
       if (!success) {
         ErrorLogger.Log("Could not load configs for OriMod, creating configs.");
-        CreateConfig();
+        SaveConfig();
       }
     }
     public static void LoadColor(string s) {
@@ -44,13 +44,21 @@ namespace OriMod {
       }
       return false;
     }
-    public static void CreateConfig() {
+    public static void SaveConfig() {
       Prefs.Clear();
       Prefs.Put("GlobalPlayerLight", GlobalPlayerLight);
       Prefs.Put("DoPlayerLight", DoPlayerLight);
       Prefs.Put("SmoothCamera", SmoothCamera);
       Prefs.Put("OriColor", OriColor);
       // Prefs.Put("BlindForestMovement", BlindForestMovement);
+      Prefs.Save();
+    }
+    public static void ResetConfig() {
+      Prefs.Clear();
+      Prefs.Put("GlobalPlayerLight", false);
+      Prefs.Put("DoPlayerLight", true);
+      Prefs.Put("SmoothCamera", true);
+      Prefs.Put("OriColor", Color.LightCyan);
       Prefs.Save();
     }
   }
