@@ -6,7 +6,7 @@ namespace OriMod.Items
   public class SpiritSapling2 : ModItem
   {
     public override void SetStaticDefaults() {}
-
+    public override string Texture => "OriMod/Items/SpiritSapling"; // TODO: Add SpiritSapling2 sprite
     public override void SetDefaults()
     {
       item.width = 12;

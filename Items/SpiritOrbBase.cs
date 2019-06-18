@@ -6,6 +6,7 @@ using Terraria.ModLoader;
 namespace OriMod.Items {
   public class SpiritOrbBase : ModItem {
     public int upgrade;
+    public override string Texture => "OriMod/Items/SpiritOrb";
     public override void SetStaticDefaults() { }
     public override void SetDefaults() {
       item.summon = true;

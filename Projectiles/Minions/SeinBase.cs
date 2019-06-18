@@ -11,6 +11,7 @@ using Terraria.GameInput;
 namespace OriMod.Projectiles.Minions {
   public abstract class SeinBase : Minion {
     protected int Upgrade;
+    public override string Texture => "OriMod/Projectiles/Minions/Sein";
     public override bool? CanCutTiles() => false;
     protected bool Autoshoot {
       get {

@@ -6,6 +6,10 @@ using Terraria.ModLoader;
 namespace OriMod.Dusts {
   public class SFDustTrail : ModDust {
     protected int alphaRate = 1;
+    public override bool Autoload(ref string name, ref string texture) {
+      texture = "OriMod/Dusts/SFDust1";
+      return base.Autoload(ref name, ref texture);
+    }
     public override void OnSpawn(Dust dust) {
       dust.alpha = 0;
       dust.noGravity = true;

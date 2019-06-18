@@ -35,6 +35,7 @@ namespace OriMod.Projectiles.Minions {
     protected Color color;
     protected float lightStrength;
 
+    public override string Texture => "OriMod/Projectiles/Minions/SpiritFlame";
     internal void Init(int upgradeID) {
       SeinUpgrade u = OriMod.SeinUpgrades[upgradeID];
       
