@@ -9,9 +9,22 @@ namespace OriMod {
     public static string ConfigPath = Path.Combine(Main.SavePath, "Mod Configs", "OriMod.json");
     public static bool GlobalPlayerLight = true; // If true, sets all players on this side to `DoPlayerLight`
     public static bool DoPlayerLight = true; // If the player should emit light
-    public static bool BlindForestMovement = true; // TODO: Movement preset, Blind Forest style vs balanced for Terraria
+    public static bool BlindForestMovement = false;
     public static bool SmoothCamera = true;
     public static bool BurrowToMouse = false;
+    public static bool AutoBurrow = false;
+    private static int _burrowTier = 0;
+    public static int BurrowTier {
+      get {
+        return _burrowTier;
+      }
+      set {
+        if (value != _burrowTier) {
+          Abilities.Burrow.UpdateBurrowableTiles(value);
+        }
+        _burrowTier = value;
+      }
+    }
     public static Color OriColor = Color.LightCyan;
     private static Preferences Prefs = new Preferences(ConfigPath);
     public static void Load() {
@@ -40,7 +53,12 @@ namespace OriMod {
         string s = "";
         Prefs.Get("OriColor", ref s);
         LoadColor(s);
+        Prefs.Get("BlindForestMovement", ref BlindForestMovement);
         Prefs.Get("BurrowToMouse", ref BurrowToMouse);
+        Prefs.Get("AutoBurrow", ref AutoBurrow);
+        int temp = BurrowTier;
+        Prefs.Get("BurrowTier", ref temp);
+        BurrowTier = temp;
         // Prefs.Get("BlindForestMovement", ref BlindForestMovement);
         return true;
       }
@@ -52,8 +70,10 @@ namespace OriMod {
       Prefs.Put("DoPlayerLight", DoPlayerLight);
       Prefs.Put("SmoothCamera", SmoothCamera);
       Prefs.Put("OriColor", OriColor);
+      Prefs.Put("BlindForestMovement", BlindForestMovement);
       Prefs.Put("BurrowToMouse", BurrowToMouse);
-      // Prefs.Put("BlindForestMovement", BlindForestMovement);
+      Prefs.Put("AutoBurrow", AutoBurrow);
+      Prefs.Put("BurrowTier", BurrowTier);
       Prefs.Save();
     }
     public static void ResetConfig() {
@@ -62,7 +82,10 @@ namespace OriMod {
       Prefs.Put("DoPlayerLight", true);
       Prefs.Put("SmoothCamera", true);
       Prefs.Put("OriColor", Color.LightCyan);
+      Prefs.Put("BlindForestMovement", false);
       Prefs.Put("BurrowToMouse", false);
+      Prefs.Put("AutoBurrow", false);
+      Prefs.Put("BurrowTier", 0);
       Prefs.Save();
     }
   }

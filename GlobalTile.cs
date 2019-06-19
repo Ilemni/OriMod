@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,7 +13,7 @@ namespace OriMod {
       Vector2 playerPos = Main.LocalPlayer.Center.ToTileCoordinates().ToVector2();
       float dist = Vector2.Distance(playerPos, new Vector2(i, j)) - InnerRange;
       dist = Utils.Clamp((OuterRange - dist) / OuterRange, 0, 1);
-      if (Abilities.Burrow.Burrowable.Contains(type)) {
+      if (Abilities.Burrow.CanBurrowAny || Abilities.Burrow.CurrentBurrowable.Contains((ushort)type)) {
         drawColor = Color.Lerp(orig, Color.White, 0.8f * dist);
       }
       else if (Main.tileSolid[type]) {
@@ -22,12 +21,8 @@ namespace OriMod {
       }
       drawColor.A = orig.A;
       if (oPlayer.debugMode) {
-        Point[] posArr = oPlayer.burrow.Hitbox;
         Point pos = new Point(i, j);
         if (oPlayer.burrow.BurrowInner.Contains(pos)) {
-          drawColor = Color.ForestGreen;
-        }
-        else if (oPlayer.burrow.Hitbox.Contains(pos)) {
           drawColor = Color.Red;
         }
       }
@@ -38,10 +33,12 @@ namespace OriMod {
         BurrowEffects(i, j, type, spriteBatch, ref drawColor, ref nextSpecialDrawIndex, oPlayer);
       }
       if (oPlayer.debugMode) {
-        Point[] posArr = oPlayer.burrow.BurrowEnter;
         Point pos = new Point(i, j);
-        if (posArr.Contains(pos)) {
+        if (oPlayer.burrow.BurrowEnter.Contains(pos)) {
           drawColor = Color.LimeGreen;
+        }
+        else if (oPlayer.burrow.BurrowEnterOuter.Contains(pos)) {
+          drawColor = Color.Turquoise;
         }
       }
     }

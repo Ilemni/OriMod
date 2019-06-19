@@ -59,8 +59,10 @@ namespace OriMod.Abilities {
       Proj.height = 320;
       Proj.damage = (int)(Proj.damage * 1.6f);
       Proj = null;
-      CurrCooldown = Cooldown;
-      Refreshed = false;
+      if (!Config.BlindForestMovement) {
+        CurrCooldown = Cooldown;
+        Refreshed = false;
+      }
     }
     protected override void UpdateUsing() {
       player.controlUp = false;

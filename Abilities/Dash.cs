@@ -23,7 +23,6 @@ namespace OriMod.Abilities {
     }
     internal void StartDash() {
       CurrTime = 0;
-      Refreshed = false;
       Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction;
       oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3, ref currRand), 0.2f);
       player.pulley = false;
@@ -50,7 +49,10 @@ namespace OriMod.Abilities {
         CurrTime++;
         if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse) {
           Inactive = true;
-          CurrCooldown = Cooldown;
+          if (!Config.BlindForestMovement) {
+            Refreshed = false;
+            CurrCooldown = Cooldown;
+          }
         }
       }
     }

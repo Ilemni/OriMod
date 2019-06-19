@@ -111,7 +111,9 @@ namespace OriMod.Abilities {
         CurrTime++;
         if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           Inactive = true;
-          CurrCooldown = Cooldown;
+          if (!Config.BlindForestMovement) {
+            CurrCooldown = Cooldown;
+          }
           if ((Npc == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
             Vector2 newVel = Npc == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
             newVel.Normalize();

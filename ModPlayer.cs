@@ -1233,6 +1233,7 @@ namespace OriMod {
       for (int i = 0; i < 26; i++) {
         Trails.Add(new Trail());
       }
+      Burrow.UpdateBurrowableTiles(Config.BurrowTier);
     }
     public override void OnEnterWorld(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();

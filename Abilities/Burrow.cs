@@ -7,53 +7,66 @@ using Terraria.ID;
 
 namespace OriMod.Abilities {
   public class Burrow : Ability {
-    public Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-    public static readonly int[] Burrowable = new int[] { TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush };
+    internal Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    public static readonly ushort[][] Burrowable = new ushort[][] {
+      new ushort[] {
+        TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush,
+        TileID.LeafBlock, TileID.LivingMahoganyLeaves
+      },
+      new ushort[] {
+        TileID.Dirt, TileID.Mud,
+        TileID.Grass, TileID.CorruptGrass, TileID.FleshGrass, TileID.HallowedGrass, TileID.JungleGrass, TileID.MushroomGrass
+      },
+      new ushort[] {
+        TileID.LivingWood, TileID.LivingMahogany,
+        TileID.Stone, TileID.ActiveStoneBlock, TileID.Ebonstone, TileID.Pearlstone, TileID.Crimstone,
+        TileID.Sandstone, TileID.CorruptSandstone, TileID.CrimsonSandstone, TileID.HallowSandstone,
+        TileID.Hellstone
+      }
+    };
+    internal static bool CanBurrowAny => Config.BurrowTier < 0;
+    public static List<ushort> CurrentBurrowable = new List<ushort>();
     private const float Speed = 8f; 
     private const float SpeedExitMultiplier = 1.5f;
-    private int TimeUntilCheck = 0;
     private int TimeUntilEnd = 0;
     internal Vector2 Velocity = Vector2.Zero;
     internal override bool CanUse => base.CanUse && !Handler.dash.InUse && !Handler.cDash.InUse;
+    protected override int Cooldown => 12;
+    protected override Color RefreshColor => Color.SandyBrown;
+    internal bool AutoBurrow = false;
     internal bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
-    private static readonly Point[] HitboxTemplate = new Point[] {
-      new Point(0, -2), // Top
-      new Point(0, 2),  // Bottom
-      new Point(-2, 0), // Left
-      new Point(2, 0),  // Right
-      new Point(1, 1),  // Corners
-      new Point(1, -1),
-      new Point(-1, 1),
-      new Point(-1, -1),
-    };
+    private static Point p(int x, int y) => new Point(x, y);
     private static readonly Point[] BurrowEnterTemplate = new Point[] {
-      new Point(-1, 1), // Top
-      new Point(-1, 0),
-      new Point(2, 1), // Bottom
-      new Point(2, 0),
-      new Point(1, -1), // Left
-      new Point(0, -1),
-      new Point(1, 2), // Right
-      new Point(0, 2),
-      new Point(2, 2), // Corners
-      new Point(2, -1),
-      new Point(-1, 2),
-      new Point(-1, -1),
+      p(0, -1),  p(0, 0),  p(0, 1),   // Center
+      p(-1, -1), p(-1, 0), p(-1, 1), // Left
+      p(2, -1),  p(2, 0),  p(2, 1),  // Right
+      p(0, -2),  p(1, -2), // Top
+      p(0, 2),   p(1, 2),  // Bottom
+      p(2, 2),   p(2, -2), p(-1, 2),  p(-1, -2), // Corners
+    };
+    public static readonly Point[] BurrowEnterOuterTemplate = new Point[] {
+      p(-2, -2), p(-2, -1), p(-2, 0), p(-2, 1), p(-2, 2),  // Left
+      p(3, -2),  p(3, -1),  p(3, 0),  p(3, 1),  p(3, 2),   // Right
+      p(-1, -2), p(0, -2),  p(1, -2), p(2, -2),  // Top
+      p(-1, 3),  p(0, 3),   p(1, 3),  p(2, 3),   // Bottom
+      p(3, 3),   p(3, -3),  p(-2, 3), p(-2, -3), // Corners
     };
     private static readonly Point[] BurrowInnerTemplate = new Point[] {
-      new Point(-1, -1),
-      new Point(-1, 0),
-      new Point(-1, 1),
-      new Point(0, -1),
-      new Point(0, 0),
-      new Point(0, 1),
-      new Point(1, -1),
-      new Point(1, 0),
-      new Point(1, 1),
+      p(0, -1), // Top
+      p(0, 1),  // Bottom
+      p(-1, 0), // Left
+      p(1, 0),  // Right
     };
     internal Point[] Hitbox = new Point[HitboxTemplate.Length];
     internal Point[] BurrowEnter = new Point[BurrowEnterTemplate.Length];
+    internal Point[] BurrowEnterOuter = new Point[BurrowEnterOuterTemplate.Length];
     internal Point[] BurrowInner = new Point[BurrowInnerTemplate.Length];
+    internal static void UpdateBurrowableTiles(int tier) {
+      CurrentBurrowable.Clear();
+      for (int i = 0; i < tier + 1; i++) {
+        CurrentBurrowable.AddRange(Burrowable[i]);
+      }
+    }
     internal void UpdateBox(ref Point[] Box, Point[] Template, Vector2 pos) {
       UpdateBox(ref Box, Template, pos.ToTileCoordinates());
     }
@@ -71,6 +84,7 @@ namespace OriMod.Abilities {
     }
     internal void UpdateBurrowEnterBox() {
       UpdateBox(ref BurrowEnter, BurrowEnterTemplate, player.Center);
+      UpdateBox(ref BurrowEnterOuter, BurrowEnterOuterTemplate, player.Center);
     }
     internal void UpdateBurrowInnerBox() {
       UpdateBox(ref BurrowInner, BurrowInnerTemplate, player.Center + Velocity.Norm() * 16);
@@ -138,14 +152,16 @@ namespace OriMod.Abilities {
       Velocity = newVel *= Speed;
       bool didX = false;
       bool didY = false;
-      for (int i = 0; i < Hitbox.Length; i++) {
-        Point v = Hitbox[i];
+      if (!CanBurrowAny) {
+        for (int i = 0; i < BurrowInner.Length; i++) {
+          Point v = BurrowInner[i];
         Tile t = Main.tile[(int)v.X, (int)v.Y];
         // if (i == 0) oPlayer.Debug(!t.active() + " || " + t.inActive() + " || " + !t.nactive());
         if (!IsSolid(t)) continue;
-        if (!Burrowable.Contains(t.type)) {
+          if (!CurrentBurrowable.Contains(t.type)) {
           OnBurrowCollision(i, ref didX, ref didY);
         }
+      }
       }
       player.position += Velocity;
       player.velocity = Vector2.Zero;
@@ -167,12 +183,11 @@ namespace OriMod.Abilities {
       player.grapCount = 0;
     }
     internal override void Tick() {
+      if (AutoBurrow && !OriMod.BurrowKey.Current) {
+        AutoBurrow = false;
+      }
       if (InUse) {
         if (Active) {
-          if (TimeUntilCheck > 0) {
-            TimeUntilCheck--;
-          }
-          if (TimeUntilCheck == 0) {
             bool canBurrow = false;
             foreach(Point p in BurrowInner) {
               if (IsSolid(Main.tile[p.X, p.Y])) {
@@ -185,7 +200,6 @@ namespace OriMod.Abilities {
               TimeUntilEnd = 2;
             }
           }
-        }
         else if (Ending) {
           TimeUntilEnd--;
           if (TimeUntilEnd < 1) {
@@ -193,14 +207,22 @@ namespace OriMod.Abilities {
           }
         }
       }
-      if (CanUse && !InUse && OriMod.BurrowKey.JustPressed) {
+      else {
+        if (CurrCooldown > Cooldown) {
+          CurrCooldown--;
+        }
+        else {
+          Refreshed = true;
+        }
+      }
+      if (CanUse && !InUse && (OriMod.BurrowKey.JustPressed || AutoBurrow)) {
         UpdateBurrowEnterBox();
         Vector2 vel = Vector2.Zero;
         for (int i = 0; i < BurrowEnterTemplate.Length; i++) {
           Point v = BurrowEnter[i];
-          Tile t = Main.tile[(int)v.X, (int)v.Y];
-          if (IsSolid(t) && Burrowable.Contains(t.type)) {
-            vel = vel.Add(BurrowEnterTemplate[i]);
+          Tile t = Main.tile[v.X, v.Y];
+          if (IsSolid(t) && (CanBurrowAny || CurrentBurrowable.Contains(t.type))) {
+            vel += BurrowEnterTemplate[i].ToVector2().Norm();
           }
         }
         if (vel == Vector2.Zero) {
@@ -208,10 +230,24 @@ namespace OriMod.Abilities {
           return;
         }
         oPlayer.Debug("Can burrow");
+        if (Config.AutoBurrow) AutoBurrow = true;
         Active = true;
-        TimeUntilCheck = 15;
+        Refreshed = false;
+        CurrCooldown = Cooldown;
+        if (AutoBurrow) {
+          vel = player.velocity.Norm();
+        }
+        if (!AutoBurrow || vel.HasNaNs()) {
+          for (int i = 0; i < BurrowEnterOuterTemplate.Length; i++) {
+            Point v = BurrowEnterOuter[i];
+            Tile t = Main.tile[v.X, v.Y];
+            if (IsSolid(t) && (CanBurrowAny || CurrentBurrowable.Contains(t.type))) {
+              vel += BurrowEnterOuterTemplate[i].ToVector2().Norm();
+            }
+          }
         vel.Normalize();
-        vel *= 64;
+        }
+        vel = vel.Norm() * 64;
         player.position += vel;
         Velocity = vel;
       }

@@ -97,7 +97,10 @@ namespace OriMod.Abilities {
       }
       int damage = BashDamage + OriWorld.GlobalSeinUpgrade * 9;
       player.ApplyDamageToNPC(Npc, damage, 0, 1, false);
-      CurrCooldown = Cooldown;
+      if (!Config.BlindForestMovement) {
+        CurrCooldown = Cooldown;
+        Refreshed = false;
+      }
     }
     protected override void UpdateUsing() {
       if (!Ending) {
@@ -146,7 +149,6 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (CanUse && OriMod.BashKey.JustPressed) {
-        Refreshed = false;
         CurrDuration = 0;
         bool didBash = BashStart();
         if (!didBash) {
