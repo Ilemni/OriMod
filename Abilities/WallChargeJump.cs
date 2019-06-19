@@ -1,14 +1,14 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameInput;
 
 namespace OriMod.Abilities {
-  public class ChargeJump : Ability {
-    internal ChargeJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+  public class WallChargeJump : Ability {
+    public WallChargeJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
-    internal override bool CanUse => base.CanUse && !InUse && Charged && !Handler.burrow.InUse && !Handler.climb.InUse;
+    internal override bool CanUse => base.CanUse && Charged && CanCharge;
+    internal bool CanCharge => base.CanUse && Handler.climb.IsCharging;
     protected override Color RefreshColor => Color.Blue;
-    internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && (Handler.lookUp.InUse || oPlayer.Input(OriMod.ChargeKey.Current));
-    internal bool justJumped = false;
     protected override int Cooldown => 420;
     private const int Duration = 20;
     private int CurrTime = 0;
@@ -16,18 +16,15 @@ namespace OriMod.Abilities {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
     };
     public Projectile Proj { get; private set; }
-    private bool Charged = false;
+    internal bool Charged = false;
     private int MaxCharge => 35;
     private int CurrCharge = 0;
-    private int ChargeGrace => 15;
-    private int CurrGrace = 0;
+    private Vector2 Direction = Vector2.Zero;
     protected override void UpdateActive() {
-      float speed = Speeds[CurrTime - 1] * 0.35f;
-      player.velocity.Y = speed * -player.gravDir;
-      player.controlJump = false;
-      oPlayer.ImmuneTimer = 12;
+      float speed = Speeds[CurrTime - 1] * 0.5f;
+      player.velocity = Direction * speed;
     }
-    private void StartChargeJump() {
+    private void StartWallChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref currRand));
       Charged = false;
       CurrCharge = 0;
@@ -36,7 +33,10 @@ namespace OriMod.Abilities {
         Refreshed = false;
         CurrCooldown = Cooldown;
       }
-      Handler.climb.Inactive = true;
+      float angle = Utils.Clamp(player.AngleTo(Main.MouseWorld), -0.5f, 0.5f);
+      Direction = Vector2.UnitX.RotatedBy(angle);
+      player.velocity = Direction * Speeds[0] * 0.5f;
+
     }
     private void UpdateCharged() {
       if (Main.rand.NextFloat() < 0.7f) {
@@ -47,7 +47,6 @@ namespace OriMod.Abilities {
       if (Handler.burrow.InUse) {
         Charged = false;
         CurrCharge = 0;
-        CurrGrace = 0;
         return;
       }
       if (!Refreshed && !InUse) {
@@ -66,21 +65,15 @@ namespace OriMod.Abilities {
           oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
         }
       }
-      if (CanUse && justJumped) {
-        StartChargeJump();
+      if (CanUse && oPlayer.Input(PlayerInput.Triggers.JustPressed.Jump)) {
+        StartWallChargeJump();
         Active = true;
       }
       else if (Charged) {
         UpdateCharged();
-        if (CanCharge) {
-          CurrGrace = ChargeGrace;
-        }
-        else {
-          CurrGrace--;
-          if (CurrGrace < 0) {
-            Charged = false;
-            oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
-          }
+        if (!CanCharge) {
+          Charged = false;
+          oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
         }
       }
       if (Active) {

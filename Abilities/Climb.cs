@@ -4,9 +4,9 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class Climb : Ability {
     internal Climb(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-
+    internal bool IsCharging => Active && ((WallDir == 1 && PlayerInput.Triggers.Current.Left) || (WallDir == -1 && PlayerInput.Triggers.Current.Right));
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Handler.wJump.InUse && !Handler.wCJump.InUse;
     internal int WallDir = 0;
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Handler.wJump.InUse;
     private void StartClimb() {
       WallDir = player.direction;
     }
@@ -20,18 +20,20 @@ namespace OriMod.Abilities {
       player.controlLeft = false;
       player.controlRight = false;
 
-      if (PlayerInput.Triggers.Current.Up) {
-        player.velocity.Y += player.velocity.Y < -2 ? 1 : -1;
-      }
-      else if (PlayerInput.Triggers.Current.Down) {
-        player.velocity.Y += player.velocity.Y < 4 ? 1 : -1;
-      }
-      if (
-        (!PlayerInput.Triggers.Current.Down) && !PlayerInput.Triggers.Current.Up) {
-        player.velocity.Y *= Math.Abs(player.velocity.Y) > 1 ? 0.35f : 0;
-      }
-      if ((WallDir == 1 && PlayerInput.Triggers.Current.Left) || (WallDir == -1 && PlayerInput.Triggers.Current.Right)) {
+      if (IsCharging) {
         player.velocity.Y = 0;
+      }
+      else {
+        if (PlayerInput.Triggers.Current.Up) {
+          player.velocity.Y += player.velocity.Y < -2 ? 1 : -1;
+        }
+        else if (PlayerInput.Triggers.Current.Down) {
+          player.velocity.Y += player.velocity.Y < 4 ? 1 : -1;
+        }
+        if (
+          (!PlayerInput.Triggers.Current.Down) && !PlayerInput.Triggers.Current.Up) {
+          player.velocity.Y *= Math.Abs(player.velocity.Y) > 1 ? 0.35f : 0;
+        }
       }
     }
 
@@ -43,7 +45,7 @@ namespace OriMod.Abilities {
         }
       }
       if (InUse) {
-        if (!oPlayer.OnWall || !OriMod.ClimbKey.Current) {
+        if (!CanUse || !OriMod.ClimbKey.Current) {
           Inactive = true;
         }
       }

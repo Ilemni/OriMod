@@ -5,7 +5,7 @@ namespace OriMod.Abilities {
   public class WallJump : Ability {
     internal WallJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
 
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !Handler.wCJump.Charged;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private const int EndTime = 12;

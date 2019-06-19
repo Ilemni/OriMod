@@ -34,6 +34,7 @@ namespace OriMod {
     public Glide glide => Abilities.glide;
     public Climb climb => Abilities.climb;
     public ChargeJump cJump => Abilities.cJump;
+    public WallChargeJump wCJump => Abilities.wCJump;
     public Dash dash => Abilities.dash;
     public ChargeDash cDash => Abilities.cDash;
     public Crouch crouch => Abilities.crouch;
@@ -876,6 +877,9 @@ namespace OriMod {
         }
         if (Input(OriMod.BurrowKey.Current) || burrow.InUse) {
           burrow.Update();
+        }
+        if (Input(OriMod.ChargeKey.Current) || wCJump.InUse) {
+          wCJump.Update();
         }
       }
       else if (Transforming) {

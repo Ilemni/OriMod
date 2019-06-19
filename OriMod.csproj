@@ -63,6 +63,7 @@
     <Compile Include="Abilities\Glide.cs" />
     <Compile Include="Abilities\LookUp.cs" />
     <Compile Include="Abilities\Stomp.cs" />
+    <Content Include="Abilities\WallChargeJump.cs" />
     <Compile Include="Abilities\WallJump.cs" />
     <Compile Include="Buffs\SeinBuff.cs" />
     <Compile Include="Buffs\SeinBuffBase.cs" />

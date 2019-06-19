@@ -18,6 +18,7 @@ namespace OriMod {
     public Glide glide { get; }
     public Climb climb { get; }
     public ChargeJump cJump { get; }
+    public WallChargeJump wCJump { get; }
     public Dash dash { get; }
     public ChargeDash cDash { get; }
     public LookUp lookUp { get; }
@@ -34,6 +35,7 @@ namespace OriMod {
         { glide = new Glide(o, this) },
         { climb = new Climb(o, this) },
         { cJump = new ChargeJump(o, this) },
+        { wCJump = new WallChargeJump(o, this) },
         { dash = new Dash(o, this) },
         { cDash = new ChargeDash(o, this) },
         { crouch = new Crouch(o, this) },
