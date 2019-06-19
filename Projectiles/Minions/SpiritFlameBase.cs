@@ -64,6 +64,7 @@ namespace OriMod.Projectiles.Minions {
     }
     
     public override void SetStaticDefaults() {
+      ProjectileID.Sets.CanDistortWater[projectile.type] = true;
       ProjectileID.Sets.MinionShot[projectile.type] = true;
     }
 
@@ -72,6 +73,7 @@ namespace OriMod.Projectiles.Minions {
       projectile.friendly = true;
       projectile.ignoreWater = true;
       projectile.tileCollide = false;
+      projectile.timeLeft = 150;
       dustWidth = 10;
       dustHeight = 10;
     }
