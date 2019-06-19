@@ -27,7 +27,7 @@ namespace OriMod.Abilities {
     public NPC Npc => NpcID < Main.maxNPCs ? Main.npc[NpcID] : null;
     public NPC WormNpc => WormID < Main.maxNPCs ? Main.npc[WormID] : null;
     public bool IsBashingWorm => WormID < Main.maxNPCs;
-    internal override bool CanUse => base.CanUse && Refreshed && Inactive && !Handler.stomp.InUse && Handler.cJump.InUse;
+    internal override bool CanUse => base.CanUse && Inactive && !Handler.stomp.InUse && !Handler.cJump.InUse;
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
       if (InUse) {
@@ -179,6 +179,9 @@ namespace OriMod.Abilities {
         }
       }
       else {
+        if (Failed) {
+          Inactive = true;
+        }
         if (CurrCooldown > 0 || !Refreshed) {
           CurrCooldown--;
           if (CurrCooldown < 0) {
