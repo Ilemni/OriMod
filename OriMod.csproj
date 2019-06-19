@@ -56,6 +56,7 @@
     <Compile Include="Abilities\Bash.cs" />
     <Compile Include="Abilities\Burrow.cs" />
     <Compile Include="Abilities\ChargeDash.cs" />
+    <Content Include="Abilities\ChargeJump.cs" />
     <Compile Include="Abilities\Climb.cs" />
     <Compile Include="Abilities\Crouch.cs" />
     <Compile Include="Abilities\Dash.cs" />
@@ -65,10 +66,12 @@
     <Compile Include="Abilities\WallJump.cs" />
     <Compile Include="Buffs\SeinBuff.cs" />
     <Compile Include="Buffs\SeinBuffBase.cs" />
+    <Content Include="Commands\BurrowMode.cs" />
     <Compile Include="Commands\ConfigCommand.cs" />
     <Compile Include="Commands\Debug.cs" />
     <Compile Include="Commands\Light.cs" />
     <Compile Include="Commands\SetColor.cs" />
+    <Content Include="Dusts\AbilityRefreshedDust.cs" />
     <Compile Include="Dusts\SFDust.cs" />
     <Compile Include="Dusts\SFDustTrail.cs" />
     <Compile Include="Items\DebugArmor.cs" />
@@ -129,8 +132,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="build.txt" />
+    <Content Include="CHANGELOG.md" />
     <Content Include="description.txt" />
     <Content Include="icon.png" />
+    <Content Include="README.md" />
     <Content Include="Buffs/SeinBuff.png" />
     <Content Include="Dusts/SFDust1.png" />
     <Content Include="Dusts/SFDust8.png" />
@@ -186,7 +191,7 @@
     <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinSwimmingDrowningDeathA.mp3" />
     <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinSwimmingDrowningDeathB.mp3" />
     <Content Include="Sounds\Custom\NewSFX\Ori\Death\seinSwimmingDrowningDeathC.mp3" />
-    <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsA.wav" />
+    <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsA.mp3" />
     <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsB.mp3" />
     <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsC.mp3" />
     <Content Include="Sounds\Custom\NewSFX\Ori\DoubleJump\seinDoubleJumpsD.mp3" />
@@ -306,7 +311,6 @@
     <Content Include="Sounds\Custom\NewSFX\Ori\WallJump\seinWallJumpsE.mp3" />
     <Content Include="Sounds\Custom\NewSFX\SavePoints\checkpointCantPlaceSound.mp3" />
     <Content Include="Sounds\Custom\NewSFX\SavePoints\checkpointSpawnSound.mp3" />
-    <Content Include="Sounds\Custom\NewSFX\SavePoints\hint.mp3" />
     <Content Include="Tiles\SpiritSapling.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

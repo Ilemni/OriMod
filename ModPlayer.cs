@@ -33,6 +33,7 @@ namespace OriMod {
     public Stomp stomp => Abilities.stomp;
     public Glide glide => Abilities.glide;
     public Climb climb => Abilities.climb;
+    public ChargeJump cJump => Abilities.cJump;
     public Dash dash => Abilities.dash;
     public ChargeDash cDash => Abilities.cDash;
     public Crouch crouch => Abilities.crouch;
@@ -82,13 +83,6 @@ namespace OriMod {
     }
     private bool _unrestrictedMovement = false;
     public bool OnWall { get; private set; }
-
-    // Variables relating to Charge Jumping
-    public bool charged = false;
-    public int chargeTimer = 0;
-    public int chargeUpTimer = 40;
-    public int chargeJumpAnimTimer = 0;
-    public bool upRefresh = false;
 
     // Variables relating to visual or audible effects
     public bool doOriDeathParticles = true;
@@ -492,11 +486,8 @@ namespace OriMod {
         }
       }
           
-      if (chargeJumpAnimTimer > 0) {
+      if (cJump.InUse) {
         Increment("ChargeJump");
-        if (chargeJumpAnimTimer > 17) {
-          drawPlayer.controlJump = false;
-        }
         return;
       }
       if (!IsGrounded) {
@@ -779,24 +770,6 @@ namespace OriMod {
           SeinMinionUpgrade = 0;
         }
       }
-      IsGrounded = false;
-      // Check if grounded by means of liquid walking
-      if (player.fireWalk || player.waterWalk2 || player.waterWalk) {
-        Vector2 checkPos = new Vector2(player.Bottom.X, player.Bottom.Y + 4);
-        Vector2 check2 = checkPos.ToTileCoordinates().ToVector2();
-        bool testblock =
-          Main.tile[(int)check2.X, (int)check2.Y].liquid > 0 &&
-          Main.tile[(int)check2.X, (int)check2.Y - 1].liquid == 0;
-        if (testblock) {
-          Tile liquidTile = Main.tile[(int)check2.X, (int)check2.Y];
-          IsGrounded = liquidTile.lava() ? player.fireWalk : (player.waterWalk || player.waterWalk2);
-        }
-      }
-      if (!IsGrounded) {
-        IsGrounded = !Collision.IsClearSpotTest(player.position + new Vector2(0, 8), 16f, player.width, player.height, false, false, (int)player.gravDir, true, true);
-      }
-
-      // thanks jopo
 
       if (Transforming) {
         player.direction = TransformDirection;
@@ -804,72 +777,42 @@ namespace OriMod {
 
       UpdateFrame(player);
       if (!OriSet) return;
-      // Jump Effects
       if (DoPlayerLight && !burrow.Active) Lighting.AddLight(player.Center, LightColor.ToVector3());
       if (player.justJumped) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
+      cJump.justJumped = player.justJumped; // justJumped is reset in PostUpdateRunSpeeds() -_-
       // Charging
-      if (!burrow.InUse && ( // Ground CJump
-          Input(OriMod.ChargeKey.Current) &&
-          !upRefresh &&
-          !(OnWall && Input(OriMod.ClimbKey.Current))
-        ) || ( // Wall CJump
+      if (!burrow.InUse && ( // Wall CJump
           climb.InUse && (
             (player.direction == 1 && Input(Current.Left)) ||
             (player.direction == -1 && Input(Current.Right))
           )
         )
-      ) {
-        if (chargeTimer == 1) {
-          PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
-        }
-        if (!charged) {
-          chargeTimer++;
-          chargeUpTimer = 35;
-        }
-        if (chargeTimer > chargeUpTimer) {
-          chargeTimer = chargeUpTimer;
-          PlayNewSound("Ori/ChargeDash/seinChargeDashCharged");
-          charged = true;
-        }
-        if (charged && player.justJumped) {
-          chargeTimer = 0;
-          charged = false;
-          PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + RandomChar(3));
-          chargeJumpAnimTimer = 20;
-          upRefresh = true;
-          Projectile.NewProjectile(player.Center, new Vector2(0, 0), mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1);
+      ) { }
+      CheckOnGround();
+      CheckOnWall();
+    }
+    private void CheckOnGround() {
+      IsGrounded = false;
+      if (player.fireWalk || player.waterWalk || player.waterWalk2) {
+        Point pos = new Vector2(player.Bottom.X, player.Bottom.Y + 4).ToTileCoordinates();
+        bool testblock = Main.tile[pos.X, pos.Y].liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
+        if (testblock) {
+          Tile tile = Main.tile[pos.X, pos.Y];
+          IsGrounded = tile.lava() ? player.fireWalk : (player.waterWalk || player.waterWalk2);
         }
       }
-      else {
-        chargeTimer = 0;
-        if (charged && !burrow.InUse) {
-          PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
-          charged = false;
-        }
+      if (!IsGrounded) {
+        IsGrounded = !Collision.IsClearSpotTest(player.position + new Vector2(0, 8), 16f, player.width, player.height, false, false, (int)player.gravDir, true, true);
       }
-      if (!Input(OriMod.ChargeKey.Current) && chargeJumpAnimTimer <= 0) {
-        upRefresh = false;
-      }
-
-      // wall detection
-      OnWall = false;
-      // code modified from source code
-      float posx = player.position.X;
-      float posy = player.position.Y + 2f;
-      if (player.direction == 1) {
-        posx += player.width;
-      }
-      posx += player.direction;
-      if (player.gravDir < 0f) {
-        posy = player.position.Y - 1f;
-      }
-      posx /= 16f;
-      posy /= 16f;
-      if (WorldGen.SolidTile((int)posx, (int)posy + 1) && WorldGen.SolidTile((int)posx, (int)posy + 2)) {
-        OnWall = true;
-      }
+    }
+    private void CheckOnWall() {
+      Point p = new Vector2(
+        player.Center.X + player.direction + player.direction * player.width * 0.5f,
+        player.position.Y + (player.gravDir < 0f ? -1f : 2f)
+      ).ToTileCoordinates();
+      OnWall = WorldGen.SolidTile(p.X, p.Y + 1) && WorldGen.SolidTile(p.X, p.Y + 2);
     }
     public override void PostUpdateRunSpeeds() {
       if (OriSet) {
@@ -894,25 +837,8 @@ namespace OriMod {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
         }
-        else if (chargeJumpAnimTimer > 0) {
-          player.gravity = 0.1f;
-          player.velocity.Y = -3 * chargeJumpAnimTimer;
-          if (chargeJumpAnimTimer == 18) {
-            player.controlJump = false;
-          }
-          player.immune = true;
-        }
         else {
           player.gravity = 0.35f;
-        }
-        if (charged) {
-          player.jumpSpeedBoost += 20f;
-          if (Main.rand.NextFloat() < 0.7f) {
-            Dust dust = Main.dust[Terraria.Dust.NewDust(player.position, 30, 30, 172, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
-          }
-          if (DoPlayerLight) Lighting.AddLight(player.Center, LightColor.ToVector3());
-        }
-        else {
           player.jumpSpeedBoost += 2f;
         }
         if (Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased)) {
@@ -944,6 +870,9 @@ namespace OriMod {
         }
         if (Input(OriMod.BashKey.Current) || bash.InUse) {
           bash.Update();
+        }
+        if (Input(OriMod.ChargeKey.Current) || cJump.InUse) {
+          cJump.Update();
         }
         if (Input(OriMod.BurrowKey.Current) || burrow.InUse) {
           burrow.Update();
@@ -994,7 +923,7 @@ namespace OriMod {
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       OriNPC oNpc = npc.GetGlobalNPC<OriNPC>(mod);
-      if (oNpc.IsBashed || OriSet && (stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0)) {
+      if (oNpc.IsBashed || OriSet && (stomp.InUse || cDash.InUse || cJump.InUse)) {
         damage = 0;
       }
     }
@@ -1003,7 +932,7 @@ namespace OriMod {
       if (!OriSet) return true;
       playSound = false;
       genGore = false;
-      if (stomp.InUse || cDash.InUse || chargeJumpAnimTimer > 0) {
+      if (stomp.InUse || cDash.InUse || cJump.InUse) {
         damage = 0;
         return false;
       }
@@ -1219,7 +1148,6 @@ namespace OriMod {
       if (OriSet) {
         if (FlashTimer > 0) FlashTimer--;
         if (TeatherTrailTimer > 0) TeatherTrailTimer--;
-        if (chargeJumpAnimTimer > 0) chargeJumpAnimTimer--;
       }
       if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer && doNetUpdate) {
         ModNetHandler.oriPlayerHandler.SendOriState(255, player.whoAmI);

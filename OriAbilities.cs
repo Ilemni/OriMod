@@ -11,17 +11,18 @@ namespace OriMod {
     public Player player { get; private set; }
     public List<Ability> Abilities { get; private set; }
 
-    public WallJump wJump { get; private set; }
-    public AirJump airJump { get; private set; }
-    public Bash bash { get; private set; }
-    public Stomp stomp { get; private set; }
-    public Glide glide { get; private set; }
-    public Climb climb { get; private set; }
-    public Dash dash { get; private set; }
-    public ChargeDash cDash { get; private set; }
-    public LookUp lookUp { get; private set; }
-    public Crouch crouch { get; private set; }
-    public Burrow burrow { get; private set; }
+    public WallJump wJump { get; }
+    public AirJump airJump { get; }
+    public Bash bash { get; }
+    public Stomp stomp { get; }
+    public Glide glide { get; }
+    public Climb climb { get; }
+    public ChargeJump cJump { get; }
+    public Dash dash { get; }
+    public ChargeDash cDash { get; }
+    public LookUp lookUp { get; }
+    public Crouch crouch { get; }
+    public Burrow burrow { get; }
     internal OriAbilities(OriPlayer o) {
       oPlayer = o;
       player = o.player;
@@ -32,6 +33,7 @@ namespace OriMod {
         { bash = new Bash(o, this) },
         { glide = new Glide(o, this) },
         { climb = new Climb(o, this) },
+        { cJump = new ChargeJump(o, this) },
         { dash = new Dash(o, this) },
         { cDash = new ChargeDash(o, this) },
         { crouch = new Crouch(o, this) },
