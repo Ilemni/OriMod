@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameInput;
@@ -23,6 +24,7 @@ namespace OriMod.Abilities {
     protected override void UpdateActive() {
       float speed = Speeds[CurrTime - 1] * 0.5f;
       player.velocity = Direction * speed;
+      player.direction = Math.Sign(player.velocity.X);
     }
     private void StartWallChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref currRand));
@@ -33,8 +35,9 @@ namespace OriMod.Abilities {
         Refreshed = false;
         CurrCooldown = Cooldown;
       }
-      float angle = Utils.Clamp(player.AngleTo(Main.MouseWorld), -0.5f, 0.5f);
+      float angle = Utils.Clamp(player.AngleTo(Main.MouseWorld) * -Handler.climb.WallDir, -0.5f, 0.5f);
       Direction = Vector2.UnitX.RotatedBy(angle);
+      Direction *= -Handler.climb.WallDir;
       player.velocity = Direction * Speeds[0] * 0.5f;
 
     }
