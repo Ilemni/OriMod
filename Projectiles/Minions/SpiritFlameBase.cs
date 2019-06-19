@@ -8,7 +8,15 @@ namespace OriMod.Projectiles.Minions {
   public class SpiritFlameBase : ModProjectile {
     protected NPC target = null;
     protected bool isTargetingNPC => projectile.ai[1] == 0;
-    protected Vector2 nonTargetPos => new Vector2(projectile.ai[0], projectile.ai[1]);
+    private Vector2 _nonTargetPos = Vector2.Zero;
+    protected Vector2 nonTargetPos {
+      get {
+        if (_nonTargetPos == Vector2.Zero) {
+          _nonTargetPos = new Vector2(projectile.ai[0], projectile.ai[1]);
+        }
+        return _nonTargetPos;
+      }
+    }
     // Initial lerp value: 0 = no homing; 1 = full homing
     protected float lerp;
     // Value added to lerp every frame
@@ -89,7 +97,7 @@ namespace OriMod.Projectiles.Minions {
           target = Main.npc[(int)projectile.ai[0]];
         }
         // If target dies before projectile hits, kill projectile when it reaches target
-        else if (target.active == false) {
+        else if (!target.active) {
           if (distance < speed) {
             projectile.active = false;
           }
@@ -117,49 +125,31 @@ namespace OriMod.Projectiles.Minions {
         currLerpDelay = lerpDelay * 0.25f;
       }
 
-      //Get the shoot trajectory from the projectile and target
-      float shootToX;
-      float shootToY;
+      // Get the shoot trajectory from the projectile and target
+      Vector2 shootTo = Vector2.Zero;
       // If target dies before projectile hits, target last live position
       if (isTargetingNPC) {
         if (target.active) {
           lastTargetPos = target.position;
-          shootToX = target.position.X + (float)target.width * 0.5f - projectile.Center.X;
-          shootToY = target.position.Y - projectile.Center.Y;
+          shootTo.X = target.position.X + (float)target.width * 0.5f - projectile.Center.X;
+          shootTo.Y = target.position.Y - projectile.Center.Y;
         } else {
-          shootToX = lastTargetPos.X - projectile.Center.X;
-          shootToY = lastTargetPos.Y - projectile.Center.Y;
+          shootTo.X = lastTargetPos.X - projectile.Center.X;
+          shootTo.Y = lastTargetPos.Y - projectile.Center.Y;
         }
       }
       else {
-        shootToX = projectile.ai[0];
-        shootToY = projectile.ai[1];
+        shootTo = nonTargetPos;
       }
-      if (speed > 60) {
-        speed = 60;
+      if (speed > 30) {
+        speed = 30;
       }
       Vector2 currVelocity = projectile.velocity;
-      Vector2 currDist = new Vector2(shootToX, shootToY);
       currVelocity.Normalize();
-      currDist.Normalize();
-      Vector2 newVelocity = Vector2.Lerp(currVelocity, currDist, lerp);
-      newVelocity *= speed;
+      shootTo.Normalize();
+      Vector2 newVelocity = Vector2.Lerp(currVelocity, shootTo, lerp) * speed;
       projectile.velocity = newVelocity;
       CreateDust();
     }
-    public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-      
-    }
-
-    // public override bool OnTileCollide(Vector2 oldVelocity)
-    // {
-    //  projectile.penetrate = -1;
-    //  projectile.maxPenetrate = -1;
-    //  projectile.tileCollide = false;
-    //  projectile.position += projectile.velocity;
-    //  projectile.velocity = Vector2.Zero;
-    //  projectile.timeLeft = 180;
-    //  return false;
-    // }
   }
 }
