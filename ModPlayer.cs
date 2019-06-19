@@ -385,8 +385,8 @@ namespace OriMod {
       if (!HasTransformedOnce) {
         HasTransformedOnce = true;
       }
-      if (drawPlayer.pulley) {
-        Increment("Idle");
+      if (drawPlayer.pulley|| drawPlayer.mount.Active) {
+        Increment("Idle" );
         return;
       }
       if (burrow.InUse) {
@@ -396,9 +396,14 @@ namespace OriMod {
         Increment("Burrow", rotDegrees:deg);
         return;
       }
-      if (drawPlayer.mount.Active) {
-        Increment("Idle");
-        // TODO: Minecart animation?
+      if (wCJump.InUse) {
+        float rad = (float)Math.Atan2(player.velocity.Y, player.velocity.X);
+        Main.NewText(rad);
+        rad = rad * (float)(180 / Math.PI) * player.direction;
+        if (player.direction == -1) {
+          rad -= 180f;
+        }
+        Increment("Dash", overrideFrame:0, rotDegrees:rad);
         return;
       }
       if (wJump.InUse) {
@@ -439,6 +444,26 @@ namespace OriMod {
         }
       }
       if (climb.InUse) {
+        if (climb.IsCharging) {
+          int frame = 0;
+          float angle = Utils.Clamp(player.AngleTo(Main.MouseWorld) * -climb.WallDir, -0.5f, 0.5f);
+          angle *= -climb.WallDir;
+          if (Math.Abs(angle) <= 0.15f) {
+            frame = 3;
+          }
+          else if (angle < -0.15f) {
+            frame = 4;
+          }
+          else if (angle < 0.3f) {
+            frame = 2;
+          }
+          else {
+            frame = 1;
+          }
+          Main.NewText("WallChargeJumpCharge frame " + frame + " [" + angle + "]");
+          Increment("WallChargeJumpCharge", overrideFrame:frame);
+          return;
+        }
         if (Math.Abs(player.velocity.Y) < 0.1f) {
           Increment("ClimbIdle");
         }

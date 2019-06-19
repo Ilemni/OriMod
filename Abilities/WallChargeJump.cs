@@ -25,6 +25,7 @@ namespace OriMod.Abilities {
       float speed = Speeds[CurrTime - 1] * 0.5f;
       player.velocity = Direction * speed;
       player.direction = Math.Sign(player.velocity.X);
+      player.maxFallSpeed = Math.Abs(player.velocity.Y);
     }
     private void StartWallChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref currRand));
@@ -39,7 +40,6 @@ namespace OriMod.Abilities {
       Direction = Vector2.UnitX.RotatedBy(angle);
       Direction *= -Handler.climb.WallDir;
       player.velocity = Direction * Speeds[0] * 0.5f;
-
     }
     private void UpdateCharged() {
       if (Main.rand.NextFloat() < 0.7f) {

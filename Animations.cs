@@ -62,6 +62,10 @@ namespace OriMod {
         h(incrementType.Single),
         f(5, 15, 12)
       }},
+      {"WallChargeJumpCharge", new Vector3[] {
+        h(),
+        f(6, 0), f(6, 4)
+      }},
       {"AirJump", new Vector3[] {
         h(incrementType.Single),
         f(3, 0)
