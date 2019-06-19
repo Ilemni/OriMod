@@ -781,6 +781,18 @@ namespace OriMod {
       }
     }
     public override void PostUpdate() {
+      UpdateFrame(player);
+      CheckSeinBuffs();
+      if (!OriSet) return;
+      if (DoPlayerLight && !burrow.Active) Lighting.AddLight(player.Center, LightColor.ToVector3());
+      if (player.justJumped) {
+        PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
+      }
+      cJump.justJumped = player.justJumped; // justJumped is reset in PostUpdateRunSpeeds() -_-
+      CheckOnGround();
+      CheckOnWall();
+    }
+    private void CheckSeinBuffs() {
       if (SeinMinionActive) {
         if (!(
           player.HasBuff(mod.GetBuff("SeinBuff1").Type) ||
@@ -796,28 +808,6 @@ namespace OriMod {
           SeinMinionUpgrade = 0;
         }
       }
-
-      if (Transforming) {
-        player.direction = TransformDirection;
-      }
-
-      UpdateFrame(player);
-      if (!OriSet) return;
-      if (DoPlayerLight && !burrow.Active) Lighting.AddLight(player.Center, LightColor.ToVector3());
-      if (player.justJumped) {
-        PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
-      }
-      cJump.justJumped = player.justJumped; // justJumped is reset in PostUpdateRunSpeeds() -_-
-      // Charging
-      if (!burrow.InUse && ( // Wall CJump
-          climb.InUse && (
-            (player.direction == 1 && Input(Current.Left)) ||
-            (player.direction == -1 && Input(Current.Right))
-          )
-        )
-      ) { }
-      CheckOnGround();
-      CheckOnWall();
     }
     private void CheckOnGround() {
       IsGrounded = false;
@@ -842,30 +832,21 @@ namespace OriMod {
     }
     public override void PostUpdateRunSpeeds() {
       if (OriSet) {
+        DefaultPostRunSpeeds();
         Abilities.Tick();
-
-        player.noFallDmg = true;
         if (Input(Current.Left) || Input(Current.Right) || IsGrounded) {
           UnrestrictedMovement = false;
         }
         player.runSlowdown = UnrestrictedMovement ? 0 : 1;
-        if (!crouch.InUse) {
-          player.runAcceleration = 0.5f;
-          player.maxRunSpeed += 2f;
-        }
         if (Config.SmoothCamera) Main.SetCameraLerp(0.05f, 1);
         if (OnWall && (IsGrounded || player.velocity.Y < 0) && !climb.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
           player.jumpSpeedBoost -= 6f;
         }
-        else if (OnWall &&  !IsGrounded && player.velocity.Y > 0 && !stomp.InUse) {
+        else if (OnWall && !IsGrounded && player.velocity.Y > 0 && !stomp.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
-        }
-        else {
-          player.gravity = 0.35f;
-          player.jumpSpeedBoost += 2f;
         }
         if (Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased)) {
           glide.Update();
@@ -908,6 +889,7 @@ namespace OriMod {
         }
       }
       else if (Transforming) {
+        player.direction = TransformDirection;
         if (TransformTimer > 235) {
           if (TransformTimer < 240) {
             player.gravity = 9f;
@@ -931,6 +913,13 @@ namespace OriMod {
         ImmuneTimer--;
         player.immune = true;
       }
+    }
+    private void DefaultPostRunSpeeds() {
+      player.runAcceleration = 0.5f;
+      player.maxRunSpeed += 2f;
+      player.noFallDmg = true;
+      player.gravity = 0.35f;
+      player.jumpSpeedBoost += 2f;
     }
     public void CreateTeatherDust() {
       Dust dust = Main.dust[Terraria.Dust.NewDust(player.position, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
