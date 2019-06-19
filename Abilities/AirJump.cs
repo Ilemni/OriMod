@@ -1,3 +1,4 @@
+using System;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
@@ -43,7 +44,11 @@ namespace OriMod.Abilities {
         Ending = true;
       }
       else if (Ending) {
+        
         CurrTime++;
+        if (CurrTime < EndDuration - 1 && player.velocity.Y * Math.Sign(player.gravity) > 0) {
+          CurrTime = EndDuration - 1;
+        }
         if (CurrTime > EndDuration) {
           Inactive = true;
           CurrTime = 0;

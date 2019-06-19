@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -57,7 +56,6 @@ namespace OriMod.Abilities {
       p(-1, 0), // Left
       p(1, 0),  // Right
     };
-    internal Point[] Hitbox = new Point[HitboxTemplate.Length];
     internal Point[] BurrowEnter = new Point[BurrowEnterTemplate.Length];
     internal Point[] BurrowEnterOuter = new Point[BurrowEnterOuterTemplate.Length];
     internal Point[] BurrowInner = new Point[BurrowInnerTemplate.Length];
@@ -76,11 +74,6 @@ namespace OriMod.Abilities {
         posList.Add(pos.Add(v));
       }
       Box = posList.ToArray();
-    }
-    internal void UpdateHitbox() {
-      Vector2 pos = (player.Center + Velocity.Norm() * 16);
-      UpdateBox(ref Hitbox, HitboxTemplate, pos);
-      List<Point> posList = new List<Point>();
     }
     internal void UpdateBurrowEnterBox() {
       UpdateBox(ref BurrowEnter, BurrowEnterTemplate, player.Center);
@@ -119,7 +112,6 @@ namespace OriMod.Abilities {
       }
     }
     protected override void UpdateActive() {
-      UpdateHitbox();
       UpdateBurrowInnerBox();
       if (Velocity == Vector2.Zero) {
         Velocity = new Vector2(0, Speed);
@@ -130,21 +122,21 @@ namespace OriMod.Abilities {
         newVel = player.AngleTo(Main.MouseWorld).ToRotationVector2();
       }
       else {
-      if (player.controlLeft) {
-        newVel.X -= 1;
-      }
-      if (player.controlRight) {
-        newVel.X += 1;
-      }
-      if (player.controlUp) {
-        newVel.Y -= 1;
-      }
-      if (player.controlDown) {
-        newVel.Y += 1;
-      }
-      if (newVel == Vector2.Zero) {
-        newVel = oldVel;
-      }
+        if (player.controlLeft) {
+          newVel.X -= 1;
+        }
+        if (player.controlRight) {
+          newVel.X += 1;
+        }
+        if (player.controlUp) {
+          newVel.Y -= 1;
+        }
+        if (player.controlDown) {
+          newVel.Y += 1;
+        }
+        if (newVel == Vector2.Zero) {
+          newVel = oldVel;
+        }
       }
       oldVel.Normalize();
       newVel.Normalize();
@@ -155,13 +147,13 @@ namespace OriMod.Abilities {
       if (!CanBurrowAny) {
         for (int i = 0; i < BurrowInner.Length; i++) {
           Point v = BurrowInner[i];
-        Tile t = Main.tile[(int)v.X, (int)v.Y];
-        // if (i == 0) oPlayer.Debug(!t.active() + " || " + t.inActive() + " || " + !t.nactive());
-        if (!IsSolid(t)) continue;
+          Tile t = Main.tile[(int)v.X, (int)v.Y];
+          // if (i == 0) oPlayer.Debug(!t.active() + " || " + t.inActive() + " || " + !t.nactive());
+          if (!IsSolid(t)) continue;
           if (!CurrentBurrowable.Contains(t.type)) {
-          OnBurrowCollision(i, ref didX, ref didY);
+            OnBurrowCollision(i, ref didX, ref didY);
+          }
         }
-      }
       }
       player.position += Velocity;
       player.velocity = Vector2.Zero;
@@ -187,19 +179,20 @@ namespace OriMod.Abilities {
         AutoBurrow = false;
       }
       if (InUse) {
+        Handler.glide.Inactive = true;
         if (Active) {
-            bool canBurrow = false;
-            foreach(Point p in BurrowInner) {
-              if (IsSolid(Main.tile[p.X, p.Y])) {
-                canBurrow = true;
-              }
-            }
-            if (!canBurrow || player.dead) {
-              oPlayer.Debug("No longer burrowing!");
-              Ending = true;
-              TimeUntilEnd = 2;
+          bool canBurrow = false;
+          foreach(Point p in BurrowInner) {
+            if (IsSolid(Main.tile[p.X, p.Y])) {
+              canBurrow = true;
             }
           }
+          if (!canBurrow || player.dead) {
+            oPlayer.Debug("No longer burrowing!");
+            Ending = true;
+            TimeUntilEnd = 2;
+          }
+        }
         else if (Ending) {
           TimeUntilEnd--;
           if (TimeUntilEnd < 1) {
@@ -245,7 +238,7 @@ namespace OriMod.Abilities {
               vel += BurrowEnterOuterTemplate[i].ToVector2().Norm();
             }
           }
-        vel.Normalize();
+          vel.Normalize();
         }
         vel = vel.Norm() * 64;
         player.position += vel;

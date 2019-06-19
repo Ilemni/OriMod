@@ -1,3 +1,4 @@
+using System;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
@@ -11,7 +12,7 @@ namespace OriMod.Abilities {
     private const int EndDuration = 10;
     private int CurrTime = 0;
 
-    internal override bool CanUse => base.CanUse && !Ending && !Handler.dash.InUse && !Handler.cDash.InUse && player.velocity.Y > 0 && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && !Ending && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.airJump.InUse && player.velocity.Y * Math.Sign(player.gravity) > 0 && !player.mount.Active && !Handler.burrow.InUse && !Handler.burrow.AutoBurrow;
 
     protected override void UpdateUsing() {
       if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
