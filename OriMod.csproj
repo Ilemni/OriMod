@@ -312,6 +312,7 @@
     <Content Include="Sounds\Custom\NewSFX\SavePoints\checkpointCantPlaceSound.mp3" />
     <Content Include="Sounds\Custom\NewSFX\SavePoints\checkpointSpawnSound.mp3" />
     <Content Include="Tiles\SpiritSapling.png" />
+    <Content Include="Commands\BurrowMode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
