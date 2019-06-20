@@ -84,6 +84,7 @@ namespace OriMod {
     }
     private bool _unrestrictedMovement = false;
     public bool OnWall { get; private set; }
+    public bool justJumped { get; private set; }
 
     // Variables relating to visual or audible effects
     public bool doOriDeathParticles = true;
@@ -785,10 +786,10 @@ namespace OriMod {
       CheckSeinBuffs();
       if (!OriSet) return;
       if (DoPlayerLight && !burrow.Active) Lighting.AddLight(player.Center, LightColor.ToVector3());
-      if (player.justJumped) {
+      justJumped = player.justJumped;
+      if (justJumped) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
-      cJump.justJumped = player.justJumped; // justJumped is reset in PostUpdateRunSpeeds() -_-
       CheckOnGround();
       CheckOnWall();
     }
