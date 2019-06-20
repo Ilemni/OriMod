@@ -3,6 +3,7 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class Crouch : Ability {
     internal Crouch(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.Current.Down); 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
     private const int StartDuration = 10;
     private const int EndDuration = 4;

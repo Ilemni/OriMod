@@ -835,10 +835,6 @@ namespace OriMod {
       if (OriSet) {
         DefaultPostRunSpeeds();
         Abilities.Tick();
-        if (Input(Current.Left) || Input(Current.Right) || IsGrounded) {
-          UnrestrictedMovement = false;
-        }
-        player.runSlowdown = UnrestrictedMovement ? 0 : 1;
         if (Config.SmoothCamera) Main.SetCameraLerp(0.05f, 1);
         if (OnWall && (IsGrounded || player.velocity.Y < 0) && !climb.InUse) {
           player.gravity = 0.1f;
@@ -849,45 +845,7 @@ namespace OriMod {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
         }
-        if (Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased)) {
-          glide.Update();
-        }
-        if (Input(JustPressed.Jump) || airJump.InUse) {
-          airJump.Update();
-        }
-        if ((Input(OriMod.DashKey.JustPressed) && !cDash.InUse) || dash.InUse) {
-          dash.Update();
-        }
-        else if ((Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && cDash.Refreshed) || cDash.InUse) {
-          cDash.Update();
-        }
-        if ((Input(JustPressed.Jump) && OnWall && !IsGrounded) || wJump.InUse) {
-          wJump.Update();
-        }
-        if (Input(OriMod.ClimbKey.Current) && OnWall) {
-          climb.Update();
-        }
-        if (Input(JustPressed.Down) || stomp.InUse) {
-          stomp.Update();
-        }
-        if (Input(Current.Up) || lookUp.InUse) {
-          lookUp.Update();
-        }
-        if (Input(Current.Down) || crouch.InUse) {
-          crouch.Update();
-        }
-        if (Input(OriMod.BashKey.Current) || bash.InUse) {
-          bash.Update();
-        }
-        if (Input(OriMod.ChargeKey.Current) || cJump.InUse) {
-          cJump.Update();
-        }
-        if (Input(OriMod.BurrowKey.Current) || burrow.InUse) {
-          burrow.Update();
-        }
-        if (Input(OriMod.ChargeKey.Current) || wCJump.InUse) {
-          wCJump.Update();
-        }
+        Abilities.Update();
       }
       else if (Transforming) {
         player.direction = TransformDirection;
@@ -921,6 +879,10 @@ namespace OriMod {
       player.noFallDmg = true;
       player.gravity = 0.35f;
       player.jumpSpeedBoost += 2f;
+      if (Input(Current.Left) || Input(Current.Right) || IsGrounded) {
+        UnrestrictedMovement = false;
+      }
+      player.runSlowdown = UnrestrictedMovement ? 0 : 1;
     }
     public void CreateTeatherDust() {
       Dust dust = Main.dust[Terraria.Dust.NewDust(player.position, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];

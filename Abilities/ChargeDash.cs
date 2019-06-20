@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 namespace OriMod.Abilities {
   public class ChargeDash : Ability {
     internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { Npc = 255; }
-    
+    internal override bool DoUpdate => !Handler.dash.DoUpdate && (InUse || (oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Handler.cDash.Refreshed));
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
     private const int ManaCost = 20;
     private static readonly float[] Speeds = new float[] {

@@ -7,6 +7,7 @@ using Terraria.ID;
 namespace OriMod.Abilities {
   public class Burrow : Ability {
     internal Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BurrowKey.Current);
     public static readonly ushort[][] Burrowable = new ushort[][] {
       new ushort[] {
         TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush,

@@ -7,7 +7,7 @@ using Terraria.ID;
 namespace OriMod.Abilities {
   public class Bash : Ability {
     internal Bash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-    
+    internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BashKey.Current);
     public static List<int> CannotBash = new List<int> {
       NPCID.BlazingWheel, NPCID.SpikeBall
     };

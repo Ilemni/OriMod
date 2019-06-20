@@ -77,6 +77,11 @@ namespace OriMod {
         }
       }
     }
+    internal void Update() {
+      Abilities.ForEach(ability => {
+        if (ability.DoUpdate) ability.Update();
+      });
+    }
     internal void TickOtherClient() {
       Abilities.ForEach(ability => {
         if (ability.InUse) {

@@ -4,7 +4,7 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class AirJump : Ability {
     internal AirJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-    
+    internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.JustPressed.Jump);
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrCount < MaxJumps && !Active && !Handler.bash.InUse && !player.mount.Active && !Handler.wCJump.InUse;
     private const float JumpVelocity = 8.8f;
     private const int EndDuration = 32;

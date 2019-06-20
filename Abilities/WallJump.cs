@@ -4,7 +4,7 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class WallJump : Ability {
     internal WallJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-
+    internal override bool DoUpdate => (oPlayer.Input(OriPlayer.JustPressed.Jump) && oPlayer.OnWall && !oPlayer.IsGrounded);
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !Handler.wCJump.Charged;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);

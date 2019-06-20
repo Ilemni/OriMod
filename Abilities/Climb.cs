@@ -4,6 +4,7 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class Climb : Ability {
     internal Climb(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal override bool DoUpdate => oPlayer.Input(OriMod.ClimbKey.Current) && oPlayer.OnWall;
     internal bool IsCharging => Active && ((WallDir == 1 && PlayerInput.Triggers.Current.Left) || (WallDir == -1 && PlayerInput.Triggers.Current.Right));
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Handler.wJump.InUse && !Handler.wCJump.InUse;
     internal int WallDir = 0;

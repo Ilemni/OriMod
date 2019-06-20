@@ -4,7 +4,7 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class Glide : Ability {
     internal Glide(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-
+    internal override bool DoUpdate => oPlayer.Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased);
     private const float MaxFallSpeed = 2f;
     private const float RunSlowdown = 0.125f;
     private const float RunAcceleration = 0.2f;

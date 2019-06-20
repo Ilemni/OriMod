@@ -6,7 +6,7 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class WallChargeJump : Ability {
     public WallChargeJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-
+    internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
     internal bool CanCharge => base.CanUse && Handler.climb.IsCharging;
     protected override Color RefreshColor => Color.Blue;

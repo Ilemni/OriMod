@@ -6,7 +6,7 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class Stomp : Ability {
     internal Stomp(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
-
+    internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.JustPressed.Down);
     private const int StartDuration = 24;
     private const int MinDuration = 30;
     protected override int Cooldown => 480;
