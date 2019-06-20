@@ -240,6 +240,9 @@ namespace OriMod.Abilities {
           }
           vel.Normalize();
         }
+        if (vel.HasNaNs()) {
+          vel = Vector2.UnitY;
+        }
         vel = vel.Norm() * 64;
         player.position += vel;
         Velocity = vel;
