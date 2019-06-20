@@ -29,6 +29,14 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
+      if (PlayerInput.Triggers.JustPressed.Jump && (player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm)) {
+        Inactive = true;
+        if (!Config.BlindForestMovement) {
+          Refreshed = false;
+          CurrCooldown = Cooldown;
+        }
+        return;
+      }
       player.velocity.X = Speeds[CurrTime] * Direction * 0.65f;
       player.velocity.Y = 0.25f * (CurrTime + 1);
       if (CurrTime > 20) player.runSlowdown = 26f;
