@@ -1037,7 +1037,7 @@ namespace OriMod {
         oriPlayerSprite.visible = false;
       }
     }
-    private Vector2 Offset(OriPlayer oPlayer, int x=0, int y=0) {
+    private Vector2 Offset(int x=0, int y=0) {
       Vector2 offset = new Vector2(x, y);
       return offset;
     }
@@ -1081,7 +1081,7 @@ namespace OriMod {
           new Rectangle(trail.FrameX, trail.FrameY, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight), color, trail.Rotation,
           new Vector2(SpriteWidth / 2, SpriteHeight / 2 + 6), 1, effect, 0
         );
-        data.position += oPlayer.Offset(oPlayer);
+        data.position += oPlayer.Offset();
         Main.playerDrawData.Add(data);
       }
     });
@@ -1103,7 +1103,7 @@ namespace OriMod {
       GetSpriteInfo(drawPlayer, oPlayer, out pos, out effect, out rect, out orig);
       
       DrawData data = new DrawData(spriteTexture, pos, rect, oPlayer.SpriteColor, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
-      data.position += oPlayer.Offset(oPlayer);
+      data.position += oPlayer.Offset();
       Main.playerDrawData.Add(data);
     });
     internal static readonly PlayerLayer oriTransformSprite = new PlayerLayer("OriMod", "OriTransform", delegate (PlayerDrawInfo drawInfo) {
@@ -1121,7 +1121,7 @@ namespace OriMod {
         new Rectangle(0, y * 76, 104, 76),
         Color.White, drawPlayer.direction * oPlayer.AnimRads,
         new Vector2(52, 38), 1, effect, 0);
-      data.position += oPlayer.Offset(oPlayer);
+      data.position += oPlayer.Offset();
       Main.playerDrawData.Add(data);
     });
     internal static readonly PlayerLayer oriBashArrow = new PlayerLayer("OriMod", "bashArrow", delegate (PlayerDrawInfo drawInfo) {
@@ -1152,7 +1152,7 @@ namespace OriMod {
       rect.X = 0;
 
       DrawData data = new DrawData(spriteTexture, pos, rect, oPlayer.SpriteColor, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
-      data.position += oPlayer.Offset(oPlayer);
+      data.position += oPlayer.Offset();
       Main.playerDrawData.Add(data);
     });
     public override void ResetEffects() {
