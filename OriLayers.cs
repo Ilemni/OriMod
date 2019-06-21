@@ -16,8 +16,8 @@ namespace OriMod {
       Rectangle rect;
       Vector2 orig;
       GetSpriteInfo(drawPlayer, oPlayer, out pos, out effect, out rect, out orig);
-      
-      DrawData data = new DrawData(spriteTexture, pos, rect, oPlayer.SpriteColor, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
+      Color color = oPlayer.Flashing ? Color.Red : oPlayer.SpriteColor;
+      DrawData data = new DrawData(spriteTexture, pos, rect, color, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
       data.position += Offset();
       Main.playerDrawData.Add(data);
     });

@@ -1,9 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameInput;
@@ -258,14 +256,6 @@ namespace OriMod {
     internal float AnimRads { get; private set; }
     internal bool AnimReversed = false;
     internal bool Flashing = false;
-    internal int FlashTimer = 0;
-    private static readonly int[] flashPattern = new int[] {
-      53,52,51,50,45,
-      44,43,38,37,36,
-      31,30,29,24,23,
-      22,17,16,15,10,
-       9, 8, 3, 2, 1
-    };
     private int FootstepRand = 0;
     private int JumpSoundRand = 0;
     private Point PixelToTile(Point pixel) {
@@ -877,7 +867,7 @@ namespace OriMod {
       else if ((dash.InUse || cDash.InUse) && TeatherTrailTimer > 4) {
         TeatherTrailTimer = Main.rand.Next(2, 4);
       }
-      Flashing = flashPattern.Contains(FlashTimer);
+      Flashing = player.immuneTime % 12 > 6 && !player.immuneNoBlink;
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       OriNPC oNpc = npc.GetGlobalNPC<OriNPC>(mod);
@@ -895,7 +885,6 @@ namespace OriMod {
         return false;
       }
       else {
-        FlashTimer = 53;
         PlayNewSound("Ori/Hurt/seinHurtRegular" + RandomChar(4, ref hurtRand));
         UnrestrictedMovement = true;
       }
@@ -986,7 +975,6 @@ namespace OriMod {
         }
       }
       if (OriSet) {
-        if (FlashTimer > 0) FlashTimer--;
         if (TeatherTrailTimer > 0) TeatherTrailTimer--;
       }
       if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer && doNetUpdate) {
