@@ -8,7 +8,7 @@ namespace OriMod.Abilities {
     internal override bool CanUse => base.CanUse && !InUse && Charged && !Handler.burrow.InUse && !Handler.climb.InUse;
     protected override Color RefreshColor => Color.Blue;
     internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && (Handler.lookUp.InUse || oPlayer.Input(OriMod.ChargeKey.Current));
-    protected override int Cooldown => 420;
+    protected override int Cooldown => 360;
     private const int Duration = 20;
     private int CurrTime = 0;
     private static readonly float[] Speeds = new float[20] {

@@ -10,7 +10,7 @@ namespace OriMod.Abilities {
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
     internal bool CanCharge => base.CanUse && Handler.climb.IsCharging;
     protected override Color RefreshColor => Color.Blue;
-    protected override int Cooldown => 420;
+    protected override int Cooldown => 360;
     private const int Duration = 20;
     private int CurrTime = 0;
     private static readonly float[] Speeds = new float[20] {

@@ -14,7 +14,7 @@ namespace OriMod.Abilities {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     };
     private const int Duration = 14;
-    protected override int Cooldown => 180;
+    protected override int Cooldown => 300;
     protected override Color RefreshColor => Color.LightBlue;
     private int CurrTime = 0;
     /// <summary>
