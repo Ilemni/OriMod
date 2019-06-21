@@ -54,7 +54,6 @@ namespace OriMod {
     }
     public override void Load() {
       Config.Load();
-      AnimationHandler.Init();
 
       BashKey = RegisterHotKey("Bash", "Mouse2");
       DashKey = RegisterHotKey("Dash", "LeftControl");

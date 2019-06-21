@@ -237,14 +237,14 @@ namespace OriMod {
     // Animation Variables
     internal const int SpriteWidth = 128;
     internal const int SpriteHeight = 128;
-    private Vector2 AnimFrame;
+    private Point AnimFrame;
     /// <summary>
     /// The current sprite tile of the player in Ori state
     /// 
     /// X and Y values are based on the sprite tile coordinates, not pixel coordinates 
     /// </summary>
     /// <value></value>
-    public Vector2 AnimTile {
+    public Point AnimTile {
       get { return PixelToTile(AnimFrame); }
       internal set { AnimFrame = TileToPixel(value); }
     }
@@ -268,12 +268,12 @@ namespace OriMod {
     };
     private int FootstepRand = 0;
     private int JumpSoundRand = 0;
-    private Vector2 PixelToTile(Vector2 pixel) {
+    private Point PixelToTile(Point pixel) {
       pixel.X = (int)(pixel.X / SpriteWidth);
       pixel.Y = (int)(pixel.Y / SpriteHeight);
       return pixel;
     }
-    private static Vector2 TileToPixel(Vector2 tile) {
+    private static Point TileToPixel(Point tile) {
       tile.X *= SpriteWidth;
       tile.Y *= SpriteHeight;
       return tile;
@@ -360,18 +360,18 @@ namespace OriMod {
     }
     
     // Class with all necessary animation frame info, should make frame work much more managable
-    internal void Increment(string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Vector3 overrideMeta=new Vector3(), Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
-      // Main.NewText("Frame called: " + AnimName + ", Time: " + AnimTime + ", AnimIndex: " + AnimIndex); // Debug
-      AnimationHandler.IncrementFrame(this, anim, overrideFrame, overrideTime, overrideDur, overrideMeta, drawOffset, rotDegrees);
+    internal void Increment(string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Header overrideHeader=null, Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
+      if (AnimName != null) {
+        // Main.NewText($"Frame called: {AnimName}, Time: {AnimTime}, AnimIndex: {AnimIndex}/{AnimationHandler.Tracks[AnimName].Frames.Length}"); // Debug
+      }
+      AnimationHandler.IncrementFrame(this, anim, overrideFrame, overrideTime, overrideDur, overrideHeader, drawOffset, rotDegrees);
     }
     
-    internal void SetFrame(string name, int frameIndex, float time, Vector3 frame, float animRads) =>
-      SetFrame(name, frameIndex, time, new Vector2(frame.X, frame.Y), animRads);
-    internal void SetFrame(string name, int frameIndex, float time, Vector2 frame, float animRads) {
+    internal void SetFrame(string name, int frameIndex, float time, Frame frame, float animRads) {
       AnimName = name;
       AnimIndex = frameIndex;
       AnimTime = time;
-      AnimFrame = TileToPixel(frame);
+      AnimFrame = TileToPixel(frame.Tile);
       AnimRads = animRads;
     }
 
@@ -427,7 +427,7 @@ namespace OriMod {
             AnimRads = AnimTime;
             return;
           case Ability.States.Active:
-            Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideMeta:new Vector3(0,2,0));
+            Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideHeader:new Header(playback:PlaybackMode.PingPong));
             return;
         }
       }
@@ -440,7 +440,7 @@ namespace OriMod {
             Increment("Glide");
             return;
           case Ability.States.Ending:
-            Increment("GlideStart", overrideMeta:new Vector3(0, 0, 3));
+            Increment("GlideStart", overrideHeader:new Header(playback:PlaybackMode.Reverse));
             return;
         }
       }
@@ -495,7 +495,7 @@ namespace OriMod {
             Increment("LookUp");
             return;
           case Ability.States.Ending:
-            Increment("LookUpStart", overrideMeta:new Vector3(0, 2, 0));
+            Increment("LookUpStart", overrideHeader:new Header(playback:PlaybackMode.Reverse));
             return;
         }
       }
@@ -508,7 +508,7 @@ namespace OriMod {
             Increment("Crouch");
             return;
           case Ability.States.Ending:
-            Increment("CrouchStart", overrideMeta:new Vector3(0, 2, 0));
+            Increment("CrouchStart", overrideHeader:new Header(playback:PlaybackMode.Reverse));
             return;
         }
       }
@@ -1040,7 +1040,7 @@ namespace OriMod {
         DrawData data = new DrawData(
           mod.GetTexture("PlayerEffects/OriGlow"),
           new Vector2(trail.Position.X - Main.screenPosition.X, trail.Position.Y - Main.screenPosition.Y),
-          new Rectangle(trail.FrameX, trail.FrameY, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight), color, trail.Rotation,
+          new Rectangle(trail.X, trail.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight), color, trail.Rotation,
           new Vector2(SpriteWidth / 2, SpriteHeight / 2 + 6), 1, effect, 0
         );
         data.position += oPlayer.Offset();
