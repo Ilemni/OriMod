@@ -23,8 +23,10 @@ namespace OriMod.Abilities {
     protected override void UpdateActive() {
       float speed = Speeds[CurrTime - 1] * 0.35f;
       player.velocity.Y = speed * -player.gravDir;
-      player.controlJump = false;
       oPlayer.ImmuneTimer = 12;
+    }
+    protected override void UpdateUsing() {
+      player.controlJump = false;
     }
     private void StartChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref currRand));
@@ -85,9 +87,17 @@ namespace OriMod.Abilities {
       if (Active) {
         CurrTime++;
         if (CurrTime > Duration) {
-          Inactive = true;
+          if (oPlayer.Input(OriPlayer.Current.Jump)) {
+            Ending = true;
+          }
+          else {
+            Inactive = true;
+          }
           CurrTime = 0;
         }
+      }
+      if (Ending && !oPlayer.Input(OriPlayer.Current.Jump)) {
+        Inactive = true;
       }
     }
   }

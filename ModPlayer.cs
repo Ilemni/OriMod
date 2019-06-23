@@ -387,7 +387,7 @@ namespace OriMod {
         Increment("Burrow", rotDegrees:deg);
         return;
       }
-      if (wCJump.InUse) {
+      if (wCJump.Active) {
         float rad = (float)Math.Atan2(player.velocity.Y, player.velocity.X);
         Main.NewText(rad);
         rad = rad * (float)(180 / Math.PI) * player.direction;
@@ -503,7 +503,7 @@ namespace OriMod {
         }
       }
           
-      if (cJump.InUse) {
+      if (cJump.Active) {
         Increment("ChargeJump");
         return;
       }

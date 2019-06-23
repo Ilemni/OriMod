@@ -27,6 +27,9 @@ namespace OriMod.Abilities {
       player.direction = Math.Sign(player.velocity.X);
       player.maxFallSpeed = Math.Abs(player.velocity.Y);
     }
+    protected override void UpdateUsing() {
+      player.controlJump = false;
+    }
     private void StartWallChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref currRand));
       Charged = false;
@@ -82,9 +85,17 @@ namespace OriMod.Abilities {
       if (Active) {
         CurrTime++;
         if (CurrTime > Duration) {
-          Inactive = true;
+          if (oPlayer.Input(OriPlayer.Current.Jump)) {
+            Ending = true;
+          }
+          else {
+            Inactive = true;
+          }
           CurrTime = 0;
         }
+      }
+      if (Ending && !oPlayer.Input(OriPlayer.Current.Jump)) {
+        Inactive = true;
       }
     }
   }
