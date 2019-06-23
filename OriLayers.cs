@@ -25,9 +25,10 @@ namespace OriMod {
       Player drawPlayer = drawInfo.drawPlayer;
       Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
+      Texture2D texture = mod.GetTexture("PlayerEffects/OriGlow");
       for (int i = 0; i < 26; i++) {
         Trail trail = oPlayer.Trails[i];
-        trail.Alpha -= 0.00002f;
+        trail.Alpha -= 0.0002f;
         if (trail.Alpha < 0) {
           trail.Alpha = 0;
         }
@@ -43,7 +44,7 @@ namespace OriMod {
         trail.Direction.X = drawPlayer.direction;
         trail.Direction.Y = (int)drawPlayer.gravDir;
         float alpha = drawPlayer.velocity.Length() * 0.002f;
-        if (alpha > 0.005f) alpha = 0.005f;
+        if (alpha > 0.08f) alpha = 0.08f;
         trail.Alpha = alpha;
         trail.Rotation = oPlayer.AnimRads;
         if (trail.Alpha > 104) {
@@ -56,10 +57,9 @@ namespace OriMod {
         if (trail.Direction.X == -1) effect = effect | SpriteEffects.FlipHorizontally;
         if (trail.Direction.Y == -1) effect = effect | SpriteEffects.FlipVertically;
 
-        Color color = oPlayer.SpriteColor * trail.Alpha;
-        color.A = 0;
+        Color color = oPlayer.SpriteColor * (trail.Alpha * 10);
         DrawData data = new DrawData(
-          mod.GetTexture("PlayerEffects/OriGlow"),
+          texture,
           new Vector2(trail.Position.X - Main.screenPosition.X, trail.Position.Y - Main.screenPosition.Y),
           new Rectangle(trail.X, trail.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight), color, trail.Rotation,
           new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 6), 1, effect, 0
