@@ -8,6 +8,8 @@ namespace OriMod.Abilities {
   public class Burrow : Ability {
     internal Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BurrowKey.Current);
+    internal override bool CanUse => base.CanUse && !Handler.dash.InUse && !Handler.cDash.InUse && !inMenu;
+    private bool inMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
     public static readonly ushort[][] Burrowable = new ushort[][] {
       new ushort[] {
         TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush,
@@ -30,7 +32,6 @@ namespace OriMod.Abilities {
     private const float SpeedExitMultiplier = 1.5f;
     private int TimeUntilEnd = 0;
     internal Vector2 Velocity = Vector2.Zero;
-    internal override bool CanUse => base.CanUse && !Handler.dash.InUse && !Handler.cDash.InUse;
     protected override int Cooldown => 12;
     protected override Color RefreshColor => Color.SandyBrown;
     internal bool AutoBurrow = false;
