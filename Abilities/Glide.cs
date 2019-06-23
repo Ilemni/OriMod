@@ -12,7 +12,10 @@ namespace OriMod.Abilities {
     private const int EndDuration = 10;
     private int CurrTime = 0;
 
-    internal override bool CanUse => base.CanUse && !Ending && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.airJump.InUse && player.velocity.Y * Math.Sign(player.gravity) > 0 && !player.mount.Active && !Handler.wCJump.InUse && !Handler.burrow.InUse && !Handler.burrow.AutoBurrow;
+    internal override bool CanUse =>
+      base.CanUse && !Ending &&
+      !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.airJump.InUse && !Handler.wCJump.InUse && !Handler.burrow.InUse &&
+      player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active && !Handler.burrow.AutoBurrow;
 
     protected override void UpdateUsing() {
       if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
@@ -31,7 +34,7 @@ namespace OriMod.Abilities {
       if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + OriPlayer.RandomChar(3), 0.8f);
     }
     internal override void Tick() {
-      if (!InUse && CanUse && player.velocity.Y > 0 && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
+      if (!InUse && CanUse && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
         Starting = true;
         CurrTime = 0;
         return;
@@ -55,7 +58,7 @@ namespace OriMod.Abilities {
             Inactive = true;
           }
         }
-        if (player.velocity.Y < 0 || oPlayer.OnWall || oPlayer.IsGrounded) {
+        if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded) {
           if (InUse) {
             Ending = true;
           }

@@ -384,6 +384,9 @@ namespace OriMod {
         double rad = Math.Atan2(burrow.Velocity.X, -burrow.Velocity.Y);
         int deg = (int)(rad * (180 / Math.PI));
         deg *= drawPlayer.direction;
+        if (player.gravDir < 0) {
+          deg += 180;
+        }
         Increment("Burrow", rotDegrees:deg);
         return;
       }
@@ -437,8 +440,8 @@ namespace OriMod {
       if (climb.InUse) {
         if (climb.IsCharging) {
           int frame = 0;
-          float angle = Utils.Clamp(player.AngleTo(Main.MouseWorld) * -climb.WallDir, -0.5f, 0.5f);
-          angle *= -climb.WallDir;
+          float angle;
+          wCJump.GetMouseDirection(out angle);
           if (Math.Abs(angle) <= 0.15f) {
             frame = 3;
           }
@@ -451,7 +454,7 @@ namespace OriMod {
           else {
             frame = 1;
           }
-          Main.NewText("WallChargeJumpCharge frame " + frame + " [" + angle + "]");
+          Debug($"WallChargeJumpCharge frame {frame} [{angle}]");
           Increment("WallChargeJumpCharge", overrideFrame:frame);
           return;
         }
@@ -459,7 +462,7 @@ namespace OriMod {
           Increment("ClimbIdle");
         }
         else {
-          Increment(player.velocity.Y < 0 ? "Climb" : "WallSlide", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
+          Increment(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", overrideTime:AnimTime+Math.Abs(drawPlayer.velocity.Y)*0.1f);
         }
         return;
       }
@@ -780,7 +783,9 @@ namespace OriMod {
     private void CheckOnGround() {
       IsGrounded = false;
       if (player.fireWalk || player.waterWalk || player.waterWalk2) {
-        Point pos = new Vector2(player.Bottom.X, player.Bottom.Y + 4).ToTileCoordinates();
+        Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
+        feetVect.Y += 4 * player.gravDir;
+        Point pos = feetVect.ToTileCoordinates();
         bool testblock = Main.tile[pos.X, pos.Y].liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
         if (testblock) {
           Tile tile = Main.tile[pos.X, pos.Y];
@@ -788,7 +793,7 @@ namespace OriMod {
         }
       }
       if (!IsGrounded) {
-        IsGrounded = !Collision.IsClearSpotTest(player.position + new Vector2(0, 8), 16f, player.width, player.height, false, false, (int)player.gravDir, true, true);
+        IsGrounded = !Collision.IsClearSpotTest(player.position + new Vector2(0, 8 * player.gravDir), 16f, player.width, player.height, false, false, (int)player.gravDir, true, true);
       }
     }
     private void CheckOnWall() {

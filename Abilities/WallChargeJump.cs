@@ -30,6 +30,22 @@ namespace OriMod.Abilities {
     protected override void UpdateUsing() {
       player.controlJump = false;
     }
+    internal Vector2 GetMouseDirection() {
+      float unused;
+      Vector2 v = GetMouseDirection(out unused);
+      return v;
+    }
+    internal Vector2 GetMouseDirection(out float angle) {
+      Vector2 mouse = Main.MouseWorld - player.Center;
+      mouse.X *= -Handler.climb.WallDir;
+      mouse.Y *= player.gravDir;
+      mouse += player.Center;
+      angle = Utils.Clamp(player.AngleTo(mouse), -0.5f, 0.5f);
+      Vector2 dir = Vector2.UnitX.RotatedBy(angle);
+      dir.X *= -Handler.climb.WallDir;
+      dir.Y *= player.gravDir;
+      return dir;
+    }
     private void StartWallChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref currRand));
       Charged = false;
@@ -39,9 +55,7 @@ namespace OriMod.Abilities {
         Refreshed = false;
         CurrCooldown = Cooldown;
       }
-      float angle = Utils.Clamp(player.AngleTo(Main.MouseWorld) * -Handler.climb.WallDir, -0.5f, 0.5f);
-      Direction = Vector2.UnitX.RotatedBy(angle);
-      Direction *= -Handler.climb.WallDir;
+      Direction = GetMouseDirection();
       player.velocity = Direction * Speeds[0] * 0.5f;
     }
     private void UpdateCharged() {

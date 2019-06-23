@@ -39,7 +39,7 @@ namespace OriMod.Abilities {
         return;
       }
       player.velocity.X = Speeds[CurrTime] * Direction * 0.65f;
-      player.velocity.Y = 0.25f * (CurrTime + 1);
+      player.velocity.Y = 0.25f * (CurrTime + 1) * player.gravDir;
       if (CurrTime > 20) player.runSlowdown = 26f;
     }
     internal override void Tick() {

@@ -76,7 +76,7 @@ namespace OriMod.Abilities {
       }
       else {
         player.velocity.X = speed * Direction * 0.8f;
-        player.velocity.Y = oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrTime + 1);
+        player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrTime + 1)) * player.gravDir;
       }
       
       Proj.width = (int)Utils.Clamp((Math.Abs(player.velocity.X) * 2.5f), 96, 250);

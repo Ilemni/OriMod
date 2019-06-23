@@ -40,7 +40,8 @@ namespace OriMod {
         Trail trail = oPlayer.Trails[oPlayer.TrailIndex];
         trail.Position = drawPlayer.Center;
         trail.Frame = oPlayer.AnimFrame;
-        trail.Direction = drawPlayer.direction;
+        trail.Direction.X = drawPlayer.direction;
+        trail.Direction.Y = (int)drawPlayer.gravDir;
         float alpha = drawPlayer.velocity.Length() * 0.002f;
         if (alpha > 0.005f) alpha = 0.005f;
         trail.Alpha = alpha;
@@ -51,7 +52,9 @@ namespace OriMod {
       }
       for (int i = 0; i < 26; i++) {
         Trail trail = oPlayer.Trails[i];
-        SpriteEffects effect = trail.Direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+        SpriteEffects effect = SpriteEffects.None;
+        if (trail.Direction.X == -1) effect = effect | SpriteEffects.FlipHorizontally;
+        if (trail.Direction.Y == -1) effect = effect | SpriteEffects.FlipVertically;
 
         Color color = oPlayer.SpriteColor * trail.Alpha;
         color.A = 0;
@@ -122,9 +125,11 @@ namespace OriMod {
     }
     private static void GetSpriteInfo(Player player, OriPlayer oPlayer, out Vector2 pos, out SpriteEffects effect, out Rectangle rect, out Vector2 orig) {
       pos = new Vector2(player.Center.X - Main.screenPosition.X, player.Center.Y - Main.screenPosition.Y);
-      effect = player.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+      effect = SpriteEffects.None;
+      if (player.direction == -1) effect = effect | SpriteEffects.FlipHorizontally;
+      if (player.gravDir == -1) effect = effect | SpriteEffects.FlipVertically;
       rect = new Rectangle((int)oPlayer.AnimFrame.X, (int)oPlayer.AnimFrame.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight);
-      orig = new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 6);
+      orig = new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 5 * player.gravDir);
     }
   }
 }

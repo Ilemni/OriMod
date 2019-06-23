@@ -8,6 +8,6 @@ namespace OriMod {
     internal int Y => Frame.Y;
     internal float Alpha = 1;
     internal float Rotation = 0;
-    internal int Direction = 1;
+    internal Point Direction = new Point(1, 1);
   }
 }

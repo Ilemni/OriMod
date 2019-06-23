@@ -129,11 +129,11 @@ namespace OriMod.Abilities {
         if (player.controlRight) {
           newVel.X += 1;
         }
-        if (player.controlUp) {
-          newVel.Y -= 1;
+        if (oPlayer.Input(OriPlayer.Current.Up)) {
+          newVel.Y -= player.gravDir;
         }
         if (player.controlDown) {
-          newVel.Y += 1;
+          newVel.Y += player.gravDir;
         }
         if (newVel == Vector2.Zero) {
           newVel = oldVel;
@@ -172,6 +172,7 @@ namespace OriMod.Abilities {
       player.controlUseItem = false;
       player.controlUseTile = false;
       player.controlThrow = false;
+      player.controlUp = false;
       player.grappling[0] = -1;
       player.grapCount = 0;
     }

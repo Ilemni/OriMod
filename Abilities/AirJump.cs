@@ -13,7 +13,7 @@ namespace OriMod.Abilities {
     private int CurrTime = 0;
     private int randDoubleJumpSound = 1;
     private int randTripleJumpSound = 1;
-
+    private int GravDir = 1;
     protected override void UpdateActive() {
       if (CurrCount == MaxJumps) {
         oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + OriPlayer.RandomChar(5, ref randTripleJumpSound), 0.7f);
@@ -23,6 +23,7 @@ namespace OriMod.Abilities {
       }
       float newVel = -JumpVelocity * ((EndDuration - CurrTime) / EndDuration);
       if (player.velocity.Y > newVel) player.velocity.Y = newVel;
+      player.velocity.Y *= GravDir;
       Handler.stomp.Inactive = true;
     }
 
@@ -33,6 +34,7 @@ namespace OriMod.Abilities {
           Handler.dash.Inactive = true;
           CurrTime = 0;
           CurrCount++;
+          GravDir = (int)player.gravDir;
         }
         return;
       }
@@ -44,9 +46,8 @@ namespace OriMod.Abilities {
         Ending = true;
       }
       else if (Ending) {
-        
         CurrTime++;
-        if (CurrTime < EndDuration - 1 && player.velocity.Y * Math.Sign(player.gravity) > 0) {
+        if (CurrTime < EndDuration - 1 && player.velocity.Y * Math.Sign(player.gravDir) > 0) {
           CurrTime = EndDuration - 1;
         }
         if (CurrTime > EndDuration) {

@@ -20,19 +20,19 @@ namespace OriMod.Abilities {
       player.velocity.X = 0;
       player.controlLeft = false;
       player.controlRight = false;
+      player.controlUp = false;
 
       if (IsCharging) {
         player.velocity.Y = 0;
       }
       else {
         if (PlayerInput.Triggers.Current.Up) {
-          player.velocity.Y += player.velocity.Y < -2 ? 1 : -1;
+          player.velocity.Y += player.velocity.Y < (player.gravDir > 0 ? -2 : 4) ? 1 : -1;
         }
         else if (PlayerInput.Triggers.Current.Down) {
-          player.velocity.Y += player.velocity.Y < 4 ? 1 : -1;
+          player.velocity.Y += player.velocity.Y < (player.gravDir > 0 ? 4 : -2) ? 1 : -1;
         }
-        if (
-          (!PlayerInput.Triggers.Current.Down) && !PlayerInput.Triggers.Current.Up) {
+        if (!PlayerInput.Triggers.Current.Down && !PlayerInput.Triggers.Current.Up) {
           player.velocity.Y *= Math.Abs(player.velocity.Y) > 1 ? 0.35f : 0;
         }
       }

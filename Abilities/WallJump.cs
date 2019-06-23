@@ -11,13 +11,14 @@ namespace OriMod.Abilities {
     private const int EndTime = 12;
     private int CurrTime = 0;
     private int WallDir = 0;
+    private int GravDir = 1;
 
     protected override void UpdateActive() {
-      player.velocity.Y = WallJumpVelocity.Y;
+      player.velocity.Y = WallJumpVelocity.Y * GravDir;
       oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + OriPlayer.RandomChar(5, ref currRand));
     }
     protected override void UpdateEnding() {
-      if (oPlayer.OnWall) player.velocity.Y--;
+      if (oPlayer.OnWall) player.velocity.Y -= GravDir;
     }
     protected override void UpdateUsing() {
       player.velocity.X = WallJumpVelocity.X * -WallDir;
@@ -29,6 +30,7 @@ namespace OriMod.Abilities {
       if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
         Active = true;
         WallDir = player.direction;
+        GravDir = (int)player.gravDir;
         Handler.climb.Inactive = true;
       }
       else if (Active) {
