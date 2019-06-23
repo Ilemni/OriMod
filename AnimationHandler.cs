@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
@@ -12,21 +11,21 @@ namespace OriMod {
     
     internal static void IncrementFrame(OriPlayer oPlayer, string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Header overrideHeader=null, Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
       if (oPlayer == null) return;
-      if (overrideHeader == null) overrideHeader = Tracks[anim].Header;
+      if (overrideHeader == null) overrideHeader = PlayerAnim[anim].Header;
       float rotRads = (float)(rotDegrees / 180 * Math.PI);
-      if (!Names.Contains(anim)) {
+      if (!PlayerAnim.TrackNames.Contains(anim)) {
         if (anim != null && anim.Length > 0) {
           Main.NewText("Error with animation: The animation sequence \"" + anim + "\" does not exist.", Color.Red);
           ErrorLogger.Log("Error with animation: The animation sequence \"" + anim + "\" does not exist.");
         }
         anim = "Default";
-        Track track = Tracks[anim];
+        Track track = PlayerAnim[anim];
         oPlayer.AnimReversed = false;
         oPlayer.SetFrame(anim, 1, overrideTime, track.Frames[0], rotRads);
         return;
       }
-      Frame[] frames = Tracks[anim].Frames;
-      Header header = Tracks[anim].Header.CopySome(overrideHeader); // X is incrementType (no reason to be used in IncrementFrame()), Y is loopMode, Z is playbackMode
+      Frame[] frames = PlayerAnim[anim].Frames;
+      Header header = PlayerAnim[anim].Header.CopySome(overrideHeader); // X is incrementType (no reason to be used in IncrementFrame()), Y is loopMode, Z is playbackMode
       if (anim != oPlayer.AnimName) {
         OverrideHeader = Header.Default;
       }
@@ -73,7 +72,12 @@ namespace OriMod {
           if (header.Playback == PlaybackMode.Normal) {
             oPlayer.AnimReversed = false;
             if (frameIndex == frames.Length - 1) {
-              if (header.Loop != LoopMode.Once) {
+              if (header.Loop == LoopMode.Transfer) {
+                anim = header.TransferTo;
+                frameIndex = 0;
+                time = 0;
+              }
+              else if (header.Loop != LoopMode.Once) {
                 frameIndex = 0;
               }
             }

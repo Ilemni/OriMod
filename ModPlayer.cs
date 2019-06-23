@@ -235,6 +235,7 @@ namespace OriMod {
     // Animation Variables
     internal const int SpriteWidth = 128;
     internal const int SpriteHeight = 128;
+    internal Animations Animations;
     internal Point AnimFrame;
     /// <summary>
     /// The current sprite tile of the player in Ori state
@@ -250,7 +251,18 @@ namespace OriMod {
     /// The name of the animation track currently playing
     /// </summary>
     /// <value></value>
-    public string AnimName { get; private set; }
+    public string AnimName {
+      get {
+        return _animName;
+      }
+      private set {
+        if (value != _animName) {
+          OnAnimNameChange(value);
+        }
+        _animName = value;
+      }
+    }
+    private string _animName = "Default";
     internal int AnimIndex { get; private set; }
     internal float AnimTime { get; private set; } // Intentionally a float
     internal float AnimRads { get; private set; }
@@ -352,7 +364,7 @@ namespace OriMod {
     // Class with all necessary animation frame info, should make frame work much more managable
     internal void Increment(string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Header overrideHeader=null, Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
       if (AnimName != null) {
-        // Main.NewText($"Frame called: {AnimName}, Time: {AnimTime}, AnimIndex: {AnimIndex}/{AnimationHandler.Tracks[AnimName].Frames.Length}"); // Debug
+        // Main.NewText($"Frame called: {AnimName}, Time: {AnimTime}, AnimIndex: {AnimIndex}/{Animations.PlayerAnim.Tracks[AnimName].Frames.Length}"); // Debug
       }
       AnimationHandler.IncrementFrame(this, anim, overrideFrame, overrideTime, overrideDur, overrideHeader, drawOffset, rotDegrees);
     }
@@ -368,16 +380,15 @@ namespace OriMod {
     private void UpdateFrame(Player drawPlayer) {
       AnimTime++;
       if (Transforming) {
-        if (TransformTimer < 235)
-        Increment("TransformEnd");
+        Increment(OriSet ? "TransformEnd" : "TransformStart");
         return;
       }
       if (!OriSet) return;
       if (!HasTransformedOnce) {
         HasTransformedOnce = true;
       }
-      if (drawPlayer.pulley|| drawPlayer.mount.Active) {
-        Increment("Idle" );
+      if (drawPlayer.pulley || drawPlayer.mount.Active) {
+        Increment("Idle");
         return;
       }
       if (burrow.InUse) {
@@ -392,12 +403,11 @@ namespace OriMod {
       }
       if (wCJump.Active) {
         float rad = (float)Math.Atan2(player.velocity.Y, player.velocity.X);
-        Main.NewText(rad);
-        rad = rad * (float)(180 / Math.PI) * player.direction;
+        float deg = rad * (float)(180 / Math.PI) * player.direction;
         if (player.direction == -1) {
-          rad -= 180f;
+          deg -= 180f;
         }
-        Increment("Dash", overrideFrame:0, rotDegrees:rad);
+        Increment("Dash", overrideFrame:0, rotDegrees:deg);
         return;
       }
       if (wJump.InUse) {
@@ -564,7 +574,7 @@ namespace OriMod {
     internal void DoTransformation() {
       Transforming = true;
       TransformDirection = player.direction;
-      TransformTimer = 627;
+      TransformTimer = Animations.PlayerAnim.Tracks["TransformEnd"].Duration + Animations.PlayerAnim.Tracks["TransformStart"].Duration;
     }
     private void InitTestMaterial() {
       GrassFloorMaterials = new List<int>();
@@ -804,7 +814,7 @@ namespace OriMod {
       OnWall = WorldGen.SolidTile(p.X, p.Y + 1) && WorldGen.SolidTile(p.X, p.Y + 2);
     }
     public override void PostUpdateRunSpeeds() {
-      if (OriSet) {
+      if (OriSet && !Transforming) {
         DefaultPostRunSpeeds();
         Abilities.Tick();
         if (Config.SmoothCamera) Main.SetCameraLerp(0.05f, 1);
@@ -819,11 +829,13 @@ namespace OriMod {
         }
         Abilities.Update();
       }
-      else if (Transforming) {
+      if (Transforming) {
         player.direction = TransformDirection;
-        if (TransformTimer > 235) {
-          if (TransformTimer < 240) {
+        int dur = Animations.PlayerAnim.Tracks["TransformEnd"].Duration;
+        if (TransformTimer > dur - 10) {
+          if (TransformTimer < dur) {
             player.gravity = 9f;
+            OriSet = true;
           }
           else {
             player.velocity = new Vector2(0, -0.00055f * TransformTimer);
@@ -876,7 +888,7 @@ namespace OriMod {
     }
     public override void OnHitByNPC(NPC npc, int damage, bool crit) {
       OriNPC oNpc = npc.GetGlobalNPC<OriNPC>(mod);
-      if (oNpc.IsBashed || OriSet && (stomp.InUse || cDash.InUse || cJump.InUse)) {
+      if (oNpc.IsBashed || stomp.InUse || cDash.InUse || cJump.InUse) {
         damage = 0;
       }
     }
@@ -930,50 +942,39 @@ namespace OriMod {
       return true;
     }
     public override void ModifyDrawLayers(List<PlayerLayer> layers) {
-      if (bash.InUse && bash.Npc != null) {
-        layers.Insert(0, OriLayers.BashArrow);
-        OriLayers.BashArrow.visible = true;
-      }
       if (OriSet || Transforming) {
-        PlayerLayer.Skin.visible = false;
-        PlayerLayer.Arms.visible = false;
-        PlayerLayer.Body.visible = false;
-        PlayerLayer.Face.visible = false;
-        PlayerLayer.Head.visible = false;
-        PlayerLayer.Legs.visible = false;
-        PlayerLayer.WaistAcc.visible = false;
-        PlayerLayer.NeckAcc.visible = false;
-        PlayerLayer.ShieldAcc.visible = false;
-        PlayerLayer.FaceAcc.visible = false;
-        PlayerLayer.Hair.visible = false;
-        PlayerLayer.ShoeAcc.visible = false;
-        PlayerLayer.HandOnAcc.visible = false;
-        PlayerLayer.HandOffAcc.visible = false;
-
-        if (Transforming && TransformTimer > 235) {
-          layers.Insert(0, OriLayers.TransformSprite);
-          OriLayers.TransformSprite.visible = true;
-        }
-        if (OriSet) {
-          layers.Insert(9, OriLayers.PlayerSprite);
-          layers.Insert(0, OriLayers.Trail);
-          player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
-          OriLayers.PlayerSprite.visible = (!player.dead && !player.invis);
-          OriLayers.Trail.visible = (!player.dead && !player.invis && !player.mount.Active);
-          if (glide.InUse) {
-            layers.Insert(0, OriLayers.FeatherSprite);
-          }
-        }
-      }
-      else {
-        OriLayers.Trail.visible = false;
-        OriLayers.PlayerSprite.visible = false;
+        DisableVanillaLayers();
+        Animations.PlayerAnim.Draw(layers);
+        Animations.TrailAnim.Draw(layers);
+        Animations.GlideAnim.Draw(layers);
+        Animations.BashAnim.Draw(layers);
+        player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
+        OriLayers.PlayerSprite.visible = (!player.dead && !player.invis);
+        OriLayers.Trail.visible = OriLayers.PlayerSprite.visible && !player.mount.Active;
       }
     }
+    private void DisableVanillaLayers() {
+      PlayerLayer.Skin.visible = false;
+      PlayerLayer.Arms.visible = false;
+      PlayerLayer.Body.visible = false;
+      PlayerLayer.Face.visible = false;
+      PlayerLayer.Head.visible = false;
+      PlayerLayer.Legs.visible = false;
+      PlayerLayer.WaistAcc.visible = false;
+      PlayerLayer.NeckAcc.visible = false;
+      PlayerLayer.ShieldAcc.visible = false;
+      PlayerLayer.FaceAcc.visible = false;
+      PlayerLayer.Hair.visible = false;
+      PlayerLayer.ShoeAcc.visible = false;
+      PlayerLayer.HandOnAcc.visible = false;
+      PlayerLayer.HandOffAcc.visible = false;
+    }
     public override void ResetEffects() {
-      if (TransformTimer > 0) {
-        TransformTimer -= HasTransformedOnce ? RepeatedTransformRate : 1;
-        if (TransformTimer <= 0 || (TransformTimer < 236 - 62 && HasTransformedOnce)) {
+      if (Transforming) {
+        float rate = HasTransformedOnce ? RepeatedTransformRate : 0; 
+        AnimTime += rate - 1;
+        TransformTimer -= rate;
+        if (TransformTimer < Animations.PlayerAnim.Tracks["TransformEnd"].Duration - 62 && HasTransformedOnce) {
           TransformTimer = 0;
           Transforming = false;
           OriSet = true;
@@ -987,8 +988,15 @@ namespace OriMod {
         doNetUpdate = false;
       }
     }
+    private void OnAnimNameChange(string value) {
+      Animations.PlayerAnim.OnAnimNameChange(value);
+      Animations.TrailAnim.OnAnimNameChange(value);
+      Animations.BashAnim.OnAnimNameChange(value);
+      Animations.GlideAnim.OnAnimNameChange(value);
+    }
     public override void Initialize() {
       Abilities = new OriAbilities(this);
+      Animations = new Animations(this);
       InitTestMaterial();
       Trails = new List<Trail>();
       for (int i = 0; i < 26; i++) {

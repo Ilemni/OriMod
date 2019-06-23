@@ -8,23 +8,15 @@ namespace OriMod {
   public static class OriLayers {
     internal static readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
-      Player drawPlayer = drawInfo.drawPlayer;
-      OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
-      Texture2D spriteTexture = mod.GetTexture("PlayerEffects/OriPlayer");
-      Vector2 pos;
-      SpriteEffects effect;
-      Rectangle rect;
-      Vector2 orig;
-      GetSpriteInfo(drawPlayer, oPlayer, out pos, out effect, out rect, out orig);
-      Color color = oPlayer.Flashing ? Color.Red : oPlayer.SpriteColor;
-      DrawData data = new DrawData(spriteTexture, pos, rect, color, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
-      data.position += Offset();
+      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
+      DrawData data = DefaultDrawData(oPlayer, oPlayer.Animations.PlayerAnim);
+      data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TransformStart" ? Color.White : oPlayer.SpriteColor;
       Main.playerDrawData.Add(data);
     });
     internal static readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
-      Player drawPlayer = drawInfo.drawPlayer;
       Mod mod = ModLoader.GetMod("OriMod");
-      OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
+      Player player = drawInfo.drawPlayer;
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
       Texture2D texture = mod.GetTexture("PlayerEffects/OriGlow");
       for (int i = 0; i < 26; i++) {
         Trail trail = oPlayer.Trails[i];
@@ -33,17 +25,17 @@ namespace OriMod {
           trail.Alpha = 0;
         }
       }
-      if (!drawPlayer.dead && !drawPlayer.invis) {
+      if (!player.dead && !player.invis) {
         oPlayer.TrailIndex++;
         if (oPlayer.TrailIndex > 25) {
           oPlayer.TrailIndex = 0;
         }
         Trail trail = oPlayer.Trails[oPlayer.TrailIndex];
-        trail.Position = drawPlayer.Center;
+        trail.Position = player.Center;
         trail.Frame = oPlayer.AnimFrame;
-        trail.Direction.X = drawPlayer.direction;
-        trail.Direction.Y = (int)drawPlayer.gravDir;
-        float alpha = drawPlayer.velocity.Length() * 0.002f;
+        trail.Direction.X = player.direction;
+        trail.Direction.Y = (int)player.gravDir;
+        float alpha = player.velocity.Length() * 0.002f;
         if (alpha > 0.08f) alpha = 0.08f;
         trail.Alpha = alpha;
         trail.Rotation = oPlayer.AnimRads;
@@ -68,29 +60,12 @@ namespace OriMod {
         Main.playerDrawData.Add(data);
       }
     });
-    internal static readonly PlayerLayer TransformSprite = new PlayerLayer("OriMod", "OriTransform", delegate (PlayerDrawInfo drawInfo) {
-      Player drawPlayer = drawInfo.drawPlayer;
+    internal static readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
-      OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
-      Vector2 position = drawPlayer.position;
-      Texture2D texture = mod.GetTexture("PlayerEffects/transform");
-      SpriteEffects effect = drawPlayer.direction == -1 ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-      float t = oPlayer.TransformTimer - 235;
-      int y = t > 390 ? 0 : t > 330 ? 1 : t > 270 ? 2 : t > 150 ? 3 : t > 110 ? 4 : t > 70 ? 5 : t > 30 ? 6 : 7;
-      
-      DrawData data = new DrawData(texture,
-        new Vector2(drawPlayer.position.X - Main.screenPosition.X + 10, drawPlayer.position.Y - Main.screenPosition.Y + 8),
-        new Rectangle(0, y * 76, 104, 76),
-        Color.White, drawPlayer.direction * oPlayer.AnimRads,
-        new Vector2(52, 38), 1, effect, 0);
-      data.position += Offset();
-      Main.playerDrawData.Add(data);
-    });
-    internal static readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "bashArrow", delegate (PlayerDrawInfo drawInfo) {
-      Player drawPlayer = drawInfo.drawPlayer;
-      Mod mod = ModLoader.GetMod("OriMod");
-      OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
-      Texture2D texture = mod.GetTexture("PlayerEffects/bashArrow");
+      Player player = drawInfo.drawPlayer;
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
+      Animation anim = oPlayer.Animations.BashAnim;
+      Texture2D texture = anim.Texture(mod);
       SpriteEffects effect = SpriteEffects.None;
       int y = oPlayer.bash.CurrDuration < 40 ? 0 : oPlayer.bash.CurrDuration < 50 ? 1 : 2;
 
@@ -103,18 +78,8 @@ namespace OriMod {
     });
     internal static readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
-      Player drawPlayer = drawInfo.drawPlayer;
-      OriPlayer oPlayer = drawPlayer.GetModPlayer<OriPlayer>(mod);
-      Texture2D spriteTexture = mod.GetTexture("PlayerEffects/Feather");
-      Vector2 pos;
-      SpriteEffects effect;
-      Rectangle rect;
-      Vector2 orig;
-      GetSpriteInfo(drawPlayer, oPlayer, out pos, out effect, out rect, out orig);
-      rect.X = 0;
-
-      DrawData data = new DrawData(spriteTexture, pos, rect, oPlayer.SpriteColor, drawPlayer.direction * oPlayer.AnimRads, orig, 1, effect, 0);
-      data.position += Offset();
+      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
+      DrawData data = DefaultDrawData(oPlayer, oPlayer.Animations.GlideAnim);
       Main.playerDrawData.Add(data);
     });
 
@@ -123,13 +88,19 @@ namespace OriMod {
       Vector2 offset = new Vector2(x, y);
       return offset;
     }
-    private static void GetSpriteInfo(Player player, OriPlayer oPlayer, out Vector2 pos, out SpriteEffects effect, out Rectangle rect, out Vector2 orig) {
-      pos = new Vector2(player.Center.X - Main.screenPosition.X, player.Center.Y - Main.screenPosition.Y);
-      effect = SpriteEffects.None;
+    private static DrawData DefaultDrawData(OriPlayer oPlayer, Animation anim) {
+      Player player = oPlayer.player;
+      Texture2D texture = anim.Texture(oPlayer.mod);
+      Vector2 pos = new Vector2(player.Center.X - Main.screenPosition.X, player.Center.Y - Main.screenPosition.Y);
+      SpriteEffects effect = SpriteEffects.None;
       if (player.direction == -1) effect = effect | SpriteEffects.FlipHorizontally;
       if (player.gravDir == -1) effect = effect | SpriteEffects.FlipVertically;
-      rect = new Rectangle((int)oPlayer.AnimFrame.X, (int)oPlayer.AnimFrame.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight);
-      orig = new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 5 * player.gravDir);
+      Point tile = anim.ActiveTile;
+      Rectangle rect = new Rectangle(tile.X, tile.Y, anim.TileSize.X, anim.TileSize.Y);
+      Vector2 orig = new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 5 * player.gravDir);
+      DrawData data = new DrawData(texture, pos, rect, oPlayer.SpriteColor, player.direction * oPlayer.AnimRads, orig, 1, effect, 0);
+      data.position += Offset();
+      return data;
     }
   }
 }

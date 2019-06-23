@@ -1,6 +1,8 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using Terraria.ModLoader;
 
 namespace OriMod {
   internal enum InitType {
@@ -12,6 +14,7 @@ namespace OriMod {
     None = 0,
     Always = 1,
     Once = 2,
+    Transfer = 3,
   }
   internal enum PlaybackMode {
       None = 0,
@@ -21,16 +24,16 @@ namespace OriMod {
       Random = 4,
   }
   internal class Header {
-    internal string SpritePath;
-    internal const string DefaultSpritePath = "PlayerEffects/OriPlayer";
     internal InitType Init;
     internal LoopMode Loop;
     internal PlaybackMode Playback;
-    internal Header(string spritePath=DefaultSpritePath, InitType init=InitType.None, LoopMode loop=LoopMode.None, PlaybackMode playback=PlaybackMode.None) {
-      SpritePath = spritePath;
+    internal string OverrideTexturePath { get; }
+    internal string TransferTo { get; }
+    internal Header(InitType init=InitType.None, LoopMode loop=LoopMode.None, PlaybackMode playback=PlaybackMode.None, string transferTo=null, string overrideTexturePath=null) {
       Init = init;
       Loop = loop;
       Playback = playback;
+      OverrideTexturePath = overrideTexturePath;
     }
     internal void OverwriteSome(Header other) {
       if (other.Init != 0) Init = other.Init;
@@ -39,16 +42,15 @@ namespace OriMod {
     }
     internal Header CopySome(Header other) {
       return new Header(
-        other.SpritePath,
         other.Init != 0 ? other.Init : Init,
         other.Loop != 0 ? other.Loop : Loop,
         other.Playback != 0 ? other.Playback : Playback
       );
     }
-    internal static Header Default => new Header(DefaultSpritePath, InitType.Range, LoopMode.Always, PlaybackMode.Normal);
-    internal static Header None => new Header(DefaultSpritePath, InitType.None, LoopMode.None, PlaybackMode.None);
+    internal static Header Default => new Header(InitType.Range, LoopMode.Always, PlaybackMode.Normal);
+    internal static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
     public override string ToString()
-      => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}" + (SpritePath != DefaultSpritePath ? $" | SpritePath: {SpritePath}" : "");
+      => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}" + (OverrideTexturePath != null ? $" | Texture Path: \"{OverrideTexturePath}\"" : "");
   }
   internal class Frame {
     internal byte X;
@@ -75,13 +77,20 @@ namespace OriMod {
     public override string ToString() => $"Tile [{X}, {Y}] Duration {Duration}";
   }
   internal class Track {
-    internal string SpritePath { get; }
     internal Header Header { get; }
     internal Frame[] Frames { get; }
+    internal int Duration { get; }
     internal Track(Header header, params Frame[] frames) {
       Header = header;
       Frame[] newFrames = (header.Init == InitType.Range && frames.Length > 1) ? InitRange(frames) : frames;
       Frames = newFrames;
+      foreach (Frame f in frames) {
+        if (f.Duration == -1) {
+          Duration = -1;
+          break;
+        }
+        Duration += f.Duration;
+      }
     }
     private Frame[] InitRange(Frame[] frames) {
       List<Frame> newFrames = new List<Frame>();
@@ -97,93 +106,175 @@ namespace OriMod {
     }
     internal Frame this[int idx] => Frames[idx];
   }
+  internal class Animation {
+    internal string TexturePath { get; }
+    internal Texture2D Texture(Mod mod) => mod.GetTexture(ActiveTrack.Header.OverrideTexturePath ?? TexturePath);
+    internal PlayerLayer playerLayer { get; }
+    internal Point TileSize { get; }
+    internal Dictionary<string, Track> Tracks { get; }
+    internal bool Valid { get; private set; }
+    internal void Draw(List<PlayerLayer> layers) {
+      if (Valid) layers.Insert(0, playerLayer);
+    }
+    internal void OnAnimNameChange(string name) {
+      Valid = Tracks.ContainsKey(name);
+    }
+    internal Track ActiveTrack {
+      get {
+        if (!Valid) {
+          return Tracks.First().Value;
+        }
+        return Tracks[Handler.owner.AnimName];
+      }
+    }
+    internal Frame ActiveFrame {
+      get {
+        if (Handler.owner.AnimIndex >= ActiveTrack.Frames.Length) {
+          return ActiveTrack[0];
+        }
+        return ActiveTrack[Handler.owner.AnimIndex];
+      }
+    }
+    internal Point ActiveTile => ActiveFrame.Tile.Multiply(TileSize);
+    internal Track this[string name] => Tracks[name];
+    internal Animations Handler = null;
+    internal string[] TrackNames;
+    internal Animation(string texture, int x, int y, Dictionary<string, Track> tracks) {
+      TexturePath = texture;
+      Tracks = tracks;
+      TrackNames = tracks.Keys.ToArray();
+      TileSize = new Point(x, y);
+    }
+    internal Animation(Animations handler, Animation source, PlayerLayer pLayer) {
+      Handler = handler;
+      TexturePath = source.TexturePath;
+      Tracks = source.Tracks;
+      TrackNames = source.TrackNames;
+      TileSize = source.TileSize;
+      playerLayer = pLayer;
+    }
+  }
+  internal class Animations {
+    internal OriPlayer owner;
+    internal Animation PlayerAnim, TrailAnim, BashAnim, GlideAnim, TransformAnim;
+    internal Animations(OriPlayer oPlayer) {
+      owner = oPlayer;
+      PlayerAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.PlayerSprite);
+      TrailAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.Trail);
+      BashAnim = new Animation(this, AnimationHandler.BashAnim, OriLayers.BashArrow);
+      GlideAnim = new Animation(this, AnimationHandler.GlideAnim, OriLayers.FeatherSprite);
+    }
+  }
   internal static partial class AnimationHandler {
     private static Frame f(int frameX, int frameY, int duration=-1) { return new Frame(frameX, frameY, duration); }
-    private static Header h(string s=Header.DefaultSpritePath, InitType i=InitType.Range, LoopMode l=LoopMode.Always, PlaybackMode p=PlaybackMode.Normal)
-      => new Header(spritePath:s, init:i, loop:l, playback:p);
+    private static Header h(InitType i=InitType.Range, LoopMode l=LoopMode.Always, PlaybackMode p=PlaybackMode.Normal, string to=null, string s=null)
+      => new Header(init:i, loop:l, playback:p, transferTo:to, overrideTexturePath:s);
     
-    internal static Dictionary<string, Track> Tracks = new Dictionary<string, Track> {
-      {"Default", new Track(h(),
-        f(0, 0)
-      )},
-      {"FallNoAnim", new Track(h(),
-        f(3, 13)
-      )},
-      {"Running", new Track(h(),
-        f(2, 0, 4), f(2, 10, 4)
-      )},
-      {"Idle", new Track(h(),
-        f(0, 1, 9), f(0, 8, 9)
-      )},
-      {"Dash", new Track(h(i:InitType.Select, l:LoopMode.Once),
-        f(2, 12, 36), f(2, 13, 12)
-      )},
-      {"Bash", new Track(h(i:InitType.Select, l:LoopMode.Once),
-        f(2, 14, 40), f(2, 13)
-      )},
-      {"CrouchStart", new Track(h(),
-        f(1, 8)
-      )},
-      {"Crouch", new Track(h(),
-        f(1, 9)
-      )},
-      {"WallJump", new Track(h(),
-        f(5, 15, 12)
-      )},
-      {"WallChargeJumpCharge", new Track(h(),
-        f(6, 0), f(6, 4)
-      )},
-      {"AirJump", new Track(h(),
-        f(3, 0)
-      )},
-      {"ChargeJump", new Track(h(l:LoopMode.Once, p:PlaybackMode.PingPong),
-        f(3, 5, 4), f(3, 8, 4)
-      )},
-      {"Falling", new Track(h(),
-        f(3, 9, 4), f(3, 12, 4)
-      )},
-      {"ClimbIdle", new Track(h(),
-        f(5, 0)
-      )},
-      {"Climb", new Track(h(),
-        f(5, 1, 4), f(5, 8, 4)
-      )},
-      {"WallSlide", new Track(h(),
-        f(5, 9, 5), f(5, 12, 5)
-      )},
-      {"IntoJumpBall", new Track(h(i:InitType.Select, l:LoopMode.Once),
-        f(3, 3, 6), f(3, 4, 4)
-      )},
-      {"IdleAgainst", new Track(h(),
-        f(0, 9, 7), f(0, 14, 7)
-      )},
-      {"Jump", new Track(h(i:InitType.Select, p:PlaybackMode.Reverse),
-        f(3, 1), f(3, 2, 14)
-      )},
-      {"GlideStart", new Track(h(l:LoopMode.Once),
-        f(4, 0, 5), f(4, 2, 5)
-      )},
-      {"GlideIdle", new Track(h(),
-        f(4, 3)
-      )},
-      {"Glide", new Track(h(),
-        f(4, 4, 5), f(4, 9, 5)
-      )},
-      {"LookUpStart", new Track(h(),
-        f(1, 0)
-      )},
-      {"LookUp", new Track(h(),
-        f(1, 1, 8), f(1, 7, 8)
-      )},
-      {"TransformEnd", new Track(h(i:InitType.Select),
-        f(15, 8, 6), f(15, 9, 50), f(15, 10, 6), f(15, 11, 60),
-        f(15, 12, 10), f(15, 13, 40), f(15, 14, 3), f(15, 15, 60)
-      )},
-      {"Burrow", new Track(h(i:InitType.Range),
-        f(7, 0, 3), f(7, 7, 3)
-      )},
-    };
-    
-    private static string[] Names = Tracks.Keys.ToArray();
+    internal static Animation PlayerAnim = new Animation ("PlayerEffects/OriPlayer", 128, 128,
+      new Dictionary<string, Track> {
+        ["Default"] = new Track(h(),
+          f(0, 0)
+        ),
+        ["FallNoAnim"] = new Track(h(),
+          f(3, 13)
+        ),
+        ["Running"] = new Track(h(),
+          f(2, 0, 4), f(2, 10, 4)
+        ),
+        ["Idle"] = new Track(h(),
+          f(0, 1, 9), f(0, 8, 9)
+        ),
+        ["Dash"] = new Track(h(i:InitType.Select, l:LoopMode.Once),
+          f(2, 12, 36), f(2, 13, 12)
+        ),
+        ["Bash"] = new Track(h(i:InitType.Select, l:LoopMode.Once),
+          f(2, 14, 40), f(2, 13)
+        ),
+        ["CrouchStart"] = new Track(h(),
+          f(1, 8)
+        ),
+        ["Crouch"] = new Track(h(),
+          f(1, 9)
+        ),
+        ["WallJump"] = new Track(h(),
+          f(5, 15, 12)
+        ),
+        ["WallChargeJumpCharge"] = new Track(h(),
+          f(6, 0), f(6, 4)
+        ),
+        ["AirJump"] = new Track(h(),
+          f(3, 0)
+        ),
+        ["ChargeJump"] = new Track(h(l:LoopMode.Once, p:PlaybackMode.PingPong),
+          f(3, 5, 4), f(3, 8, 4)
+        ),
+        ["Falling"] = new Track(h(),
+          f(3, 9, 4), f(3, 12, 4)
+        ),
+        ["ClimbIdle"] = new Track(h(),
+          f(5, 0)
+        ),
+        ["Climb"] = new Track(h(),
+          f(5, 1, 4), f(5, 8, 4)
+        ),
+        ["WallSlide"] = new Track(h(),
+          f(5, 9, 5), f(5, 12, 5)
+        ),
+        ["IntoJumpBall"] = new Track(h(i:InitType.Select, l:LoopMode.Once),
+          f(3, 3, 6), f(3, 4, 4)
+        ),
+        ["IdleAgainst"] = new Track(h(),
+          f(0, 9, 7), f(0, 14, 7)
+        ),
+        ["Jump"] = new Track(h(i:InitType.Select, p:PlaybackMode.Reverse),
+          f(3, 1), f(3, 2, 14)
+        ),
+        ["GlideStart"] = new Track(h(l:LoopMode.Once),
+          f(4, 0, 5), f(4, 2, 5)
+        ),
+        ["GlideIdle"] = new Track(h(),
+          f(4, 3)
+        ),
+        ["Glide"] = new Track(h(),
+          f(4, 4, 5), f(4, 9, 5)
+        ),
+        ["LookUpStart"] = new Track(h(),
+          f(1, 0)
+        ),
+        ["LookUp"] = new Track(h(),
+          f(1, 1, 8), f(1, 7, 8)
+        ),
+        ["TransformStart"] = new Track(h(i:InitType.Select, l:LoopMode.Transfer, to:"TransformEnd", s:"PlayerEffects/Transform"),
+          f(0, 0, 2), f(0, 1, 60), f(0, 2, 60), f(0, 3, 120),
+          f(0, 4, 40), f(0, 5, 40), f(0, 6, 40), f(0, 7, 30)
+        ),
+        ["TransformEnd"] = new Track(h(i:InitType.Select),
+          f(15, 8, 6), f(15, 9, 50), f(15, 10, 6), f(15, 11, 60),
+          f(15, 12, 10), f(15, 13, 40), f(15, 14, 3), f(15, 15, 60)
+        ),
+        ["Burrow"] = new Track(h(i:InitType.Range),
+          f(7, 0, 3), f(7, 7, 3)
+        )
+      }
+    );
+    internal static Animation BashAnim = new Animation("PlayerEffects/BashArrow", 152, 20,
+      new Dictionary<string, Track> {
+        {"Bash", new Track(h(i:InitType.Select),
+        f(0, 0))}
+      }
+    );
+    internal static Animation GlideAnim = new Animation("PlayerEffects/Feather", 128, 128,
+      new Dictionary<string, Track> {
+        {"GlideStart", new Track(h(l:LoopMode.Once),
+          f(0, 0, 5), f(0, 2, 5)
+        )},
+        {"GlideIdle", new Track(h(),
+          f(0, 3)
+        )},
+        {"Glide", new Track(h(),
+          f(0, 4, 5), f(0, 9, 5)
+        )},
+      }
+    );
   }
 }
