@@ -198,7 +198,6 @@ namespace OriMod.Abilities {
             }
           }
           if (!canBurrow || player.dead) {
-            oPlayer.Debug("No longer burrowing!");
             Ending = true;
             TimeUntilEnd = 2;
           }
@@ -225,10 +224,8 @@ namespace OriMod.Abilities {
           }
         }
         if (vel == Vector2.Zero) {
-          oPlayer.Debug("Cannot burrow");
           return;
         }
-        oPlayer.Debug("Can burrow");
         if (Config.AutoBurrow) AutoBurrow = true;
         Active = true;
         CurrCooldown = Cooldown;
