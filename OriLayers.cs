@@ -19,11 +19,7 @@ namespace OriMod {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
       Texture2D texture = mod.GetTexture("PlayerEffects/OriGlow");
       for (int i = 0; i < 26; i++) {
-        Trail trail = oPlayer.Trails[i];
-        trail.Alpha -= 0.0002f;
-        if (trail.Alpha < 0) {
-          trail.Alpha = 0;
-        }
+        oPlayer.Trails[i].Tick();
       }
       if (!player.dead && !player.invis) {
         oPlayer.TrailIndex++;
@@ -37,7 +33,7 @@ namespace OriMod {
         trail.Direction.Y = (int)player.gravDir;
         float alpha = player.velocity.Length() * 0.002f;
         if (alpha > 0.08f) alpha = 0.08f;
-        trail.Alpha = alpha;
+        trail.Alpha = trail.StartAlpha = alpha;
         trail.Rotation = oPlayer.AnimRads;
         if (trail.Alpha > 104) {
           trail.Alpha = 104;
