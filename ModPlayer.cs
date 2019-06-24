@@ -450,7 +450,7 @@ namespace OriMod {
       if (climb.InUse) {
         if (climb.IsCharging) {
           if (!wCJump.Charged) {
-            Increment("WallChargeJumpCharge");
+            Increment("WallChargeJumpCharge", overrideFrame: wCJump.Refreshed ? -1 : 0);
             return;
           }
           int frame = 0;
