@@ -362,9 +362,9 @@ namespace OriMod {
     }
     
     // Class with all necessary animation frame info, should make frame work much more managable
-    internal void Increment(string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Header overrideHeader=null, Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
+    internal void Increment(string anim="Default", int overrideFrame=-1, float overrideTime=0, int overrideDur=0, Header overrideHeader=null, Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
       if (AnimName != null) {
-        // Main.NewText($"Frame called: {AnimName}, Time: {AnimTime}, AnimIndex: {AnimIndex}/{Animations.PlayerAnim.Tracks[AnimName].Frames.Length}"); // Debug
+        Main.NewText($"Frame called: {AnimName}, Time: {AnimTime}, AnimIndex: {AnimIndex}/{Animations.PlayerAnim.Tracks[AnimName].Frames.Length}"); // Debug
       }
       AnimationHandler.IncrementFrame(this, anim, overrideFrame, overrideTime, overrideDur, overrideHeader, drawOffset, rotDegrees);
     }
@@ -449,23 +449,27 @@ namespace OriMod {
       }
       if (climb.InUse) {
         if (climb.IsCharging) {
+          if (!wCJump.Charged) {
+            Increment("WallChargeJumpCharge");
+            return;
+          }
           int frame = 0;
           float angle;
           wCJump.GetMouseDirection(out angle);
-          if (Math.Abs(angle) <= 0.15f) {
-            frame = 3;
-          }
-          else if (angle < -0.15f) {
-            frame = 4;
-          }
-          else if (angle < 0.3f) {
+          if (angle < -0.46f) {
             frame = 2;
           }
-          else {
+          else if (angle < -0.17f) {
             frame = 1;
           }
+          else if (angle > 0.46f) {
+            frame = 4;
+          }
+          else if (angle > 0.17f) {
+            frame = 3;
+          }
           Debug($"WallChargeJumpCharge frame {frame} [{angle}]");
-          Increment("WallChargeJumpCharge", overrideFrame:frame);
+          Increment("WallChargeJumpAim", overrideFrame:frame);
           return;
         }
         if (Math.Abs(player.velocity.Y) < 0.1f) {

@@ -200,7 +200,10 @@ namespace OriMod {
           f(5, 15, 12)
         ),
         ["WallChargeJumpCharge"] = new Track(h(),
-          f(6, 0), f(6, 4)
+          f(6, 0, 16), f(6, 1, 10), f(6, 2)
+        ),
+        ["WallChargeJumpAim"] = new Track(h(),
+          f(6, 2), f(6, 6)
         ),
         ["AirJump"] = new Track(h(),
           f(3, 0)

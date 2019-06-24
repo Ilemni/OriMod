@@ -37,7 +37,7 @@ namespace OriMod {
         header = OverrideHeader;
       }
       Frame newFrame;
-      if (overrideFrame != 0 && overrideFrame < frames.Length) { // If override frame, just set frame
+      if (overrideFrame != -1 && overrideFrame < frames.Length) { // If override frame, just set frame
         newFrame = frames[overrideFrame];
         oPlayer.AnimReversed = header.Playback == PlaybackMode.Reverse;
         oPlayer.SetFrame(anim, overrideFrame, 0, newFrame, rotRads);
