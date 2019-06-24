@@ -1,6 +1,48 @@
+## v2.3
+### Additions
+- Added Burrow
+    - Burrow can travel through all forms of Sand, Silt, and Slush.
+    - Bound to Left Shift by default.
+- Added Wall Charge Jump (It's about time)
+    - Activate by climbing and attempting to move in the opposite direction.
+    - Aim by facing the mouse in the desired direction
+    - Cooldown of 6 seconds
+- Added additional Config options
+    - RestrictiveCrouch: If true, crouching prevents moving left or right. Default: true
+    - BlindForestMovement: If true, disables ability cooldowns. Default: false
+    - BurrowToMouse: Determines if Burrow is controlled by mouse or arrow keys.
+    - AutoBurrow: Automatically re-enter Burrow if the Burrow key is still held (note this feature is buggy). Default: false
+    - BurrowTier: Determines which tiles can be burrowed through.
+        - 0 (Default): Sands, Slush, Silt, and Leaves
+        - 1: Dirt and Grass
+        - 2: Wood, Stone, and Sandstone
+        - -1: Everything
+- Abilities now indicate when they are refreshed
+- Added support for Mod Helpers.
+### Changes
+- Modified cooldowns to various abilities
+    - Stomp now has a cooldown of 8 seconds.
+    - Charge Jump now has a cooldown of 6 seconds.
+    - Charge Dash now has a cooldown of 5 seconds.
+    - Dash now has a cooldown of 1 second.
+    - Bash cooldown reduced from 2 seconds to 1.5 seconds.
+- Changed invincibility timer for various abilities
+    - Note: Immunity is always active when performing one of the below ability, and the timer impacts immunity after the ability is finished.
+    - Stomp immunity timer reduced from 1/3 seconds to 1/5 seconds.
+    - Charge Dash immunity timer reduced from 1/3 seconds to 1/5 seconds.
+    - Bash no longer grants immunity to damage. Instead, bashed NPCs cannot deal damage.
+- Improve trail color
+- Rewrote Charge Jump
+- Changed Sein's texture
+### Bug Fixes
+- Fix Dash interaction with Cloud-based jumps
+- Fix all skills not working properly with flipped gravity.
+- Fix wrong animation playing while water walking and on rope.
+- Fix various actions still able to be performed while using Stomp.
 ## v2.2.5.2
 ### Bug Fixes
-- Fix Bash no longer working## v2.2.5
+- Fix Bash no longer working
+## v2.2.5
 ### Additions
 - Add Config file for lighting, color, and camera movement.
     - GlobalPlayerLight: All other players' lighting looks the same as yours if set to true.
@@ -14,7 +56,6 @@
 ### Bug Fixes
 - Fix Dash resetting flight timer.
 - Fix Charge Jump not activating while water walking.
-- Fix wrong animmation playing while water walking.
 - Transform animation now plays properly.
 ---
 ## Known Issues

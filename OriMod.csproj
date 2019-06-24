@@ -149,7 +149,7 @@
     <Content Include="Items\OriPotionEmpty.png" />
     <Content Include="Items\SpiritOrb.png" />
     <Content Include="Items\SpiritSapling.png" />
-    <Content Include="PlayerEffects\bashArrow.png" />
+    <Content Include="PlayerEffects\BashArrow.png" />
     <Content Include="PlayerEffects\Feather.png" />
     <Content Include="PlayerEffects\invisible.png" />
     <Content Include="PlayerEffects\OriGlow.png" />
@@ -157,7 +157,7 @@
     <Content Include="PlayerEffects\OriHead.png" />
     <Content Include="PlayerEffects\OriPlayer.png" />
     <Content Include="PlayerEffects\Sein.png" />
-    <Content Include="PlayerEffects\transform.png" />
+    <Content Include="PlayerEffects\Transform.png" />
     <Content Include="Projectiles\Minions\Sein.png" />
     <Content Include="Projectiles\Minions\SpiritFlame.png" />
     <Content Include="Projectiles\StompHitbox.png" />
