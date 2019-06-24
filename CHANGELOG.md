@@ -57,13 +57,6 @@
 - Fix Dash resetting flight timer.
 - Fix Charge Jump not activating while water walking.
 - Transform animation now plays properly.
----
-## Known Issues
-- Multiplayer syncing for movement is a work in progress. Netcode is hard.
-- Charge Dash sometimes causes clipping into the ceiling.
-- Spirit Flame is not considered summon damage in some mods.
-- Movement is not properly affected by Mighty Winds.
----
 ## v2.2.4
 ### Changes
 - Sein is set to auto fire rather than manual fire while holding non-damage tiles.
