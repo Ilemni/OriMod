@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 namespace OriMod.Commands {
   public class ConfigCommand : ModCommand {
     public override string Command => "config";
-    public override string Usage => "/config <load|save>";
+    public override string Usage => "/config <load|save|reset>";
     public override string Description => "Allows loading and saving the config file in-game";
     public override CommandType Type => CommandType.Chat;
     public override void Action(CommandCaller caller, string input, string[] args) {
@@ -21,8 +21,12 @@ namespace OriMod.Commands {
           Config.SaveConfig();
           Main.NewText("Saved config.");
           break;
+        case "reset":
+          Config.ResetConfig();
+          Main.NewText("Reset config.");
+          break;
         default:
-          Main.NewText("Expected an argument of \"load\" or \"save\"");
+          Main.NewText("Expected an argument of \"load\", \"save\", or \"reset\"");
           return;
       }
       OriPlayer oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
