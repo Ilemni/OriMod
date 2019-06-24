@@ -180,7 +180,7 @@ namespace OriMod.Abilities {
       player.controlUseTile = false;
       player.controlThrow = false;
       player.controlUp = false;
-      player.grappling[0] = -1;
+      oPlayer.KillGrapples();
       player.grapCount = 0;
     }
     

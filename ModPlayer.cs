@@ -817,6 +817,14 @@ namespace OriMod {
       ).ToTileCoordinates();
       OnWall = WorldGen.SolidTile(p.X, p.Y + 1) && WorldGen.SolidTile(p.X, p.Y + 2);
     }
+    internal void KillGrapples() {
+      for (int j = 0; j < 1000; j++) {
+        Projectile proj = Main.projectile[j];
+        if (proj.active && proj.owner == player.whoAmI && proj.aiStyle == 7) {
+          Main.projectile[j].Kill();
+        }
+      }
+    }
     public override void PostUpdateRunSpeeds() {
       if (OriSet && !Transforming) {
         DefaultPostRunSpeeds();

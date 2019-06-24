@@ -63,6 +63,7 @@ namespace OriMod.Abilities {
       player.controlLeft = false;
       player.controlRight = false;
       player.controlHook = false;
+      oPlayer.KillGrapples();
       player.controlMount = false;
       player.controlThrow = false;
       player.controlUseItem = false;
@@ -76,12 +77,14 @@ namespace OriMod.Abilities {
       }
       else if (Starting) {
         CurrTime++;
+        Main.NewText($"Stomp Starting: {CurrTime}/{StartDuration}");
         if (CurrTime > StartDuration) {
           CurrTime = 0;
           Active = true;
         }
       }
       else if (Active) {
+        Main.NewText($"Stomp Active: {CurrTime}/{MinDuration}");
         CurrTime++;
         if (CurrTime > MinDuration && !PlayerInput.Triggers.Current.Down) {
           Inactive = true;
