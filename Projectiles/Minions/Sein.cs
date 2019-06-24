@@ -359,6 +359,7 @@ namespace OriMod.Projectiles.Minions {
       Main.projectile[proj].timeLeft = t != -1 ? 300 : 15;
       Main.projectile[proj].netUpdate = true;
       Main.projectile[proj].penetrate = Pierce;
+      Main.projectile[proj].owner = projectile.owner;
     }
     internal override void Behavior() {
       if (!projectile.active) { return; }

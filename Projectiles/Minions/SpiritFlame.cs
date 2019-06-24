@@ -54,7 +54,7 @@ namespace OriMod.Projectiles.Minions {
       speed = u.projectileSpeedStart;
       acceleration = u.projectileSpeedIncreaseRate;
       accelDelay = u.projectileSpeedIncreaseDelay;
-      projectile.maxPenetrate = u.pierce;
+      projectile.penetrate = projectile.maxPenetrate = u.pierce;
       projectile.width = u.flameWidth;
       projectile.height = u.flameHeight;
       dustScale = u.dustScale;
@@ -71,6 +71,7 @@ namespace OriMod.Projectiles.Minions {
     public override void SetDefaults() {
       projectile.alpha = 32;
       projectile.friendly = true;
+      projectile.minion = true;
       projectile.ignoreWater = true;
       projectile.tileCollide = false;
       projectile.timeLeft = 150;
