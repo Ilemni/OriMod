@@ -8,17 +8,20 @@ namespace OriMod.Abilities {
   public class Bash : Ability {
     internal Bash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BashKey.Current);
+    internal override bool CanUse => base.CanUse && Inactive && !Handler.stomp.InUse && !Handler.cJump.InUse;
+    protected override int Cooldown => 90;
+    protected override Color RefreshColor => Color.LightYellow;
+    
     public static List<int> CannotBash = new List<int> {
       NPCID.BlazingWheel, NPCID.SpikeBall
     };
-    private const int BashDamage = 15;
-    private const float BashPlayerStrength = 12f;
-    private const float BashNpcStrength = 10f;
-    private const float BashRange = 120f;
-    private const int MinBashDuration = 30;
-    private const int MaxBashDuration = 85;
-    protected override int Cooldown => 90;
-    protected override Color RefreshColor => Color.LightYellow;
+    private int BashDamage => 15;
+    private float BashPlayerStrength => 12f;
+    private float BashNpcStrength => 10f;
+    private float BashRange => 120f;
+    private int MinBashDuration => 30;
+    private int MaxBashDuration => 85;
+    
     internal int CurrDuration { get; private set; }
     private Vector2 playerStartPos;
     private Vector2 npcStartPos;
@@ -27,7 +30,6 @@ namespace OriMod.Abilities {
     public NPC Npc => NpcID < Main.maxNPCs ? Main.npc[NpcID] : null;
     public NPC WormNpc => WormID < Main.maxNPCs ? Main.npc[WormID] : null;
     public bool IsBashingWorm => WormID < Main.maxNPCs;
-    internal override bool CanUse => base.CanUse && Inactive && !Handler.stomp.InUse && !Handler.cJump.InUse;
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
       if (InUse) {
@@ -77,6 +79,7 @@ namespace OriMod.Abilities {
       oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.7f);
       return true;
     }
+    
     protected override void UpdateActive() {
       if (CurrDuration == MinBashDuration + 2) {
         oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
@@ -97,10 +100,7 @@ namespace OriMod.Abilities {
       }
       int damage = BashDamage + OriWorld.GlobalSeinUpgrade * 9;
       player.ApplyDamageToNPC(Npc, damage, 0, 1, false);
-      if (!Config.BlindForestMovement) {
-        CurrCooldown = Cooldown;
-        Refreshed = false;
-      }
+      PutOnCooldown();
     }
     protected override void UpdateUsing() {
       if (!Ending) {
@@ -182,12 +182,7 @@ namespace OriMod.Abilities {
         if (Failed) {
           Inactive = true;
         }
-        if (CurrCooldown > 0 || !Refreshed) {
-          CurrCooldown--;
-          if (CurrCooldown < 0) {
-            Refreshed = true;
-          }
-        }
+        TickCooldown();
       }
     }
   }

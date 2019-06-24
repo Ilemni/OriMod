@@ -5,18 +5,25 @@ namespace OriMod.Abilities {
   public class Glide : Ability {
     internal Glide(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => oPlayer.Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased);
-    private const float MaxFallSpeed = 2f;
-    private const float RunSlowdown = 0.125f;
-    private const float RunAcceleration = 0.2f;
-    private const int StartDuration = 8;
-    private const int EndDuration = 10;
-    private int CurrTime = 0;
-
     internal override bool CanUse =>
       base.CanUse && !Ending &&
-      !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.airJump.InUse && !Handler.wCJump.InUse && !Handler.burrow.InUse &&
+      !Handler.airJump.InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.wCJump.InUse && !Handler.burrow.InUse &&
       player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active && !Handler.burrow.AutoBurrow;
+    
+    private float MaxFallSpeed => 2f;
+    private float RunSlowdown => 0.125f;
+    private float RunAcceleration => 0.2f;
+    private int StartDuration => 8;
+    private int EndDuration => 10;
+    
+    private int CurrTime = 0;
 
+    protected override void UpdateStarting() {
+      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
+    }
+    protected override void UpdateEnding() {
+      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + OriPlayer.RandomChar(3), 0.8f);
+    }
     protected override void UpdateUsing() {
       if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
         oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + OriPlayer.RandomChar(5), 0.45f);
@@ -27,12 +34,7 @@ namespace OriMod.Abilities {
         player.runAcceleration = RunAcceleration;
       }
     }
-    protected override void UpdateStarting() {
-      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
-    }
-    protected override void UpdateEnding() {
-      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + OriPlayer.RandomChar(3), 0.8f);
-    }
+    
     internal override void Tick() {
       if (!InUse && CanUse && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
         Starting = true;

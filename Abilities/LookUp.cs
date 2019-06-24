@@ -6,8 +6,10 @@ namespace OriMod.Abilities {
     internal LookUp(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.Current.Up);
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !Handler.crouch.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
-    private const int StartDuration = 12;
-    private const int EndDuration = 8;
+    
+    private int StartDuration => 12;
+    private int EndDuration => 8;
+
     private int CurrTime = 0;
 
     internal override void Tick() {

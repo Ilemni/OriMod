@@ -9,7 +9,12 @@ namespace OriMod.Abilities {
     internal Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BurrowKey.Current);
     internal override bool CanUse => base.CanUse && !Handler.dash.InUse && !Handler.cDash.InUse && !inMenu;
+    protected override int Cooldown => 12;
+    protected override Color RefreshColor => Color.SandyBrown;
+
     private bool inMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
+    private float Speed => 8f; 
+    private float SpeedExitMultiplier => 1.5f;
     public static readonly ushort[][] Burrowable = new ushort[][] {
       new ushort[] {
         TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush,
@@ -26,16 +31,14 @@ namespace OriMod.Abilities {
         TileID.Hellstone
       }
     };
-    internal static bool CanBurrowAny => Config.BurrowTier < 0;
     public static List<ushort> CurrentBurrowable = new List<ushort>();
-    private const float Speed = 8f; 
-    private const float SpeedExitMultiplier = 1.5f;
-    private int TimeUntilEnd = 0;
+    internal static bool CanBurrowAny => Config.BurrowTier < 0;
+    internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
+    
     internal Vector2 Velocity = Vector2.Zero;
-    protected override int Cooldown => 12;
-    protected override Color RefreshColor => Color.SandyBrown;
     internal bool AutoBurrow = false;
-    internal bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
+    private int TimeUntilEnd = 0;
+    
     private static Point p(int x, int y) => new Point(x, y);
     private static readonly Point[] BurrowEnterTemplate = new Point[] {
       p(0, -1),  p(0, 0),  p(0, 1),   // Center
@@ -45,7 +48,7 @@ namespace OriMod.Abilities {
       p(0, 2),   p(1, 2),  // Bottom
       p(2, 2),   p(2, -2), p(-1, 2),  p(-1, -2), // Corners
     };
-    public static readonly Point[] BurrowEnterOuterTemplate = new Point[] {
+    private static readonly Point[] BurrowEnterOuterTemplate = new Point[] {
       p(-2, -2), p(-2, -1), p(-2, 0), p(-2, 1), p(-2, 2),  // Left
       p(3, -2),  p(3, -1),  p(3, 0),  p(3, 1),  p(3, 2),   // Right
       p(-1, -2), p(0, -2),  p(1, -2), p(2, -2),  // Top
@@ -61,27 +64,29 @@ namespace OriMod.Abilities {
     internal Point[] BurrowEnter = new Point[BurrowEnterTemplate.Length];
     internal Point[] BurrowEnterOuter = new Point[BurrowEnterOuterTemplate.Length];
     internal Point[] BurrowInner = new Point[BurrowInnerTemplate.Length];
+    
     internal static void UpdateBurrowableTiles(int tier) {
       CurrentBurrowable.Clear();
       for (int i = 0; i < tier + 1; i++) {
         CurrentBurrowable.AddRange(Burrowable[i]);
       }
     }
-    internal void UpdateBox(ref Point[] Box, Point[] Template, Vector2 pos) {
+    
+    private void UpdateBox(ref Point[] Box, Point[] Template, Vector2 pos) {
       UpdateBox(ref Box, Template, pos.ToTileCoordinates());
     }
-    internal void UpdateBox(ref Point[] Box, Point[] Template, Point pos) {
+    private void UpdateBox(ref Point[] Box, Point[] Template, Point pos) {
       List<Point> posList = new List<Point>();
       foreach(Point v in Template) {
         posList.Add(pos.Add(v));
       }
       Box = posList.ToArray();
     }
-    internal void UpdateBurrowEnterBox() {
+    private void UpdateBurrowEnterBox() {
       UpdateBox(ref BurrowEnter, BurrowEnterTemplate, player.Center);
       UpdateBox(ref BurrowEnterOuter, BurrowEnterOuterTemplate, player.Center);
     }
-    internal void UpdateBurrowInnerBox() {
+    private void UpdateBurrowInnerBox() {
       UpdateBox(ref BurrowInner, BurrowInnerTemplate, player.Center + Velocity.Norm() * 16);
     }
     private void OnBurrowCollision(int hitboxIdx, ref bool didX, ref bool didY) {
@@ -113,6 +118,7 @@ namespace OriMod.Abilities {
           break;
       }
     }
+    
     protected override void UpdateActive() {
       UpdateBurrowInnerBox();
       if (Velocity == Vector2.Zero) {
@@ -177,6 +183,7 @@ namespace OriMod.Abilities {
       player.grappling[0] = -1;
       player.grapCount = 0;
     }
+    
     internal override void Tick() {
       if (AutoBurrow && !OriMod.BurrowKey.Current) {
         AutoBurrow = false;
@@ -200,16 +207,12 @@ namespace OriMod.Abilities {
           TimeUntilEnd--;
           if (TimeUntilEnd < 1) {
             Inactive = true;
+            PutOnCooldown();
           }
         }
       }
       else {
-        if (CurrCooldown > Cooldown) {
-          CurrCooldown--;
-        }
-        else {
-          Refreshed = true;
-        }
+        TickCooldown();
       }
       if (CanUse && !InUse && (OriMod.BurrowKey.JustPressed || AutoBurrow)) {
         UpdateBurrowEnterBox();
@@ -228,7 +231,6 @@ namespace OriMod.Abilities {
         oPlayer.Debug("Can burrow");
         if (Config.AutoBurrow) AutoBurrow = true;
         Active = true;
-        Refreshed = false;
         CurrCooldown = Cooldown;
         if (AutoBurrow) {
           vel = player.velocity.Norm();

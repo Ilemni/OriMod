@@ -8,28 +8,23 @@ namespace OriMod.Abilities {
     public WallChargeJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
-    internal bool CanCharge => base.CanUse && Handler.climb.IsCharging;
-    protected override Color RefreshColor => Color.Blue;
     protected override int Cooldown => 360;
-    private const int Duration = 20;
-    private int CurrTime = 0;
+    protected override Color RefreshColor => Color.Blue;
+    
+    internal bool CanCharge => base.CanUse && Handler.climb.IsCharging;
+    private int MaxCharge => 35;
+    private int Duration => 20;
     private static readonly float[] Speeds = new float[20] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
     };
-    public Projectile Proj { get; private set; }
+    
     internal bool Charged = false;
-    private int MaxCharge => 35;
     private int CurrCharge = 0;
+    private int CurrTime = 0;
     private Vector2 Direction = Vector2.Zero;
-    protected override void UpdateActive() {
-      float speed = Speeds[CurrTime - 1] * 0.5f;
-      player.velocity = Direction * speed;
-      player.direction = Math.Sign(player.velocity.X);
-      player.maxFallSpeed = Math.Abs(player.velocity.Y);
-    }
-    protected override void UpdateUsing() {
-      player.controlJump = false;
-    }
+    
+    public Projectile Proj { get; private set; }
+    
     internal Vector2 GetMouseDirection() {
       float unused;
       Vector2 v = GetMouseDirection(out unused);
@@ -46,15 +41,13 @@ namespace OriMod.Abilities {
       dir.Y *= player.gravDir;
       return dir;
     }
+    
     private void StartWallChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref currRand));
       Charged = false;
       CurrCharge = 0;
       Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
-      if (!Config.BlindForestMovement) {
-        Refreshed = false;
-        CurrCooldown = Cooldown;
-      }
+      PutOnCooldown();
       Direction = GetMouseDirection();
       player.velocity = Direction * Speeds[0] * 0.5f;
     }
@@ -63,18 +56,24 @@ namespace OriMod.Abilities {
         Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor:Color.Blue)];
       }
     }
+    
+    protected override void UpdateActive() {
+      float speed = Speeds[CurrTime - 1] * 0.5f;
+      player.velocity = Direction * speed;
+      player.direction = Math.Sign(player.velocity.X);
+      player.maxFallSpeed = Math.Abs(player.velocity.Y);
+    }
+    protected override void UpdateUsing() {
+      player.controlJump = false;
+    }
+    
     internal override void Tick() {
       if (Handler.burrow.InUse) {
         Charged = false;
         CurrCharge = 0;
         return;
       }
-      if (!Refreshed && !InUse) {
-        CurrCooldown--;
-        if (CurrCooldown < 0) {
-          Refreshed = true;
-        }
-      }
+      TickCooldown();
       if (!Charged && CanCharge) {
         if (CurrCharge == 0) {
           oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);

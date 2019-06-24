@@ -5,8 +5,10 @@ namespace OriMod.Abilities {
     internal Crouch(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.Current.Down); 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
-    private const int StartDuration = 10;
-    private const int EndDuration = 4;
+    
+    private int StartDuration => 10;
+    private int EndDuration => 4;
+    
     private int CurrTime = 0;
 
     protected override void UpdateUsing() {
@@ -43,7 +45,7 @@ namespace OriMod.Abilities {
         Inactive = true;
         CurrTime = 0;
       }
-      else if (!PlayerInput.Triggers.Current.Down && State != States.Ending) {
+      else if (!PlayerInput.Triggers.Current.Down && !Ending) {
         if (Active) {
           Ending = true;
         }

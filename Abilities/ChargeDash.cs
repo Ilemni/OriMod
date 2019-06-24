@@ -6,30 +6,42 @@ using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   public class ChargeDash : Ability {
-    internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { Npc = 255; }
+    internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { NpcID = 255; }
     internal override bool DoUpdate => !Handler.dash.DoUpdate && (InUse || (oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Handler.cDash.Refreshed));
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
-    private const int ManaCost = 20;
+    protected override int Cooldown => 300;
+    protected override Color RefreshColor => Color.LightBlue;
+    
+    private int ManaCost => 20;
+    private int Duration => 14;
     private static readonly float[] Speeds = new float[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     };
-    private const int Duration = 14;
-    protected override int Cooldown => 300;
-    protected override Color RefreshColor => Color.LightBlue;
-    private int CurrTime = 0;
-    /// <summary>
-    /// The ID of the NPC currently targeted by this player's Charge Dash.
-    /// </summary>
-    /// <value><c>0</c>-<c>200</c> if there is a target NPC, <c>255</c> if no NPC is targeted</value>
-    public byte Npc { get; internal set; }
+    
+    public byte NpcID { get; internal set; }
     internal int Direction = 1;
-    public Projectile Proj;
+    private int CurrTime = 0;
+    
+    public Projectile Proj { get; private set; }
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
-      Npc = r.ReadByte();
+      NpcID = r.ReadByte();
     }
     protected override void WritePacket(ModPacket packet) {
-      packet.Write((byte)Npc);
+      packet.Write((byte)NpcID);
+    }
+
+    protected override void PutOnCooldown(bool force=false) {
+      Refreshed = false;
+      base.PutOnCooldown(force);
+    }
+    protected override void TickCooldown() {
+      if (!Refreshed || CurrCooldown > 0) {
+        CurrCooldown--;
+        if (CurrCooldown < 0 && !OriMod.ChargeKey.Current) {
+          Refreshed = true;
+        }
+      }
     }
     
     protected override void UpdateStarting() {
@@ -45,8 +57,8 @@ namespace OriMod.Abilities {
         }
       }
       if (tempNPC != -1) {
-        Npc = (byte)tempNPC;
-        Direction = player.direction = player.position.X - Main.npc[Npc].position.X < 0 ? 1 : -1;
+        NpcID = (byte)tempNPC;
+        Direction = player.direction = player.position.X - Main.npc[NpcID].position.X < 0 ? 1 : -1;
       }
       else {
         Direction = (Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
@@ -58,19 +70,19 @@ namespace OriMod.Abilities {
     protected override void UpdateUsing() {
       float speed = Speeds[CurrTime];
       player.gravity = 0;
-      if (Npc < Main.maxNPCs && Main.npc[Npc].active) {
+      if (NpcID < Main.maxNPCs && Main.npc[NpcID].active) {
         player.maxFallSpeed = speed;
-        Vector2 dir = (Main.npc[Npc].position - player.position);
+        Vector2 dir = (Main.npc[NpcID].position - player.position);
         dir.Y -= 32f;
         dir.Normalize();
         player.velocity = dir * speed * 0.8f;
-        if (CurrTime < Duration && (player.position - Main.npc[Npc].position).Length() < speed) {
+        if (CurrTime < Duration && (player.position - Main.npc[NpcID].position).Length() < speed) {
           Inactive = true;
-          CurrCooldown = Cooldown;
+          PutOnCooldown();
           CurrTime = Duration;
-          player.position = Main.npc[Npc].position;
+          player.position = Main.npc[NpcID].position;
           player.position.Y -= 32f;
-          Npc = 255;
+          NpcID = 255;
           player.velocity *= speed < 50 ? 0.5f : 0.25f;
         }
       }
@@ -91,7 +103,6 @@ namespace OriMod.Abilities {
         if (player.CheckMana(ManaCost, true, true)) {
           Active = true;
           CurrTime = 0;
-          Refreshed = false;
           UpdateStarting();
         }
         else if (!Handler.dash.InUse) {
@@ -99,29 +110,22 @@ namespace OriMod.Abilities {
         }
         return;
       }
-      if (!Refreshed) {
-        CurrCooldown--;
-        if (CurrCooldown < 0 && !OriMod.ChargeKey.Current) {
-          Refreshed = true;
-        }
-      }
+      TickCooldown();
       if (InUse) {
         Handler.dash.Inactive = true;
         Handler.dash.Refreshed = false;
         CurrTime++;
         if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           Inactive = true;
-          if (!Config.BlindForestMovement) {
-            CurrCooldown = Cooldown;
-          }
-          if ((Npc == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
-            Vector2 newVel = Npc == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
+          PutOnCooldown();
+          if ((NpcID == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
+            Vector2 newVel = NpcID == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
             newVel.Normalize();
             newVel *= Speeds[Speeds.Length - 1];
             player.velocity = newVel;
           }
           Proj = null;
-          Npc = 255;
+          NpcID = 255;
         }
       }
     }

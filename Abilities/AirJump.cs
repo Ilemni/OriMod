@@ -6,14 +6,17 @@ namespace OriMod.Abilities {
     internal AirJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.JustPressed.Jump);
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrCount < MaxJumps && !Active && !Handler.bash.InUse && !player.mount.Active && !Handler.wCJump.InUse;
-    private const float JumpVelocity = 8.8f;
-    private const int EndDuration = 32;
-    private const int MaxJumps = 2;
+    
+    private float JumpVelocity => 8.8f;
+    private int EndDuration => AnimationHandler.PlayerAnim.Tracks["AirJump"].Duration;
+    private int MaxJumps => 2;
+    
     private int CurrCount = 0;
     private int CurrTime = 0;
     private int randDoubleJumpSound = 1;
     private int randTripleJumpSound = 1;
     private int GravDir = 1;
+    
     protected override void UpdateActive() {
       if (CurrCount == MaxJumps) {
         oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + OriPlayer.RandomChar(5, ref randTripleJumpSound), 0.7f);

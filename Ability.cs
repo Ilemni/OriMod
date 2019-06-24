@@ -191,5 +191,19 @@ namespace OriMod {
         Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor:RefreshColor)];
       }
     }
+    protected virtual void PutOnCooldown(bool force=false) {
+      if (!Config.BlindForestMovement || force) {
+        CurrCooldown = Cooldown;
+        Refreshed = false;
+      }
+    }
+    protected virtual void TickCooldown() {
+      if (CurrCooldown > 0 || !Refreshed) {
+        CurrCooldown--;
+        if (CurrCooldown < 0) {
+          Refreshed = true;
+        }
+      }
+    }
   }
 }
