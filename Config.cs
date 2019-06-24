@@ -13,7 +13,7 @@ namespace OriMod {
     public static bool SmoothCamera = true;
     public static bool BurrowToMouse = false;
     public static bool AutoBurrow = false;
-    public static bool CanCrouch = true;
+    public static bool RestrictiveCrouch = true;
     private static int _burrowTier = 0;
     public static int BurrowTier {
       get {
@@ -54,7 +54,7 @@ namespace OriMod {
         string s = "";
         Prefs.Get("OriColor", ref s);
         LoadColor(s);
-        Prefs.Get("CanCrouch", ref CanCrouch);
+        Prefs.Get("RestrictiveCrouch", ref RestrictiveCrouch);
         Prefs.Get("BlindForestMovement", ref BlindForestMovement);
         Prefs.Get("BurrowToMouse", ref BurrowToMouse);
         Prefs.Get("AutoBurrow", ref AutoBurrow);
@@ -72,7 +72,7 @@ namespace OriMod {
       Prefs.Put("DoPlayerLight", DoPlayerLight);
       Prefs.Put("SmoothCamera", SmoothCamera);
       Prefs.Put("OriColor", OriColor);
-      Prefs.Put("CanCrouch", CanCrouch);
+      Prefs.Put("RestrictiveCrouch", RestrictiveCrouch);
       Prefs.Put("BlindForestMovement", BlindForestMovement);
       Prefs.Put("BurrowToMouse", BurrowToMouse);
       Prefs.Put("AutoBurrow", AutoBurrow);
@@ -85,7 +85,7 @@ namespace OriMod {
       Prefs.Put("DoPlayerLight", true);
       Prefs.Put("SmoothCamera", true);
       Prefs.Put("OriColor", Color.LightCyan);
-      Prefs.Put("CanCrouch", true);
+      Prefs.Put("RestrictiveCrouch", true);
       Prefs.Put("BlindForestMovement", false);
       Prefs.Put("BurrowToMouse", false);
       Prefs.Put("AutoBurrow", false);

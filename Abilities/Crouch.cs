@@ -4,7 +4,7 @@ namespace OriMod.Abilities {
   public class Crouch : Ability {
     internal Crouch(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.Current.Down); 
-    internal override bool CanUse => base.CanUse && Config.CanCrouch && oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !player.controlLeft && !player.controlRight;
     
     private int StartDuration => 10;
     private int EndDuration => 4;
@@ -12,16 +12,18 @@ namespace OriMod.Abilities {
     private int CurrTime = 0;
 
     protected override void UpdateUsing() {
-      player.runAcceleration = 0;
-      player.maxRunSpeed = 0;
-      player.velocity.X = 0;
-      if (PlayerInput.Triggers.JustPressed.Left) {
-        player.controlLeft = false;
-        player.direction = -1;
-      }
-      else if (PlayerInput.Triggers.JustPressed.Right) {
-        player.controlRight = false;
-        player.direction = 1;
+      if (Config.RestrictiveCrouch) {
+        player.runAcceleration = 0;
+        player.maxRunSpeed = 0;
+        player.velocity.X = 0;
+        if (PlayerInput.Triggers.JustPressed.Left) {
+          player.controlLeft = false;
+          player.direction = -1;
+        }
+        else if (PlayerInput.Triggers.JustPressed.Right) {
+          player.controlRight = false;
+          player.direction = 1;
+        }
       }
 
       // if (PlayerInput.Triggers.JustPressed.Jump) { // TODO: Backflip
