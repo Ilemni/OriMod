@@ -982,10 +982,10 @@ namespace OriMod {
     }
     public override void ResetEffects() {
       if (Transforming) {
-        float rate = HasTransformedOnce ? RepeatedTransformRate : 0; 
+        float rate = HasTransformedOnce ? RepeatedTransformRate : 1; 
         AnimTime += rate - 1;
         TransformTimer -= rate;
-        if (TransformTimer < Animations.PlayerAnim.Tracks["TransformEnd"].Duration - 62 && HasTransformedOnce) {
+        if (TransformTimer < 0 || (HasTransformedOnce && TransformTimer < Animations.PlayerAnim.Tracks["TransformEnd"].Duration - 62)) {
           TransformTimer = 0;
           Transforming = false;
           OriSet = true;

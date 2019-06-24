@@ -6,6 +6,9 @@ The Ori franchise is the property of Microsoft. This mod and its creators are in
 If you enjoy this mod, we strongly urge you purchase Ori and the Blind Forest, as well as Ori and the Will of the Wisps when it releases.
 
 # Changelog
+## v2.3.0.1
+### Bug Fixes
+- Fix first transformation lasting forever
 ## v2.3
 ### Additions
 - Added Burrow

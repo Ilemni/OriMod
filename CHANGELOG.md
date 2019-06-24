@@ -1,3 +1,6 @@
+## v2.3.0.1
+### Bug Fixes
+- Fix first transformation lasting forever
 ## v2.3
 ### Additions
 - Added Burrow
