@@ -206,7 +206,7 @@ namespace OriMod {
           f(6, 2), f(6, 6)
         ),
         ["AirJump"] = new Track(h(),
-          f(3, 0)
+          f(3, 0, 32)
         ),
         ["ChargeJump"] = new Track(h(l:LoopMode.Once, p:PlaybackMode.PingPong),
           f(3, 5, 4), f(3, 8, 4)
