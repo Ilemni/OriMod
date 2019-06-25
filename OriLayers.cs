@@ -13,6 +13,16 @@ namespace OriMod {
       data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TransformStart" ? Color.White : oPlayer.SpriteColor;
       Main.playerDrawData.Add(data);
     });
+    internal static readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "SecondaryColor", delegate (PlayerDrawInfo drawinfo) {
+      Mod mod = ModLoader.GetMod("OriMod");
+      if (!mod.FileExists("PlayerEffects/OriPlayerSecondary")) return;
+      Main.NewText("Calling SecondaryLayer PlayerLayer");
+      OriPlayer oPlayer = drawinfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
+      DrawData data = DefaultDrawData(oPlayer, oPlayer.Animations.SecondaryLayer);
+      data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TrasformStart" ? Color.White : oPlayer.SpriteColorSecondary;
+      data.texture = mod.GetTexture("PlayerEffects/OriPlayerSecondary");
+      Main.playerDrawData.Add(data);
+    });
     internal static readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
       Player player = drawInfo.drawPlayer;

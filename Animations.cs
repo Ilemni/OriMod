@@ -156,10 +156,11 @@ namespace OriMod {
   }
   internal class Animations {
     internal OriPlayer owner;
-    internal Animation PlayerAnim, TrailAnim, BashAnim, GlideAnim, TransformAnim;
+    internal Animation PlayerAnim, SecondaryLayer, TrailAnim, BashAnim, GlideAnim, TransformAnim;
     internal Animations(OriPlayer oPlayer) {
       owner = oPlayer;
       PlayerAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.PlayerSprite);
+      SecondaryLayer = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.SecondaryLayer);
       TrailAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.Trail);
       BashAnim = new Animation(this, AnimationHandler.BashAnim, OriLayers.BashArrow);
       GlideAnim = new Animation(this, AnimationHandler.GlideAnim, OriLayers.FeatherSprite);

@@ -292,6 +292,17 @@ namespace OriMod {
         }
       }
     }
+    private Color _spriteColorSecondary = Color.LightCyan;
+    internal Color SpriteColorSecondary {
+      get {
+        return Main.myPlayer == player.whoAmI ? (Color)Config.OriColorSecondary : _spriteColorSecondary;
+      }
+      set {
+        if (Main.myPlayer != player.whoAmI) {
+          _spriteColorSecondary = value;
+        }
+      }
+    }
     internal bool debugMode = false;
     private bool _mpcPlayerLight = false;
     internal bool MpcPlayerLight {
@@ -956,6 +967,7 @@ namespace OriMod {
     public override void ModifyDrawLayers(List<PlayerLayer> layers) {
       if (OriSet || Transforming) {
         DisableVanillaLayers();
+        Animations.SecondaryLayer.Draw(layers);
         Animations.PlayerAnim.Draw(layers);
         Animations.TrailAnim.Draw(layers);
         Animations.GlideAnim.Draw(layers);
@@ -1002,6 +1014,7 @@ namespace OriMod {
     }
     private void OnAnimNameChange(string value) {
       Animations.PlayerAnim.OnAnimNameChange(value);
+      Animations.SecondaryLayer.OnAnimNameChange(value);
       Animations.TrailAnim.OnAnimNameChange(value);
       Animations.BashAnim.OnAnimNameChange(value);
       Animations.GlideAnim.OnAnimNameChange(value);

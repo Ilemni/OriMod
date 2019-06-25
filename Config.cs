@@ -17,6 +17,7 @@ namespace OriMod {
     public static int BurrowTier = 0;
     public static int StompHoldDownDelay = 0;
     public static Color OriColor = Color.LightCyan;
+    public static Color OriColorSecondary = Color.LightCyan;
     private static Preferences Prefs = new Preferences(ConfigPath);
     public static void Load() {
       bool success = ReadConfig();
@@ -25,8 +26,12 @@ namespace OriMod {
         SaveConfig();
       }
     }
-    public static void LoadColor(string s) {
+    public static void LoadColor(string s, ref Color color, bool alpha=false) {
       string[] arr = s.Split(new char[] { ',', ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+      if (arr.Length == 0) {
+        color = Color.LightCyan;
+        return;
+      }
       byte r = 255;
       byte g = 255;
       byte b = 255;
@@ -34,7 +39,8 @@ namespace OriMod {
       byte.TryParse(arr[0], out r);
       byte.TryParse(arr[1], out g);
       byte.TryParse(arr[2], out b);
-      OriColor = new Color(r, g, b, a);
+      if (alpha) byte.TryParse(arr[3], out a);
+      color = new Color(r, g, b, a);
     }
     public static bool ReadConfig() {
       if (Prefs.Load()) {
@@ -43,7 +49,10 @@ namespace OriMod {
         Prefs.Get("SmoothCamera", ref SmoothCamera);
         string s = "";
         Prefs.Get("OriColor", ref s);
-        LoadColor(s);
+        LoadColor(s, ref OriColor);
+        s = "";
+        Prefs.Get("OriColorSecondary", ref s);
+        LoadColor(s, ref OriColorSecondary, true);
         Prefs.Get("RestrictiveCrouch", ref RestrictiveCrouch);
         Prefs.Get("AbilityCooldowns", ref AbilityCooldowns);
         Prefs.Get("BurrowToMouse", ref BurrowToMouse);
@@ -63,6 +72,7 @@ namespace OriMod {
       Prefs.Put("DoPlayerLight", DoPlayerLight);
       Prefs.Put("SmoothCamera", SmoothCamera);
       Prefs.Put("OriColor", OriColor);
+      Prefs.Put("OriColorSecondary", OriColorSecondary);
       Prefs.Put("RestrictiveCrouch", RestrictiveCrouch);
       Prefs.Put("AbilityCooldowns", AbilityCooldowns);
       Prefs.Put("BurrowToMouse", BurrowToMouse);
@@ -77,6 +87,7 @@ namespace OriMod {
       Prefs.Put("DoPlayerLight", true);
       Prefs.Put("SmoothCamera", true);
       Prefs.Put("OriColor", Color.LightCyan);
+      Prefs.Put("OriColorSecondary", Color.LightCyan);
       Prefs.Put("RestrictiveCrouch", true);
       Prefs.Put("AbilityCooldowns", true);
       Prefs.Put("BurrowToMouse", false);
