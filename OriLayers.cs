@@ -92,7 +92,7 @@ namespace OriMod {
       if (player.direction == -1) effect = effect | SpriteEffects.FlipHorizontally;
       if (player.gravDir == -1) effect = effect | SpriteEffects.FlipVertically;
       Point tile = anim.ActiveTile;
-      Rectangle rect = new Rectangle(tile.X, tile.Y, anim.TileSize.X, anim.TileSize.Y);
+      Rectangle rect = new Rectangle(tile.X, tile.Y, anim.Source.TileSize.X, anim.Source.TileSize.Y);
       Vector2 orig = new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 5 * player.gravDir);
       DrawData data = new DrawData(texture, pos, rect, oPlayer.SpriteColor, player.direction * oPlayer.AnimRads, orig, 1, effect, 0);
       data.position += Offset();

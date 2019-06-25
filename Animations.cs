@@ -106,25 +106,34 @@ namespace OriMod {
     }
     internal Frame this[int idx] => Frames[idx];
   }
-  internal class Animation {
+  internal class AnimationSource {
     internal string TexturePath { get; }
-    internal Texture2D Texture(Mod mod) => mod.GetTexture(ActiveTrack.Header.OverrideTexturePath ?? TexturePath);
-    internal PlayerLayer playerLayer { get; }
-    internal Point TileSize { get; }
     internal Dictionary<string, Track> Tracks { get; }
+    internal string[] TrackNames;
+    internal Point TileSize { get; }
+    internal Track this[string name] => Tracks[name];
+    internal AnimationSource(string texture, int x, int y, Dictionary<string, Track> tracks) {
+      TexturePath = texture;
+      Tracks = tracks;
+      TrackNames = tracks.Keys.ToArray();
+      TileSize = new Point(x, y);
+    }
+
+  }
+  internal class Animation {
+    internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
+    internal Texture2D Texture(Mod mod) => mod.GetTexture(ActiveTrack.Header.OverrideTexturePath ?? Source.TexturePath);
+    internal PlayerLayer playerLayer { get; }
     internal bool Valid { get; private set; }
     internal void Draw(List<PlayerLayer> layers) {
       if (Valid) layers.Insert(0, playerLayer);
     }
-    internal void OnAnimNameChange(string name) {
-      Valid = Tracks.ContainsKey(name);
-    }
     internal Track ActiveTrack {
       get {
         if (!Valid) {
-          return Tracks.First().Value;
+          return Source.Tracks.First().Value;
         }
-        return Tracks[Handler.owner.AnimName];
+        return Source.Tracks[Handler.owner.AnimName];
       }
     }
     internal Frame ActiveFrame {
@@ -135,22 +144,13 @@ namespace OriMod {
         return ActiveTrack[Handler.owner.AnimIndex];
       }
     }
-    internal Point ActiveTile => ActiveFrame.Tile.Multiply(TileSize);
-    internal Track this[string name] => Tracks[name];
+    internal Point ActiveTile => ActiveFrame.Tile.Multiply(Source.TileSize);
+    internal Track this[string name] => Source.Tracks[name];
     internal Animations Handler = null;
-    internal string[] TrackNames;
-    internal Animation(string texture, int x, int y, Dictionary<string, Track> tracks) {
-      TexturePath = texture;
-      Tracks = tracks;
-      TrackNames = tracks.Keys.ToArray();
-      TileSize = new Point(x, y);
-    }
-    internal Animation(Animations handler, Animation source, PlayerLayer pLayer) {
+    internal AnimationSource Source;
+    internal Animation(Animations handler, AnimationSource source, PlayerLayer pLayer) {
       Handler = handler;
-      TexturePath = source.TexturePath;
-      Tracks = source.Tracks;
-      TrackNames = source.TrackNames;
-      TileSize = source.TileSize;
+      Source = source;
       playerLayer = pLayer;
     }
   }
@@ -170,7 +170,7 @@ namespace OriMod {
     private static Header h(InitType i=InitType.Range, LoopMode l=LoopMode.Always, PlaybackMode p=PlaybackMode.Normal, string to=null, string s=null)
       => new Header(init:i, loop:l, playback:p, transferTo:to, overrideTexturePath:s);
     
-    internal static Animation PlayerAnim = new Animation ("PlayerEffects/OriPlayer", 128, 128,
+    internal static AnimationSource PlayerAnim = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
       new Dictionary<string, Track> {
         ["Default"] = new Track(h(),
           f(0, 0)
@@ -260,13 +260,13 @@ namespace OriMod {
         )
       }
     );
-    internal static Animation BashAnim = new Animation("PlayerEffects/BashArrow", 152, 20,
+    internal static AnimationSource BashAnim = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
       new Dictionary<string, Track> {
         {"Bash", new Track(h(i:InitType.Select),
         f(0, 0))}
       }
     );
-    internal static Animation GlideAnim = new Animation("PlayerEffects/Feather", 128, 128,
+    internal static AnimationSource GlideAnim = new AnimationSource("PlayerEffects/Feather", 128, 128,
       new Dictionary<string, Track> {
         {"GlideStart", new Track(h(l:LoopMode.Once),
           f(0, 0, 5), f(0, 2, 5)

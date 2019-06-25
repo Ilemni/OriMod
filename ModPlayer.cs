@@ -578,7 +578,7 @@ namespace OriMod {
     internal void DoTransformation() {
       Transforming = true;
       TransformDirection = player.direction;
-      TransformTimer = Animations.PlayerAnim.Tracks["TransformEnd"].Duration + Animations.PlayerAnim.Tracks["TransformStart"].Duration;
+      TransformTimer = Animations.PlayerAnim.Source.Tracks["TransformEnd"].Duration + Animations.PlayerAnim.Source.Tracks["TransformStart"].Duration;
     }
     private void InitTestMaterial() {
       GrassFloorMaterials = new List<int>();
@@ -843,7 +843,7 @@ namespace OriMod {
       }
       if (Transforming) {
         player.direction = TransformDirection;
-        int dur = Animations.PlayerAnim.Tracks["TransformEnd"].Duration;
+        int dur = Animations.PlayerAnim.Source.Tracks["TransformEnd"].Duration;
         if (TransformTimer > dur - 10) {
           if (TransformTimer < dur) {
             player.gravity = 9f;
@@ -986,7 +986,7 @@ namespace OriMod {
         float rate = HasTransformedOnce ? RepeatedTransformRate : 1; 
         AnimTime += rate - 1;
         TransformTimer -= rate;
-        if (TransformTimer < 0 || (HasTransformedOnce && TransformTimer < Animations.PlayerAnim.Tracks["TransformEnd"].Duration - 62)) {
+        if (TransformTimer < 0 || (HasTransformedOnce && TransformTimer < Animations.PlayerAnim.Source.Tracks["TransformEnd"].Duration - 62)) {
           TransformTimer = 0;
           Transforming = false;
           OriSet = true;
