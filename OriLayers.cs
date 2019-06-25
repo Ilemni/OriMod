@@ -15,7 +15,7 @@ namespace OriMod {
     });
     internal static readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "SecondaryColor", delegate (PlayerDrawInfo drawinfo) {
       Mod mod = ModLoader.GetMod("OriMod");
-      if (!mod.FileExists("PlayerEffects/OriPlayerSecondary")) return;
+      if (!mod.TextureExists("PlayerEffects/OriPlayerSecondary")) return;
       Main.NewText("Calling SecondaryLayer PlayerLayer");
       OriPlayer oPlayer = drawinfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
       DrawData data = DefaultDrawData(oPlayer, oPlayer.Animations.SecondaryLayer);
