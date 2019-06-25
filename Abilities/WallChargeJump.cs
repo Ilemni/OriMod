@@ -92,6 +92,7 @@ namespace OriMod.Abilities {
         UpdateCharged();
         if (!CanCharge) {
           Charged = false;
+          CurrCharge = 0;
           oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
         }
       }

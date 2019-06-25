@@ -83,6 +83,7 @@ namespace OriMod.Abilities {
           CurrGrace--;
           if (CurrGrace < 0) {
             Charged = false;
+            CurrCharge = 0;
             oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
           }
         }
