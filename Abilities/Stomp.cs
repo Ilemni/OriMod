@@ -15,8 +15,10 @@ namespace OriMod.Abilities {
     private float MaxFallSpeed => 28f;
     private int StartDuration => 24;
     private int MinDuration => 30;
+    private int HoldDownDelay => Config.StompHoldDownDelay;
 
     private int CurrTime = 0;
+    private int CurrHoldDown = 0;
     
     public Projectile Proj { get; private set; }
 
@@ -71,9 +73,15 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (PlayerInput.Triggers.JustPressed.Down && CanUse) {
-        Starting = true;
-        CurrTime = 0;
+      if (PlayerInput.Triggers.Current.Down && CanUse) {
+        if (PlayerInput.Triggers.JustPressed.Down || CurrHoldDown > 0) {
+          CurrHoldDown++;
+          if (HoldDownDelay == 0 || CurrHoldDown > HoldDownDelay) {
+            Starting = true;
+            CurrTime = 0;
+            CurrHoldDown = 0;
+          }
+        }
       }
       else if (Starting) {
         CurrTime++;
@@ -95,6 +103,7 @@ namespace OriMod.Abilities {
         Inactive = true;
       }
       else {
+        CurrHoldDown = 0;
         TickCooldown();
       }
     }

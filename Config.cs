@@ -15,6 +15,7 @@ namespace OriMod {
     public static bool AutoBurrow = false;
     public static bool RestrictiveCrouch = true;
     public static int BurrowTier = 0;
+    public static int StompHoldDownDelay = 0;
     public static Color OriColor = Color.LightCyan;
     private static Preferences Prefs = new Preferences(ConfigPath);
     public static void Load() {
@@ -49,6 +50,7 @@ namespace OriMod {
         Prefs.Get("AutoBurrow", ref AutoBurrow);
         int temp = BurrowTier;
         Prefs.Get("BurrowTier", ref temp);
+        Prefs.Get("StompHoldDownDelay", ref StompHoldDownDelay);
         BurrowTier = temp;
         // Prefs.Get("BlindForestMovement", ref BlindForestMovement);
         return true;
@@ -66,6 +68,7 @@ namespace OriMod {
       Prefs.Put("BurrowToMouse", BurrowToMouse);
       Prefs.Put("AutoBurrow", AutoBurrow);
       Prefs.Put("BurrowTier", BurrowTier);
+      Prefs.Put("StompHoldDownDelay", StompHoldDownDelay);
       Prefs.Save();
     }
     public static void ResetConfig() {
@@ -79,6 +82,7 @@ namespace OriMod {
       Prefs.Put("BurrowToMouse", false);
       Prefs.Put("AutoBurrow", false);
       Prefs.Put("BurrowTier", 0);
+      Prefs.Put("StompHoldDownDelay", 0);
       Prefs.Save();
     }
   }
