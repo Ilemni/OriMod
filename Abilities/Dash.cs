@@ -42,7 +42,14 @@ namespace OriMod.Abilities {
       player.velocity.Y = 0.25f * (CurrTime + 1) * player.gravDir;
       if (CurrTime > 20) player.runSlowdown = 26f;
     }
-    
+    protected override void TickCooldown() {
+      if (CurrCooldown > 0 || !Refreshed) {
+        CurrCooldown--;
+        if (CurrCooldown < 0 && (Handler.bash.InUse || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
+          Refreshed = true;
+        }
+      }
+    }
     internal override void Tick() {
       if (CanUse && OriMod.DashKey.JustPressed) {
         Active = true;
