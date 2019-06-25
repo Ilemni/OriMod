@@ -798,7 +798,7 @@ namespace OriMod {
       IsGrounded = false;
       if (player.fireWalk || player.waterWalk || player.waterWalk2) {
         Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
-        feetVect.Y += 4 * player.gravDir;
+        feetVect.Y += (1f / 255f) * player.gravDir;
         Point pos = feetVect.ToTileCoordinates();
         bool testblock = Main.tile[pos.X, pos.Y].liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
         if (testblock) {
