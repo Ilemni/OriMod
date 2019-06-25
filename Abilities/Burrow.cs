@@ -31,6 +31,7 @@ namespace OriMod.Abilities {
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
     
     internal Vector2 Velocity = Vector2.Zero;
+    internal Vector2 LastPos = Vector2.Zero;
     internal bool AutoBurrow = false;
     private int TimeUntilEnd = 0;
     
@@ -108,6 +109,7 @@ namespace OriMod.Abilities {
     }
     
     protected override void UpdateActive() {
+      player.position = LastPos;
       UpdateBurrowInnerBox();
       if (Velocity == Vector2.Zero) {
         Velocity = new Vector2(0, Speed);
@@ -153,6 +155,7 @@ namespace OriMod.Abilities {
       }
       player.position += Velocity;
       player.velocity = Vector2.Zero;
+      LastPos = player.position;
     }
     protected override void UpdateEnding() {
       player.velocity = Velocity * SpeedExitMultiplier;
@@ -233,9 +236,10 @@ namespace OriMod.Abilities {
         if (vel.HasNaNs()) {
           vel = Vector2.UnitY;
         }
-        vel = vel.Norm() * 64;
+        vel = vel.Norm() * Speed;
         player.position += vel;
         Velocity = vel;
+        LastPos = player.position;
       }
     }
   }
