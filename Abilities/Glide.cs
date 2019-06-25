@@ -7,7 +7,8 @@ namespace OriMod.Abilities {
     internal override bool DoUpdate => oPlayer.Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased);
     internal override bool CanUse =>
       base.CanUse && !Ending &&
-      !Handler.airJump.InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.wCJump.InUse && !Handler.burrow.InUse &&
+      !Handler.airJump.InUse && !Handler.stomp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse &&
+      !Handler.wCJump.InUse && !Handler.burrow.InUse &&
       player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active && !Handler.burrow.AutoBurrow;
     
     private float MaxFallSpeed => 2f;
