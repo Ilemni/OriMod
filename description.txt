@@ -1,9 +1,30 @@
 Ori and the Blind Forest crossover pack.
+
+--- v2.3.0.2 ---
+ -- Changes --
+- Burrowable tiles is now based on Pickaxe Power.
+  - The config defaults to 0, which makes most tiles
+    burrowable.
+  - Read the Terraria Wiki on Pickaxe Power for more
+    information.
+  - Due to this change, loading the mod will take longer.
+- Tweaked Burrow movement.
+  - Smaller gaps should no longer cause Burrow to get stuck.
+- Add config option to hold down for x frames to stomp.
+- Rename config option "BlindForestMovement" to
+  "AbilityCooldowns" for better clarity.
+### Bug Fixes
+- *Actually* fixed water walking.
+- Fix Dash refreshing when it shouldn't be.
+- Fix uncharging Wall Charge Jump not properly resetting the
+  charge.
+
 --- v2.3.0.1 ---
  -- Bug Fixes --
 - Fix first transformation lasting forever
--- v2.3 --
---- Additions ---
+
+--- v2.3 ---
+ -- Additions --
 - Added Burrow
   - Burrow can travel through all forms of Sand, Silt, and
     Slush.
@@ -31,7 +52,7 @@ Ori and the Blind Forest crossover pack.
     - -1: Everything
 - Abilities now indicate when they are refreshed
 - Added support for Mod Helpers.
---- Changes ---
+ -- Changes --
 - Modified cooldowns to various abilities
   - Stomp now has a cooldown of 8 seconds.
   - Charge Jump now has a cooldown of 6 seconds.
@@ -51,7 +72,7 @@ Ori and the Blind Forest crossover pack.
 - Improve trail color
 - Rewrote Charge Jump
 - Changed Sein's texture
---- Bug Fixes ---
+ -- Bug Fixes --
 - Fix Dash interaction with Cloud-based jumps
 - Fix all skills not working properly with flipped gravity.
 - Fix wrong animation playing while water walking and on rope.
@@ -60,7 +81,7 @@ Ori and the Blind Forest crossover pack.
 
 To read about previous versions, visit our mod's homepage.
 
--- Summary --
+--- Summary ---
 
 To start, craft a Spirit Sprout using 10 wood and either
 one enchanted weapon (sword, boomerang, arkhalis), or

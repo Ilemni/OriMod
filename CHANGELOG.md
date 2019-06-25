@@ -1,8 +1,22 @@
-## v2.3.0.1
-### Bug Fixes
+# v2.3.0.2
+## Changes
+- Burrowable tiles is now based on Pickaxe power.
+    - The config defaults to 0, which makes most tiles burrowable.
+    - Read bullet point 4 in [this wiki page](https://terraria.gamepedia.com/Pickaxe_power#Mechanics) for more information.
+    - Due to this change, loading the mod will take longer.
+- Tweaked Burrow movement.
+    - Smaller gaps should no longer cause Burrow to get stuck.
+- Add config option to hold down for x frames to stomp.
+- Rename config option "BlindForestMovement" to "AbilityCooldowns" for better clarity.
+## Bug Fixes
+- *Actually* fixed water walking.
+- Fix Dash refreshing when it shouldn't be.
+- Fix uncharging Wall Charge Jump not properly resetting the charge.
+# v2.3.0.1
+## Bug Fixes
 - Fix first transformation lasting forever
-## v2.3
-### Additions
+# v2.3
+## Additions
 - Added Burrow
     - Burrow can travel through all forms of Sand, Silt, and Slush.
     - Bound to Left Shift by default.
@@ -22,7 +36,7 @@
         - -1: Everything
 - Abilities now indicate when they are refreshed
 - Added support for Mod Helpers.
-### Changes
+## Changes
 - Modified cooldowns to various abilities
     - Stomp now has a cooldown of 8 seconds.
     - Charge Jump now has a cooldown of 6 seconds.
@@ -37,40 +51,40 @@
 - Improve trail color
 - Rewrote Charge Jump
 - Changed Sein's texture
-### Bug Fixes
+## Bug Fixes
 - Fix Dash interaction with Cloud-based jumps
 - Fix all skills not working properly with flipped gravity.
 - Fix wrong animation playing while water walking and on rope.
 - Fix various actions still able to be performed while using Stomp.
-## v2.2.5.2
-### Bug Fixes
+# v2.2.5.2
+## Bug Fixes
 - Fix Bash no longer working
-## v2.2.5
-### Additions
+# v2.2.5
+## Additions
 - Add Config file for lighting, color, and camera movement.
     - GlobalPlayerLight: All other players' lighting looks the same as yours if set to true.
     - DoPlayerLight: If your player lights up.
     - OriColor: The color of your sprite.
     - SmoothCamera: If camera movement is smooth similar to Blind Forest or retains vanilla behavior.
-### Changes
+## Changes
 - Reduce speed of Sein's auto fire to 75%.
 - Renamed `/oricolor` to `/color`.
 - Trail color is now based on sprite color.
-### Bug Fixes
+## Bug Fixes
 - Fix Dash resetting flight timer.
 - Fix Charge Jump not activating while water walking.
 - Transform animation now plays properly.
-## v2.2.4
-### Changes
+# v2.2.4
+## Changes
 - Sein is set to auto fire rather than manual fire while holding non-damage tiles.
     - To manual fire, you must now either be holding the summon item or nothing.
 - Reduced Spirit Flame manual damage multiplier from 2x to 1.4x.
 - Increase Bash cooldown to 2.5 seconds.
-### Bug Fixes
+## Bug Fixes
 - Fix some vanilla bosses and all mod bosses not dropping loot (sorry about that!)
 - Fix Sein firing while performing menu actions.
-## v2.2.3
-### Changes
+# v2.2.3
+## Changes
 - Spirit Flame can now be used manually
     - Use Left Mouse button while either holding nothing, the summon item, or an item that doesn't deal damage.
     - Deals 2x damage compared to auto fire.
@@ -83,30 +97,30 @@
     - Use `/light` to turn on or off.
 - Temporarily disable transformation animation.
 - Slightly reduced filesize further.
-### Bug Fixes
+## Bug Fixes
 - Fixed Charge Dash hitbox being too small.
 - Fix mount interaction.
 - Cleaned up some sounds and animations.
-## v2.2.2
-### Changes
+# v2.2.2
+## Changes
 - Greatly reduced filesize.
 - Damage of Stomp, Bash, and Charge Dash now scaled to which Sein is summoned.
 - Stomp, Bash, and Charge Dash now grant temporary invulnerability after ending.
 - Increased volume of certain sounds.
-### Bug Fixes
+## Bug Fixes
 - Fixed Bash activating on the Destroyer.
 - Fixed certain armors greatly increasing the speed of animations.
 - Actually fixed Sein being able to be spawned endlessly.
 - Remove unintended debug messages.
-## v2.2.1
-### Bug Fixes
+# v2.2.1
+## Bug Fixes
 - Fixed some texts not displaying properly.
 - Fixed Sein no longer spawnable after mod reload.
 - Fixed Sein being able to be spawned endlessly.
 - Fixed Bash and Charge Dash targeting friendly NPCs.
 - Fixed Charge Dash not dealing damage to enemies.
-## v2.2
-### Additions
+# v2.2
+## Additions
 - Added the Spirit Orb
     - The Spirit Orb is used to summon Sein.
     - This item can be upgraded throughout your playthrough.
@@ -119,37 +133,37 @@
 - You can now change your Spirit Guardian color with /oricolor
     - Usage: /oricolor \<r> \<g> \<b>
     - Values are between 0 and 255
-### Changes
+## Changes
 - Massive overhaul of the mod's backend
-### Bug Fixes
+## Bug Fixes
 - The Spirit Guardian state is now properly synced among clients.
 - Lunar armors no longer caused Spirit Guardian animations to animate at unintended speeds.
 - Double Jump is now usable after Bashing or Wall Jumping.
 - Many other bug fixes.
-## v2.1
-### Additions
+# v2.1
+## Additions
 - Proper Water Walking mechanics
 - Spirit potion was added
 -- Can be used to remotely transform into Ori
 - Reduced .tmod size
-## v2.0
-### Changes
+# v2.0
+## Changes
 - Charge Dash was tweaked
 -- Distance is two blocks further
-### Bug Fixes
+## Bug Fixes
 - More bugfixes
-## v1.4
-### Bug Fixes
+# v1.4
+## Bug Fixes
 -Multiplayer fixes pertaining to people not looking like Ori
 (it apparently doesnt actually work, ill be investigating this)
-## v1.3
-#### Mod browser release
-## v1.2
-### Bug Fixes
+# v1.3
+### Mod browser release
+# v1.2
+## Bug Fixes
 - Version number actually updates ingame
-## v1.1
-### Bug Fixes
+# v1.1
+## Bug Fixes
 - Fixed issues pertaining to minecarts
 - Ori now dies properly
-## v1.0
-### Release
+# v1.0
+## Release

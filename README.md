@@ -6,6 +6,20 @@ The Ori franchise is the property of Microsoft. This mod and its creators are in
 If you enjoy this mod, we strongly urge you purchase Ori and the Blind Forest, as well as Ori and the Will of the Wisps when it releases.
 
 # Changelog
+## v2.3.0.2
+### Changes
+- Burrowable tiles is now based on Pickaxe power.
+    - The config defaults to 0, which makes most tiles burrowable.
+    - Read bullet point 4 in [this wiki page](https://terraria.gamepedia.com/Pickaxe_power#Mechanics) for more information.
+    - Due to this change, loading the mod will take longer.
+- Tweaked Burrow movement.
+    - Smaller gaps should no longer cause Burrow to get stuck.
+- Add config option to hold down for x frames to stomp.
+- Rename config option "BlindForestMovement" to "AbilityCooldowns" for better clarity.
+### Bug Fixes
+- *Actually* fixed water walking.
+- Fix Dash refreshing when it shouldn't be.
+- Fix uncharging Wall Charge Jump not properly resetting the charge.
 ## v2.3.0.1
 ### Bug Fixes
 - Fix first transformation lasting forever
