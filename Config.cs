@@ -9,7 +9,7 @@ namespace OriMod {
     public static string ConfigPath = Path.Combine(Main.SavePath, "Mod Configs", "OriMod.json");
     public static bool GlobalPlayerLight = true; // If true, sets all players on this side to `DoPlayerLight`
     public static bool DoPlayerLight = true; // If the player should emit light
-    public static bool BlindForestMovement = false;
+    public static bool AbilityCooldowns = true;
     public static bool SmoothCamera = true;
     public static bool BurrowToMouse = false;
     public static bool AutoBurrow = false;
@@ -45,7 +45,7 @@ namespace OriMod {
         Prefs.Get("OriColor", ref s);
         LoadColor(s);
         Prefs.Get("RestrictiveCrouch", ref RestrictiveCrouch);
-        Prefs.Get("BlindForestMovement", ref BlindForestMovement);
+        Prefs.Get("AbilityCooldowns", ref AbilityCooldowns);
         Prefs.Get("BurrowToMouse", ref BurrowToMouse);
         Prefs.Get("AutoBurrow", ref AutoBurrow);
         int temp = BurrowTier;
@@ -64,7 +64,7 @@ namespace OriMod {
       Prefs.Put("SmoothCamera", SmoothCamera);
       Prefs.Put("OriColor", OriColor);
       Prefs.Put("RestrictiveCrouch", RestrictiveCrouch);
-      Prefs.Put("BlindForestMovement", BlindForestMovement);
+      Prefs.Put("AbilityCooldowns", AbilityCooldowns);
       Prefs.Put("BurrowToMouse", BurrowToMouse);
       Prefs.Put("AutoBurrow", AutoBurrow);
       Prefs.Put("BurrowTier", BurrowTier);
@@ -78,7 +78,7 @@ namespace OriMod {
       Prefs.Put("SmoothCamera", true);
       Prefs.Put("OriColor", Color.LightCyan);
       Prefs.Put("RestrictiveCrouch", true);
-      Prefs.Put("BlindForestMovement", false);
+      Prefs.Put("AbilityCooldowns", true);
       Prefs.Put("BurrowToMouse", false);
       Prefs.Put("AutoBurrow", false);
       Prefs.Put("BurrowTier", 0);

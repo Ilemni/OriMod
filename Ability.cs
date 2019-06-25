@@ -192,7 +192,7 @@ namespace OriMod {
       }
     }
     protected virtual void PutOnCooldown(bool force=false) {
-      if (!Config.BlindForestMovement || force) {
+      if (Config.AbilityCooldowns || force) {
         CurrCooldown = Cooldown;
         Refreshed = false;
       }
