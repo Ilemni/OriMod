@@ -51,6 +51,7 @@
     <Compile Include="PacketHandler.cs" />
     <Compile Include="SecretClass.cs" />
     <Compile Include="SeinUpgrades.cs" />
+    <Content Include="TileCollection.cs" />
     <Compile Include="Trail.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Abilities\AirJump.cs" />

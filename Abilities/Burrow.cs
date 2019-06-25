@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   public class Burrow : Ability {
@@ -15,23 +16,17 @@ namespace OriMod.Abilities {
     private bool inMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
     private float Speed => 8f; 
     private float SpeedExitMultiplier => 1.5f;
-    public static readonly ushort[][] Burrowable = new ushort[][] {
-      new ushort[] {
-        TileID.Sand, TileID.Ebonsand, TileID.Crimsand, TileID.Pearlsand, TileID.Silt, TileID.Slush,
-        TileID.LeafBlock, TileID.LivingMahoganyLeaves
-      },
-      new ushort[] {
-        TileID.Dirt, TileID.Mud,
-        TileID.Grass, TileID.CorruptGrass, TileID.FleshGrass, TileID.HallowedGrass, TileID.JungleGrass, TileID.MushroomGrass
-      },
-      new ushort[] {
-        TileID.LivingWood, TileID.LivingMahogany,
-        TileID.Stone, TileID.ActiveStoneBlock, TileID.Ebonstone, TileID.Pearlstone, TileID.Crimstone,
-        TileID.Sandstone, TileID.CorruptSandstone, TileID.CrimsonSandstone, TileID.HallowSandstone,
-        TileID.Hellstone
+    internal static bool CanBurrow(Tile t) {
+      if (CanBurrowAny) return true;
+      if (!TileCollection.TilePickaxeMin.ContainsKey(t.type)) {
+        ModTile mt = TileLoader.GetTile(t.type);
+        if ((mt?.Type ?? -1) != -1) {
+          TileCollection.AddModTile(mt);
+        }
+        else return true;
       }
-    };
-    public static List<ushort> CurrentBurrowable = new List<ushort>();
+      return TileCollection.TilePickaxeMin[t.type] <= Config.BurrowTier;
+    }
     internal static bool CanBurrowAny => Config.BurrowTier < 0;
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
     
@@ -64,13 +59,6 @@ namespace OriMod.Abilities {
     internal Point[] BurrowEnter = new Point[BurrowEnterTemplate.Length];
     internal Point[] BurrowEnterOuter = new Point[BurrowEnterOuterTemplate.Length];
     internal Point[] BurrowInner = new Point[BurrowInnerTemplate.Length];
-    
-    internal static void UpdateBurrowableTiles(int tier) {
-      CurrentBurrowable.Clear();
-      for (int i = 0; i < tier + 1; i++) {
-        CurrentBurrowable.AddRange(Burrowable[i]);
-      }
-    }
     
     private void UpdateBox(ref Point[] Box, Point[] Template, Vector2 pos) {
       UpdateBox(ref Box, Template, pos.ToTileCoordinates());
@@ -158,7 +146,7 @@ namespace OriMod.Abilities {
           Tile t = Main.tile[(int)v.X, (int)v.Y];
           // if (i == 0) oPlayer.Debug(!t.active() + " || " + t.inActive() + " || " + !t.nactive());
           if (!IsSolid(t)) continue;
-          if (!CurrentBurrowable.Contains(t.type)) {
+          if (!CanBurrow(t)) {
             OnBurrowCollision(i, ref didX, ref didY);
           }
         }
@@ -219,7 +207,7 @@ namespace OriMod.Abilities {
         for (int i = 0; i < BurrowEnterTemplate.Length; i++) {
           Point v = BurrowEnter[i];
           Tile t = Main.tile[v.X, v.Y];
-          if (IsSolid(t) && (CanBurrowAny || CurrentBurrowable.Contains(t.type))) {
+          if (IsSolid(t) && CanBurrow(t)) {
             vel += BurrowEnterTemplate[i].ToVector2().Norm();
           }
         }
@@ -236,7 +224,7 @@ namespace OriMod.Abilities {
           for (int i = 0; i < BurrowEnterOuterTemplate.Length; i++) {
             Point v = BurrowEnterOuter[i];
             Tile t = Main.tile[v.X, v.Y];
-            if (IsSolid(t) && (CanBurrowAny || CurrentBurrowable.Contains(t.type))) {
+            if (IsSolid(t) && CanBurrow(t)) {
               vel += BurrowEnterOuterTemplate[i].ToVector2().Norm();
             }
           }

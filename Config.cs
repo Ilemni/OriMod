@@ -14,18 +14,7 @@ namespace OriMod {
     public static bool BurrowToMouse = false;
     public static bool AutoBurrow = false;
     public static bool RestrictiveCrouch = true;
-    private static int _burrowTier = 0;
-    public static int BurrowTier {
-      get {
-        return _burrowTier;
-      }
-      set {
-        if (value != _burrowTier) {
-          Abilities.Burrow.UpdateBurrowableTiles(value);
-        }
-        _burrowTier = value;
-      }
-    }
+    public static int BurrowTier = 0;
     public static Color OriColor = Color.LightCyan;
     private static Preferences Prefs = new Preferences(ConfigPath);
     public static void Load() {
