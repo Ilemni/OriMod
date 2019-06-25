@@ -315,6 +315,7 @@ namespace OriMod {
     internal static void Debug(string msg, OriPlayer oPlayer) {
       if (oPlayer.debugMode && oPlayer.player.whoAmI == Main.myPlayer) {
         Main.NewText(msg);
+        ErrorLogger.Log(msg);
       }
     }
     internal SoundEffectInstance PlayNewSound(string Path) => PlayNewSound(Path, 1, 0);
