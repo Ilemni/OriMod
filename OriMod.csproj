@@ -64,6 +64,7 @@
     <Compile Include="Abilities\Dash.cs" />
     <Compile Include="Abilities\Glide.cs" />
     <Compile Include="Abilities\LookUp.cs" />
+    <Content Include="Abilities\SoulLink.cs" />
     <Compile Include="Abilities\Stomp.cs" />
     <Content Include="Abilities\WallChargeJump.cs" />
     <Compile Include="Abilities\WallJump.cs" />

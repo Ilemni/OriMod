@@ -12,6 +12,7 @@ namespace OriMod {
     public static void ReloadConfigFromFile() { Config.ReadConfig(); }
     public static void ResetConfigFromDefaults() { Config.ResetConfig(); }
       
+    public static ModHotKey SoulLinkKey;
     public static ModHotKey BashKey;
     public static ModHotKey DashKey;
     public static ModHotKey ClimbKey;
@@ -55,6 +56,7 @@ namespace OriMod {
     public override void Load() {
       Config.Load();
 
+      SoulLinkKey = RegisterHotKey("Soul Link", "E");
       BashKey = RegisterHotKey("Bash", "Mouse2");
       DashKey = RegisterHotKey("Dash", "LeftControl");
       ClimbKey = RegisterHotKey("Climbing", "LeftShift");

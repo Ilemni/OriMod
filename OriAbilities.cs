@@ -11,6 +11,7 @@ namespace OriMod {
     public Player player { get; private set; }
     public List<Ability> Abilities { get; private set; }
 
+    public SoulLink soulLink { get; }
     public WallJump wJump { get; }
     public AirJump airJump { get; }
     public Bash bash { get; }
@@ -28,6 +29,7 @@ namespace OriMod {
       oPlayer = o;
       player = o.player;
       Abilities = new List<Ability> {
+        { soulLink = new SoulLink(o, this) },
         { wJump = new WallJump(o, this) },
         { stomp = new Stomp(o, this) },
         { airJump = new AirJump(o, this) },

@@ -25,6 +25,7 @@ namespace OriMod {
     /// <value></value>
     internal OriAbilities Abilities { get; set; } // Class used for all of Ori's movements
     
+    public SoulLink soulLink => Abilities.soulLink;
     public WallJump wJump => Abilities.wJump;
     public AirJump airJump => Abilities.airJump;
     public Bash bash => Abilities.bash;
@@ -963,6 +964,9 @@ namespace OriMod {
         }
       }
       return true;
+    }
+    public override void UpdateDead() {
+      soulLink.UpdateDead();
     }
     public override void ModifyDrawLayers(List<PlayerLayer> layers) {
       if (OriSet || Transforming) {
