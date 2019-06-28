@@ -61,22 +61,12 @@ namespace OriMod.Abilities {
     internal Point[] BurrowEnterOuter = new Point[BurrowEnterOuterTemplate.Length];
     internal Point[] BurrowInner = new Point[BurrowInnerTemplate.Length];
     
-    private void UpdateBox(ref Point[] Box, Point[] Template, Vector2 pos) {
-      UpdateBox(ref Box, Template, pos.ToTileCoordinates());
-    }
-    private void UpdateBox(ref Point[] Box, Point[] Template, Point pos) {
-      List<Point> posList = new List<Point>();
-      foreach(Point v in Template) {
-        posList.Add(pos.Add(v));
-      }
-      Box = posList.ToArray();
-    }
     private void UpdateBurrowEnterBox() {
-      UpdateBox(ref BurrowEnter, BurrowEnterTemplate, player.Center);
-      UpdateBox(ref BurrowEnterOuter, BurrowEnterOuterTemplate, player.Center);
+      BurrowEnter.UpdateHitbox(BurrowEnterTemplate, player.Center);
+      BurrowEnterOuter.UpdateHitbox(BurrowEnterOuterTemplate, player.Center);
     }
     private void UpdateBurrowInnerBox() {
-      UpdateBox(ref BurrowInner, BurrowInnerTemplate, player.Center + Velocity.Norm() * 16);
+      BurrowInner.UpdateHitbox(BurrowInnerTemplate, player.Center + Velocity.Norm() * 16);
     }
     private void OnBurrowCollision(int hitboxIdx, ref bool didX, ref bool didY) {
       oPlayer.Debug("Bounce! " + hitboxIdx);

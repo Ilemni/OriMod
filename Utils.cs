@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using Terraria;
 
 namespace OriMod {
   public static class OriModUtils {
@@ -30,6 +31,14 @@ namespace OriMod {
       Vector2 v = vect;
       v.Normalize();
       return v;
+    }
+    public static void UpdateHitbox(this Point[] box, Point[] template, Vector2 center) {
+      box.UpdateHitbox(template, center.ToTileCoordinates());
+    }
+    public static void UpdateHitbox(this Point[] box, Point[] template, Point center) {
+      for(int i = 0; i < box.Length; i++) {
+        box[i] = template[i].Add(center);
+      }
     }
   }
 }
