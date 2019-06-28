@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 
@@ -83,15 +84,18 @@ namespace OriMod.Abilities {
         if (Obstructed) {
           Main.NewText("Cannot place a Soul Link here...");
           CurrCharge -= UnchargeRate;
-          return;
+          if (CurrCharge < 0) CurrCharge = 0;
         }
-        CurrCharge += ChargeRate;
-        if (CurrCharge > ChargeMax) {
-          player.statMana -= ManaCost;
-          Active = true;
-          PlacedSoulLink = true;
-          oPlayer.Debug("Placed a Soul Link!");
-          PutOnCooldown(force:true);
+        else {
+          CurrCharge += ChargeRate;
+          if (CurrCharge > ChargeMax) {
+            player.statMana -= ManaCost;
+            CurrCharge = 0;
+            Active = true;
+            PlacedSoulLink = true;
+            oPlayer.Debug("Placed a Soul Link!");
+            PutOnCooldown(force:true);
+          }
         }
       }
       else if (CurrCharge > 0) {
@@ -99,6 +103,10 @@ namespace OriMod.Abilities {
         if (CurrCharge < 0) {
           CurrCharge = 0;
         }
+      }
+      if (CurrCharge > 0 && CurrCharge < ChargeMax) {
+        Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("SoulLinkChargeDust"), newColor:Color.DeepSkyBlue)];
+        dust.position += -Vector2.UnitY.RotatedBy((CurrCharge / ChargeMax) * 2 * Math.PI) * 56;
       }
       TickCooldown();
     }
