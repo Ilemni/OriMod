@@ -5,7 +5,7 @@ namespace OriMod.Abilities {
   public class SoulLink : Ability {
     public SoulLink(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => OriMod.SoulLinkKey.Current || InUse;
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded;
+    internal override bool CanUse => base.CanUse && player.CheckMana(ManaCost, blockQuickMana:true) && oPlayer.IsGrounded;
     protected override int Cooldown => 1800;
 
     private static Point p(int x, int y) => new Point(x, y);
@@ -21,6 +21,7 @@ namespace OriMod.Abilities {
     private float ChargeRate => 0.018f;
     private float UnchargeRate => 0.032f;
     private int RespawnTime => 80;
+    private int ManaCost => 20;
 
     private float CurrCharge = 0;
     internal bool PlacedSoulLink = false;
@@ -47,6 +48,7 @@ namespace OriMod.Abilities {
     
 
     internal void UpdateDead() {
+      if (!PlacedSoulLink) return;
       if (player.respawnTimer > RespawnTime) {
         player.respawnTimer = RespawnTime;
       }
@@ -56,6 +58,7 @@ namespace OriMod.Abilities {
       if (PlacedSoulLink && !Obstructed) {
         oPlayer.Debug("Soul link respawn!");
         player.Center = Center.ToWorldCoordinates();
+        PlacedSoulLink = false;
       }
     }
     protected override bool PreUpdate() {
@@ -84,6 +87,7 @@ namespace OriMod.Abilities {
         }
         CurrCharge += ChargeRate;
         if (CurrCharge > ChargeMax) {
+          player.statMana -= ManaCost;
           Active = true;
           PlacedSoulLink = true;
           oPlayer.Debug("Placed a Soul Link!");
