@@ -20,6 +20,13 @@ namespace OriMod {
       for (int i = 0; i < TilePickaxeMin.Length; i++) {
         TilePickaxeMin[i] = -1;
       }
+      TilePickaxeMin.AddMultiKey(0, new List<ushort> {
+        TileID.Sand, TileID.Slush, TileID.Silt,
+      });
+      TilePickaxeMin.AddMultiKey(1, new List<ushort> {
+        TileID.Dirt, TileID.Mud,
+        TileID.Grass, TileID.CorruptGrass, TileID.FleshGrass, TileID.HallowedGrass, TileID.JungleGrass, TileID.MushroomGrass
+      });
       TilePickaxeMin.AddMultiKey(50, new List<ushort> {
         TileID.Meteorite
       });
