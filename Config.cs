@@ -14,7 +14,7 @@ namespace OriMod {
     public static bool BurrowToMouse = false;
     public static bool AutoBurrow = false;
     public static bool RestrictiveCrouch = true;
-    public static int BurrowTier = 0;
+    public static int BurrowStrength = 0;
     public static int StompHoldDownDelay = 0;
     public static Color OriColor = Color.LightCyan;
     public static Color OriColorSecondary = Color.LightCyan;
@@ -57,10 +57,10 @@ namespace OriMod {
         Prefs.Get("AbilityCooldowns", ref AbilityCooldowns);
         Prefs.Get("BurrowToMouse", ref BurrowToMouse);
         Prefs.Get("AutoBurrow", ref AutoBurrow);
-        int temp = BurrowTier;
-        Prefs.Get("BurrowTier", ref temp);
+        int temp = BurrowStrength;
+        Prefs.Get("BurrowStrength", ref temp);
         Prefs.Get("StompHoldDownDelay", ref StompHoldDownDelay);
-        BurrowTier = temp;
+        BurrowStrength = temp;
         // Prefs.Get("BlindForestMovement", ref BlindForestMovement);
         return true;
       }
@@ -77,7 +77,7 @@ namespace OriMod {
       Prefs.Put("AbilityCooldowns", AbilityCooldowns);
       Prefs.Put("BurrowToMouse", BurrowToMouse);
       Prefs.Put("AutoBurrow", AutoBurrow);
-      Prefs.Put("BurrowTier", BurrowTier);
+      Prefs.Put("BurrowStrength", BurrowStrength);
       Prefs.Put("StompHoldDownDelay", StompHoldDownDelay);
       Prefs.Save();
     }
@@ -92,7 +92,7 @@ namespace OriMod {
       Prefs.Put("AbilityCooldowns", true);
       Prefs.Put("BurrowToMouse", false);
       Prefs.Put("AutoBurrow", false);
-      Prefs.Put("BurrowTier", 0);
+      Prefs.Put("BurrowStrength", 0);
       Prefs.Put("StompHoldDownDelay", 0);
       Prefs.Save();
     }

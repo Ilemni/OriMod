@@ -25,9 +25,9 @@ namespace OriMod.Abilities {
         }
         else return true;
       }
-      return TileCollection.TilePickaxeMin[t.type] <= Config.BurrowTier;
+      return TileCollection.TilePickaxeMin[t.type] <= Config.BurrowStrength;
     }
-    internal static bool CanBurrowAny => Config.BurrowTier < 0;
+    internal static bool CanBurrowAny => Config.BurrowStrength < 0;
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
     
     internal Vector2 Velocity = Vector2.Zero;
