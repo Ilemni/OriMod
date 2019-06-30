@@ -5,16 +5,21 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   internal static class TileCollection {
-    internal static Dictionary<ushort, int> TilePickaxeMin = new Dictionary<ushort, int>();
-    private static void AddMultiKey(this Dictionary<ushort, int> d, int v, List<ushort> keys)
-      => keys.ForEach(k => d.Add(k, v));
+    internal static int[] TilePickaxeMin;
+    private static void AddMultiKey(this int[] a, int v, List<ushort> keys)
+      => keys.ForEach(k => a[k] = v);
     internal static void AddModTile(ModTile m) {
       OriPlayer.Debug($"Adding to TilePickaxeMin <{m?.Type ?? -1}, {m?.minPick ?? -1}> (Name: {m?.Name ?? "Unknown name"}, Mod {m?.mod?.Name ?? "Unknown Mod"})", Main.LocalPlayer.GetModPlayer<OriPlayer>());
-      TilePickaxeMin.Add(m.Type, m.minPick);
+      TilePickaxeMin[m.Type] = m.minPick;
     }
     internal static void Init() {
-      if (TilePickaxeMin.Count != 0) return; // Prevent multiple Inits that causes crashing or massive lag
+      if (TilePickaxeMin != null) return;
       ErrorLogger.Log("Initializing TileCollection...");
+      
+      TilePickaxeMin = new int[ushort.MaxValue];
+      for (int i = 0; i < TilePickaxeMin.Length; i++) {
+        TilePickaxeMin[i] = -1;
+      }
       TilePickaxeMin.AddMultiKey(50, new List<ushort> {
         TileID.Meteorite
       });
@@ -51,9 +56,8 @@ namespace OriMod {
 
       for (int i = 0; i < TileID.Count; i++) {
         ushort t = (ushort)i;
-        if (Main.tileSolid[i] && !TilePickaxeMin.ContainsKey(t)) {
-          TilePickaxeMin.Add(t, 0);
-          ErrorLogger.Log($"Added unspecified tile {t}");
+        if (Main.tileSolid[i] && TilePickaxeMin[t] == -1) {
+          TilePickaxeMin[t] = 2;
         }
       }
     }

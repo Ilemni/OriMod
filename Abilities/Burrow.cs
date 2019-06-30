@@ -18,7 +18,7 @@ namespace OriMod.Abilities {
     private float SpeedExitMultiplier => 1.5f;
     internal static bool CanBurrow(Tile t) {
       if (CanBurrowAny) return true;
-      if (!TileCollection.TilePickaxeMin.ContainsKey(t.type)) {
+      if (TileCollection.TilePickaxeMin[t.type] == -1) {
         ModTile mt = TileLoader.GetTile(t.type);
         if ((mt?.Type ?? -1) != -1) {
           TileCollection.AddModTile(mt);
