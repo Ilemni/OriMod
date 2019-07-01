@@ -971,8 +971,11 @@ namespace OriMod {
     public override void ModifyDrawLayers(List<PlayerLayer> layers) {
       if (OriSet || Transforming) {
         DisableVanillaLayers();
+        if (stomp.Active) {
+          PlayerLayer.Wings.visible = false;
+        }
         Animations.SecondaryLayer.Draw(layers);
-        Animations.PlayerAnim.Draw(layers);
+        Animations.PlayerAnim.Draw(layers, 9);
         Animations.TrailAnim.Draw(layers);
         Animations.GlideAnim.Draw(layers);
         Animations.BashAnim.Draw(layers);

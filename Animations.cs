@@ -125,8 +125,8 @@ namespace OriMod {
     internal Texture2D Texture(Mod mod) => mod.GetTexture(ActiveTrack.Header.OverrideTexturePath ?? Source.TexturePath);
     internal PlayerLayer playerLayer { get; }
     internal bool Valid { get; private set; }
-    internal void Draw(List<PlayerLayer> layers) {
-      if (Valid) layers.Insert(0, playerLayer);
+    internal void Draw(List<PlayerLayer> layers, int idx=0) {
+      if (Valid) layers.Insert(idx, playerLayer);
     }
     internal Track ActiveTrack {
       get {
