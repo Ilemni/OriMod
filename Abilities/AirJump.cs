@@ -35,6 +35,7 @@ namespace OriMod.Abilities {
         if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
           Active = true;
           Handler.dash.Inactive = true;
+          Handler.dash.Refreshed = false;
           CurrTime = 0;
           CurrCount++;
           GravDir = (int)player.gravDir;
