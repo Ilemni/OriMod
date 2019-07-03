@@ -24,7 +24,7 @@ namespace OriMod {
         TileID.Sand, TileID.Slush, TileID.Silt,
       });
       TilePickaxeMin.AddMultiKey(1, new List<ushort> {
-        TileID.Dirt, TileID.Mud,
+        TileID.Dirt, TileID.Mud, TileID.ClayBlock, TileID.SnowBlock,
         TileID.Grass, TileID.CorruptGrass, TileID.FleshGrass, TileID.HallowedGrass, TileID.JungleGrass, TileID.MushroomGrass
       });
       TilePickaxeMin.AddMultiKey(50, new List<ushort> {
