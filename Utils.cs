@@ -40,5 +40,13 @@ namespace OriMod {
         box[i] = template[i].Add(center);
       }
     }
+    public static bool IsAnyBossAlive {
+      get {
+        for(int i = 0; i < Main.maxNPCs; i++) {
+          if (Main.npc[i].active && Main.npc[i].boss) return true;
+        }
+        return false;
+      }
+    }
   }
 }

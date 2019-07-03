@@ -7,6 +7,7 @@ namespace OriMod.Abilities {
     internal override bool DoUpdate => InUse || (oPlayer.Input(OriMod.DashKey.JustPressed) && !Handler.cDash.InUse);
     internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
     protected override int Cooldown => 60;
+    protected override bool CooldownOnlyOnBoss => true;
     protected override Color RefreshColor => Color.White;
     
     private static readonly float[] Speeds = new float[] {

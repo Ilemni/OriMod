@@ -117,6 +117,7 @@ namespace OriMod {
     internal bool Unlocked = true;
     protected virtual int Cooldown { get; }
     protected int CurrCooldown { get; set; }
+    protected virtual bool CooldownOnlyOnBoss => false;
     internal virtual bool CanUse => Unlocked && Refreshed;
     internal abstract bool DoUpdate { get; }
     private bool _refreshed = true;
@@ -192,7 +193,7 @@ namespace OriMod {
       }
     }
     protected virtual void PutOnCooldown(bool force=false) {
-      if (Config.AbilityCooldowns || force) {
+      if (Config.AbilityCooldowns && (CooldownOnlyOnBoss && OriModUtils.IsAnyBossAlive) || force) {
         CurrCooldown = Cooldown;
         Refreshed = false;
       }
