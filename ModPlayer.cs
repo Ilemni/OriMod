@@ -971,6 +971,7 @@ namespace OriMod {
     public override void ModifyDrawLayers(List<PlayerLayer> layers) {
       if (OriSet || Transforming) {
         DisableVanillaLayers();
+        if (soulLink.PlacedSoulLink) layers.Insert(0, OriLayers.SoulLinkLayer);
         Animations.SecondaryLayer.Draw(layers);
         Animations.PlayerAnim.Draw(layers, 9);
         Animations.TrailAnim.Draw(layers);

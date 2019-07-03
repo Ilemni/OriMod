@@ -64,6 +64,18 @@ namespace OriMod {
       DrawData data = DefaultDrawData(oPlayer, oPlayer.Animations.GlideAnim);
       Main.playerDrawData.Add(data);
     });
+    internal static readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
+      Mod mod = ModLoader.GetMod("OriMod");
+      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
+      Texture2D tex = mod.GetTexture("Dusts/SoulLinkPlaced");
+      Vector2 pos = oPlayer.soulLink.Center.ToWorldCoordinates() - Main.screenPosition;
+      SpriteEffects effect = SpriteEffects.None;
+      int frame = (int)(Main.time % 45 / 15) * 32;
+      Rectangle rect = new Rectangle(0, /*frame*/ 0, 24, 32);
+      Vector2 orig = new Vector2(12, 20);
+      DrawData data = new DrawData(tex, pos, rect, Color.White, 0, orig, 2, effect, 0);
+      Main.playerDrawData.Add(data);
+    });
 
     // Used with frames that are not aligned to center
     private static Vector2 Offset(int x=0, int y=0) {
