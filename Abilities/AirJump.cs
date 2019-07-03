@@ -34,8 +34,10 @@ namespace OriMod.Abilities {
       if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
         if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
           Active = true;
-          Handler.dash.Inactive = true;
-          Handler.dash.Refreshed = false;
+          if (Handler.dash.Active) {
+            Handler.dash.Inactive = true;
+            Handler.dash.PutOnCooldown();
+          }
           CurrTime = 0;
           CurrCount++;
           GravDir = (int)player.gravDir;
