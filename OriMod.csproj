@@ -45,39 +45,40 @@
     <Compile Include="ModPlayer.cs" />
     <Compile Include="ModWorld.cs" />
     <Compile Include="OriAbilities.cs" />
-    <Content Include="OriLayers.cs" />
+    <Compile Include="OriLayers.cs" />
     <Compile Include="OriMod.cs" />
     <Compile Include="OriPacketHandler.cs" />
     <Compile Include="PacketHandler.cs" />
     <Compile Include="SecretClass.cs" />
     <Compile Include="SeinUpgrades.cs" />
-    <Content Include="TileCollection.cs" />
+    <Compile Include="TileCollection.cs" />
     <Compile Include="Trail.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Abilities\AirJump.cs" />
     <Compile Include="Abilities\Bash.cs" />
     <Compile Include="Abilities\Burrow.cs" />
     <Compile Include="Abilities\ChargeDash.cs" />
-    <Content Include="Abilities\ChargeJump.cs" />
+    <Compile Include="Abilities\ChargeJump.cs" />
     <Compile Include="Abilities\Climb.cs" />
     <Compile Include="Abilities\Crouch.cs" />
     <Compile Include="Abilities\Dash.cs" />
     <Compile Include="Abilities\Glide.cs" />
     <Compile Include="Abilities\LookUp.cs" />
-    <Content Include="Abilities\SoulLink.cs" />
+    <Compile Include="Abilities\SoulLink.cs" />
     <Compile Include="Abilities\Stomp.cs" />
-    <Content Include="Abilities\WallChargeJump.cs" />
+    <Compile Include="Abilities\WallChargeJump.cs" />
     <Compile Include="Abilities\WallJump.cs" />
     <Compile Include="Buffs\SeinBuff.cs" />
     <Compile Include="Buffs\SeinBuffBase.cs" />
-    <Content Include="Commands\BurrowMode.cs" />
+    <Compile Include="Commands\BurrowMode.cs" />
     <Compile Include="Commands\ConfigCommand.cs" />
     <Compile Include="Commands\Debug.cs" />
     <Compile Include="Commands\Light.cs" />
     <Compile Include="Commands\SetColor.cs" />
-    <Content Include="Dusts\AbilityRefreshedDust.cs" />
+    <Compile Include="Dusts\AbilityRefreshedDust.cs" />
     <Compile Include="Dusts\SFDust.cs" />
     <Compile Include="Dusts\SFDustTrail.cs" />
+    <Compile Include="Dusts\SoulLinkChargeDust.cs" />
     <Compile Include="Items\DebugArmor.cs" />
     <Compile Include="Items\OriPotion.cs" />
     <Compile Include="Items\OriPotionEmpty.cs" />
@@ -120,6 +121,9 @@
     <Reference Include="System" />
     <Reference Include="Terraria">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\terraria\Terraria.exe</HintPath>
+    </Reference>
+    <Reference Include="Steamworks">
+      <HintPath>lib\Steamworks.NET.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
