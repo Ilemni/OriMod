@@ -8,7 +8,7 @@ namespace OriMod.Abilities {
     public WallChargeJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
-    protected override int Cooldown => 360;
+    protected override int Cooldown => 240;
     protected override Color RefreshColor => Color.Blue;
     
     internal bool CanCharge => base.CanUse && Handler.climb.IsCharging;

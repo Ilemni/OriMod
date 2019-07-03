@@ -9,7 +9,7 @@ namespace OriMod.Abilities {
     internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { NpcID = 255; }
     internal override bool DoUpdate => !Handler.dash.DoUpdate && (InUse || (oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Handler.cDash.Refreshed));
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
-    protected override int Cooldown => 300;
+    protected override int Cooldown => 180;
     protected override Color RefreshColor => Color.LightBlue;
     
     private int ManaCost => 20;
