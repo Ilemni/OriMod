@@ -27,41 +27,17 @@ namespace OriMod {
       Mod mod = ModLoader.GetMod("OriMod");
       Player player = drawInfo.drawPlayer;
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
-      Texture2D texture = mod.GetTexture("PlayerEffects/OriGlow");
-      for (int i = 0; i < 26; i++) {
-        oPlayer.Trails[i].Tick();
-      }
       if (!player.dead && !player.invis) {
         oPlayer.TrailIndex++;
         if (oPlayer.TrailIndex > 25) {
           oPlayer.TrailIndex = 0;
         }
-        Trail trail = oPlayer.Trails[oPlayer.TrailIndex];
-        trail.Position = player.Center;
-        trail.Frame = oPlayer.AnimFrame;
-        trail.Direction.X = player.direction;
-        trail.Direction.Y = (int)player.gravDir;
-        float alpha = player.velocity.Length() * 0.002f;
-        if (alpha > 0.08f) alpha = 0.08f;
-        trail.Alpha = trail.StartAlpha = alpha;
-        trail.Rotation = oPlayer.AnimRads;
-        if (trail.Alpha > 104) {
-          trail.Alpha = 104;
-        }
+        oPlayer.Trails[oPlayer.TrailIndex].Reset(oPlayer);
       }
       for (int i = 0; i < 26; i++) {
         Trail trail = oPlayer.Trails[i];
-        SpriteEffects effect = SpriteEffects.None;
-        if (trail.Direction.X == -1) effect = effect | SpriteEffects.FlipHorizontally;
-        if (trail.Direction.Y == -1) effect = effect | SpriteEffects.FlipVertically;
-
-        Color color = oPlayer.SpriteColor * (trail.Alpha * 10);
-        DrawData data = new DrawData(
-          texture,
-          new Vector2(trail.Position.X - Main.screenPosition.X, trail.Position.Y - Main.screenPosition.Y),
-          new Rectangle(trail.X, trail.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight), color, trail.Rotation,
-          new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 6), 1, effect, 0
-        );
+        trail.Tick();
+        DrawData data = trail.GetDrawData(oPlayer);
         data.position += Offset();
         Main.playerDrawData.Add(data);
       }
