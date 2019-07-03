@@ -43,7 +43,7 @@ namespace OriMod.Abilities {
       player.velocity.Y = 0.25f * (CurrTime + 1) * player.gravDir;
       if (CurrTime > 20) player.runSlowdown = 26f;
     }
-    protected override void PutOnCooldown(bool force=false) {
+    internal override void PutOnCooldown(bool force=false) {
       base.PutOnCooldown(force);
       Refreshed = false;
     }

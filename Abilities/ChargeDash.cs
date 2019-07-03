@@ -31,7 +31,7 @@ namespace OriMod.Abilities {
       packet.Write((byte)NpcID);
     }
 
-    protected override void PutOnCooldown(bool force=false) {
+    internal override void PutOnCooldown(bool force=false) {
       Refreshed = false;
       base.PutOnCooldown(force);
     }

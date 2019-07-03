@@ -192,7 +192,7 @@ namespace OriMod {
         Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor:RefreshColor)];
       }
     }
-    protected virtual void PutOnCooldown(bool force=false) {
+    internal virtual void PutOnCooldown(bool force=false) {
       if (Config.AbilityCooldowns && (CooldownOnlyOnBoss && OriModUtils.IsAnyBossAlive) || force) {
         CurrCooldown = Cooldown;
         Refreshed = false;
