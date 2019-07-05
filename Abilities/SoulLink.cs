@@ -6,7 +6,7 @@ namespace OriMod.Abilities {
   public class SoulLink : Ability {
     public SoulLink(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => OriMod.SoulLinkKey.Current || InUse;
-    internal override bool CanUse => base.CanUse && player.CheckMana(ManaCost, blockQuickMana:true) && oPlayer.IsGrounded;
+    internal override bool CanUse => base.CanUse && !AnyBossAlive && player.CheckMana(ManaCost, blockQuickMana:true) && oPlayer.IsGrounded;
     protected override int Cooldown => 1800;
 
     private static Point p(int x, int y) => new Point(x, y);
@@ -27,6 +27,7 @@ namespace OriMod.Abilities {
     private float CurrCharge = 0;
     internal bool PlacedSoulLink = false;
     internal bool Obstructed = false;
+    private bool AnyBossAlive = false;
     private bool WasDead = false;
 
     private void CheckValidPlacement(bool force=false) {
@@ -79,10 +80,20 @@ namespace OriMod.Abilities {
         }
       }
       if (CanUse && OriMod.SoulLinkKey.Current) {
+        if (OriMod.SoulLinkKey.JustPressed) {
+          AnyBossAlive = OriModUtils.IsAnyBossAlive;
+          if (AnyBossAlive) {
+          Main.NewText("Cannot place a Soul Link while powerful enemies are around");
+            return;
+          }
+        }
+        bool WasObstructed = Obstructed;
         UpdateBox();
         CheckValidPlacement(force:true);
         if (Obstructed) {
+          if (!WasObstructed) {
           Main.NewText("Cannot place a Soul Link here...");
+          }
           CurrCharge -= UnchargeRate;
           if (CurrCharge < 0) CurrCharge = 0;
         }
