@@ -319,33 +319,6 @@ namespace OriMod {
     }
     internal bool DoPlayerLight => Config.GlobalPlayerLight ? Config.DoPlayerLight : MpcPlayerLight;
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
-    
-
-
-
-    //reformat and redo these variables however it needs to be
-    //
-    //
-    public List<Vector2> soulLinkParticlePosition = new List<Vector2>();
-    public int soulLinkParticleLimit = 16;
-    public List<float> soulLinkParticleRotation = new List<float>();
-    public List<float> soulLinkParticleSize = new List<float>();
-    public List<float> soulLinkParticleShrinkRate = new List<float>();
-    public List<float> soulLinkParticleRotationSpeed = new List<float>();
-    public List<float> soulLinkParticleRotationRate = new List<float>();
-    public List<int> soulLinkParticleTexture = new List<int>();
-    public List<Vector2> soulLinkParticleVelocity = new List<Vector2>();
-    public float soulLinkParticleRotationMin = -(float)Math.PI;
-    public float soulLinkParticleRotationMax = 0;
-    public float soulLinkParticleRotationRateMin = -0.3f;
-    public float soulLinkParticleRotationrateMax = 0.3f;
-    public float soulLinkParticleSizeMin = 0.5f;
-    public float soulLinkParticleSizeMax = 2;
-    public float soulLinkParticleShrinkRateMin = 0.1f;
-    public float soulLinkParticleShrinkRateMax = 0.4f;
-    public float soulLinkParticleVelocityMin = -1f;
-    public float soulLinkParticleVelocityMax = 1f;
-    public float soulLinkParticleSpawnRadius = 6f;
     #endregion
     
     internal void Debug(string msg) {
@@ -1063,10 +1036,6 @@ namespace OriMod {
         Trails.Add(new Trail());
       }
       TileCollection.Init();
-      for (int i = 0; i < soulLinkParticleLimit; i++)
-      {
-        soulLinkParticlePosition.Add(Vector2.Zero);
-      }
     }
     public override void OnEnterWorld(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 
@@ -47,7 +48,6 @@ namespace OriMod.Abilities {
     private void UpdateBox() {
       Box.UpdateHitbox(Template, player.Center.ToTileCoordinates());
     }
-    
 
     internal void UpdateDead() {
       if (!PlacedSoulLink) return;
@@ -55,6 +55,13 @@ namespace OriMod.Abilities {
         player.respawnTimer = RespawnTime;
       }
       WasDead = true;
+    }
+    private void UpdateDust() {
+      if (Main.time % 12 != 0) return;
+      Vector2 linkPos = oPlayer.soulLink.Center.ToWorldCoordinates();
+      linkPos.Y += 8;
+      linkPos += (-Vector2.UnitY * Main.rand.NextFloat(1, 16)).RotateRandom(Math.PI * 0.7);
+      Dust dust = Main.dust[Dust.NewDust(linkPos, 16, 16, oPlayer.mod.DustType("SoulLinkDust"), newColor:Color.LightSkyBlue)];
     }
     internal void OnRespawn() {
       if (PlacedSoulLink && !Obstructed) {
@@ -73,6 +80,7 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (PlacedSoulLink) {
+        UpdateDust();
         CheckValidPlacement();
         if (Obstructed) {
           PlacedSoulLink = false;
@@ -83,7 +91,7 @@ namespace OriMod.Abilities {
         if (OriMod.SoulLinkKey.JustPressed) {
           AnyBossAlive = OriModUtils.IsAnyBossAlive;
           if (AnyBossAlive) {
-          Main.NewText("Cannot place a Soul Link while powerful enemies are around");
+            Main.NewText("Cannot place a Soul Link while powerful enemies are around");
             return;
           }
         }
@@ -92,7 +100,7 @@ namespace OriMod.Abilities {
         CheckValidPlacement(force:true);
         if (Obstructed) {
           if (!WasObstructed) {
-          Main.NewText("Cannot place a Soul Link here...");
+            Main.NewText("Cannot place a Soul Link here...");
           }
           CurrCharge -= UnchargeRate;
           if (CurrCharge < 0) CurrCharge = 0;

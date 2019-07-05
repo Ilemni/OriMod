@@ -65,41 +65,15 @@ namespace OriMod {
     internal static readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
-      Vector2 linkPos = new Vector2(oPlayer.soulLink.Center.ToWorldCoordinates().X, oPlayer.soulLink.Center.ToWorldCoordinates().Y + 8);
-
       Texture2D tex = mod.GetTexture("Dusts/SoulLinkPlaced");
+      Vector2 pos = oPlayer.soulLink.Center.ToWorldCoordinates() - Main.screenPosition;
+      int frame = (int)(Main.time % 45 / 15) * 32;
+      Rectangle rect = new Rectangle(0, /*frame*/ 0, 24, 32);
+      Vector2 orig = new Vector2(12, 20);
+      SpriteEffects effect = SpriteEffects.None;
 
-      Texture2D foregroundParticle = mod.GetTexture("PlayerEffects/soulLinkForeground");
-      Texture2D backgroundParticle = mod.GetTexture("PlayerEffects/soulLinkBackground");
-
-      //Vector2 pos = oPlayer.soulLink.Center.ToWorldCoordinates() - Main.screenPosition;
-
-      for (int i = 0; i < oPlayer.soulLinkParticleLimit; i++)
-      {
-        if (oPlayer.soulLinkParticlePosition[i] == Vector2.Zero)
-        {
-          oPlayer.soulLinkParticlePosition[i] = linkPos + new Vector2(Main.rand.NextFloat(-oPlayer.soulLinkParticleSpawnRadius, oPlayer.soulLinkParticleSpawnRadius), Main.rand.NextFloat(-oPlayer.soulLinkParticleSpawnRadius, oPlayer.soulLinkParticleSpawnRadius));
-          oPlayer.soulLinkParticleRotation[i] = Main.rand.NextFloat(oPlayer.soulLinkParticleRotationMin, oPlayer.soulLinkParticleRotationMax);
-          oPlayer.soulLinkParticleTexture[i] = Main.rand.Next(0, 3);
-          oPlayer.soulLinkParticleRotationRate[i] = Main.rand.NextFloat(oPlayer.soulLinkParticleRotationMin, oPlayer.soulLinkParticleRotationMax);
-          oPlayer.soulLinkParticleSize[i] = Main.rand.NextFloat(oPlayer.soulLinkParticleSizeMin, oPlayer.soulLinkParticleSizeMax);
-          oPlayer.soulLinkParticleShrinkRate[i] = Main.rand.NextFloat(oPlayer.soulLinkParticleShrinkRateMin, oPlayer.soulLinkParticleShrinkRateMax);
-          oPlayer.soulLinkParticleVelocity[i] = new Vector2(Main.rand.NextFloat(oPlayer.soulLinkParticleVelocityMin, oPlayer.soulLinkParticleVelocityMax), Main.rand.NextFloat(0, oPlayer.soulLinkParticleVelocityMax));
-        }
-        int frame = /*(int)(Main.time % 45 / 15) * 32*/ oPlayer.soulLinkParticleTexture[i] * 24;
-        Rectangle rect = new Rectangle(0, frame, 20, 24);
-        Vector2 orig = new Vector2(10, 12);
-        SpriteEffects effect = SpriteEffects.None;
-        Vector2 pos = oPlayer.soulLinkParticlePosition[i] - Main.screenPosition;
-
-        //update particle
-        oPlayer.soulLinkParticlePosition[i] += oPlayer.soulLinkParticleVelocity[i];
-
-        DrawData data = new DrawData(foregroundParticle, pos, rect, Color.White, 0, orig, 2, effect, 0);
-        Main.playerDrawData.Add(data);
-      }
-
-
+      DrawData data = new DrawData(tex, pos, rect, Color.White, 0, orig, 2, effect, 0);
+      Main.playerDrawData.Add(data);
     });
     private static DrawData DefaultDrawData(OriPlayer oPlayer, Animation anim) {
       Player player = oPlayer.player;
