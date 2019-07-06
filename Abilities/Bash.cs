@@ -73,7 +73,7 @@ namespace OriMod.Abilities {
     private bool BashNpcFilter(NPC npc) =>
       npc.friendly || CannotBash.Contains(npc.type) || npc.boss || npc.aiStyle == 37;
     private bool BashProjFilter(Projectile proj) =>
-      proj.minion || proj.sentry || proj.trap || CannotBash.Contains(proj.type);
+      proj.minion || proj.sentry || proj.trap || CannotBashProj.Contains(proj.type);
     
     private bool BashStart() {
       int tempNpcID = byte.MaxValue;
