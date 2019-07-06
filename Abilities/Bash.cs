@@ -9,7 +9,7 @@ namespace OriMod.Abilities {
     internal Bash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BashKey.Current);
     internal override bool CanUse => base.CanUse && Inactive && !Handler.stomp.InUse && !Handler.cJump.InUse;
-    protected override int Cooldown => 90;
+    protected override int Cooldown => 45;
     protected override Color RefreshColor => Color.LightYellow;
     
     public static List<int> CannotBash = new List<int> {
@@ -26,9 +26,9 @@ namespace OriMod.Abilities {
       ProjectileID.WoodHook, ProjectileID.WormHook,
     };
     private int BashDamage => 15;
-    private float BashPlayerStrength => 12f;
-    private float BashNpcStrength => 10f;
-    private float BashRange => 120f;
+    private float BashPlayerStrength => 15f;
+    private float BashNpcStrength => 12f;
+    private float BashRange => 48f;
     private int MinBashDuration => 30;
     private int MaxBashDuration => 85;
     
@@ -54,10 +54,10 @@ namespace OriMod.Abilities {
         TargetIsProjectile = r.ReadBoolean();
         if (TargetIsProjectile) {
           ProjID = r.ReadUInt16();
-      }
+        }
         else {
           NpcID = r.ReadByte();
-    }
+        }
       }
     }
     protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
@@ -93,7 +93,7 @@ namespace OriMod.Abilities {
         oProj.BashPos = BashProj.Center;
       }
       else if (isBashingNpc) {
-      NpcID = (byte)tempNpcID;
+        NpcID = (byte)tempNpcID;
         WormID = BashNpc.aiStyle == 6 ? (byte)BashNpc.ai[3] : (byte)255; 
         OriNPC oNpc = (IsBashingWorm ? WormNpc : BashNpc).GetGlobalNPC<OriNPC>();
         oNpc.IsBashed = true;
@@ -102,7 +102,7 @@ namespace OriMod.Abilities {
       oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.7f);
       return true;
     }
-    
+
     protected override void UpdateActive() {
       if (CurrDuration == MinBashDuration + 2) {
         oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
@@ -122,7 +122,7 @@ namespace OriMod.Abilities {
       }
       else {
         OriNPC bashNpc = (IsBashingWorm ? WormNpc : BashNpc).GetGlobalNPC<OriNPC>();
-      bashNpc.IsBashed = false;
+        bashNpc.IsBashed = false;
         int damage = BashDamage + OriWorld.GlobalSeinUpgrade * 9;
         player.ApplyDamageToNPC(BashNpc, damage, 0, 1, false);
       }
@@ -202,7 +202,7 @@ namespace OriMod.Abilities {
           return;
         }
         if (Active) {
-          if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || Npc == null || !Npc.active) {
+          if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || BashEntity == null || !BashEntity.active) {
             Ending = true;
           }
           return;
