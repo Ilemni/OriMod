@@ -234,8 +234,8 @@ namespace OriMod {
     private int TeatherTrailTimer = 0;
 
     // Animation Variables
-    internal const int SpriteWidth = 128;
-    internal const int SpriteHeight = 128;
+    internal static int SpriteWidth => AnimationHandler.PlayerAnim.TileSize.X;
+    internal static int SpriteHeight => AnimationHandler.PlayerAnim.TileSize.Y;
     internal Animations Animations;
     internal Point AnimFrame;
     /// <summary>

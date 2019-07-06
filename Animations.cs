@@ -122,41 +122,28 @@ namespace OriMod {
   }
   internal class Animation {
     internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
-    internal Texture2D Texture(Mod mod) => mod.GetTexture(ActiveTrack.Header.OverrideTexturePath ?? Source.TexturePath);
-    internal PlayerLayer playerLayer { get; }
+    internal Texture2D Texture { get; }
+    internal PlayerLayer PlayerLayer { get; }
     internal bool Valid { get; private set; }
     internal void Draw(List<PlayerLayer> layers, int idx=0) {
-      if (Valid) layers.Insert(idx, playerLayer);
+      if (Valid) layers.Insert(idx, this.PlayerLayer);
     }
-    internal Track ActiveTrack {
-      get {
-        if (!Valid) {
-          return Source.Tracks.First().Value;
-        }
-        return Source.Tracks[Handler.owner.AnimName];
-      }
-    }
-    internal Frame ActiveFrame {
-      get {
-        if (Handler.owner.AnimIndex >= ActiveTrack.Frames.Length) {
-          return ActiveTrack[0];
-        }
-        return ActiveTrack[Handler.owner.AnimIndex];
-      }
-    }
+    internal Track ActiveTrack => Valid ? Source.Tracks[Handler.owner.AnimName] : Source.Tracks.First().Value;
+    internal Frame ActiveFrame => ActiveTrack[Handler.owner.AnimIndex < ActiveTrack.Frames.Length ? Handler.owner.AnimIndex : 0];
     internal Point ActiveTile => ActiveFrame.Tile.Multiply(Source.TileSize);
     internal Track this[string name] => Source.Tracks[name];
     internal Animations Handler = null;
     internal AnimationSource Source;
-    internal Animation(Animations handler, AnimationSource source, PlayerLayer pLayer) {
+    internal Animation(Animations handler, AnimationSource source, PlayerLayer playerLayer) {
       Handler = handler;
       Source = source;
-      playerLayer = pLayer;
+      this.PlayerLayer = playerLayer;
+      Texture = ModLoader.GetMod("OriMod").GetTexture(ActiveTrack.Header.OverrideTexturePath ?? Source.TexturePath);
     }
   }
   internal class Animations {
     internal OriPlayer owner;
-    internal Animation PlayerAnim, SecondaryLayer, TrailAnim, BashAnim, GlideAnim, TransformAnim;
+    internal Animation PlayerAnim, SecondaryLayer, TrailAnim, BashAnim, GlideAnim;
     internal Animations(OriPlayer oPlayer) {
       owner = oPlayer;
       PlayerAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.PlayerSprite);
