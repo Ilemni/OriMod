@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 
@@ -48,5 +49,46 @@ namespace OriMod {
         return false;
       }
     }
+    public static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float dist, out int entityId, Func<T, bool> filter=null) where T : Entity {
+      entityId = int.MaxValue;
+      float oldDist = dist;
+      dist = (float)Math.Pow(dist, 2);
+      bool inRange = false;
+      for (int e = 0; e < arr.Length; e++) {
+        T entity = arr[e];
+        if (entity == null || !entity.active || (filter != null ? filter(entity) : false)) continue;
+        float newDist = me.DistanceShortSquared(entity);
+        if (newDist < dist) {
+          dist = newDist;
+          inRange = true;
+          entityId = entity.whoAmI;
+        }
+      }
+      if (inRange) {
+        dist = (float)Math.Sqrt(dist);
+      }
+      else {
+        dist = oldDist;
+      }
+      return inRange;
+    }
+    public static Vector2 ClosestSideTo(this Entity me, Entity other) =>
+      new Vector2(
+        me.Left.X > other.Left.X ? me.Left.X : me.Right.X < other.Right.Y ? me.Right.X : me.Center.X,
+        me.Top.Y > other.Top.Y ? me.Top.Y : me.Bottom.Y < other.Bottom.Y ? me.Bottom.Y : me.Center.Y
+      );
+    public static Vector2 ClosestSideTo(this Entity me, Vector2 vect) =>
+      new Vector2(
+        me.Left.X > vect.X ? me.Left.X : me.Right.X < vect.Y ? me.Right.X : me.Center.X,
+        me.Top.Y > vect.Y ? me.Top.Y : me.Bottom.Y < vect.Y ? me.Bottom.Y : me.Center.Y
+      );
+    public static float DistanceShort(this Entity me, Entity other) =>
+      Vector2.Distance(me.ClosestSideTo(other), other.ClosestSideTo(me));
+    public static float DistanceShortSquared(this Entity me, Entity other) =>
+      Vector2.DistanceSquared(me.ClosestSideTo(other), other.ClosestSideTo(me));
+    public static float DistanceShort(this Entity me, Vector2 otherVect) =>
+      Vector2.Distance(me.ClosestSideTo(otherVect), otherVect);
+    public static float DistanceShortSquared(this Entity me, Vector2 otherVect) =>
+      Vector2.DistanceSquared(me.ClosestSideTo(otherVect), otherVect);
   }
 }
