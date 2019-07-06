@@ -1,5 +1,6 @@
-using Microsoft.Xna.Framework;
 using System.IO;
+using Microsoft.Win32;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,6 +12,7 @@ namespace OriMod {
     public static string ConfigFileRelativePath => "Mod Configs/OriMod.json";
     public static void ReloadConfigFromFile() { Config.ReadConfig(); }
     public static void ResetConfigFromDefaults() { Config.ResetConfig(); }
+    public static bool? OwnsBlindForest = null;
       
     public static ModHotKey SoulLinkKey;
     public static ModHotKey BashKey;
@@ -68,6 +70,23 @@ namespace OriMod {
         AddEquipTexture(null, EquipType.Head, "OriHead", "OriMod/PlayerEffects/OriHead");
       }
       LoadSeinUpgrades();
+      if (OwnsBlindForest == null) {
+        bool owned =
+          checkInstalled(@"Software\Valve\Steam\Apps\387290") ||
+          checkInstalled(@"Software\Valve\Steam\Apps\261570") ||
+          checkInstalled(@"Software\GOG.com\Games\1384944984", checkValue:null);
+        ErrorLogger.Log($"Ori is owned: {owned}");
+      }
+    }
+    public static bool checkInstalled(string rkey, string rvalue="Installed", string checkValue="1") {
+      RegistryKey key = Registry.CurrentUser.OpenSubKey(rkey);
+      if (key == null) return false;
+      if (checkValue == null || key.GetValue(rvalue).ToString() == checkValue) {
+        key.Close();
+        return true;
+      }
+      key.Close();
+      return false;
     }
     public override void Unload() {
       BashKey = null;
