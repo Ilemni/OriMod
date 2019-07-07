@@ -126,8 +126,8 @@ namespace OriMod {
     internal Texture2D Texture => ActiveTrack.Header.Texture ?? _texture;
     internal PlayerLayer PlayerLayer { get; }
     internal bool Valid { get; private set; }
-    internal void Draw(List<PlayerLayer> layers, int idx=0) {
-      if (Valid) layers.Insert(idx, this.PlayerLayer);
+    internal void Draw(List<PlayerLayer> layers, int idx=0, bool force=false) {
+      if (Valid || force) layers.Insert(idx, this.PlayerLayer);
     }
     internal Track ActiveTrack => Valid ? Source.Tracks[Handler.owner.AnimName] : Source.Tracks.First().Value;
     internal Frame ActiveFrame => ActiveTrack[Handler.owner.AnimIndex < ActiveTrack.Frames.Length ? Handler.owner.AnimIndex : 0];

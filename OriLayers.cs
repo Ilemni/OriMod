@@ -10,9 +10,14 @@ namespace OriMod {
     private static Texture2D SecondaryTexture = null;
     internal static readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
-      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
+      Player player = drawInfo.drawPlayer;
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
       
       DrawData data = DefaultDrawData(oPlayer, oPlayer.Animations.PlayerAnim);
+      // Current check for if in player select screen
+      if (player.position == Vector2.Zero) {
+        data.position = drawInfo.position - Main.screenPosition + player.Size / 2;
+      }
       data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TransformStart" ? Color.White : oPlayer.SpriteColor;
       Main.playerDrawData.Add(data);
     });
