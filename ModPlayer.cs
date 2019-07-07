@@ -997,7 +997,7 @@ namespace OriMod {
       PlayerLayer.ShoeAcc.visible = false;
       PlayerLayer.HandOnAcc.visible = false;
       PlayerLayer.HandOffAcc.visible = false;
-      if (stomp.InUse || airJump.InUse || burrow.InUse || Transforming) {
+      if (stomp.InUse || airJump.InUse || burrow.InUse || OnWall || Transforming) {
         PlayerLayer.Wings.visible = false;
       }
     }
