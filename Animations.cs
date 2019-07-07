@@ -27,13 +27,13 @@ namespace OriMod {
     internal InitType Init;
     internal LoopMode Loop;
     internal PlaybackMode Playback;
-    internal string OverrideTexturePath { get; }
+    internal Texture2D Texture { get; }
     internal string TransferTo { get; }
     internal Header(InitType init=InitType.None, LoopMode loop=LoopMode.None, PlaybackMode playback=PlaybackMode.None, string transferTo=null, string overrideTexturePath=null) {
       Init = init;
       Loop = loop;
       Playback = playback;
-      OverrideTexturePath = overrideTexturePath;
+      if (overrideTexturePath != null) Texture = ModLoader.GetMod("OriMod").GetTexture(overrideTexturePath);
     }
     internal void OverwriteSome(Header other) {
       if (other.Init != 0) Init = other.Init;
@@ -50,7 +50,7 @@ namespace OriMod {
     internal static Header Default => new Header(InitType.Range, LoopMode.Always, PlaybackMode.Normal);
     internal static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
     public override string ToString()
-      => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}" + (OverrideTexturePath != null ? $" | Texture Path: \"{OverrideTexturePath}\"" : "");
+      => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}" + (Texture != null ? $" | Texture Path: \"{Texture.Name}\"" : "");
   }
   internal class Frame {
     internal byte X;
@@ -122,7 +122,8 @@ namespace OriMod {
   }
   internal class Animation {
     internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
-    internal Texture2D Texture { get; }
+    private Texture2D _texture { get; }
+    internal Texture2D Texture => ActiveTrack.Header.Texture ?? _texture;
     internal PlayerLayer PlayerLayer { get; }
     internal bool Valid { get; private set; }
     internal void Draw(List<PlayerLayer> layers, int idx=0) {
@@ -138,7 +139,7 @@ namespace OriMod {
       Handler = handler;
       Source = source;
       this.PlayerLayer = playerLayer;
-      Texture = ModLoader.GetMod("OriMod").GetTexture(ActiveTrack.Header.OverrideTexturePath ?? Source.TexturePath);
+      _texture = ModLoader.GetMod("OriMod").GetTexture(Source.TexturePath);
     }
   }
   internal class Animations {
