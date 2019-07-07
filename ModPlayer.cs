@@ -841,7 +841,9 @@ namespace OriMod {
       if (OriSet && !Transforming) {
         DefaultPostRunSpeeds();
         Abilities.Tick();
-        if (Config.SmoothCamera) Main.SetCameraLerp(0.05f, 1);
+        if (Config.SmoothCamera) {
+          Main.SetCameraLerp(OriModUtils.IsAnyBossAlive(check:Main.time % 120 == 0) ? 0.15f : 0.05f, 1);
+        }
         if (OnWall && (IsGrounded || player.velocity.Y < 0) && !climb.InUse) {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
