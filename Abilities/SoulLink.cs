@@ -125,6 +125,7 @@ namespace OriMod.Abilities {
       }
       if (CurrCharge > 0 && CurrCharge < ChargeMax) {
         Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("SoulLinkChargeDust"), newColor:Color.DeepSkyBlue)];
+        dust.customData = player;
         dust.position += -Vector2.UnitY.RotatedBy((CurrCharge / ChargeMax) * 2 * Math.PI) * 56;
       }
       TickCooldown();
