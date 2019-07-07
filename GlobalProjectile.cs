@@ -11,6 +11,7 @@ namespace OriMod {
     public override bool PreAI(Projectile proj) {
       if (IsBashed) {
         proj.Center = BashPos;
+        proj.friendly = true;
         return false;
       }
       return base.PreAI(proj);
