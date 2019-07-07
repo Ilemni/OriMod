@@ -89,7 +89,7 @@ namespace OriMod.Abilities {
       }
       if (CanUse && OriMod.SoulLinkKey.Current) {
         if (OriMod.SoulLinkKey.JustPressed) {
-          AnyBossAlive = OriModUtils.IsAnyBossAlive;
+          AnyBossAlive = OriModUtils.IsAnyBossAlive(check:true);
           if (AnyBossAlive) {
             Main.NewText("Cannot place a Soul Link while powerful enemies are around");
             return;

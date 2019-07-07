@@ -41,13 +41,22 @@ namespace OriMod {
         box[i] = template[i].Add(center);
       }
     }
-    public static bool IsAnyBossAlive {
-      get {
-        for(int i = 0; i < Main.maxNPCs; i++) {
-          if (Main.npc[i].active && Main.npc[i].boss) return true;
+    public static void CheckAnyBossAlive() {
+      if (Main.time - 5 < lastBossCheck) return;
+      lastBossCheck = Main.time;
+      for(int i = 0; i < Main.maxNPCs; i++) {
+        if (Main.npc[i].active && Main.npc[i].boss) {
+          _isAnyBossAlive = true;
+          return;
         }
-        return false;
       }
+      _isAnyBossAlive = false;
+    }
+    private static double lastBossCheck = 0;
+    private static bool _isAnyBossAlive = false;
+    public static bool IsAnyBossAlive(bool check=false) {
+      if (check) CheckAnyBossAlive();
+      return _isAnyBossAlive;
     }
     public static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float dist, out int entityId, Func<T, bool> filter=null) where T : Entity {
       entityId = int.MaxValue;
