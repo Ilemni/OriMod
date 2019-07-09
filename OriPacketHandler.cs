@@ -7,9 +7,7 @@ using Terraria.ModLoader;
 namespace OriMod {
   internal class OriPlayerPacketHandler : PacketHandler {
     internal OriPlayerPacketHandler(byte handlerType) : base(handlerType)
-    {
-      HandlerType = handlerType;
-    }
+      => HandlerType = handlerType;
     internal const byte OriState = 1;
     internal override void HandlePacket(BinaryReader reader, int fromWho) {
       byte packetType = reader.ReadByte();
@@ -22,7 +20,7 @@ namespace OriMod {
           break;
         default:
           Main.NewText("Unknown OriStateHandler byte " + packetType, Color.Red);
-          ErrorLogger.Log("Unknown OriStateHandler byte " + packetType);
+          OriMod.Log.Error("Unknown OriStateHandler byte " + packetType);
           break;
       }
     }

@@ -11,7 +11,11 @@ namespace OriMod {
     public static string GithubProjectName => "OriMod";
     internal static bool? OwnsBlindForest { get; private set; }
 
-      
+    public static OriConfigClient1 ConfigClient { get; internal set; }
+    public static OriConfigClient2 ConfigAbilities { get; internal set; }
+    
+    internal static log4net.ILog Log => OriMod.Instance.Logger;
+
     public static ModHotKey SoulLinkKey;
     public static ModHotKey BashKey;
     public static ModHotKey DashKey;
@@ -54,8 +58,6 @@ namespace OriMod {
       RecipeGroup.RegisterGroup("OriMod:MovementAccessories", group2);
     }
     public override void Load() {
-      Config.Load();
-
       SoulLinkKey = RegisterHotKey("Soul Link", "E");
       BashKey = RegisterHotKey("Bash", "Mouse2");
       DashKey = RegisterHotKey("Dash", "LeftControl");
@@ -73,7 +75,7 @@ namespace OriMod {
           checkInstalled(@"Software\Valve\Steam\Apps\387290") ||
           checkInstalled(@"Software\Valve\Steam\Apps\261570") ||
           checkInstalled(@"Software\GOG.com\Games\1384944984", checkValue:null);
-        ErrorLogger.Log($"Ori is owned: {owned}");
+        Log.Info($"Ori is owned: {owned}");
       }
     }
     public static bool checkInstalled(string rkey, string rvalue="Installed", string checkValue="1") {
@@ -106,7 +108,7 @@ namespace OriMod {
             oPlayer.ResetData();
           }
           else {
-            ErrorLogger.Log(this.Name + ".Call() - ResetPlayerModData - Invalid player");
+            Log.Warn(this.Name + ".Call() - ResetPlayerModData - Invalid player");
           }
         }
       }
@@ -129,7 +131,7 @@ namespace OriMod {
           break;
         default:
           Main.NewText("Unknown Packet " + packetClass, Color.Red);
-          ErrorLogger.Log("Unknown Packet " + packetClass);
+          OriMod.Log.Warn("Unknown Packet " + packetClass);
           break;
       }
     }

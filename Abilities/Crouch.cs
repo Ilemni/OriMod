@@ -5,14 +5,14 @@ namespace OriMod.Abilities {
     internal Crouch(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.Current.Down); 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Restricted;
-    private bool Restricted => Config.RestrictiveCrouch ? false : player.controlLeft || player.controlRight;
+    private bool Restricted => OriMod.ConfigClient.SoftCrouch ? player.controlLeft || player.controlRight : false;
     private int StartDuration => 10;
     private int EndDuration => 4;
     
     private int CurrTime = 0;
 
     protected override void UpdateUsing() {
-      if (Config.RestrictiveCrouch) {
+      if (!OriMod.ConfigClient.SoftCrouch) {
         player.runAcceleration = 0;
         player.maxRunSpeed = 0;
         player.velocity.X = 0;

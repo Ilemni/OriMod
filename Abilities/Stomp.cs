@@ -15,7 +15,7 @@ namespace OriMod.Abilities {
     private float MaxFallSpeed => 28f;
     private int StartDuration => 24;
     private int MinDuration => 30;
-    private int HoldDownDelay => Config.StompHoldDownDelay;
+    private int HoldDownDelay => OriMod.ConfigClient.StompHoldDownDelay;
 
     private int CurrTime = 0;
     private int CurrHoldDown = 0;

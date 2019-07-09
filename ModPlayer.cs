@@ -284,9 +284,7 @@ namespace OriMod {
 
     private Color _spriteColor = Color.LightCyan;
     internal Color SpriteColor {
-      get {
-        return Main.myPlayer == player.whoAmI ? (Color)Config.OriColor : _spriteColor;
-      }
+      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColor : _spriteColor;
       set {
         if (Main.myPlayer != player.whoAmI) {
           _spriteColor = value;
@@ -295,9 +293,7 @@ namespace OriMod {
     }
     private Color _spriteColorSecondary = Color.LightCyan;
     internal Color SpriteColorSecondary {
-      get {
-        return Main.myPlayer == player.whoAmI ? (Color)Config.OriColorSecondary : _spriteColorSecondary;
-      }
+      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColorSecondary : _spriteColorSecondary;
       set {
         if (Main.myPlayer != player.whoAmI) {
           _spriteColorSecondary = value;
@@ -317,10 +313,10 @@ namespace OriMod {
         _mpcPlayerLight = value;
       }
     }
-    internal bool DoPlayerLight => Config.GlobalPlayerLight ? Config.DoPlayerLight : MpcPlayerLight;
+    internal bool DoPlayerLight => OriMod.ConfigClient.GlobalPlayerLight ? OriMod.ConfigClient.PlayerLight : MpcPlayerLight;
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
-    #endregion
-    
+        #endregion
+
     internal void Debug(string msg) => Debug(msg, this);
     internal static void Debug(string msg, OriPlayer oPlayer) {
       if (oPlayer.debugMode && oPlayer.player.whoAmI == Main.myPlayer) {
@@ -834,7 +830,7 @@ namespace OriMod {
       if (OriSet && !Transforming) {
         DefaultPostRunSpeeds();
         Abilities.Tick();
-        if (Config.SmoothCamera) {
+        if (OriMod.ConfigClient.SmoothCamera) {
           Main.SetCameraLerp(OriModUtils.IsAnyBossAlive(check:Main.time % 120 == 0) ? 0.15f : 0.05f, 1);
         }
         if (OnWall && (IsGrounded || player.velocity.Y < 0) && !climb.InUse) {

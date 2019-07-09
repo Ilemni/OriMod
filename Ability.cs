@@ -146,7 +146,7 @@ namespace OriMod {
       }
     }
     internal virtual void PutOnCooldown(bool force=false) {
-      if (Config.AbilityCooldowns && (!CooldownOnlyOnBoss || CooldownOnlyOnBoss && OriModUtils.IsAnyBossAlive(check:true)) || force) {
+      if (OriMod.ConfigClient.AbilityCooldowns && (!CooldownOnlyOnBoss || CooldownOnlyOnBoss && OriModUtils.IsAnyBossAlive(check:true)) || force) {
         CurrCooldown = Cooldown;
         Refreshed = false;
       }

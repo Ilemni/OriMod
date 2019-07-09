@@ -25,9 +25,9 @@ namespace OriMod.Abilities {
         }
         else return true;
       }
-      return TileCollection.TilePickaxeMin[t.type] <= Config.BurrowStrength;
+      return TileCollection.TilePickaxeMin[t.type] <= OriMod.ConfigAbilities.BurrowStrength;
     }
-    internal static bool CanBurrowAny => Config.BurrowStrength < 0;
+    internal static bool CanBurrowAny => OriMod.ConfigAbilities.BurrowStrength < 0;
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
     
     internal Vector2 Velocity = Vector2.Zero;
@@ -106,7 +106,7 @@ namespace OriMod.Abilities {
       }
       Vector2 oldVel = Velocity;
       Vector2 newVel = Vector2.Zero;
-      if (Config.BurrowToMouse) {
+      if (OriMod.ConfigClient.BurrowToMouse) {
         newVel = player.AngleTo(Main.MouseWorld).ToRotationVector2();
       }
       else {
@@ -207,7 +207,7 @@ namespace OriMod.Abilities {
         if (vel == Vector2.Zero) {
           return;
         }
-        if (Config.AutoBurrow) AutoBurrow = true;
+        if (OriMod.ConfigClient.AutoBurrow) AutoBurrow = true;
         Active = true;
         CurrCooldown = Cooldown;
         if (AutoBurrow) {
