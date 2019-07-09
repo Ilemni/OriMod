@@ -1,7 +1,7 @@
 **/.vscode/
 **/bin/
 **/obj/
-**/vs/
+**/.vs/
 **/Sounds/
 *.txt
 SecretClass.cs
@@ -9,3 +9,4 @@ SecretClass.cs
 !description.txt
 *.xcf
 *.pdn
+ori_sheet_*.png
