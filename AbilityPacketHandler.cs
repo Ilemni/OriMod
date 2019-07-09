@@ -22,7 +22,7 @@ namespace OriMod {
           break;
         default:
           Main.NewText("Unknown AbilityPacket type" + packetType, Color.Red);
-          ErrorLogger.Log("Unknown AbilityPacket type" + packetType);
+          // ErrorLogger.Log("Unknown AbilityPacket type" + packetType);
           break;
       }
     }

@@ -6,10 +6,10 @@ using Terraria.ModLoader;
 namespace OriMod {
   public abstract class Ability {
     internal byte id = 255;
-    protected Player player;
-    protected OriPlayer oPlayer;
-    protected bool isLocalPlayer;
-    protected OriAbilities Handler;
+    protected Player player { get; }
+    protected OriPlayer oPlayer { get; }
+    protected bool isLocalPlayer { get; }
+    protected OriAbilities Handler { get; }
     internal Ability(OriPlayer oriPlayer, OriAbilities handler) {
       player = oriPlayer.player;
       oPlayer = oriPlayer;
@@ -44,69 +44,24 @@ namespace OriMod {
     /// <value></value>
     public States State { get; internal set; }
     public bool Active {
-      get {
-        return State == States.Active;
-      }
-      internal set {
-        if (value == true) {
-          State = States.Active;
-        }
-        else {
-          ErrorLogger.Log("Error: Cannot directly set Ability.Active to false");
-        }
-      }
+      get => State == States.Active;
+      internal set => State = value ? States.Active : State;
     }
     public bool Starting {
-      get {
-        return State == States.Starting;
-      }
-      internal set {
-        if (value == true) {
-          State = States.Starting;
-        }
-        else {
-          ErrorLogger.Log("Error: Cannot directly set Ability.Starting to false");
-        }
-      }
+      get => State == States.Starting;
+      internal set => State = value ? States.Starting : State;
     }
     public bool Ending {
-      get {
-        return State == States.Ending;
-      }
-      internal set {
-        if (value == true) {
-          State = States.Ending;
-        }
-        else {
-          ErrorLogger.Log("Error: Cannot directly set Ability.Ending to false");
-        }
-      }
+      get => State == States.Ending;
+      internal set => State = value ? States.Ending : State;
     }
     public bool Inactive {
-      get {
-        return State == States.Inactive;
-      }
-      internal set {
-        if (value == true) {
-          State = States.Inactive;
-        }
-        else {
-          ErrorLogger.Log("Error: Cannot directly set Ability.Inactive to false");
-        }
-      }
+      get => State == States.Inactive;
+      internal set => State = value ? States.Inactive : State;
     }
     public bool Failed {
-      get {
-        return State == States.Failed;
-      }
-      internal set {
-        if (value == true) {
-          State = States.Failed;
-        }
-        else {
-          ErrorLogger.Log("Error: Cannot directly set Ability.Failed to false");
-        }
-      }
+      get => State == States.Failed;
+      internal set => State = value ? States.Failed : State;
     }
     /// <summary>
     /// Determines if the ability has been unlocked by the player.
@@ -116,17 +71,15 @@ namespace OriMod {
     /// <value></value>
     internal bool Unlocked = true;
     protected virtual int Cooldown { get; }
-    protected int CurrCooldown { get; set; }
+    protected int CurrCooldown;
     protected virtual bool CooldownOnlyOnBoss => false;
     internal virtual bool CanUse => Unlocked && Refreshed;
     internal abstract bool DoUpdate { get; }
     private bool _refreshed = true;
     internal bool Refreshed {
-      get {
-        return _refreshed;
-      }
+      get => _refreshed;
       set {
-        if (!_refreshed && value == true) {
+        if (!_refreshed && value) {
           OnRefreshed();
         }
         _refreshed = value;
@@ -137,7 +90,7 @@ namespace OriMod {
     /// Checks if the ability is active
     /// </summary>
     /// <value>True if the state is neither Inactive nor Failed</value>
-    public bool InUse => State != States.Inactive && State != States.Failed;
+    public bool InUse => !Inactive && !Failed;
     
     internal void PreReadPacket(BinaryReader r) {
       State = (States)r.ReadByte();
@@ -193,7 +146,7 @@ namespace OriMod {
       }
     }
     internal virtual void PutOnCooldown(bool force=false) {
-      if (Config.AbilityCooldowns && (CooldownOnlyOnBoss && OriModUtils.IsAnyBossAlive(check:true)) || force) {
+      if (Config.AbilityCooldowns && (!CooldownOnlyOnBoss || CooldownOnlyOnBoss && OriModUtils.IsAnyBossAlive(check:true)) || force) {
         CurrCooldown = Cooldown;
         Refreshed = false;
       }

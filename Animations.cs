@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod {
@@ -34,11 +36,6 @@ namespace OriMod {
       Loop = loop;
       Playback = playback;
       if (overrideTexturePath != null) Texture = ModLoader.GetMod("OriMod").GetTexture(overrideTexturePath);
-    }
-    internal void OverwriteSome(Header other) {
-      if (other.Init != 0) Init = other.Init;
-      if (other.Loop != 0) Loop = other.Loop;
-      if (other.Playback != 0) Playback = other.Playback;
     }
     internal Header CopySome(Header other) {
       return new Header(
@@ -107,44 +104,40 @@ namespace OriMod {
     internal Frame this[int idx] => Frames[idx];
   }
   internal class AnimationSource {
-    internal string TexturePath { get; }
     internal Dictionary<string, Track> Tracks { get; }
-    internal string[] TrackNames;
     internal Point TileSize { get; }
+    internal Texture2D Texture { get; }
+    internal string[] TrackNames { get; }
     internal Track this[string name] => Tracks[name];
     internal AnimationSource(string texture, int x, int y, Dictionary<string, Track> tracks) {
-      TexturePath = texture;
+      Texture = ModLoader.GetMod("OriMod").GetTexture(texture);
       Tracks = tracks;
       TrackNames = tracks.Keys.ToArray();
       TileSize = new Point(x, y);
     }
-
   }
   internal class Animation {
-    internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
-    private Texture2D _texture { get; }
-    internal Texture2D Texture => ActiveTrack.Header.Texture ?? _texture;
-    internal PlayerLayer PlayerLayer { get; }
+    internal Texture2D Texture => ActiveTrack.Header.Texture ?? Source.Texture;
+    private PlayerLayer PlayerLayer { get; }
     internal bool Valid { get; private set; }
+    internal Track ActiveTrack => Valid ? Source.Tracks[Handler.owner.AnimName] : Source.Tracks.First().Value;
+    internal Frame ActiveFrame => ActiveTrack[Handler.owner.AnimIndex < ActiveTrack.Frames.Length ? Handler.owner.AnimIndex : 0];
+    internal Rectangle ActiveTile => new Rectangle(ActiveFrame.Tile.X * Source.TileSize.X, ActiveFrame.Tile.Y * Source.TileSize.Y, Source.TileSize.X, Source.TileSize.Y);
+    internal Animations Handler { get; }
+    internal AnimationSource Source { get; }
     internal void Draw(List<PlayerLayer> layers, int idx=0, bool force=false) {
       if (Valid || force) layers.Insert(idx, this.PlayerLayer);
     }
-    internal Track ActiveTrack => Valid ? Source.Tracks[Handler.owner.AnimName] : Source.Tracks.First().Value;
-    internal Frame ActiveFrame => ActiveTrack[Handler.owner.AnimIndex < ActiveTrack.Frames.Length ? Handler.owner.AnimIndex : 0];
-    internal Point ActiveTile => ActiveFrame.Tile.Multiply(Source.TileSize);
-    internal Track this[string name] => Source.Tracks[name];
-    internal Animations Handler = null;
-    internal AnimationSource Source;
+    internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
     internal Animation(Animations handler, AnimationSource source, PlayerLayer playerLayer) {
       Handler = handler;
       Source = source;
       this.PlayerLayer = playerLayer;
-      _texture = ModLoader.GetMod("OriMod").GetTexture(Source.TexturePath);
     }
   }
   internal class Animations {
-    internal OriPlayer owner;
-    internal Animation PlayerAnim, SecondaryLayer, TrailAnim, BashAnim, GlideAnim;
+    internal OriPlayer owner { get; }
+    internal readonly Animation PlayerAnim, SecondaryLayer, TrailAnim, BashAnim, GlideAnim;
     internal Animations(OriPlayer oPlayer) {
       owner = oPlayer;
       PlayerAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.PlayerSprite);
@@ -155,11 +148,11 @@ namespace OriMod {
     }
   }
   internal static partial class AnimationHandler {
-    private static Frame f(int frameX, int frameY, int duration=-1) { return new Frame(frameX, frameY, duration); }
+    private static Frame f(int frameX, int frameY, int duration=-1) => new Frame(frameX, frameY, duration);
     private static Header h(InitType i=InitType.Range, LoopMode l=LoopMode.Always, PlaybackMode p=PlaybackMode.Normal, string to=null, string s=null)
       => new Header(init:i, loop:l, playback:p, transferTo:to, overrideTexturePath:s);
     
-    internal static AnimationSource PlayerAnim = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
+    internal static readonly AnimationSource PlayerAnim = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
       new Dictionary<string, Track> {
         ["Default"] = new Track(h(),
           f(0, 0)
@@ -236,7 +229,7 @@ namespace OriMod {
         ["LookUp"] = new Track(h(),
           f(1, 1, 8), f(1, 7, 8)
         ),
-        ["TransformStart"] = new Track(h(i:InitType.Select, l:LoopMode.Transfer, to:"TransformEnd", s:"PlayerEffects/Transform"),
+        ["TransformStart"] = new Track(h(i:InitType.Select, l:LoopMode.Transfer, s:"PlayerEffects/Transform"),
           f(0, 0, 2), f(0, 1, 60), f(0, 2, 60), f(0, 3, 120),
           f(0, 4, 40), f(0, 5, 40), f(0, 6, 40), f(0, 7, 30)
         ),
@@ -249,13 +242,13 @@ namespace OriMod {
         )
       }
     );
-    internal static AnimationSource BashAnim = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
+    internal static readonly AnimationSource BashAnim = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
       new Dictionary<string, Track> {
         {"Bash", new Track(h(i:InitType.Select),
         f(0, 0))}
       }
     );
-    internal static AnimationSource GlideAnim = new AnimationSource("PlayerEffects/Feather", 128, 128,
+    internal static readonly AnimationSource GlideAnim = new AnimationSource("PlayerEffects/Feather", 128, 128,
       new Dictionary<string, Track> {
         {"GlideStart", new Track(h(l:LoopMode.Once),
           f(0, 0, 5), f(0, 2, 5)
@@ -268,5 +261,130 @@ namespace OriMod {
         )},
       }
     );
+    private static Header OverrideHeader = Header.Default;
+    internal static void IncrementFrame(OriPlayer oPlayer, string anim="Default", int overrideFrame=0, float overrideTime=0, int overrideDur=0, Header overrideHeader=null, Vector2 drawOffset=new Vector2(), float rotDegrees=0) {
+      if (oPlayer == null) return;
+      if (overrideHeader == null) overrideHeader = PlayerAnim[anim].Header;
+      float rotRads = (float)(rotDegrees / 180 * Math.PI);
+      if (!PlayerAnim.TrackNames.Contains(anim)) {
+        if (anim != null && anim.Length > 0) {
+          Main.NewText("Error with animation: The animation sequence \"" + anim + "\" does not exist.", Color.Red);
+          // ErrorLogger.Log("Error with animation: The animation sequence \"" + anim + "\" does not exist.");
+        }
+        anim = "Default";
+        Track track = PlayerAnim[anim];
+        oPlayer.AnimReversed = false;
+        oPlayer.SetFrame(anim, 1, overrideTime, track.Frames[0], rotRads);
+        return;
+      }
+      Frame[] frames = PlayerAnim[anim].Frames;
+      Header header = PlayerAnim[anim].Header.CopySome(overrideHeader); // X is incrementType (no reason to be used in IncrementFrame()), Y is loopMode, Z is playbackMode
+      if (anim != oPlayer.AnimName) {
+        OverrideHeader = Header.Default;
+      }
+      if (overrideHeader != Header.None) {
+        OverrideHeader = overrideHeader;
+        header = overrideHeader;
+      }
+      if (OverrideHeader != Header.None && anim == oPlayer.AnimName) {
+        header = OverrideHeader;
+      }
+      Frame newFrame;
+      if (overrideFrame != -1 && overrideFrame < frames.Length) { // If override frame, just set frame
+        newFrame = frames[overrideFrame];
+        oPlayer.AnimReversed = header.Playback == PlaybackMode.Reverse;
+        oPlayer.SetFrame(anim, overrideFrame, 0, newFrame, rotRads);
+      }
+      else { // Else actually do work
+        int frameIndex = oPlayer.AnimIndex; // frameIndex's lowest value is 1, as frames[0] contains header data for the track
+        float time = overrideTime != 0 ? overrideTime : oPlayer.AnimTime;
+        Point currFrame = oPlayer.AnimTile;
+        
+        if (anim == oPlayer.AnimName) {
+          int testFrame = Array.FindIndex(frames, f => (f.Tile == currFrame)); // Check if this frame already exists
+          if (testFrame == -1) {
+            Main.NewText("Invalid frame for \"" + anim + "\": " + currFrame, Color.Red);
+            // ErrorLogger.Log("Invalid frame for \"" + anim + "\": " + currFrame);
+            frameIndex = header.Playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
+          }
+        }
+        else {
+          frameIndex = header.Playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
+          time = 0;
+        }
+        int dur = overrideDur != 0 ? overrideDur : frames[frameIndex].Duration;
+        int framesToAdvance = 0;
+        while (time > dur && dur != -1) {
+          time -= dur;
+          framesToAdvance++;
+          if (framesToAdvance + frameIndex > frames.Length - 1) {
+            time = time % dur;
+          }
+        }
+        if (framesToAdvance != 0) {
+          if (header.Playback == PlaybackMode.Normal) {
+            oPlayer.AnimReversed = false;
+            if (frameIndex == frames.Length - 1) {
+              if (header.Loop == LoopMode.Transfer) {
+                anim = header.TransferTo;
+                frameIndex = 0;
+                time = 0;
+              }
+              else if (header.Loop != LoopMode.Once) {
+                frameIndex = 0;
+              }
+            }
+            else {
+              frameIndex += framesToAdvance;
+              if (frameIndex > frames.Length - 1) {
+                frameIndex = frames.Length - 1;
+              }
+            }
+          }
+          else if (header.Playback == PlaybackMode.PingPong) {
+            if (frameIndex == 0 && header.Loop != LoopMode.Once) {
+              oPlayer.AnimReversed = false;
+              frameIndex += framesToAdvance;
+              if (frameIndex > frames.Length - 1) {
+                frameIndex = frames.Length - 1;
+              }
+            }
+            else if (frameIndex == frames.Length - 1 && header.Loop != LoopMode.Once) {
+              oPlayer.AnimReversed = true;
+              frameIndex -= framesToAdvance;
+              if (frameIndex < 0) {
+                frameIndex = 0;
+              }
+            }
+            else {
+              frameIndex += oPlayer.AnimReversed ? -framesToAdvance : framesToAdvance;
+              if (frameIndex > frames.Length - 1) {
+                frameIndex = frames.Length - 1;
+              }
+              else if (frameIndex < 0) {
+                frameIndex = 0;
+              }
+            }
+          }
+          else if (header.Playback == PlaybackMode.Reverse) {
+            oPlayer.AnimReversed = true;
+            if (frameIndex == 0) {
+              if (header.Loop != LoopMode.Once) {
+                frameIndex = frames.Length - 1;
+              }
+            }
+            else {
+              frameIndex -= framesToAdvance;
+              if (frameIndex < 0) {
+                frameIndex = 0;
+              }
+            }
+          }
+        }
+        newFrame = frames[frameIndex];
+        oPlayer.SetFrame(anim, frameIndex, time, newFrame, rotRads);
+      }
+    }
+  
   }
 }

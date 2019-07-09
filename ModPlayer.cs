@@ -321,32 +321,26 @@ namespace OriMod {
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
     #endregion
     
-    internal void Debug(string msg) {
-      Debug(msg, this);
-    }
+    internal void Debug(string msg) => Debug(msg, this);
     internal static void Debug(string msg, OriPlayer oPlayer) {
       if (oPlayer.debugMode && oPlayer.player.whoAmI == Main.myPlayer) {
         Main.NewText(msg);
-        ErrorLogger.Log(msg);
+        // ErrorLogger.Log(msg);
       }
     }
     internal SoundEffectInstance PlayNewSound(string Path) => PlayNewSound(Path, 1, 0);
     internal SoundEffectInstance PlayNewSound(string Path, float Volume) => PlayNewSound(Path, Volume, 0);
     internal SoundEffectInstance PlayNewSound(string Path, float Volume, float Pitch) =>
       Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
-    internal SoundEffectInstance PlayFootstep(string Material, int rand, float Volume) {
-      char randChar = RandomChar(rand, ref FootstepRand);
-      return PlayNewSound("Ori/Footsteps/" + Material + "/" + Material + randChar, Volume, 0.1f);
-    }
+    internal SoundEffectInstance PlayFootstep(string Material, int rand, float Volume) =>
+      PlayNewSound($"Ori/Footsteps/{Material}/{Material + RandomChar(rand, ref FootstepRand)}", Volume, 0.1f);
     /// <summary>
     /// Retrieves a random character of an alphabet between indices 0 and <c>length</c>
     /// </summary>
     /// <param name="length">Max letter indice to use</param>
     /// <returns>char between A and <c>alphabet[length]</c></returns>
-    public static char RandomChar(int length) { // Returns random letter based on length. Primarily used for sound effects
-      char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-      return alphabet[Main.rand.Next(length)];
-    }
+    private static char[] alphabet { get; } = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+    public static char RandomChar(int length) => alphabet[Main.rand.Next(length)];
     /// <summary>
     /// Retrieves a random, non-repeating character of an alphabet between indices 0 and <c>length</c>
     /// </summary>
@@ -467,8 +461,7 @@ namespace OriMod {
             return;
           }
           int frame = 0;
-          float angle;
-          wCJump.GetMouseDirection(out angle);
+          wCJump.GetMouseDirection(out float angle);
           if (angle < -0.46f) {
             frame = 2;
           }
@@ -547,7 +540,7 @@ namespace OriMod {
       }
       Increment("Running", overrideTime:AnimTime+(int)Math.Abs(player.velocity.X) / 3);
       if (AnimIndex == 4 || AnimIndex == 9) {
-        TestStepMaterial(drawPlayer);
+        TestStepMaterial();
         switch (FloorMaterial) {
           case "Grass":
           case "Mushroom":
@@ -574,8 +567,8 @@ namespace OriMod {
         }
 
         Vector2 position = new Vector2(
-          drawPlayer.Center.X + (drawPlayer.direction == -1 ? -4 : 2),
-          drawPlayer.position.Y + drawPlayer.height - 2);
+          drawPlayer.Top.X + (drawPlayer.direction == -1 ? -4 : 2),
+          drawPlayer.Top.Y + drawPlayer.height - 2);
         for (int i = 0; i < 4; i++) {
           Dust dust = Main.dust[Terraria.Dust.NewDust(position, 2, 2, 111, 0f, -2.7f, 0, new Color(255, 255, 255), 1f)];
           dust.noGravity = true;
@@ -739,7 +732,7 @@ namespace OriMod {
         FloorMaterial = "Wood";
       }
     }
-    private void TestStepMaterial(Player player) { // oh yeah good luck understanding what this is
+    private void TestStepMaterial() {
       Tile tile = GetTile(-12f, 4f);
       if (tile.liquid > 0f && tile.liquidType() == 0) {
         FloorMaterial = "Water";
@@ -999,7 +992,7 @@ namespace OriMod {
       PlayerLayer.ShoeAcc.visible = false;
       PlayerLayer.HandOnAcc.visible = false;
       PlayerLayer.HandOffAcc.visible = false;
-      if (stomp.InUse || airJump.InUse || burrow.InUse || OnWall || Transforming) {
+      if (stomp.InUse || airJump.InUse || burrow.InUse || cJump.InUse || wCJump.InUse || OnWall || Transforming) {
         PlayerLayer.Wings.visible = false;
       }
     }

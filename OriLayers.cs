@@ -84,8 +84,7 @@ namespace OriMod {
       Player player = oPlayer.player;
       Texture2D texture = anim.Texture;
       Vector2 pos = player.Center - Main.screenPosition;
-      Point tile = anim.ActiveTile;
-      Rectangle rect = new Rectangle(tile.X, tile.Y, anim.Source.TileSize.X, anim.Source.TileSize.Y);
+      Rectangle rect = anim.ActiveTile;
       Vector2 orig = new Vector2(rect.Width / 2, rect.Height / 2 + 5 * player.gravDir);
       SpriteEffects effect = SpriteEffects.None;
       if (player.direction == -1) effect = effect | SpriteEffects.FlipHorizontally;

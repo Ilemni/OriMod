@@ -9,10 +9,8 @@ namespace OriMod {
   partial class OriMod : Mod {
     public static string GithubUserName => "TwiliChaos";
     public static string GithubProjectName => "OriMod";
-    public static string ConfigFileRelativePath => "Mod Configs/OriMod.json";
-    public static void ReloadConfigFromFile() { Config.ReadConfig(); }
-    public static void ResetConfigFromDefaults() { Config.ResetConfig(); }
-    public static bool? OwnsBlindForest = null;
+    internal static bool? OwnsBlindForest { get; private set; }
+
       
     public static ModHotKey SoulLinkKey;
     public static ModHotKey BashKey;

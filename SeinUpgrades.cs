@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using System.Collections.Generic;
-using Terraria;
 
 namespace OriMod {
   public class SeinUpgrade {
