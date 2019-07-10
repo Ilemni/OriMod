@@ -67,6 +67,9 @@ namespace OriMod {
       float oldMax = MathHelper.Max(MathHelper.Max(PlayerColor.R, PlayerColor.G), PlayerColor.B);
       if (oldMax < MinColorAny) {
         PlayerColor *= ((MinColorAny + 1) / oldMax);
+        if (PlayerColor == Color.Black) {
+          PlayerColor = new Color(100, 100, 100);
+        }
       }
       PlayerColor.A = 255;
       if (StompHoldDownDelay  < 0) StompHoldDownDelay = 0;
