@@ -61,16 +61,8 @@ namespace OriMod {
     public override void OnLoaded() {
       OriMod.ConfigClient = this;
     }
-    private int MinColorAny => 100;
     [OnDeserialized]
     public void OnDeserializedMethod(StreamingContext stream) {
-      float oldMax = MathHelper.Max(MathHelper.Max(PlayerColor.R, PlayerColor.G), PlayerColor.B);
-      if (oldMax < MinColorAny) {
-        PlayerColor *= ((MinColorAny + 1) / oldMax);
-        if (PlayerColor == Color.Black) {
-          PlayerColor = new Color(100, 100, 100);
-        }
-      }
       PlayerColor.A = 255;
       if (StompHoldDownDelay  < 0) StompHoldDownDelay = 0;
     }
@@ -83,7 +75,7 @@ namespace OriMod {
     [Header("Soul Link")]
     
     [Label("Cooldown"), Description("Cooldown of Soul Link, in seconds.")]
-    [DefaultValue(30), Range(15f, 300)]
+    [DefaultValue(30), Range(1f, 150)]
     public float SoulLinkCooldown;
 
     [Label("Charge Time"), Description("How long it takes to place a Soul Link.")]
