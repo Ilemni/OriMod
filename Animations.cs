@@ -105,7 +105,8 @@ namespace OriMod {
     internal static readonly AnimationSource BashAnim = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
       new Dictionary<string, Track> {
         {"Bash", new Track(h(i:InitType.Select),
-        f(0, 0))}
+          f(0, 0)
+        )}
       }
     );
     internal static readonly AnimationSource GlideAnim = new AnimationSource("PlayerEffects/Feather", 128, 128,

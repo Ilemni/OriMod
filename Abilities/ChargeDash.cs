@@ -13,8 +13,8 @@ namespace OriMod.Abilities {
     protected override Color RefreshColor => Color.LightBlue;
     
     private int ManaCost => 20;
-    private int Duration => 14;
-    private static readonly float[] Speeds = new float[] {
+    private int Duration => Speeds.Length - 1;
+    private static readonly float[] Speeds = new float[15] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     };
     private static float SpeedMultiplier => Config.CDashSpeedMultiplier * 0.8f;
