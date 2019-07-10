@@ -71,7 +71,7 @@ namespace OriMod {
       Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
       Texture2D tex = mod.GetTexture("Dusts/SoulLinkPlaced");
-      Vector2 pos = oPlayer.soulLink.Center.ToWorldCoordinates() - Main.screenPosition;
+      Vector2 pos = oPlayer.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
       int frame = (int)(Main.time % 45 / 15) * 32;
       Rectangle rect = new Rectangle(0, /*frame*/ 0, 24, 32);
       Vector2 orig = new Vector2(12, 20);

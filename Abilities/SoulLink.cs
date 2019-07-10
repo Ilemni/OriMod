@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 
@@ -18,6 +17,7 @@ namespace OriMod.Abilities {
     };
     internal Point[] Box = new Point[Template.Length];
     internal Point Center => PlacedSoulLink && Box[4] != Point.Zero ? Box[4] : player.Center.ToTileCoordinates();
+    internal Point SoulLinkLocation { get; private set; }
     
     private float ChargeRate => 1 / (Config.SoulLinkChargeRate * 60);
     private float UnchargeRate => ChargeRate * 1.75f;
@@ -27,25 +27,24 @@ namespace OriMod.Abilities {
     private float CurrCharge;
     internal bool PlacedSoulLink;
     internal bool Obstructed;
+    private bool WasObstructed;
     private bool AnyBossAlive;
     private bool WasDead;
+    
+    private void CheckValidPlacement(Point? check, out bool obstructed, bool force=false) {
+      obstructed = false;
+      if (!force && Main.time % 20 != 0) return;
 
-    private void CheckValidPlacement(bool force=false) {
-      if (force || PlacedSoulLink) {
-        if (!force && Main.time % 20 != 0) return;
-        for (int i = 0; i < Box.Length; i++) {
-          Tile t = Main.tile[Box[i].X, Box[i].Y];
-          if (Burrow.IsSolid(t)) {
-            Obstructed = true;
-            return;
-          }
+      Point[] newBox = (Point[])Box.Clone();
+      newBox.UpdateHitbox(Template, check ?? Center);
+      for (int i = 0; i < newBox.Length; i++) {
+        Tile t = Main.tile[newBox[i].X, newBox[i].Y];
+        if (Burrow.IsSolid(t)) {
+          obstructed = true;
+          return;
         }
-        Obstructed = false;
-        return;
       }
-    }
-    private void UpdateBox() {
-      Box.UpdateHitbox(Template, player.Center.ToTileCoordinates());
+      return;
     }
 
     internal void UpdateDead() {
@@ -57,7 +56,7 @@ namespace OriMod.Abilities {
     }
     private void UpdateDust() {
       if (Main.time % 12 != 0) return;
-      Vector2 linkPos = oPlayer.soulLink.Center.ToWorldCoordinates();
+      Vector2 linkPos = SoulLinkLocation.ToWorldCoordinates();
       linkPos.Y += 8;
       linkPos += (-Vector2.UnitY * Main.rand.NextFloat(1, 16)).RotateRandom(Math.PI * 0.7);
       Dust dust = Main.dust[Dust.NewDust(linkPos, 16, 16, oPlayer.mod.DustType("SoulLinkDust"), newColor:Color.LightSkyBlue)];
@@ -65,7 +64,7 @@ namespace OriMod.Abilities {
     internal void OnRespawn() {
       if (PlacedSoulLink && !Obstructed) {
         oPlayer.Debug("Soul link respawn!");
-        player.Center = Center.ToWorldCoordinates();
+        player.Center = SoulLinkLocation.ToWorldCoordinates();
         PlacedSoulLink = false;
       }
     }
@@ -80,7 +79,7 @@ namespace OriMod.Abilities {
     internal override void Tick() {
       if (PlacedSoulLink) {
         UpdateDust();
-        CheckValidPlacement();
+        CheckValidPlacement(check:Center, out Obstructed);
         if (Obstructed) {
           PlacedSoulLink = false;
           Main.NewText("Your Soul Link has been blocked and despawned...");
@@ -94,10 +93,8 @@ namespace OriMod.Abilities {
             return;
           }
         }
-        bool WasObstructed = Obstructed;
-        UpdateBox();
-        CheckValidPlacement(force:true);
-        if (Obstructed) {
+        CheckValidPlacement(check:player.Center.ToTileCoordinates(), out bool tempObstructed, force:true);
+        if (tempObstructed) {
           if (!WasObstructed) {
             Main.NewText("Cannot place a Soul Link here...");
           }
@@ -106,15 +103,18 @@ namespace OriMod.Abilities {
         }
         else {
           CurrCharge += ChargeRate;
-          if (CurrCharge > ChargeMax) {
+          if (CurrCharge > 1) {
             player.statMana -= ManaCost;
             CurrCharge = 0;
             Active = true;
             PlacedSoulLink = true;
+            Box.UpdateHitbox(Template, player.Center.ToTileCoordinates());
+            SoulLinkLocation = Center;
             oPlayer.Debug("Placed a Soul Link!");
             PutOnCooldown(force:true);
           }
         }
+        WasObstructed = tempObstructed;
       }
       else if (CurrCharge > 0) {
         CurrCharge -= UnchargeRate;
@@ -122,10 +122,10 @@ namespace OriMod.Abilities {
           CurrCharge = 0;
         }
       }
-      if (CurrCharge > 0 && CurrCharge < ChargeMax) {
+      if (CurrCharge > 0 && CurrCharge < 1) {
         Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("SoulLinkChargeDust"), newColor:Color.DeepSkyBlue)];
         dust.customData = player;
-        dust.position += -Vector2.UnitY.RotatedBy((CurrCharge / ChargeMax) * 2 * Math.PI) * 56;
+        dust.position += -Vector2.UnitY.RotatedBy(CurrCharge * 2 * Math.PI) * 56;
       }
       TickCooldown();
     }
