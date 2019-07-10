@@ -313,7 +313,7 @@ namespace OriMod {
         _mpcPlayerLight = value;
       }
     }
-    internal bool DoPlayerLight => OriMod.ConfigClient.GlobalPlayerLight ? OriMod.ConfigClient.PlayerLight : MpcPlayerLight;
+    internal bool DoPlayerLight => (player.whoAmI == Main.myPlayer || OriMod.ConfigClient.GlobalPlayerLight) ? OriMod.ConfigClient.PlayerLight : MpcPlayerLight;
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
         #endregion
 
@@ -829,7 +829,6 @@ namespace OriMod {
     public override void PostUpdateRunSpeeds() {
       if (OriSet && !Transforming) {
         DefaultPostRunSpeeds();
-        Abilities.Tick();
         if (OriMod.ConfigClient.SmoothCamera) {
           Main.SetCameraLerp(OriModUtils.IsAnyBossAlive(check:Main.time % 120 == 0) ? 0.15f : 0.05f, 1);
         }
@@ -842,6 +841,7 @@ namespace OriMod {
           player.gravity = 0.1f;
           player.maxFallSpeed = 6f;
         }
+        Abilities.Tick();
         Abilities.Update();
       }
       if (Transforming) {

@@ -9,7 +9,7 @@ namespace OriMod.Abilities {
     
     internal bool IsCharging => Active && ((WallDir == 1 && PlayerInput.Triggers.Current.Left) || (WallDir == -1 && PlayerInput.Triggers.Current.Right));
     
-    internal int WallDir = 0;
+    internal int WallDir;
     
     private void StartClimb() {
       WallDir = player.direction;

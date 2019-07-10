@@ -6,18 +6,19 @@ namespace OriMod.Abilities {
     internal Dash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || (oPlayer.Input(OriMod.DashKey.JustPressed) && !Handler.cDash.InUse);
     internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
-    protected override int Cooldown => 45;
+    protected override int Cooldown => (int)(Config.DashCooldown * 30);
     protected override bool CooldownOnlyOnBoss => true;
     protected override Color RefreshColor => Color.White;
     
-    private static readonly float[] Speeds = new float[] {
+    private static readonly float[] Speeds = new float[25] {
       50f, 50f, 50f, 49.9f, 49.6f, 49f, 48f, 46.7f, 44.9f, 42.4f, 39.3f, 35.4f, 28.6f, 20f,
       19.6f, 19.1f, 18.7f, 18.3f, 17.9f, 17.4f, 17f, 16.5f, 16.1f, 15.7f, 15.2f
     };
-    private int Duration => 24;
+    private static float SpeedMultiplier => Config.DashSpeedMultiplier * 0.65f;
+    private int Duration => Speeds.Length;
     
-    private int CurrTime = 0;
-    private int Direction = 1;
+    private int CurrTime;
+    private int Direction;
     
     internal void StartDash() {
       CurrTime = 0;
@@ -39,7 +40,7 @@ namespace OriMod.Abilities {
         PutOnCooldown();
         return;
       }
-      player.velocity.X = Speeds[CurrTime] * Direction * 0.65f;
+      player.velocity.X = Speeds[CurrTime] * SpeedMultiplier * Direction;
       player.velocity.Y = 0.25f * (CurrTime + 1) * player.gravDir;
       if (CurrTime > 20) player.runSlowdown = 26f;
     }
@@ -64,7 +65,7 @@ namespace OriMod.Abilities {
       TickCooldown();
       if (InUse) {
         CurrTime++;
-        if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse) {
+        if (CurrTime > Duration - 1 || oPlayer.OnWall || Handler.bash.InUse) {
           Inactive = true;
           PutOnCooldown();
         }

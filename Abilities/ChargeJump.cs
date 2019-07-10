@@ -6,7 +6,7 @@ namespace OriMod.Abilities {
     internal ChargeJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && !InUse && Charged && !Handler.burrow.InUse && !Handler.climb.InUse;
-    protected override int Cooldown => 240;
+    protected override int Cooldown => (int)(Config.CJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
     
     internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && (Handler.lookUp.InUse || oPlayer.Input(OriMod.ChargeKey.Current));
@@ -15,12 +15,13 @@ namespace OriMod.Abilities {
     private static readonly float[] Speeds = new float[20] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
     };
-    private int Duration => 20;
+    private float SpeedMultiplier => Config.CJumpSpeedMultiplier * 0.35f;
+    private int Duration => Speeds.Length;
     
-    private bool Charged = false;
-    private int CurrCharge = 0;
-    private int CurrGrace = 0;
-    private int CurrTime = 0;
+    private bool Charged;
+    private int CurrCharge;
+    private int CurrGrace;
+    private int CurrTime;
     
     public Projectile Proj { get; private set; }
     
@@ -39,7 +40,7 @@ namespace OriMod.Abilities {
     }
     
     protected override void UpdateActive() {
-      float speed = Speeds[CurrTime - 1] * 0.35f;
+      float speed = Speeds[CurrTime - 1] * SpeedMultiplier;
       player.velocity.Y = speed * -player.gravDir;
       oPlayer.ImmuneTimer = 12;
     }

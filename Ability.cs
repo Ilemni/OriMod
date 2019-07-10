@@ -10,6 +10,7 @@ namespace OriMod {
     protected OriPlayer oPlayer { get; }
     protected bool isLocalPlayer { get; }
     protected OriAbilities Handler { get; }
+    protected static OriConfigClient2 Config => OriMod.ConfigAbilities;
     internal Ability(OriPlayer oriPlayer, OriAbilities handler) {
       player = oriPlayer.player;
       oPlayer = oriPlayer;

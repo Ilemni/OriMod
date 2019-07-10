@@ -9,7 +9,7 @@ namespace OriMod.Abilities {
     private int StartDuration => 10;
     private int EndDuration => 4;
     
-    private int CurrTime = 0;
+    private int CurrTime;
 
     protected override void UpdateUsing() {
       if (!OriMod.ConfigClient.SoftCrouch) {

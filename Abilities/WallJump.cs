@@ -10,9 +10,9 @@ namespace OriMod.Abilities {
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private int EndTime => 12;
     
-    private int CurrTime = 0;
-    private int WallDir = 0;
-    private int GravDir = 1;
+    private int CurrTime;
+    private int WallDir;
+    private int GravDir;
 
     protected override void UpdateActive() {
       player.velocity.Y = WallJumpVelocity.Y * GravDir;

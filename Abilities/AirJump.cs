@@ -9,13 +9,13 @@ namespace OriMod.Abilities {
     
     private float JumpVelocity => 8.8f;
     private int EndDuration => AnimationHandler.PlayerAnim.Tracks["AirJump"].Duration;
-    private int MaxJumps => 2;
+    private int MaxJumps => Config.AirJumpCount;
     
-    private int CurrCount = 0;
-    private int CurrTime = 0;
-    private int randDoubleJumpSound = 1;
-    private int randTripleJumpSound = 1;
-    private int GravDir = 1;
+    private int CurrCount;
+    private int CurrTime;
+    private int randDoubleJumpSound;
+    private int randTripleJumpSound;
+    private int GravDir;
     
     protected override void UpdateActive() {
       if (CurrCount == MaxJumps) {

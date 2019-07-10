@@ -17,7 +17,7 @@ namespace OriMod.Abilities {
     private int StartDuration => 8;
     private int EndDuration => 10;
     
-    private int CurrTime = 0;
+    private int CurrTime;
 
     protected override void UpdateStarting() {
       if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);

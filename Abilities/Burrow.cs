@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
@@ -16,6 +15,7 @@ namespace OriMod.Abilities {
     private bool inMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
     private float Speed => 8f; 
     private float SpeedExitMultiplier => 1.5f;
+
     internal static bool CanBurrow(Tile t) {
       if (CanBurrowAny) return true;
       if (TileCollection.TilePickaxeMin[t.type] == -1) {
@@ -30,10 +30,10 @@ namespace OriMod.Abilities {
     internal static bool CanBurrowAny => OriMod.ConfigAbilities.BurrowStrength < 0;
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
     
-    internal Vector2 Velocity = Vector2.Zero;
-    internal Vector2 LastPos = Vector2.Zero;
-    internal bool AutoBurrow = false;
-    private int TimeUntilEnd = 0;
+    internal Vector2 Velocity;
+    internal Vector2 LastPos;
+    internal bool AutoBurrow;
+    private int TimeUntilEnd;
     
     private static Point p(int x, int y) => new Point(x, y);
     private static readonly Point[] BurrowEnterTemplate = new Point[] {

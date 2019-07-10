@@ -9,7 +9,7 @@ namespace OriMod.Abilities {
     internal Bash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BashKey.Current);
     internal override bool CanUse => base.CanUse && Inactive && !Handler.stomp.InUse && !Handler.cJump.InUse;
-    protected override int Cooldown => 45;
+    protected override int Cooldown => (int)(Config.BashCooldown * 30);
     protected override Color RefreshColor => Color.LightYellow;
     
     public static List<int> CannotBash = new List<int> {
@@ -26,8 +26,8 @@ namespace OriMod.Abilities {
       ProjectileID.WoodHook, ProjectileID.WormHook,
     };
     private int BashDamage => 15;
-    private float BashPlayerStrength => 15f;
-    private float BashNpcStrength => 12f;
+    private float BashPlayerStrength => Config.BashStrength;
+    private float BashNpcStrength => BashPlayerStrength * 0.8f;
     private float BashRange => 48f;
     private int MinBashDuration => 30;
     private int MaxBashDuration => 85;

@@ -9,7 +9,7 @@ namespace OriMod.Abilities {
     internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { NpcID = 255; }
     internal override bool DoUpdate => !Handler.dash.DoUpdate && (InUse || (oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Handler.cDash.Refreshed));
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
-    protected override int Cooldown => 180;
+    protected override int Cooldown => (int)(Config.CDashCooldown * 30);
     protected override Color RefreshColor => Color.LightBlue;
     
     private int ManaCost => 20;
@@ -17,10 +17,11 @@ namespace OriMod.Abilities {
     private static readonly float[] Speeds = new float[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     };
+    private static float SpeedMultiplier => Config.CDashSpeedMultiplier * 0.8f;
     
     public byte NpcID { get; internal set; }
-    internal int Direction = 1;
-    private int CurrTime = 0;
+    internal int Direction;
+    private int CurrTime;
     
     public Projectile Proj { get; private set; }
 
@@ -68,14 +69,14 @@ namespace OriMod.Abilities {
       Proj.damage = 12 + OriWorld.GlobalSeinUpgrade * 9;
     }
     protected override void UpdateUsing() {
-      float speed = Speeds[CurrTime];
+      float speed = Speeds[CurrTime] * SpeedMultiplier;
       player.gravity = 0;
       if (NpcID < Main.maxNPCs && Main.npc[NpcID].active) {
         player.maxFallSpeed = speed;
         Vector2 dir = (Main.npc[NpcID].position - player.position);
         dir.Y -= 32f;
         dir.Normalize();
-        player.velocity = dir * speed * 0.8f;
+        player.velocity = dir * speed;
         if (CurrTime < Duration && (player.position - Main.npc[NpcID].position).Length() < speed) {
           Inactive = true;
           PutOnCooldown();
@@ -121,7 +122,7 @@ namespace OriMod.Abilities {
           if ((NpcID == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
             Vector2 newVel = NpcID == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
             newVel.Normalize();
-            newVel *= Speeds[Speeds.Length - 1];
+            newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
             player.velocity = newVel;
           }
           Proj = null;

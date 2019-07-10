@@ -8,17 +8,17 @@ namespace OriMod.Abilities {
     internal Stomp(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.JustPressed.Down);
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Handler.glide.Active && !Handler.climb.InUse && !Handler.stomp.Active && !player.mount.Active && player.grapCount == 0;
-    protected override int Cooldown => 360;
+    protected override int Cooldown => (int)(Config.StompCooldown * 30);
     protected override Color RefreshColor => Color.Orange;
 
     private float Gravity => 4f;
-    private float MaxFallSpeed => 28f;
+    private float MaxFallSpeed => Config.StompFallSpeed;
     private int StartDuration => 24;
     private int MinDuration => 30;
-    private int HoldDownDelay => OriMod.ConfigClient.StompHoldDownDelay;
+    private int HoldDownDelay => (int)(OriMod.ConfigClient.StompHoldDownDelay * 30);
 
-    private int CurrTime = 0;
-    private int CurrHoldDown = 0;
+    private int CurrTime;
+    private int CurrHoldDown;
     
     public Projectile Proj { get; private set; }
 
