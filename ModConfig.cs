@@ -61,8 +61,13 @@ namespace OriMod {
     public override void OnLoaded() {
       OriMod.ConfigClient = this;
     }
+    private int MinColorAny => 100;
     [OnDeserialized]
     public void OnDeserializedMethod(StreamingContext stream) {
+      float oldMax = MathHelper.Max(MathHelper.Max(PlayerColor.R, PlayerColor.G), PlayerColor.B);
+      if (oldMax < MinColorAny) {
+        PlayerColor *= ((MinColorAny + 1) / oldMax);
+      }
       PlayerColor.A = 255;
       if (StompHoldDownDelay  < 0) StompHoldDownDelay = 0;
     }
