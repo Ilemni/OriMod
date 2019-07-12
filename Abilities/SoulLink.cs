@@ -55,7 +55,7 @@ namespace OriMod.Abilities {
       WasDead = true;
     }
     private void UpdateDust() {
-      if (Main.time % 12 != 0) return;
+      if (Main.rand.NextFloat() > 0.1f) return;
       Vector2 linkPos = SoulLinkLocation.ToWorldCoordinates();
       linkPos.Y += 8;
       linkPos += (-Vector2.UnitY * Main.rand.NextFloat(1, 16)).RotateRandom(Math.PI * 0.7);

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -11,7 +12,7 @@ namespace OriMod.Abilities {
     protected override int Cooldown => (int)(Config.StompCooldown * 30);
     protected override Color RefreshColor => Color.Orange;
 
-    private float Gravity => 4f;
+    private float Gravity => 8f;
     private float MaxFallSpeed => Config.StompFallSpeed;
     private int StartDuration => 24;
     private int MinDuration => 30;
@@ -37,33 +38,35 @@ namespace OriMod.Abilities {
         Proj.damage = 9 + OriWorld.GlobalSeinUpgrade * 9;
       }
       if (Handler.airJump.Active) return;
-      player.velocity.X = 0;
+      player.maxRunSpeed = 1f;
+      player.runSlowdown = 8;
       player.gravity = Gravity;
       player.maxFallSpeed = MaxFallSpeed;
       oPlayer.ImmuneTimer = 12;
     }
-    protected override void UpdateEnding() {
+    internal void EndStomp() {
       oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + OriPlayer.RandomChar(3));
+      Handler.airJump.CurrCount = 0;
+      player.velocity = Vector2.Zero;
       Vector2 position = new Vector2(player.position.X, player.position.Y + 32);
-      for (int i = 0; i < 25; i++) { // does particles
-        Dust dust = Main.dust[Terraria.Dust.NewDust(position, 30, 15, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
+      for (int i = 0; i < 25; i++) {
+        Dust dust = Main.dust[Terraria.Dust.NewDust(position, 30, 15, 111, 0f, 0f, 0, Color.White, 1f)];
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
         dust.velocity *= new Vector2(6, 1.5f);
-        if (dust.velocity.Y > 0) {
-          dust.velocity.Y = -dust.velocity.Y;
-        }
+        dust.velocity.Y = -Math.Abs(dust.velocity.Y);
       }
-      Proj.width = 600;
-      Proj.height = 320;
-      Proj.damage = (int)(Proj.damage * 1.6f);
-      Proj = null;
       PutOnCooldown();
+      Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("StompEnd"), Proj.damage, 0, player.whoAmI);
+      Proj = null;
+      Inactive = true;
     }
     protected override void UpdateUsing() {
       player.controlUp = false;
       player.controlDown = false;
-      player.controlLeft = false;
-      player.controlRight = false;
+      if (Starting) {
+        player.controlLeft = false;
+        player.controlRight = false;
+      }
       player.controlHook = false;
       oPlayer.KillGrapples();
       player.controlMount = false;
@@ -96,11 +99,8 @@ namespace OriMod.Abilities {
           Inactive = true;
         }
         if (oPlayer.IsGrounded) {
-          Ending = true;
+          EndStomp();
         }
-      }
-      else if (Ending) {
-        Inactive = true;
       }
       else {
         CurrHoldDown = 0;

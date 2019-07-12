@@ -11,7 +11,7 @@ namespace OriMod.Abilities {
     private int EndDuration => AnimationHandler.PlayerAnim.Tracks["AirJump"].Duration;
     private int MaxJumps => Config.AirJumpCount;
     
-    private int CurrCount;
+    internal int CurrCount;
     private int CurrTime;
     private int randDoubleJumpSound;
     private int randTripleJumpSound;
