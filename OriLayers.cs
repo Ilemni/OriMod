@@ -10,23 +10,18 @@ namespace OriMod {
     private static Texture2D SecondaryTexture = null;
     internal static readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
-      Player player = drawInfo.drawPlayer;
-      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
+      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
       
-      DrawData data = DefaultDrawData(oPlayer, oPlayer.Animations.PlayerAnim);
-      // Current check for if in player select screen
-      if (player.position == Vector2.Zero) {
-        data.position = drawInfo.position - Main.screenPosition + player.Size / 2;
-      }
+      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.PlayerAnim);
       data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TransformStart" ? Color.White : oPlayer.SpriteColor;
       Main.playerDrawData.Add(data);
     });
-    internal static readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "SecondaryColor", delegate (PlayerDrawInfo drawinfo) {
+    internal static readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "SecondaryColor", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
       if ((SecondaryTextureExists ?? (SecondaryTextureExists = mod.TextureExists("PlayerEffects/OriPlayerSecondary"))) == false) return;
-      OriPlayer oPlayer = drawinfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
+      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
       
-      DrawData data = DefaultDrawData(oPlayer, oPlayer.Animations.SecondaryLayer);
+      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.SecondaryLayer);
       data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TrasformStart" ? Color.White : oPlayer.SpriteColorSecondary;
       data.texture = SecondaryTexture ?? (SecondaryTexture = mod.GetTexture("PlayerEffects/OriPlayerSecondary"));
       Main.playerDrawData.Add(data);
@@ -52,7 +47,7 @@ namespace OriMod {
       Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
       Animation anim = oPlayer.Animations.BashAnim;
-      DrawData data = DefaultDrawData(oPlayer, anim);
+      DrawData data = DefaultDrawData(drawInfo, oPlayer, anim);
       data.position = oPlayer.bash.BashEntity.Center - Main.screenPosition;
       int frame = oPlayer.bash.CurrDuration < 40 ? 0 : oPlayer.bash.CurrDuration < 50 ? 1 : 2;
       data.sourceRect = new Rectangle(0, frame * anim.Source.TileSize.Y, anim.Source.TileSize.X, anim.Source.TileSize.Y);
@@ -64,8 +59,7 @@ namespace OriMod {
       Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
 
-      DrawData data = DefaultDrawData(oPlayer, oPlayer.Animations.GlideAnim);
-      Main.playerDrawData.Add(data);
+      Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.GlideAnim));
     });
     internal static readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
@@ -80,10 +74,10 @@ namespace OriMod {
       DrawData data = new DrawData(tex, pos, rect, Color.White, 0, orig, 2, effect, 0);
       Main.playerDrawData.Add(data);
     });
-    private static DrawData DefaultDrawData(OriPlayer oPlayer, Animation anim) {
+    private static DrawData DefaultDrawData(PlayerDrawInfo drawInfo, OriPlayer oPlayer, Animation anim) {
       Player player = oPlayer.player;
       Texture2D texture = anim.Texture;
-      Vector2 pos = player.Center - Main.screenPosition;
+      Vector2 pos = drawInfo.position - Main.screenPosition + player.Size / 2;
       Rectangle rect = anim.ActiveTile;
       Vector2 orig = new Vector2(rect.Width / 2, rect.Height / 2 + 5 * player.gravDir);
       SpriteEffects effect = SpriteEffects.None;

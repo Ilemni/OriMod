@@ -964,7 +964,7 @@ namespace OriMod {
         DisableVanillaLayers();
         if (soulLink.PlacedSoulLink) layers.Insert(0, OriLayers.SoulLinkLayer);
         Animations.PlayerAnim.Draw(layers, 9, force:true);
-        Animations.SecondaryLayer.Draw(layers, 10);
+        Animations.SecondaryLayer.Draw(layers, 10, force:true);
         Animations.TrailAnim.Draw(layers);
         Animations.GlideAnim.Draw(layers);
         Animations.BashAnim.Draw(layers);
