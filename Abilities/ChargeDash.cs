@@ -6,7 +6,8 @@ using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   public class ChargeDash : Ability {
-    internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { NpcID = 255; }
+    internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    public override int id => AbilityID.ChargeDash;
     internal override bool DoUpdate => !Handler.dash.DoUpdate && (InUse || (oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Handler.cDash.Refreshed));
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);
@@ -19,7 +20,7 @@ namespace OriMod.Abilities {
     };
     private static float SpeedMultiplier => Config.CDashSpeedMultiplier * 0.8f;
     
-    public byte NpcID { get; internal set; }
+    public byte NpcID { get; internal set; } = 255;
     internal int Direction;
     private int CurrTime;
     

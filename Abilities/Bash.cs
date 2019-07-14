@@ -7,6 +7,7 @@ using Terraria.ID;
 namespace OriMod.Abilities {
   public class Bash : Ability {
     internal Bash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    public override int id => AbilityID.Bash;
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BashKey.Current);
     internal override bool CanUse => base.CanUse && Inactive && !Handler.stomp.InUse && !Handler.cJump.InUse;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);

@@ -6,6 +6,23 @@ using OriMod.Abilities;
 namespace OriMod {
   
   // This partial class is for Ability-specific implementations    
+  public static class AbilityID {
+    public static int SoulLink => 1;
+    public static int WallJump => 2;
+    public static int AirJump => 3;
+    public static int Bash => 4;
+    public static int Stomp => 5;
+    public static int Glide => 6;
+    public static int Climb => 7;
+    public static int ChargeJump => 8;
+    public static int WallChargeJump => 9;
+    public static int Dash => 10;
+    public static int ChargeDash => 11;
+    public static int Grenade => 12; // Unused
+    public static int LookUp => 13;
+    public static int Crouch => 14;
+    public static int Burrow => 15;
+  }
   public sealed partial class OriAbilities {
     public OriPlayer oPlayer { get; private set; }
     public Player player { get; private set; }
@@ -44,9 +61,6 @@ namespace OriMod {
         { lookUp = new LookUp(o, this) },
         { burrow = new Burrow(o, this) },
       };
-      for (int i = 0; i < Abilities.Count; i++) {
-        Abilities[i].id = (byte)i;
-      }
     }
     public Ability this[int index] => Abilities[index];
     internal void Tick() {

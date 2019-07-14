@@ -4,6 +4,7 @@ using Terraria;
 namespace OriMod.Abilities {
   public class ChargeJump : Ability {
     internal ChargeJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    public override int id => AbilityID.ChargeJump;
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && !InUse && Charged && !Handler.burrow.InUse && !Handler.climb.InUse;
     protected override int Cooldown => (int)(Config.CJumpCooldown * 30);

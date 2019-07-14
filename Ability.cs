@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   public abstract class Ability {
-    internal byte id = 255;
+    public virtual int id => -1;
     protected Player player { get; }
     protected OriPlayer oPlayer { get; }
     protected bool isLocalPlayer { get; }

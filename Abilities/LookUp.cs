@@ -4,6 +4,7 @@ using Terraria.GameInput;
 namespace OriMod.Abilities {
   public class LookUp : Ability {
     internal LookUp(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    public override int id => AbilityID.LookUp;
     internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.Current.Up);
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !Handler.crouch.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
     
