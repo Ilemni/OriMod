@@ -117,6 +117,10 @@ namespace OriMod {
     [DefaultValue(28), Range(1f, 100)]
     public float StompFallSpeed;
 
+    [Label("Number of Targets"), Tooltip("How many targets Stomp can damage at once.")]
+    [DefaultValue(8), Range(1, 32)]
+    public int StompNumTargets;
+
     [Header("Charge Jump")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Charge Jump, in seconds.")]
@@ -173,6 +177,7 @@ namespace OriMod {
     [OnDeserialized]
     public void OnDeserializedMethod(StreamingContext stream) {
       if (AirJumpCount < 0) AirJumpCount = 0;
+      if (StompNumTargets < 1) StompNumTargets = 1;
     }
   }
 }

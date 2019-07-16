@@ -8,7 +8,7 @@ namespace OriMod.Projectiles.Abilities {
       base.SetDefaults();
       projectile.width = 600;
       projectile.height = 320;
-      projectile.penetrate = 8;
+      projectile.penetrate = OriMod.ConfigAbilities.StompNumTargets;
     }
     public override bool PreAI() => false;
 
