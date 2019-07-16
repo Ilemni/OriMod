@@ -62,7 +62,7 @@ namespace OriMod {
         { burrow = new Burrow(o, this) },
       };
     }
-    public Ability this[int index] => Abilities[index];
+    public Ability this[int index] => Abilities.Find(a => a.id == index);
     internal void Tick() {
       if (oPlayer == null) return;
 

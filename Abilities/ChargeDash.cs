@@ -45,6 +45,24 @@ namespace OriMod.Abilities {
       }
     }
     
+    internal void End(bool byNpcContact=false) {
+      Inactive = true;
+      PutOnCooldown();
+      if (byNpcContact) {
+        player.position = Main.npc[NpcID].position;
+        player.position.Y -= 32f;
+        player.velocity *= (Speeds[CurrTime] * SpeedMultiplier) < 50 ? 0.5f : 0.25f;
+      }
+      else if ((NpcID == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
+        Vector2 newVel = NpcID == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
+        newVel.Normalize();
+        newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
+        player.velocity = newVel;
+      }
+      Proj = null;
+      NpcID = 255;
+    }
+
     protected override void UpdateStarting() {
       float tempDist = 720f;
       int tempNPC = -1;
@@ -65,7 +83,7 @@ namespace OriMod.Abilities {
         Direction = (Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
       }
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
-      Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
+      Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("ChargeDashProjectile"), 30, 0f, player.whoAmI, 0, 1)];
       Proj.damage = 12 + OriWorld.GlobalSeinUpgrade * 9;
     }
     protected override void UpdateUsing() {
@@ -78,13 +96,7 @@ namespace OriMod.Abilities {
         dir.Normalize();
         player.velocity = dir * speed;
         if (CurrTime < Duration && (player.position - Main.npc[NpcID].position).Length() < speed) {
-          Inactive = true;
-          PutOnCooldown();
-          CurrTime = Duration;
-          player.position = Main.npc[NpcID].position;
-          player.position.Y -= 32f;
-          NpcID = 255;
-          player.velocity *= speed < 50 ? 0.5f : 0.25f;
+          End(byNpcContact:true);
         }
       }
       else {
@@ -92,9 +104,6 @@ namespace OriMod.Abilities {
         player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrTime + 1)) * player.gravDir;
       }
       
-      Proj.width = (int)Utils.Clamp((Math.Abs(player.velocity.X) * 2.5f), 96, 250);
-      Proj.height = (int)Utils.Clamp((Math.Abs(player.velocity.Y) * 2.5f), 96, 250);
-      Proj.Center = player.Center;
       player.runSlowdown = 26f;
       oPlayer.ImmuneTimer = 12;
     }
@@ -117,16 +126,7 @@ namespace OriMod.Abilities {
         Handler.dash.Refreshed = false;
         CurrTime++;
         if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
-          Inactive = true;
-          PutOnCooldown();
-          if ((NpcID == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
-            Vector2 newVel = NpcID == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
-            newVel.Normalize();
-            newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
-            player.velocity = newVel;
-          }
-          Proj = null;
-          NpcID = 255;
+          End();
         }
       }
     }

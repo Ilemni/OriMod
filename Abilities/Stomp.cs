@@ -34,7 +34,7 @@ namespace OriMod.Abilities {
     protected override void UpdateActive() {
       if (CurrTime == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + OriPlayer.RandomChar(3));
-        Proj = Main.projectile[Projectile.NewProjectile(player.Center, new Vector2(0, 0), oPlayer.mod.ProjectileType("StompHitbox"), 30, 0f, player.whoAmI, 0, 1)];
+        Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("StompProjectile"), 30, 0f, player.whoAmI, 0, 1)];
         Proj.damage = 9 + OriWorld.GlobalSeinUpgrade * 9;
       }
       if (Handler.airJump.Active) return;
