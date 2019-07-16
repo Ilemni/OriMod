@@ -22,7 +22,6 @@ namespace OriMod.Abilities {
     
     public byte NpcID { get; internal set; } = 255;
     internal int Direction;
-    private int CurrTime;
     
     public Projectile Proj { get; private set; }
 

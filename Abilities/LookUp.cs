@@ -11,8 +11,6 @@ namespace OriMod.Abilities {
     private int StartDuration => 12;
     private int EndDuration => 8;
 
-    private int CurrTime;
-
     internal override void Tick() {
       if (!InUse) {
         if (CanUse && (PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current)) {

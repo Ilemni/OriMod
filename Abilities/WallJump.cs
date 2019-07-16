@@ -11,7 +11,6 @@ namespace OriMod.Abilities {
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private int EndTime => 12;
     
-    private int CurrTime;
     private int WallDir;
     private int GravDir;
 

@@ -13,7 +13,6 @@ namespace OriMod.Abilities {
     private int MaxJumps => Config.AirJumpCount;
     
     internal int CurrCount;
-    private int CurrTime;
     private int randDoubleJumpSound;
     private int randTripleJumpSound;
     private int GravDir;

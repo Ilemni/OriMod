@@ -23,7 +23,6 @@ namespace OriMod.Abilities {
     
     internal bool Charged;
     private int CurrCharge;
-    private int CurrTime;
     private Vector2 Direction;
     
     public Projectile Proj { get; private set; }

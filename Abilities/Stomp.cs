@@ -19,7 +19,6 @@ namespace OriMod.Abilities {
     private int MinDuration => 30;
     private int HoldDownDelay => (int)(OriMod.ConfigClient.StompHoldDownDelay * 30);
 
-    private int CurrTime;
     private int CurrHoldDown;
     
     public Projectile Proj { get; private set; }

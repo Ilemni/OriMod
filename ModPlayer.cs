@@ -23,7 +23,7 @@ namespace OriMod {
     /// Class that contains all of OriPlayer's abilities
     /// </summary>
     /// <value></value>
-    internal OriAbilities Abilities { get; set; } // Class used for all of Ori's movements
+    internal OriAbilities Abilities { get; private set; } // Class used for all of Ori's movements
     
     public SoulLink soulLink => Abilities.soulLink;
     public WallJump wJump => Abilities.wJump;

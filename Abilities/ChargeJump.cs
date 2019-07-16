@@ -22,7 +22,6 @@ namespace OriMod.Abilities {
     private bool Charged;
     private int CurrCharge;
     private int CurrGrace;
-    private int CurrTime;
     
     public Projectile Proj { get; private set; }
     

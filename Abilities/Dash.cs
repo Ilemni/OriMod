@@ -18,7 +18,6 @@ namespace OriMod.Abilities {
     private static float SpeedMultiplier => Config.DashSpeedMultiplier * 0.65f;
     private int Duration => Speeds.Length;
     
-    private int CurrTime;
     private int Direction;
     
     internal void StartDash() {

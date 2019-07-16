@@ -73,6 +73,7 @@ namespace OriMod {
     internal bool Unlocked = true;
     protected virtual int Cooldown { get; }
     protected int CurrCooldown;
+    protected int CurrTime;
     protected virtual bool CooldownOnlyOnBoss => false;
     internal virtual bool CanUse => Unlocked && Refreshed;
     internal abstract bool DoUpdate { get; }
