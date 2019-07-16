@@ -13,10 +13,9 @@ namespace OriMod.Projectiles.Abilities {
     public override bool PreAI() => false;
 
     private void ModifyHitAny(Entity entity, ref int damage, ref bool crit) {
-      if (Main.rand.Next(5) == 1) {
+      if (!crit && Main.rand.Next(5) == 1) {
         crit = true;
       }
-      int oldDamage = damage;
       damage = (int)((float)damage * projectile.penetrate / projectile.maxPenetrate);
     }
     public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit) => ModifyHitAny(target, ref damage, ref crit);
