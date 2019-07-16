@@ -1,12 +1,9 @@
+**/.vs/
 **/.vscode/
 **/bin/
 **/obj/
-**/.vs/
 **/Sounds/
-*.txt
-SecretClass.cs
-!build.txt
-!description.txt
 *.xcf
 *.pdn
+*.kra
 ori_sheet_*.png
