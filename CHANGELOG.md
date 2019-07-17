@@ -1,7 +1,17 @@
-# v2.3.1
-#### This update was originally written with tML 0.11.2.2 in mind.
-#### Much of the mod had to be modified to support a patch for tML 0.10.1.5.
-#### A patch for tML v0.11.2.2 is ready for when it's pushed to all players.
+# v2.3.1.2
+## Update to tML v0.11.2.2
+## Additions
+- Use the Mod Configurations menu
+    - This will make configs (especially player color) much easier to work with.
+- Add most ability variables to config
+## Removals
+- Removed the old config file
+- Removed `/config`, `/color`, `/color2` commands.
+    - All of this is much easier in the Config menu.
+
+# v2.3.1.1
+## Bug Fixes
+- Fixed a possible issue with Mac and Linux.
 
 # v2.3.1.1
 ## Bug Fixes

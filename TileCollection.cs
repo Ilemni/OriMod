@@ -9,7 +9,7 @@ namespace OriMod {
     private static void AddMultiKey(this int[] a, int v, List<ushort> keys)
       => keys.ForEach(k => a[k] = v);
     internal static void AddModTile(ModTile m) {
-     // OriMod.Log.Debug($"Adding to TilePickaxeMin <{m.Type}, {m.minPick}> (Name: {m.Name ?? "Unknown name"}, Mod {m.mod?.Name ?? "Unknown mod"})");
+      OriMod.Log.Debug($"Adding to TilePickaxeMin <{m.Type}, {m.minPick}> (Name: {m.Name ?? "Unknown name"}, Mod {m.mod?.Name ?? "Unknown mod"})");
       TilePickaxeMin[m.Type] = m.minPick;
     }
     internal static void Init() {

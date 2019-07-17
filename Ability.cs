@@ -45,24 +45,24 @@ namespace OriMod {
     /// <value></value>
     public States State { get; internal set; }
     public bool Active {
-      get { return State == States.Active; }
-      internal set { State = value ? States.Active : State; }
+      get => State == States.Active;
+      internal set => State = value ? States.Active : State;
     }
     public bool Starting {
-      get { return State == States.Starting; }
-      internal set { State = value ? States.Starting : State; }
+      get => State == States.Starting;
+      internal set => State = value ? States.Starting : State;
     }
     public bool Ending {
-      get { return State == States.Ending; }
-      internal set { State = value ? States.Ending : State; }
+      get => State == States.Ending;
+      internal set => State = value ? States.Ending : State;
     }
     public bool Inactive {
-      get { return State == States.Inactive; }
-      internal set { State = value ? States.Inactive : State; }
+      get => State == States.Inactive;
+      internal set => State = value ? States.Inactive : State;
     }
     public bool Failed {
-      get { return State == States.Failed; }
-      internal set { State = value ? States.Failed : State; }
+      get => State == States.Failed;
+      internal set => State = value ? States.Failed : State;
     }
     /// <summary>
     /// Determines if the ability has been unlocked by the player.
@@ -79,7 +79,7 @@ namespace OriMod {
     internal abstract bool DoUpdate { get; }
     private bool _refreshed = true;
     internal bool Refreshed {
-      get { return _refreshed; }
+      get => _refreshed;
       set {
         if (!_refreshed && value) {
           OnRefreshed();

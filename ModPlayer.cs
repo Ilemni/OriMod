@@ -284,7 +284,7 @@ namespace OriMod {
 
     private Color _spriteColor = Color.LightCyan;
     internal Color SpriteColor {
-      get { return Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColor : _spriteColor; }
+      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColor : _spriteColor;
       set {
         if (Main.myPlayer != player.whoAmI) {
           _spriteColor = value;
@@ -293,7 +293,7 @@ namespace OriMod {
     }
     private Color _spriteColorSecondary = Color.LightCyan;
     internal Color SpriteColorSecondary {
-      get { return Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColorSecondary : _spriteColorSecondary; }
+      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColorSecondary : _spriteColorSecondary;
       set {
         if (Main.myPlayer != player.whoAmI) {
           _spriteColorSecondary = value;
@@ -457,8 +457,7 @@ namespace OriMod {
             return;
           }
           int frame = 0;
-          float angle;
-          wCJump.GetMouseDirection(out angle);
+          wCJump.GetMouseDirection(out float angle);
           if (angle < -0.46f) {
             frame = 2;
           }
@@ -966,7 +965,7 @@ namespace OriMod {
         if (soulLink.PlacedSoulLink) layers.Insert(0, OriLayers.SoulLinkLayer);
         Animations.PlayerAnim.Draw(layers, 9, force:true);
         if (OriSet) {
-          Animations.SecondaryLayer.Draw(layers, 10, force:true);
+        Animations.SecondaryLayer.Draw(layers, 10, force:true);
         }
         Animations.TrailAnim.Draw(layers);
         Animations.GlideAnim.Draw(layers);

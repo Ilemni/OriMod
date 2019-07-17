@@ -10,19 +10,11 @@ namespace OriMod {
     public static string GithubUserName => "TwiliChaos";
     public static string GithubProjectName => "OriMod";
     internal static bool? OwnsBlindForest { get; private set; }
+
+    public static OriConfigClient1 ConfigClient { get; internal set; }
+    public static OriConfigClient2 ConfigAbilities { get; internal set; }
     
-    private static OriConfigClient1 _c1;
-    public static OriConfigClient1 ConfigClient {
-      get { return _c1 ?? (_c1 = new OriConfigClient1()); }
-      internal set { _c1 = value; }
-    }
-    private static OriConfigClient2 _c2;
-    public static OriConfigClient2 ConfigAbilities {
-      get { return _c2 ?? (_c2 = new OriConfigClient2()); }
-      internal set { _c2 = value; }
-    }
-    
-    // internal static log4net.ILog Log => OriMod.Instance.Logger;
+    internal static log4net.ILog Log => OriMod.Instance.Logger;
 
     public static ModHotKey SoulLinkKey;
     public static ModHotKey BashKey;
@@ -66,8 +58,6 @@ namespace OriMod {
       RecipeGroup.RegisterGroup("OriMod:MovementAccessories", group2);
     }
     public override void Load() {
-      Config.Load();
-      
       SoulLinkKey = RegisterHotKey("Soul Link", "E");
       BashKey = RegisterHotKey("Bash", "Mouse2");
       DashKey = RegisterHotKey("Dash", "LeftControl");
@@ -85,7 +75,7 @@ namespace OriMod {
       //     checkInstalled(@"Software\Valve\Steam\Apps\387290") ||
       //     checkInstalled(@"Software\Valve\Steam\Apps\261570") ||
       //     checkInstalled(@"Software\GOG.com\Games\1384944984", checkValue:null);
-      //   // Log.Info($"Ori is owned: {owned}");
+      //   Log.Info($"Ori is owned: {owned}");
       // }
     }
     // public static bool checkInstalled(string rkey, string rvalue="Installed", string checkValue="1") {
@@ -117,9 +107,9 @@ namespace OriMod {
             OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
             oPlayer.ResetData();
           }
-          // else {
-          //   Log.Warn(this.Name + ".Call() - ResetPlayerModData - Invalid player");
-          // }
+          else {
+            Log.Warn(this.Name + ".Call() - ResetPlayerModData - Invalid player");
+          }
         }
       }
       return null;
@@ -141,7 +131,7 @@ namespace OriMod {
           break;
         default:
           Main.NewText("Unknown Packet " + packetClass, Color.Red);
-          // OriMod.Log.Warn("Unknown Packet " + packetClass);
+          OriMod.Log.Warn("Unknown Packet " + packetClass);
           break;
       }
     }

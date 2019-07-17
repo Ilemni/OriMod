@@ -95,8 +95,7 @@ namespace OriMod.Abilities {
             return;
           }
         }
-        bool tempObstructed;
-        CheckValidPlacement(player.Center.ToTileCoordinates(), out tempObstructed, force:true);
+        CheckValidPlacement(player.Center.ToTileCoordinates(), out bool tempObstructed, force:true);
         if (tempObstructed) {
           if (!WasObstructed) {
             Main.NewText("Cannot place a Soul Link here...");
