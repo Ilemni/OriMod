@@ -16,8 +16,9 @@ namespace OriMod.Abilities {
     private bool inMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
     private float Speed => 8f; 
     private float SpeedExitMultiplier => 1.5f;
+    protected int Strength;
 
-    internal static bool CanBurrow(Tile t) {
+    internal bool CanBurrow(Tile t) {
       if (CanBurrowAny) return true;
       if (TileCollection.TilePickaxeMin[t.type] == -1) {
         ModTile mt = TileLoader.GetTile(t.type);
@@ -26,7 +27,7 @@ namespace OriMod.Abilities {
         }
         else return true;
       }
-      return TileCollection.TilePickaxeMin[t.type] <= OriMod.ConfigAbilities.BurrowStrength;
+      return TileCollection.TilePickaxeMin[t.type] <= Strength;
     }
     internal static bool CanBurrowAny => OriMod.ConfigAbilities.BurrowStrength < 0;
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
@@ -165,12 +166,20 @@ namespace OriMod.Abilities {
       oPlayer.KillGrapples();
       player.grapCount = 0;
     }
-    
+    public void UpdateBurrowStrength(bool force=false) {
+      if (!force && (int)Main.time % 64 != 0) return;
+      int pick = OriMod.ConfigAbilities.BurrowStrength;
+      foreach(Item item in player.inventory) {
+        if (item.pick > pick) pick = item.pick;
+      }
+      Strength = pick;
+    }
     internal override void Tick() {
       if (AutoBurrow && !OriMod.BurrowKey.Current) {
         AutoBurrow = false;
       }
       if (InUse) {
+        UpdateBurrowStrength();
         Handler.glide.Inactive = true;
         if (Active) {
           bool canBurrow = false;
@@ -196,6 +205,7 @@ namespace OriMod.Abilities {
         TickCooldown();
       }
       if (CanUse && !InUse && (OriMod.BurrowKey.JustPressed || AutoBurrow)) {
+        UpdateBurrowStrength(force:true);
         UpdateBurrowEnterBox();
         Vector2 vel = Vector2.Zero;
         for (int i = 0; i < BurrowEnterTemplate.Length; i++) {
