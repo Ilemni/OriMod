@@ -78,6 +78,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
+      Unlocked = false;
       if (PlacedSoulLink) {
         UpdateDust();
         CheckValidPlacement(check:Center, out Obstructed);

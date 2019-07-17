@@ -1,20 +1,44 @@
+# v2.3.1
+#### This update was originally written with tML 0.11.2.2 in mind.
+#### Much of the mod had to be modified to support a patch for tML 0.10.1.5.
+#### A patch for tML v0.11.2.2 is ready for when it's pushed to all players.
+
+# v2.3.1
+## Additions
+- Added Secondary Colors
+    - Use `/color2` to change this from in-game.
+## Changes
+- Burrow strength is now based on pickaxe power.
+- Bash now works on projectiles.
+- Stomp now stops the player mid-air if a stomped enemy does not die.
+- Reduced the number of targets Stomp can damage to 8.
+    - For each additional NPC hit, the damage of Stomp is slightly reduced until reaching the 8th NPC.
+- Dash now only goes on cooldown (1s) if a boss is alive.
+- Wings are hidden while using certain abilities.
+- Reduced camera smoothing during boss fights.
+## Bug Fixes
+- Ori now displays in the character select screen.
+- Fixed how some abilities interact with each other.
+- Fixed wings displaying in front of the player.
+
 # v2.3.0.2
 ## Changes
-- Burrowable tiles is now based on Pickaxe power.
+- Burrowable tiles is now based on Pickaxe Power.
     - The config defaults to 0, which makes most tiles burrowable.
-    - Read bullet point 4 in [this wiki page](https://terraria.gamepedia.com/Pickaxe_power#Mechanics) for more information.
+    - Read the Terraria Wiki on Pickaxe Power for more information.
     - Due to this change, loading the mod will take longer.
 - Tweaked Burrow movement.
     - Smaller gaps should no longer cause Burrow to get stuck.
-- Add config option to hold down for x frames to stomp.
-- Rename config option "BlindForestMovement" to "AbilityCooldowns" for better clarity.
+- Added config option to hold down for x frames to stomp.
+- Renamed config option "BlindForestMovement" to "AbilityCooldowns" for better clarity.
 ## Bug Fixes
 - *Actually* fixed water walking.
-- Fix Dash refreshing when it shouldn't be.
-- Fix uncharging Wall Charge Jump not properly resetting the charge.
+- Fixed Dash refreshing when it shouldn't be.
+- Fixed uncharging Wall Charge Jump not properly resetting the charge.
+
 # v2.3.0.1
 ## Bug Fixes
-- Fix first transformation lasting forever
+- Fixed first transformation lasting forever
 # v2.3
 ## Additions
 - Added Burrow
@@ -34,7 +58,7 @@
         - 1: Dirt and Grass
         - 2: Wood, Stone, and Sandstone
         - -1: Everything
-- Abilities now indicate when they are refreshed
+- Abilities now indicate when they are refreshed.
 - Added support for Mod Helpers.
 ## Changes
 - Modified cooldowns to various abilities

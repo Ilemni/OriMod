@@ -14,7 +14,6 @@ namespace OriMod {
     }
     internal static void Init() {
       if (TilePickaxeMin != null) return;
-      OriMod.Log.Info("Initializing TileCollection...");
       
       TilePickaxeMin = new int[ushort.MaxValue];
       for (int i = 0; i < TilePickaxeMin.Length; i++) {
@@ -30,36 +29,28 @@ namespace OriMod {
       TilePickaxeMin.AddMultiKey(50, new List<ushort> {
         TileID.Meteorite
       });
-      OriMod.Log.Info("Added tiles for Pickaxe power 50");
       TilePickaxeMin.AddMultiKey(55, new List<ushort> {
         TileID.Demonite, TileID.Crimtane
       });
-      OriMod.Log.Info("Added tiles for Pickaxe power 55");
       TilePickaxeMin.AddMultiKey(65, new List<ushort> {
         TileID.Ebonstone, TileID.Crimstone, TileID.Pearlstone, TileID.Hellstone, TileID.Obsidian, TileID.DesertFossil,
         TileID.BlueDungeonBrick, TileID.GreenDungeonBrick, TileID.PinkDungeonBrick,
       });
-      OriMod.Log.Info("Added tiles for Pickaxe power 65");
       TilePickaxeMin.AddMultiKey(100, new List<ushort> {
         TileID.Cobalt, TileID.Palladium,
       });
-      OriMod.Log.Info("Added tiles for Pickaxe power 100");
       TilePickaxeMin.AddMultiKey(110, new List<ushort> {
         TileID.Mythril, TileID.Orichalcum,
       });
-      OriMod.Log.Info("Added tiles for Pickaxe power 110");
       TilePickaxeMin.AddMultiKey(150, new List<ushort> {
         TileID.Adamantite, TileID.Titanium,
       });
-      OriMod.Log.Info("Added tiles for Pickaxe power 150");
       TilePickaxeMin.AddMultiKey(200, new List<ushort> {
         TileID.Chlorophyte,
       });
-      OriMod.Log.Info("Added tiles for Pickaxe power 200");
       TilePickaxeMin.AddMultiKey(210, new List<ushort> {
         TileID.LihzahrdBrick, TileID.LihzahrdAltar
       });
-      OriMod.Log.Info("Added tiles for Pickaxe power 210");
 
       for (int i = 0; i < TileID.Count; i++) {
         ushort t = (ushort)i;
