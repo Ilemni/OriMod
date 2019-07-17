@@ -3,9 +3,21 @@ using System.ComponentModel;
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using Terraria.ModLoader.Config;
+// using Terraria.ModLoader.Config;
 
 namespace OriMod {
+  #region REMOVE THESE IN tML v0.11.2.2
+  internal class HeaderAttribute : Attribute { internal HeaderAttribute(string s) { } }
+  internal class LabelAttribute : Attribute { internal LabelAttribute(string s) { } }
+  internal class TooltipAttribute : Attribute { internal TooltipAttribute(string s) { } }
+  internal class OptionStringsAttribute : Attribute { internal OptionStringsAttribute(string[] sArr) { } }
+  internal class RangeAttribute : Attribute { internal RangeAttribute(float min, float max) { } }
+  public enum ConfigScope { ClientSide = 1 }
+  public abstract class ModConfig {
+    public abstract ConfigScope Mode { get; }
+    public abstract void OnLoaded();
+  }
+  #endregion
   [Label("Client Config")]
   public class OriConfigClient1 : ModConfig {
     public override ConfigScope Mode => ConfigScope.ClientSide;
@@ -53,11 +65,11 @@ namespace OriMod {
 
     [Label("Player Color"), Tooltip("The color of your Spirit Guardian.")]
     [DefaultValue(typeof(Color), "210, 255, 255, 255")]
-    public Color PlayerColor;
+    public Color PlayerColor = new Color(210, 255, 255, 255);
     
     [Label("Player Color (Secondary)"), Tooltip("The secondary color of your Spirit Guardian.")]
     [DefaultValue(typeof(Color), "0, 0, 0, 0")]
-    public Color PlayerColorSecondary;
+    public Color PlayerColorSecondary = new Color(0, 0, 0, 0);
 
     public override void OnLoaded() {
       OriMod.ConfigClient = this;
@@ -77,93 +89,93 @@ namespace OriMod {
     
     [Label("Cooldown"), Tooltip("Cooldown of Soul Link, in seconds.")]
     [DefaultValue(30), Range(0f, 150)]
-    public float SoulLinkCooldown;
+    public float SoulLinkCooldown => 30;
 
     [Label("Charge Time"), Tooltip("How long it takes to place a Soul Link, in seconds.")]
     [DefaultValue(0.9f), Range(0.05f, 10)]
-    public float SoulLinkChargeRate;
+    public float SoulLinkChargeRate => 0.9f;
 
     [Label("Respawn Time"), Tooltip("How long after dying it takes to respawn at a Soul Link, in seconds.")]
     [DefaultValue(1.2f), Range(1f, 10)]
-    public float SoulLinkRespawnTime;
+    public float SoulLinkRespawnTime => 1.2f;
 
     [Header("Air Jump")]
 
     [Label("Number of Jumps"), Tooltip("Amount of times the player can jump in the air.")]
     [DefaultValue(2)]
-    public int AirJumpCount;
+    public int AirJumpCount = 2;
     
     [Header("Bash")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Bash, in seconds.")]
     [DefaultValue(0.75f), Range(0f, 20)]
-    public float BashCooldown;
+    public float BashCooldown => 0.75f;
 
     [Label("Strength"), Tooltip("How far Bashing pushes the player and NPCs.")]
     [DefaultValue(15), Range(0f, 50)]
-    public float BashStrength;
+    public float BashStrength => 15;
 
     [Label("Range"), Tooltip("Furthest distance from the player a target can be. 1 tile = 16 units.")]
     [DefaultValue(48), Range(8f, 160)]
-    public float BashRange;
+    public float BashRange => 48;
 
     [Header("Stomp")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Stomp, in seconds.")]
     [DefaultValue(6), Range(0f, 30)]
-    public float StompCooldown;
+    public float StompCooldown => 6;
 
     [Label("Fall Speed"), Tooltip("How fast the player falls while Stomping.")]
     [DefaultValue(28), Range(1f, 100)]
-    public float StompFallSpeed;
+    public float StompFallSpeed => 28;
 
     [Label("Number of Targets"), Tooltip("How many targets Stomp can damage at once.")]
     [DefaultValue(8), Range(1, 32)]
-    public int StompNumTargets;
+    public int StompNumTargets = 8;
 
     [Header("Charge Jump")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Charge Jump, in seconds.")]
     [DefaultValue(6), Range(0f, 30)]
-    public float CJumpCooldown;
+    public float CJumpCooldown => 6;
 
     [Label("Speed"), Tooltip("How fast Charge Jump moves the player.")]
     [DefaultValue(1), Range(0f, 10)]
-    public float CJumpSpeedMultiplier;
+    public float CJumpSpeedMultiplier => 1;
 
     [Header("Wall Charge Jump")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Wall Charge Jump, in seconds.")]
     [DefaultValue(4), Range(0f, 30)]
-    public float WCJumpCooldown;
+    public float WCJumpCooldown => 4;
 
     [Label("Speed"), Tooltip("How fast Wall Charge Jump moves the player.")]
     [DefaultValue(1), Range(0f, 10)]
-    public float WCJumpSpeedMultipler;
+    public float WCJumpSpeedMultipler => 1;
 
     [Label("Max Angle"), Tooltip("How far up or down Wall Charge Jump can be aimed.")]
     [DefaultValue(0.65f), Range(0.25f, (float)(Math.PI / 2))]
-    public float WCJumpMaxAngle;
+    public float WCJumpMaxAngle => 0.65f;
 
     [Header("Dash")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Dash, in seconds.\nNote this is only when a boss is alive.")]
     [DefaultValue(1), Range(0f, 10)]
-    public float DashCooldown;
+    public float DashCooldown => 1;
 
     [Label("Speed"), Tooltip("How fast Dash moves the player.")]
     [DefaultValue(1), Range(0f, 10)]
-    public float DashSpeedMultiplier;
+    public float DashSpeedMultiplier => 1;
 
     [Header("Charge Dash")]
     
     [Label("Cooldown"), Tooltip("Cooldown of Charge Dash, in seconds.\nNote this is only when a boss is alive.")]
     [DefaultValue(3), Range(0f, 30)]
-    public float CDashCooldown;
+    public float CDashCooldown => 3;
 
     [Label("Speed"), Tooltip("How fast Charge Dash moves the player.")]
-    [DefaultValue(1), Range(0f, 10)]
-    public float CDashSpeedMultiplier;
+    [DefaultValue(1)]
+    public float CDashSpeedMultiplier => 1;
 
     [Header("Burrow")]
     

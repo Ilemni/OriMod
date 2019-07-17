@@ -27,7 +27,10 @@ namespace OriMod.Abilities {
     
     public Projectile Proj { get; private set; }
     
-    internal Vector2 GetMouseDirection() => GetMouseDirection(out float _);
+    internal Vector2 GetMouseDirection() {
+      float _;
+      return GetMouseDirection(out _);
+    }
     internal Vector2 GetMouseDirection(out float angle) {
       Vector2 mouse = Main.MouseWorld - player.Center;
       mouse.X *= -Handler.climb.WallDir;

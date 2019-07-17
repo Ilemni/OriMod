@@ -81,7 +81,7 @@ namespace OriMod.Abilities {
       Unlocked = false;
       if (PlacedSoulLink) {
         UpdateDust();
-        CheckValidPlacement(check:Center, out Obstructed);
+        CheckValidPlacement(Center, out Obstructed);
         if (Obstructed) {
           PlacedSoulLink = false;
           Main.NewText("Your Soul Link has been blocked and despawned...");
@@ -95,7 +95,8 @@ namespace OriMod.Abilities {
             return;
           }
         }
-        CheckValidPlacement(check:player.Center.ToTileCoordinates(), out bool tempObstructed, force:true);
+        bool tempObstructed;
+        CheckValidPlacement(player.Center.ToTileCoordinates(), out tempObstructed, force:true);
         if (tempObstructed) {
           if (!WasObstructed) {
             Main.NewText("Cannot place a Soul Link here...");
