@@ -1,6 +1,10 @@
 Ori and the Blind Forest / Ori and the Will of the Wisps
 crossover pack.
 
+--- v2.3.1.1 ---
+ -- Bug Fixes --
+- Fixed a possible issue with Mac and Linux.
+
 ---  v2.3.1  ---
  -- Additions --
 - Added Secondary Colors

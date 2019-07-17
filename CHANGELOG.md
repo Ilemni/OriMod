@@ -3,6 +3,10 @@
 #### Much of the mod had to be modified to support a patch for tML 0.10.1.5.
 #### A patch for tML v0.11.2.2 is ready for when it's pushed to all players.
 
+# v2.3.1.1
+## Bug Fixes
+- Fixed a possible issue with Mac and Linux.
+
 # v2.3.1
 ## Additions
 - Added Secondary Colors
