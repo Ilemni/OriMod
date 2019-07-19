@@ -33,6 +33,7 @@ namespace OriMod {
       byte.TryParse(arr[0], out r);
       byte.TryParse(arr[1], out g);
       byte.TryParse(arr[2], out b);
+      if (alpha) byte.TryParse(arr[3], out a);
       color = new Color(r, g, b, a);
     }
     private static void GetColor(this Preferences p, string name, ref Color defaultValue, bool alpha=false) {
@@ -53,7 +54,7 @@ namespace OriMod {
         Prefs.Get("BurrowStrength", ref OriMod.ConfigAbilities.BurrowStrength);
         Prefs.Get("StompHoldDownDelay", ref OriMod.ConfigClient.StompHoldDownDelay);
         Prefs.GetColor("OriColor", ref OriMod.ConfigClient.PlayerColor);
-        Prefs.GetColor("OriColorSecondary", ref OriMod.ConfigClient.PlayerColorSecondary);
+        Prefs.GetColor("OriColorSecondary", ref OriMod.ConfigClient.PlayerColorSecondary, true);
         return true;
       }
       return false;
@@ -81,7 +82,7 @@ namespace OriMod {
       Prefs.Put("DoPlayerLight", true);
       Prefs.Put("SmoothCamera", true);
       Prefs.Put("OriColor", Color.LightCyan);
-      Prefs.Put("OriColorSecondary", Color.LightCyan);
+      Prefs.Put("OriColorSecondary", new Color(0, 0, 0, 0));
       Prefs.Put("SoftCrouch", true);
       Prefs.Put("AbilityCooldowns", true);
       Prefs.Put("BurrowToMouse", false);
