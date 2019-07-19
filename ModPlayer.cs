@@ -768,7 +768,7 @@ namespace OriMod {
       }
     }
     public override void PostUpdate() {
-      UpdateFrame(player);
+      if (!Main.dedServ) UpdateFrame(player);
       CheckSeinBuffs();
       if (!OriSet) return;
       if (DoPlayerLight && !burrow.Active) Lighting.AddLight(player.Center, LightColor.ToVector3());
@@ -847,7 +847,7 @@ namespace OriMod {
       }
       if (Transforming) {
         player.direction = TransformDirection;
-        int dur = Animations.PlayerAnim.Source.Tracks["TransformEnd"].Duration;
+        int dur = AnimationHandler.PlayerAnim.Tracks["TransformEnd"].Duration;
         if (TransformTimer > dur - 10) {
           if (TransformTimer < dur) {
             player.gravity = 9f;
@@ -862,7 +862,6 @@ namespace OriMod {
             }
           }
         }
-        player.direction = TransformDirection;
         player.runAcceleration = 0;
         player.maxRunSpeed = 0;
         player.immune = true;
@@ -961,6 +960,7 @@ namespace OriMod {
       soulLink.UpdateDead();
     }
     public override void ModifyDrawLayers(List<PlayerLayer> layers) {
+      if (Main.dedServ) return;
       if (OriSet || Transforming) {
         DisableVanillaLayers();
         if (soulLink.PlacedSoulLink) layers.Insert(0, OriLayers.SoulLinkLayer);
@@ -1015,6 +1015,7 @@ namespace OriMod {
       }
     }
     private void OnAnimNameChange(string value) {
+      if (Main.dedServ) return;
       Animations.PlayerAnim.OnAnimNameChange(value);
       Animations.SecondaryLayer.OnAnimNameChange(value);
       Animations.TrailAnim.OnAnimNameChange(value);
@@ -1023,7 +1024,9 @@ namespace OriMod {
     }
     public override void Initialize() {
       Abilities = new OriAbilities(this);
-      Animations = new Animations(this);
+      if (!Main.dedServ) {
+        Animations = new Animations(this);
+      }
       InitTestMaterial();
       Trails = new List<Trail>();
       for (int i = 0; i < 26; i++) {

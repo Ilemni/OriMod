@@ -9,8 +9,8 @@ using Terraria.ModLoader;
 namespace OriMod {
   internal static class AnimationHandler {
     private static Frame f(int frameX, int frameY, int duration=-1) => new Frame(frameX, frameY, duration);
-    private static Header h(InitType i=InitType.Range, LoopMode l=LoopMode.Always, PlaybackMode p=PlaybackMode.Normal, string to=null, string s=null)
-      => new Header(init:i, loop:l, playback:p, transferTo:to, overrideTexturePath:s);
+    private static Header h(InitType i=InitType.Range, LoopMode l=LoopMode.Always, PlaybackMode p=PlaybackMode.Normal, string s=null)
+      => new Header(init:i, loop:l, playback:p, overrideTexturePath:s);
     
     internal static readonly AnimationSource PlayerAnim = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
       new Dictionary<string, Track> {
@@ -276,7 +276,7 @@ namespace OriMod {
       Init = init;
       Loop = loop;
       Playback = playback;
-      if (overrideTexturePath != null) Texture = ModLoader.GetMod("OriMod").GetTexture(overrideTexturePath);
+      if (!Main.dedServ && overrideTexturePath != null) Texture = ModLoader.GetMod("OriMod").GetTexture(overrideTexturePath);
     }
     internal Header CopySome(Header other) {
       return new Header(
@@ -351,7 +351,7 @@ namespace OriMod {
     internal string[] TrackNames { get; }
     internal Track this[string name] => Tracks[name];
     internal AnimationSource(string texture, int x, int y, Dictionary<string, Track> tracks) {
-      Texture = ModLoader.GetMod("OriMod").GetTexture(texture);
+      if (!Main.dedServ) Texture = ModLoader.GetMod("OriMod").GetTexture(texture);
       Tracks = tracks;
       TrackNames = tracks.Keys.ToArray();
       TileSize = new Point(x, y);
