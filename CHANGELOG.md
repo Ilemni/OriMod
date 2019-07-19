@@ -1,7 +1,8 @@
-# v2.3.1
-#### This update was originally written with tML 0.11.2.2 in mind.
-#### Much of the mod had to be modified to support a patch for tML 0.10.1.5.
-#### A patch for tML v0.11.2.2 is ready for when it's pushed to all players.
+# v2.3.1.2
+## Bug Fixes
+- Fixed secondary colors always being fully opaque
+- Fixed the player sprite sometimes showing a square when certain mods are enabled
+- Fixed dedicated servers not being able to load the mod.
 
 # v2.3.1.1
 ## Bug Fixes

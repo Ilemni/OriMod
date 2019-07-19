@@ -5,14 +5,11 @@ using Terraria.IO;
 
 namespace OriMod {
   public static class Config {
-    internal const string ObsoleteMsg = "This member remains in use for tModLoader version 0.10.1.5. In the tML v0.11.2.2 release, remove this class.";
-    [System.Obsolete(Config.ObsoleteMsg, false)]
     public static string ConfigPath = Path.Combine(Main.SavePath, "Mod Configs", "OriMod.json");
-    [System.Obsolete(Config.ObsoleteMsg, false)]
     public static bool BurrowToMouse { get { return OriMod.ConfigClient.BurrowToMouse; } set { OriMod.ConfigClient.BurrowControls = value ? "Mouse" : "WASD"; } }
-    [System.Obsolete(Config.ObsoleteMsg, false)]
+    
     private static Preferences Prefs = new Preferences(ConfigPath);
-    [System.Obsolete(Config.ObsoleteMsg, false)]
+    
     public static void Load() {
       bool success = ReadConfig();
       if (!success) {
@@ -22,7 +19,7 @@ namespace OriMod {
     }
     private static void LoadColor(string s, out Color color, bool alpha=false) {
       string[] arr = s.Split(new char[] { ',', ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
-      if (arr.Length == 0) {
+      if (arr.Length < 3) {
         color = Color.LightCyan;
         return;
       }
@@ -33,14 +30,13 @@ namespace OriMod {
       byte.TryParse(arr[0], out r);
       byte.TryParse(arr[1], out g);
       byte.TryParse(arr[2], out b);
-      if (alpha) byte.TryParse(arr[3], out a);
+      if (alpha && arr.Length > 3) byte.TryParse(arr[3], out a);
       color = new Color(r, g, b, a);
     }
     private static void GetColor(this Preferences p, string name, ref Color defaultValue, bool alpha=false) {
       string s = p.Get(name, defaultValue.ToString());
       LoadColor(s, out defaultValue, alpha);
     }
-    [System.Obsolete(Config.ObsoleteMsg, false)]
     public static bool ReadConfig() {
       if (Prefs.Load()) {
         bool b = false;
@@ -59,7 +55,6 @@ namespace OriMod {
       }
       return false;
     }
-    [System.Obsolete(Config.ObsoleteMsg, false)]
     public static void SaveConfig() {
       Prefs.Clear();
       Prefs.Put("GlobalPlayerLight", OriMod.ConfigClient.GlobalPlayerLight);
@@ -75,7 +70,6 @@ namespace OriMod {
       Prefs.Put("StompHoldDownDelay", OriMod.ConfigClient.StompHoldDownDelay);
       Prefs.Save();
     }
-    [System.Obsolete(Config.ObsoleteMsg, false)]
     public static void ResetConfig() {
       Prefs.Clear();
       Prefs.Put("GlobalPlayerLight", false);

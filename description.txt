@@ -1,6 +1,12 @@
 Ori and the Blind Forest / Ori and the Will of the Wisps
 crossover pack.
 
+--- v2.3.1.2 ---
+ -- Bug Fixes --
+- Fixed secondary colors always being fully opaque
+- Fixed the player sprite sometimes showing a square when certain mods are enabled
+- Fixed dedicated servers not being able to load the mod.
+
 --- v2.3.1.1 ---
  -- Bug Fixes --
 - Fixed a possible issue with Mac and Linux.
