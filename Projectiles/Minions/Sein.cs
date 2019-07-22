@@ -149,8 +149,9 @@ namespace OriMod.Projectiles.Minions {
     protected float maxDistFromPlayer = 240f;
     protected float minDistFromNPC = 64f;
     protected string SpiritFlameSound;
-    protected SoundEffectInstance PlaySpiritFlameSound(string Path, float Volume) {
-      return Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, ("Sounds/Custom/NewSFX/Ori/SpiritFlame/" + Path)).WithVolume(Volume), projectile.Center);
+    protected void PlaySpiritFlameSound(string Path, float Volume) {
+      OriMod.Log.Debug("Prevented sound from playing.");
+      // return Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, ("Sounds/Custom/NewSFX/Ori/SpiritFlame/" + Path)).WithVolume(Volume), projectile.Center);
     }
     private int excludeRand = 0;
     private static readonly Vector2[] TargetPositions = new Vector2[] {

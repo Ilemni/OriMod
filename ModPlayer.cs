@@ -315,11 +315,10 @@ namespace OriMod {
         // ErrorLogger.Log(msg);
       }
     }
-    internal SoundEffectInstance PlayNewSound(string Path) => PlayNewSound(Path, 1, 0);
-    internal SoundEffectInstance PlayNewSound(string Path, float Volume) => PlayNewSound(Path, Volume, 0);
-    internal SoundEffectInstance PlayNewSound(string Path, float Volume, float Pitch) =>
-      Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
-    internal SoundEffectInstance PlayFootstep(string Material, int rand, float Volume) =>
+    internal void PlayNewSound(string Path, float Volume=1, float Pitch=0) =>
+      OriMod.Log.Debug("Prevented sound from playing.");
+      // Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
+    internal void PlayFootstep(string Material, int rand, float Volume) =>
       PlayNewSound($"Ori/Footsteps/{Material}/{Material + RandomChar(rand, ref FootstepRand)}", Volume, 0.1f);
     /// <summary>
     /// Retrieves a random character of an alphabet between indices 0 and <c>length</c>
