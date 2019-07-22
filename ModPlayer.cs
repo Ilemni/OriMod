@@ -10,6 +10,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using OriMod.Abilities;
+using BetterAnimations;
 
 namespace OriMod {
   public sealed class OriPlayer : ModPlayer {
@@ -17,7 +18,7 @@ namespace OriMod {
     internal static TriggersSet JustReleased => PlayerInput.Triggers.JustReleased;
     internal static TriggersSet Current => PlayerInput.Triggers.Current;
     internal bool Input(bool TriggerKey) => player.whoAmI == Main.myPlayer && TriggerKey;
-
+    
     #region Variables
     /// <summary>
     /// Class that contains all of OriPlayer's abilities
@@ -252,17 +253,7 @@ namespace OriMod {
     /// The name of the animation track currently playing
     /// </summary>
     /// <value></value>
-    public string AnimName {
-      get {
-        return _animName;
-      }
-      private set {
-        if (value != _animName) {
-          OnAnimNameChange(value);
-        }
-        _animName = value;
-      }
-    }
+    public string AnimName { get; private set; }
     private string _animName = "Default";
     internal int AnimIndex { get; private set; }
     internal float AnimTime { get; private set; } // Intentionally a float
@@ -797,13 +788,13 @@ namespace OriMod {
     }
     private void CheckOnGround() {
       IsGrounded = false;
+      Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
+      feetVect.Y += (1f / 255f) * player.gravDir;
+      Point pos = feetVect.ToTileCoordinates();
       if (player.fireWalk || player.waterWalk || player.waterWalk2) {
-        Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
-        feetVect.Y += (1f / 255f) * player.gravDir;
-        Point pos = feetVect.ToTileCoordinates();
-        bool testblock = Main.tile[pos.X, pos.Y].liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
+        Tile tile = Main.tile[pos.X, pos.Y];
+        bool testblock = tile.liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
         if (testblock) {
-          Tile tile = Main.tile[pos.X, pos.Y];
           IsGrounded = tile.lava() ? player.fireWalk : (player.waterWalk || player.waterWalk2);
         }
       }
@@ -1013,18 +1004,11 @@ namespace OriMod {
         doNetUpdate = false;
       }
     }
-    private void OnAnimNameChange(string value) {
-      if (Main.dedServ) return;
-      Animations.PlayerAnim.OnAnimNameChange(value);
-      Animations.SecondaryLayer.OnAnimNameChange(value);
-      Animations.TrailAnim.OnAnimNameChange(value);
-      Animations.BashAnim.OnAnimNameChange(value);
-      Animations.GlideAnim.OnAnimNameChange(value);
-    }
+
     public override void Initialize() {
       Abilities = new OriAbilities(this);
       if (!Main.dedServ) {
-        Animations = new Animations(this);
+        Animations = new Animations(player);
       }
       InitTestMaterial();
       Trails = new List<Trail>();
