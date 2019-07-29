@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Terraria;
 using Terraria.ModLoader;
-using BetterAnimations;
 
 namespace OriMod {
   internal static class AnimationHandler {
@@ -13,7 +12,7 @@ namespace OriMod {
     private static Header h(InitType i=InitType.Range, LoopMode l=LoopMode.Always, PlaybackMode p=PlaybackMode.Normal, string s=null)
       => new Header(init:i, loop:l, playback:p, overrideTexturePath:s);
     
-    internal static readonly AnimationSourcePlayer PlayerAnim = new AnimationSourcePlayer(ModLoader.GetMod("OriMod"), "PlayerEffects/OriPlayer", 128, 128, true, OriLayers.PlayerSprite,
+    internal static readonly AnimationSource PlayerAnim = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
       new Dictionary<string, Track> {
         ["Default"] = new Track(h(),
           f(0, 0)
@@ -93,7 +92,7 @@ namespace OriMod {
         ["Burrow"] = new Track(h(i:InitType.Range),
           f(7, 0, 3), f(7, 7, 3)
         ),
-        ["TransformStart"] = new Track(h(i:InitType.Select, s:"PlayerEffects/Transform"),
+        ["TransformStart"] = new Track(h(i:InitType.Select, l:LoopMode.Transfer, s:"PlayerEffects/Transform"),
           f(0, 0, 2), f(0, 1, 60), f(0, 2, 60), f(0, 3, 120),
           f(0, 4, 40), f(0, 5, 40), f(0, 6, 40), f(0, 7, 30)
         ),
@@ -103,14 +102,14 @@ namespace OriMod {
         ),
       }
     );
-    internal static readonly AnimationSourcePlayer BashAnim = new AnimationSourcePlayer(ModLoader.GetMod("OriMod"), "PlayerEffects/BashArrow", 152, 20, false, OriLayers.BashArrow,
+    internal static readonly AnimationSource BashAnim = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
       new Dictionary<string, Track> {
         {"Bash", new Track(h(i:InitType.Select),
           f(0, 0)
         )}
       }
     );
-    internal static readonly AnimationSourcePlayer GlideAnim = new AnimationSourcePlayer(ModLoader.GetMod("OriMod"), "PlayerEffects/Feather", 128, 128, true, OriLayers.FeatherSprite,
+    internal static readonly AnimationSource GlideAnim = new AnimationSource("PlayerEffects/Feather", 128, 128,
       new Dictionary<string, Track> {
         {"GlideStart", new Track(h(l:LoopMode.Once),
           f(0, 0, 5), f(0, 2, 5)
@@ -187,7 +186,12 @@ namespace OriMod {
           if (header.Playback == PlaybackMode.Normal) {
             oPlayer.AnimReversed = false;
             if (frameIndex == frames.Length - 1) {
-              if (header.Loop != LoopMode.Once) {
+              if (header.Loop == LoopMode.Transfer) {
+                anim = header.TransferTo;
+                frameIndex = 0;
+                time = 0;
+              }
+              else if (header.Loop != LoopMode.Once) {
                 frameIndex = 0;
               }
             }
@@ -244,133 +248,148 @@ namespace OriMod {
     }  
   }
 
-  // internal enum InitType {
-  //   None = 0,
-  //   Range = 1,
-  //   Select = 2,
-  // }
-  // internal enum LoopMode {
-  //   None = 0,
-  //   Always = 1,
-  //   Once = 2,
-  //   Transfer = 3,
-  // }
-  // internal enum PlaybackMode {
-  //     None = 0,
-  //     Normal = 1,
-  //     PingPong = 2,
-  //     Reverse = 3,
-  //     Random = 4,
-  // }
-  // internal class Header {
-  //   internal InitType Init;
-  //   internal LoopMode Loop;
-  //   internal PlaybackMode Playback;
-  //   internal Texture2D Texture { get; }
-  //   internal string TransferTo { get; }
-  //   internal Header(InitType init=InitType.None, LoopMode loop=LoopMode.None, PlaybackMode playback=PlaybackMode.None, string transferTo=null, string overrideTexturePath=null) {
-  //     Init = init;
-  //     Loop = loop;
-  //     Playback = playback;
-  //     if (!Main.dedServ && overrideTexturePath != null) Texture = ModLoader.GetMod("OriMod").GetTexture(overrideTexturePath);
-  //   }
-  //   internal Header CopySome(Header other) {
-  //     return new Header(
-  //       other.Init != 0 ? other.Init : Init,
-  //       other.Loop != 0 ? other.Loop : Loop,
-  //       other.Playback != 0 ? other.Playback : Playback
-  //     );
-  //   }
-  //   internal static Header Default => new Header(InitType.Range, LoopMode.Always, PlaybackMode.Normal);
-  //   internal static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
-  //   public override string ToString()
-  //     => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}" + (Texture != null ? $" | Texture Path: \"{Texture.Name}\"" : "");
-  // }
-  // internal class Frame {
-  //   internal byte X;
-  //   internal byte Y;
-  //   internal int Duration;
-  //   internal Point Tile => new Point(X, Y);
-  //   internal Frame (byte x, byte y, int duration=-1) {
-  //     X = x;
-  //     Y = y;
-  //     Duration = duration;
-  //   }
-  //   internal Frame(int x, int y, int duration=-1) : this((byte)x, (byte)y, duration) { }
-  //   public override string ToString() => $"Tile [{X}, {Y}] Duration {Duration}";
-  // }
-  // internal class Track {
-  //   internal Header Header { get; }
-  //   internal Frame[] Frames { get; }
-  //   internal int Duration { get; }
-  //   internal Track(Header header, params Frame[] frames) {
-  //     Header = header;
-  //     Frame[] newFrames = (header.Init == InitType.Range && frames.Length > 1) ? InitRange(frames) : frames;
-  //     Frames = newFrames;
-  //     foreach (Frame f in frames) {
-  //       if (f.Duration == -1) {
-  //         Duration = -1;
-  //         break;
-  //       }
-  //       Duration += f.Duration;
-  //     }
-  //   }
-  //   private Frame[] InitRange(Frame[] frames) {
-  //     List<Frame> newFrames = new List<Frame>();
-  //     for (int i = 0; i < frames.Length - 1; i++) {
-  //       Frame startFrame = frames[i];
-  //       Frame endFrame = frames[i + 1];
-  //       for (int y = startFrame.Y; y < endFrame.Y; y++) {
-  //         newFrames.Add(new Frame(startFrame.X, y, startFrame.Duration));
-  //       }
-  //     }
-  //     newFrames.Add(frames[frames.Length - 1]);
-  //     return newFrames.ToArray();
-  //   }
-  //   internal Frame this[int idx] => Frames[idx];
-  // }
-  // internal class AnimationSource {
-  //   internal Dictionary<string, Track> Tracks { get; }
-  //   internal Point TileSize { get; }
-  //   internal Texture2D Texture { get; }
-  //   internal string[] TrackNames { get; }
-  //   internal Track this[string name] => Tracks[name];
-  //   internal AnimationSource(string texture, int x, int y, Dictionary<string, Track> tracks) {
-  //     if (!Main.dedServ) Texture = ModLoader.GetMod("OriMod").GetTexture(texture);
-  //     Tracks = tracks;
-  //     TrackNames = tracks.Keys.ToArray();
-  //     TileSize = new Point(x, y);
-  //   }
-  // }
-  // internal class Animation {
-  //   internal Texture2D Texture => ActiveTrack.Header.Texture ?? Source.Texture;
-  //   private PlayerLayer PlayerLayer { get; }
-  //   internal bool Valid { get; private set; }
-  //   internal Track ActiveTrack => Valid ? Source.Tracks[Handler.owner.AnimName] : Source.Tracks.First().Value;
-  //   internal Frame ActiveFrame => ActiveTrack[Handler.owner.AnimIndex < ActiveTrack.Frames.Length ? Handler.owner.AnimIndex : 0];
-  //   internal Rectangle ActiveTile => new Rectangle(ActiveFrame.Tile.X * Source.TileSize.X, ActiveFrame.Tile.Y * Source.TileSize.Y, Source.TileSize.X, Source.TileSize.Y);
-  //   internal Animations Handler { get; }
-  //   internal AnimationSource Source { get; }
-  //   internal void Draw(List<PlayerLayer> layers, int idx=0, bool force=false) {
-  //     if (Valid || force) layers.Insert(idx, this.PlayerLayer);
-  //   }
-  //   internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
-  //   internal Animation(Animations handler, AnimationSource source, PlayerLayer playerLayer) {
-  //     Handler = handler;
-  //     Source = source;
-  //     this.PlayerLayer = playerLayer;
-  //   }
-  // }
+  internal enum InitType {
+    None = 0,
+    Range = 1,
+    Select = 2,
+  }
+  internal enum LoopMode {
+    None = 0,
+    Always = 1,
+    Once = 2,
+    Transfer = 3,
+  }
+  internal enum PlaybackMode {
+      None = 0,
+      Normal = 1,
+      PingPong = 2,
+      Reverse = 3,
+      Random = 4,
+  }
+  internal class Header {
+    internal InitType Init;
+    internal LoopMode Loop;
+    internal PlaybackMode Playback;
+    internal Texture2D Texture => _tex ?? (TexturePath != null ? _tex = OriMod.Instance.GetTexture(TexturePath) : null);
+    private Texture2D _tex;
+    private string TexturePath;
+    internal string TransferTo { get; }
+    internal Header(InitType init=InitType.None, LoopMode loop=LoopMode.None, PlaybackMode playback=PlaybackMode.None, string transferTo=null, string overrideTexturePath=null) {
+      Init = init;
+      Loop = loop;
+      Playback = playback;
+      TexturePath = overrideTexturePath;
+    }
+    internal Header CopySome(Header other) {
+      return new Header(
+        other.Init != 0 ? other.Init : Init,
+        other.Loop != 0 ? other.Loop : Loop,
+        other.Playback != 0 ? other.Playback : Playback
+      );
+    }
+    internal static Header Default => new Header(InitType.Range, LoopMode.Always, PlaybackMode.Normal);
+    internal static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
+    public override string ToString()
+      => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}" + (Texture != null ? $" | Texture Path: \"{Texture.Name}\"" : "");
+  }
+  internal class Frame {
+    internal byte X;
+    internal byte Y;
+    internal Point Tile => new Point(X, Y);
+    internal int Duration;
+    internal Frame(int x, int y, int duration=-1) {
+      X = (byte)x;
+      Y = (byte)y;
+      Duration = duration;
+    }
+    internal Frame (byte x, byte y, int duration=-1) {
+      X = x;
+      Y = y;
+      Duration = duration;
+    }
+    internal byte this[int idx] {
+      get {
+        if (idx == 0) return X;
+        if (idx == 1) return Y;
+        throw new System.IndexOutOfRangeException();
+      }
+    }
+    public override string ToString() => $"Tile [{X}, {Y}] Duration {Duration}";
+  }
+  internal class Track {
+    internal Header Header { get; }
+    internal Frame[] Frames { get; }
+    internal int Duration { get; }
+    internal Track(Header header, params Frame[] frames) {
+      Header = header;
+      Frame[] newFrames = (header.Init == InitType.Range && frames.Length > 1) ? InitRange(frames) : frames;
+      Frames = newFrames;
+      foreach (Frame f in frames) {
+        if (f.Duration == -1) {
+          Duration = -1;
+          break;
+        }
+        Duration += f.Duration;
+      }
+    }
+    private Frame[] InitRange(Frame[] frames) {
+      List<Frame> newFrames = new List<Frame>();
+      for (int i = 0; i < frames.Length - 1; i++) {
+        Frame startFrame = frames[i];
+        Frame endFrame = frames[i + 1];
+        for (int y = startFrame.Y; y < endFrame.Y; y++) {
+          newFrames.Add(new Frame(startFrame.X, y, startFrame.Duration));
+        }
+      }
+      newFrames.Add(frames[frames.Length - 1]);
+      return newFrames.ToArray();
+    }
+    internal Frame this[int idx] => Frames[idx];
+  }
+  internal class AnimationSource {
+    internal Dictionary<string, Track> Tracks { get; }
+    internal Point TileSize { get; }
+    internal Texture2D Texture => _tex ?? (_tex = OriMod.Instance.GetTexture(texturePath));
+    private Texture2D _tex;
+    private string texturePath;
+    internal string[] TrackNames { get; }
+    internal Track this[string name] => Tracks[name];
+    internal AnimationSource(string texture, int x, int y, Dictionary<string, Track> tracks) {
+      texturePath = texture;
+      Tracks = tracks;
+      TrackNames = tracks.Keys.ToArray();
+      TileSize = new Point(x, y);
+    }
+  }
+  internal class Animation {
+    internal Texture2D Texture => ActiveTrack.Header.Texture ?? Source.Texture;
+    private PlayerLayer PlayerLayer { get; }
+    internal bool Valid { get; private set; }
+    internal Track ActiveTrack => Valid ? Source.Tracks[Handler.owner.AnimName] : Source.Tracks.First().Value;
+    internal Frame ActiveFrame => ActiveTrack[Handler.owner.AnimIndex < ActiveTrack.Frames.Length ? Handler.owner.AnimIndex : 0];
+    internal Rectangle ActiveTile => new Rectangle(ActiveFrame.Tile.X * Source.TileSize.X, ActiveFrame.Tile.Y * Source.TileSize.Y, Source.TileSize.X, Source.TileSize.Y);
+    internal Animations Handler { get; }
+    internal AnimationSource Source { get; }
+    internal void Draw(List<PlayerLayer> layers, int idx=0, bool force=false) {
+      if (Valid || force) layers.Insert(idx, this.PlayerLayer);
+    }
+    internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
+    internal Animation(Animations handler, AnimationSource source, PlayerLayer playerLayer) {
+      Handler = handler;
+      Source = source;
+      this.PlayerLayer = playerLayer;
+    }
+  }
   internal class Animations {
-    internal Player owner { get; }
-    internal readonly AnimationPlayer PlayerAnim, SecondaryLayer, TrailAnim, BashAnim, GlideAnim;
-    internal Animations(Player player) {
-      owner = player;
-      PlayerAnim = new AnimationPlayer(AnimationHandler.PlayerAnim, owner);
-      SecondaryLayer = new AnimationPlayer(AnimationHandler.PlayerAnim, owner);
-      TrailAnim = new AnimationPlayer(AnimationHandler.PlayerAnim, owner);
-      BashAnim = new AnimationPlayer(AnimationHandler.BashAnim, owner);
-      GlideAnim = new AnimationPlayer(AnimationHandler.GlideAnim, owner);
+    internal OriPlayer owner { get; }
+    internal readonly Animation PlayerAnim, SecondaryLayer, TrailAnim, BashAnim, GlideAnim;
+    internal Animations(OriPlayer oPlayer) {
+      owner = oPlayer;
+      PlayerAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.PlayerSprite);
+      SecondaryLayer = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.SecondaryLayer);
+      TrailAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.Trail);
+      BashAnim = new Animation(this, AnimationHandler.BashAnim, OriLayers.BashArrow);
+      GlideAnim = new Animation(this, AnimationHandler.GlideAnim, OriLayers.FeatherSprite);
     }
   }
 }

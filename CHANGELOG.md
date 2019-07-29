@@ -1,13 +1,15 @@
-# v2.3.1.2
-## Update to tML v0.11.2.2
+# v2.3.2
+## Update to tML v0.11.3
 ## Additions
-- Use the Mod Configurations menu
+- Uses the Mod Configurations menu
     - This will make configs (especially player color) much easier to work with.
-- Add most ability variables to config
+- Added most ability variables to config
 ## Removals
 - Removed the old config file
 - Removed `/config`, `/color`, `/color2` commands.
     - All of this is much easier in the Config menu.
+## Bug Fixes
+- Fixed server crash due to attempting to load textures.
 
 # v2.3.1.1
 ## Bug Fixes

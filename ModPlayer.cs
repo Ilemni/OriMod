@@ -10,7 +10,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using OriMod.Abilities;
-using BetterAnimations;
 
 namespace OriMod {
   public sealed class OriPlayer : ModPlayer {
@@ -18,7 +17,7 @@ namespace OriMod {
     internal static TriggersSet JustReleased => PlayerInput.Triggers.JustReleased;
     internal static TriggersSet Current => PlayerInput.Triggers.Current;
     internal bool Input(bool TriggerKey) => player.whoAmI == Main.myPlayer && TriggerKey;
-    
+
     #region Variables
     /// <summary>
     /// Class that contains all of OriPlayer's abilities
@@ -253,7 +252,15 @@ namespace OriMod {
     /// The name of the animation track currently playing
     /// </summary>
     /// <value></value>
-    public string AnimName { get; private set; }
+    public string AnimName {
+      get => _animName;
+      private set {
+        if (value != _animName) {
+          OnAnimNameChange(value);
+        }
+        _animName = value;
+      }
+    }
     private string _animName = "Default";
     internal int AnimIndex { get; private set; }
     internal float AnimTime { get; private set; } // Intentionally a float
@@ -315,10 +322,10 @@ namespace OriMod {
         // ErrorLogger.Log(msg);
       }
     }
-    internal void PlayNewSound(string Path, float Volume=1, float Pitch=0) =>
-      OriMod.Log.Debug("Prevented sound from playing.");
-      // Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
-    internal void PlayFootstep(string Material, int rand, float Volume) =>
+    internal SoundEffectInstance PlayNewSound(string Path, float Volume=1, float Pitch=0) =>
+      Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
+    
+    internal SoundEffectInstance PlayFootstep(string Material, int rand, float Volume) =>
       PlayNewSound($"Ori/Footsteps/{Material}/{Material + RandomChar(rand, ref FootstepRand)}", Volume, 0.1f);
     /// <summary>
     /// Retrieves a random character of an alphabet between indices 0 and <c>length</c>
@@ -1003,11 +1010,18 @@ namespace OriMod {
         doNetUpdate = false;
       }
     }
-
+    private void OnAnimNameChange(string value) {
+      if (Main.dedServ) return;
+      Animations.PlayerAnim.OnAnimNameChange(value);
+      Animations.SecondaryLayer.OnAnimNameChange(value);
+      Animations.TrailAnim.OnAnimNameChange(value);
+      Animations.BashAnim.OnAnimNameChange(value);
+      Animations.GlideAnim.OnAnimNameChange(value);
+    }
     public override void Initialize() {
       Abilities = new OriAbilities(this);
       if (!Main.dedServ) {
-        Animations = new Animations(player);
+        Animations = new Animations(this);
       }
       InitTestMaterial();
       Trails = new List<Trail>();

@@ -149,10 +149,10 @@ namespace OriMod.Projectiles.Minions {
     protected float maxDistFromPlayer = 240f;
     protected float minDistFromNPC = 64f;
     protected string SpiritFlameSound;
-    protected void PlaySpiritFlameSound(string Path, float Volume) {
-      OriMod.Log.Debug("Prevented sound from playing.");
-      // return Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, ("Sounds/Custom/NewSFX/Ori/SpiritFlame/" + Path)).WithVolume(Volume), projectile.Center);
-    }
+    
+    protected void PlaySpiritFlameSound(string Path, float Volume) =>
+      Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, ("Sounds/Custom/NewSFX/Ori/SpiritFlame/" + Path)).WithVolume(Volume), projectile.Center);
+
     private int excludeRand = 0;
     private static readonly Vector2[] TargetPositions = new Vector2[] {
       new Vector2(-24, 7),
@@ -518,17 +518,18 @@ namespace OriMod.Projectiles.Minions {
       height = 4;
       return false;
     }
+    private Texture2D GlowTex => _tex ?? (_tex = mod.GetTexture("Projectiles/Minions/Sein_Glow"));
+    private Texture2D _tex;
     public override void PostDraw(SpriteBatch spriteBatch, Color lightColor) {
-      Texture2D texture = mod.GetTexture("Projectiles/Minions/Sein_Glow");
       Vector2 pos = new Vector2(projectile.BottomRight.X - Main.screenPosition.X, projectile.BottomRight.Y - Main.screenPosition.Y);
-      Vector2 orig = new Vector2(texture.Width, texture.Width) * 0.5f;
+      Vector2 orig = new Vector2(GlowTex.Width, GlowTex.Width) * 0.5f;
       for (int i = 0; i < 3; i++) {
         Color color = this.Color;
         color.A = 255;
         if (color == Color.Black) color = Color.White;
         color.A = (byte)(i == 0 ? 255 : i == 1 ? 200 : 175);
-        Rectangle sourceRect = new Rectangle(0, i * texture.Height / 3, texture.Width, texture.Width);
-        spriteBatch.Draw(texture, pos, sourceRect, color, projectile.rotation, orig, projectile.scale, SpriteEffects.None, 0f);
+        Rectangle sourceRect = new Rectangle(0, i * GlowTex.Height / 3, GlowTex.Width, GlowTex.Width);
+        spriteBatch.Draw(GlowTex, pos, sourceRect, color, projectile.rotation, orig, projectile.scale, SpriteEffects.None, 0f);
       }
     }
   }

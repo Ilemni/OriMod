@@ -58,7 +58,7 @@ namespace OriMod {
       RecipeGroup.RegisterGroup("OriMod:MovementAccessories", group2);
     }
     public override void Load() {
-      SoulLinkKey = RegisterHotKey("Soul Link", "E");
+      SoulLinkKey = RegisterHotKey("SoulLink", "E");
       BashKey = RegisterHotKey("Bash", "Mouse2");
       DashKey = RegisterHotKey("Dash", "LeftControl");
       ClimbKey = RegisterHotKey("Climbing", "LeftShift");

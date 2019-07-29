@@ -73,19 +73,19 @@ namespace OriMod {
   public class OriConfigClient2 : ModConfig {
     public override ConfigScope Mode => ConfigScope.ClientSide;
 
-    [Header("Soul Link")]
+    // [Header("Soul Link")]
     
-    [Label("Cooldown"), Tooltip("Cooldown of Soul Link, in seconds.")]
-    [DefaultValue(30), Range(0f, 150)]
-    public float SoulLinkCooldown;
+    // [Label("Cooldown"), Tooltip("Cooldown of Soul Link, in seconds.")]
+    // [DefaultValue(30), Range(0f, 150)]
+    internal float SoulLinkCooldown;
 
-    [Label("Charge Time"), Tooltip("How long it takes to place a Soul Link, in seconds.")]
-    [DefaultValue(0.9f), Range(0.05f, 10)]
-    public float SoulLinkChargeRate;
+    // [Label("Charge Time"), Tooltip("How long it takes to place a Soul Link, in seconds.")]
+    // [DefaultValue(0.9f), Range(0.05f, 10)]
+    internal float SoulLinkChargeRate;
 
-    [Label("Respawn Time"), Tooltip("How long after dying it takes to respawn at a Soul Link, in seconds.")]
-    [DefaultValue(1.2f), Range(1f, 10)]
-    public float SoulLinkRespawnTime;
+    // [Label("Respawn Time"), Tooltip("How long after dying it takes to respawn at a Soul Link, in seconds.")]
+    // [DefaultValue(1.2f), Range(1f, 10)]
+    internal float SoulLinkRespawnTime;
 
     [Header("Air Jump")]
 

@@ -12,7 +12,8 @@ namespace OriMod {
     private float Rotation = 0;
     private Point Direction = new Point(1, 1);
     private Vector2 Origin = new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 6);
-    private Texture2D Texture;
+    private Texture2D Texture => _tex ?? (_tex = OriMod.Instance.GetTexture("PlayerEffects/OriGlow"));
+    private Texture2D _tex;
     internal void Reset(OriPlayer oPlayer) {
       Player player = oPlayer.player;
       Position = player.Center;
@@ -31,9 +32,6 @@ namespace OriMod {
       }
     }
     internal DrawData GetDrawData(OriPlayer oPlayer) {
-      if (Texture == null) {
-        Texture = oPlayer.mod.GetTexture("PlayerEffects/OriGlow");
-      }
       Vector2 pos = Position - Main.screenPosition;
       Rectangle rect = new Rectangle(Frame.X, Frame.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight);
       SpriteEffects effect = SpriteEffects.None;
