@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   public static class OriLayers {
-    private static Texture2D SecondaryTexture => _tex2 ?? (_tex2 = OriMod.Instance.GetTexture("PlayerEffects/OriPlayerSecondary"));
+    private static Texture2D SecondaryTexture => !_tex2?.IsDisposed ?? false ? _tex2 : (_tex2 = OriMod.Instance.GetTexture("PlayerEffects/OriPlayerSecondary"));
     private static Texture2D _tex2;
     internal static readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");

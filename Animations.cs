@@ -270,7 +270,7 @@ namespace OriMod {
     internal InitType Init;
     internal LoopMode Loop;
     internal PlaybackMode Playback;
-    internal Texture2D Texture => _tex ?? (TexturePath != null ? _tex = OriMod.Instance.GetTexture(TexturePath) : null);
+    internal Texture2D Texture => !_tex?.IsDisposed ?? false ? _tex : (TexturePath != null ? _tex = OriMod.Instance.GetTexture(TexturePath) : null);
     private Texture2D _tex;
     private string TexturePath;
     internal string TransferTo { get; }
@@ -349,7 +349,7 @@ namespace OriMod {
   internal class AnimationSource {
     internal Dictionary<string, Track> Tracks { get; }
     internal Point TileSize { get; }
-    internal Texture2D Texture => _tex ?? (_tex = OriMod.Instance.GetTexture(texturePath));
+    internal Texture2D Texture => !_tex?.IsDisposed ?? false ? _tex : (_tex = OriMod.Instance.GetTexture(texturePath));
     private Texture2D _tex;
     private string texturePath;
     internal string[] TrackNames { get; }
