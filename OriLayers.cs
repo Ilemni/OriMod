@@ -61,17 +61,19 @@ namespace OriMod {
 
       Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.GlideAnim));
     });
+    private static Texture2D SoulLinkTexture => !_tex3?.IsDisposed ?? false ? _tex3 : (_tex3 = OriMod.Instance.GetTexture("PlayerEffects/RevSoulLinkSpritesheet"));
+    private static Texture2D _tex3;
     internal static readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
       Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>(mod);
-      Texture2D tex = mod.GetTexture("Dusts/SoulLinkPlaced");
       Vector2 pos = oPlayer.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
-      int frame = (int)(Main.time % 45 / 15) * 32;
-      Rectangle rect = new Rectangle(0, /*frame*/ 0, 24, 32);
-      Vector2 orig = new Vector2(12, 20);
+      int frame = (int)(Main.time % 48 / 8) * 64;
+      Rectangle rect = new Rectangle(0, frame, 48, 64);
+      Vector2 orig = rect.Size() / 2;
+      orig.Y += 8;
       SpriteEffects effect = SpriteEffects.None;
 
-      DrawData data = new DrawData(tex, pos, rect, Color.White, 0, orig, 2, effect, 0);
+      DrawData data = new DrawData(SoulLinkTexture, pos, rect, Color.White, 0, orig, 1, effect, 0);
       Main.playerDrawData.Add(data);
     });
     private static DrawData DefaultDrawData(PlayerDrawInfo drawInfo, OriPlayer oPlayer, Animation anim) {

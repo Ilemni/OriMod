@@ -55,13 +55,7 @@ namespace OriMod.Abilities {
       }
       WasDead = true;
     }
-    private void UpdateDust() {
-      if (Main.rand.NextFloat() > 0.1f) return;
-      Vector2 linkPos = SoulLinkLocation.ToWorldCoordinates();
-      linkPos.Y += 8;
-      linkPos += (-Vector2.UnitY * Main.rand.NextFloat(1, 16)).RotateRandom(Math.PI * 0.7);
-      Dust dust = Main.dust[Dust.NewDust(linkPos, 16, 16, oPlayer.mod.DustType("SoulLinkDust"), newColor:Color.LightSkyBlue)];
-    }
+    
     internal void OnRespawn() {
       if (PlacedSoulLink && !Obstructed) {
         oPlayer.Debug("Soul link respawn!");
@@ -78,9 +72,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      Unlocked = false;
       if (PlacedSoulLink) {
-        UpdateDust();
         CheckValidPlacement(Center, out Obstructed);
         if (Obstructed) {
           PlacedSoulLink = false;
