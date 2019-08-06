@@ -4,144 +4,116 @@ using System.Collections.Generic;
 
 namespace OriMod {
   public class SeinUpgrade {
-    /// <summary>
-    /// Damage of Spirit Flame
-    /// </summary>
+    
+    /// <summary> Damage of Spirit Flame </summary>
     public int damage = 12;
-    /// <summary>
-    /// Multiplier of damage dealt to the primary target
-    /// </summary>
+    
+    /// <summary> Multiplier of damage dealt to the primary target </summary>
     public float primaryDamageMultiplier = 1;
-    /// <summary>
-    /// Number of NPCs that can be targeted at once
-    /// </summary>
+    
+    /// <summary> Number of NPCs that can be targeted at once </summary>
     public int targets = 1;
-    /// <summary>
-    /// Maximum times the minion can fire with a delay of <c>minCooldown</c> before having a delay of <c>longCooldown</c>
-    /// 
-    /// </summary>
-    /// <seealso cref="minCooldown" />
-    /// <seealso cref="shortCooldown" />
-    /// <seealso cref="longCooldown" />
+    
+    /// <summary> Maximum times the minion can fire with a delay of `minCooldown` before having a delay of `longCooldown` </summary>
     public int shotsPerBurst = 2;
-    /// <summary>
-    /// Maximum number of shots that can be fired at each target
-    /// 
-    /// <seealso cref="shotsToPrimaryTarget" />
-    /// </summary>
+    
+    /// <summary> Maximum number of shots that can be fired at each target </summary>
     public int shotsPerTarget = 1;
-    /// <summary>
-    /// Maximum number of shots that can be fired at the primary target at once
-    /// </summary>
+    
+    /// <summary> Maximum number of shots that can be fired at the primary target at once </summary>
     public int shotsToPrimaryTarget = 1;
-    /// <summary>
-    /// Maximum number of shots that can be fired at once
-    /// </summary>
+    
+    /// <summary> Maximum number of shots that can be fired at once </summary>
     public int maxShotsPerVolley = 1;
-    /// <summary>
-    /// Delay between each shot in <c>shotsPerBurst</c>
-    /// </summary>
+    
+    /// <summary> Delay between each shot in `shotsPerBurst` </summary>
     public float minCooldown = 12f;
-    /// <summary>
-    /// Shortest time to wait during <c>shotsPerBurst</c> to reset burst count
-    /// </summary>
+    
+    /// <summary> Shortest time to wait during <c>shotsPerBurst</c> to reset burst count </summary>
     public float shortCooldown = 24f;
-    /// <summary>
-    /// Delay between each series of shots, incurred when shots reaches <c>shotsPerBurst</c>
-    /// </summary>
+    
+    /// <summary> Delay between each series of shots, incurred when shots reaches `shotsPerBurst` </summary>
     public float longCooldown = 40f;
-    /// <summary>
-    /// Maximum angle that fired Spirit Flames will be away from the target
-    /// </summary>
+    
+    /// <summary> Maximum angle that fired Spirit Flames will be away from the target </summary>
     internal int randDegrees = 40;
-    /// <summary>
-    /// NPCs this distance from the player can be targeted by the minion, if there is line of sight between it and the player
-    /// 
-    /// <seealso cref="targetThroughWallDist" />
-    /// </summary>
+    
+    /// <summary> NPCs this distance from the player can be targeted by the minion, if there is line of sight between it and the player </summary>
     public float targetMaxDist = 240f;
-    /// <summary>
-    /// NPCs this distance from the player can be targeted by the minion, regardless of line of sight
-    /// </summary>
+    /// <summary> NPCs this distance from the player can be targeted by the minion, regardless of line of sight </summary>
     public float targetThroughWallDist = 80f;
-    /// <summary>
-    /// The amount of times Spirit Flame can hit enemies before disappearing
-    /// </summary>
+    
+    /// <summary> The amount of times Spirit Flame can hit enemies before disappearing </summary>
     public int pierce = 1;
-    /// <summary>
-    /// The knockback of Spirit Flame
-    /// </summary>
+    
+    /// <summary> The knockback of Spirit Flame </summary>
     public float knockback = 0f;
-    /// <summary>
-    /// Default homing strength of Spirit Flame
-    /// </summary>
+    
+    /// <summary> Starting homing strength of Spirit Flame </summary>
     internal float homingStrengthStart = 0.07f;
-    /// <summary>
-    /// Rate to increase homing strength every frame after <c>homingIncreaseDelay</c>
-    /// </summary>
+    
+    /// <summary> Rate to increase homing strength every frame after `homingIncreaseDelay` </summary>
     internal float homingIncreaseRate = 0.04f;
-    /// <summary>
-    /// Time to wait before increasing homing strength by <c>homingIncreaseRate</c>
-    /// </summary>
+    
+    /// <summary> Ticks to wait before increasing homing strength by `homingIncreaseRate` </summary>
     internal float homingIncreaseDelay = 16f;
-    /// <summary>
-    /// Speed of Spirit Flame when it is fired
-    /// </summary>
+    
+    /// <summary> Speed of Spirit Flame when it is fired </summary>
     internal float projectileSpeedStart = 5f;
-    /// <summary>
-    /// Acceleration of Spirit Flame after waiting for <c>projectileSpeedIncreaseDelay</c>
-    /// </summary>
+    
+    /// <summary> Acceleration of Spirit Flame after waiting for `projectileSpeedIncreaseDelay` </summary>
     internal float projectileSpeedIncreaseRate = 0.5f;
-    /// <summary>
-    /// Time to wait before increasing Spirit Flame speed by <c>projectileSpeedIncreaseRate</c>
-    /// </summary>
+    
+    /// <summary> Time to wait before increasing Spirit Flame speed by `projectileSpeedIncreaseRate` </summary>
     internal int projectileSpeedIncreaseDelay = 10;
+
     internal int minionWidth = 10;
     internal int minionHeight = 11;
     internal int flameWidth = 12;
     internal int flameHeight = 12;
-    /// <summary>
-    /// The size of the dust trail emitted from Spirit Flame
-    /// </summary>
+    
+    /// <summary> The size of the dust trail emitted from Spirit Flame </summary>
     public float dustScale = 0.8f;
-    /// <summary>
-    /// Rarity of the Spirit Orb
-    /// </summary>
+    
+    /// <summary> Rarity of the Spirit Orb </summary>
     internal int rarity = 1;
-    /// <summary>
-    /// Buy value of the Spirit Orb
-    /// </summary>
+    
+    /// <summary> Buy value of the Spirit Orb </summary>
     internal int value = 1000;
-    /// <summary>
-    /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights
-    /// </summary>
+    
+    /// <summary> Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights </summary>
     internal Color color;
-    /// <summary>
-    /// Strength of the light emitted from Sein and Spirit Flame
-    /// </summary>
+    
+    /// <summary> Strength of the light emitted from Sein and Spirit Flame </summary>
     internal float lightStrength;
   }
+  
   partial class OriMod {
     internal static List<SeinUpgrade> SeinUpgrades;
-    private void AddNewSein(SeinUpgrade newSein) {
-      SeinUpgrade defaultSein = new SeinUpgrade();
-      SeinUpgrade lastSein = new SeinUpgrade();
-      if (SeinUpgrades.Count != 0) {
-        lastSein = SeinUpgrades[SeinUpgrades.Count - 1];
-      }
-      foreach(FieldInfo field in ((newSein.GetType()).GetFields())) {
-        var defVal = field.GetValue(defaultSein);
-        var oldVal = field.GetValue(lastSein);
-        var newVal = field.GetValue(newSein);
-        // If value is unspecified, use the one from the previous Sein upgrade
-        if (newVal.ToString() == defVal.ToString()) {
-          newVal = oldVal;
-        }
-        field.SetValue(newSein, newVal);
-      }
-      SeinUpgrades.Add(newSein);
-    }
+    
     private void LoadSeinUpgrades() {
+      var defaultSein = new SeinUpgrade();
+      var fields = typeof(SeinUpgrade).GetFields();
+
+      void AddNewSein(SeinUpgrade newSein) {
+        var lastSein = SeinUpgrades.Count == 0 ?
+          new SeinUpgrade() :
+          SeinUpgrades[SeinUpgrades.Count - 1];
+
+        foreach(FieldInfo field in fields) {
+          var defVal = field.GetValue(defaultSein);
+          var oldVal = field.GetValue(lastSein);
+          var newVal = field.GetValue(newSein);
+          
+          // If value is unspecified, use the one from the previous Sein upgrade
+          if (newVal.ToString() == defVal.ToString()) {
+            newVal = oldVal;
+          }
+          field.SetValue(newSein, newVal);
+        }
+        SeinUpgrades.Add(newSein);
+      }
+
       SeinUpgrades = new List<SeinUpgrade>();
       AddNewSein(new SeinUpgrade()); // Tier 1 (Silver)
       AddNewSein(new SeinUpgrade{    // Tier 2 (Demonite/Crimsane)
@@ -238,7 +210,7 @@ namespace OriMod {
         value = 500000,
         color = new Color(220, 220, 220),
         damage = 92, 
-        pierce = 3,
+        pierce = 1, // TODO: Revert to 3
         shotsPerBurst = 4, 
         targets = 6, 
         shotsToPrimaryTarget = 4,
