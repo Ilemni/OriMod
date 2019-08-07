@@ -3,13 +3,19 @@ using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
 
-namespace OriMod
-{
+namespace OriMod {
   public class OriNPC : GlobalNPC {
     public override bool InstancePerEntity => true;
     public bool IsBashed;
     public Vector2 BashPos;
     public OriPlayer BashPlayer;
+
+    public override void SetDefaults(NPC npc) {
+      if (npc.boss) {
+        OriModUtils.isAnyBossAlive = true;
+      }
+    }
+
     public override bool PreAI(NPC npc) {
       if (IsBashed) {
         npc.Center = BashPos;
@@ -17,28 +23,21 @@ namespace OriMod
       }
       return base.PreAI(npc);
     }
-    private void GetDownState(NPC npc, ref bool downedBoss, out bool wasDowned, out bool nowDowned) {
-      wasDowned = downedBoss;
-      npc.NPCLoot();
-      nowDowned = downedBoss;
-    }
+    
     private bool DoUpdate(NPC npc, ref bool downedBoss) {
-      bool wasDowned = false;
-      bool nowDowned = false;
-      GetDownState(npc, ref downedBoss, out wasDowned, out nowDowned);
-      return (nowDowned && !wasDowned);
-    }
-    private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2, ref bool downedBoss3) {
-      oldCount = 0;
-      newCount = 0;
-      if (downedBoss1) oldCount++;
-      if (downedBoss2) oldCount++;
-      if (downedBoss3) oldCount++;
+      bool wasDowned = downedBoss;
       npc.NPCLoot();
-      if (downedBoss1) newCount++;
-      if (downedBoss2) newCount++;
-      if (downedBoss3) newCount++;
+      bool nowDowned = downedBoss;
+      return nowDowned && !wasDowned;
     }
+    
+    private static bool Null = false;
+
+    private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2) =>
+      GetDownCount(npc, out oldCount, out newCount, ref downedBoss1, ref downedBoss2, ref Null, ref Null);
+    private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2, ref bool downedBoss3) =>
+      GetDownCount(npc, out oldCount, out newCount, ref downedBoss1, ref downedBoss2, ref downedBoss3, ref Null);
+    
     private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2, ref bool downedBoss3, ref bool downedBoss4) {
       oldCount = 0;
       newCount = 0;
@@ -52,10 +51,13 @@ namespace OriMod
       if (downedBoss3) newCount++;
       if (downedBoss4) newCount++;
     }
+    
     public override bool SpecialNPCLoot(NPC npc) {
       if (!npc.boss) {
         return base.SpecialNPCLoot(npc);
       }
+      OriModUtils.IsAnyBossAlive(check:true);
+      
       bool doUpdate = false;
       byte upgrade = 0;
       int oldCount = 0;

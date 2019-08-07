@@ -7,7 +7,7 @@ namespace OriMod.Abilities {
     public SoulLink(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
     public override int id => AbilityID.SoulLink;
     internal override bool DoUpdate => OriMod.SoulLinkKey.Current || InUse;
-    internal override bool CanUse => base.CanUse && !AnyBossAlive && player.CheckMana(ManaCost, blockQuickMana:true) && oPlayer.IsGrounded;
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && player.CheckMana(ManaCost, blockQuickMana:true);
     protected override int Cooldown => (int)(Config.SoulLinkCooldown * 30);
 
     private static Point p(int x, int y) => new Point(x, y);
@@ -78,7 +78,7 @@ namespace OriMod.Abilities {
       }
       if (CanUse && OriMod.SoulLinkKey.Current) {
         if (OriMod.SoulLinkKey.JustPressed) {
-          AnyBossAlive = OriModUtils.IsAnyBossAlive();
+          AnyBossAlive = OriModUtils.IsAnyBossAlive(check:true);
           if (AnyBossAlive) {
             OriMod.Error("SoulLinkBossActive", log:false);
             return;

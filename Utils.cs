@@ -45,21 +45,25 @@ namespace OriMod {
     }
     
     private static double lastBossCheck = 0;
-    private static bool _isAnyBossAlive = false;
+    internal static bool isAnyBossAlive = false;
     
-    private static void CheckAnyBossAlive() {
-      lastBossCheck = Main.time;
-      for(int i = 0; i < Main.maxNPCs; i++) {
+    private static bool CheckAnyBossAlive() {
+      for(int i = 0, len = Main.npc.Length; i < len; i++) {
         if (Main.npc[i].active && Main.npc[i].boss) {
-          _isAnyBossAlive = true;
-          return;
+          isAnyBossAlive = true;
+          return true;
         }
       }
-      _isAnyBossAlive = false;
+      isAnyBossAlive = false;
+      return false;
     }
+
     internal static bool IsAnyBossAlive(bool check=false) {
-      if (check || Main.time < lastBossCheck + 5) CheckAnyBossAlive();
-      return _isAnyBossAlive;
+      if (check || Main.time > lastBossCheck + 20) {
+        lastBossCheck = Main.time;
+        CheckAnyBossAlive();
+      }
+      return isAnyBossAlive;
     }
     
     /// <summary> Get closest entity. Returns true if any are in range. </summary>
