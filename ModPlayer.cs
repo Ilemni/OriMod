@@ -23,7 +23,6 @@ namespace OriMod {
     /// <summary>
     /// Class that contains all of OriPlayer's abilities
     /// </summary>
-    /// <value></value>
     internal OriAbilities Abilities { get; private set; } // Class used for all of Ori's movements
     
     public SoulLink soulLink => Abilities.soulLink;
@@ -49,9 +48,7 @@ namespace OriMod {
     /// External mods that attempt to be compatible with this one will need to use this property.
     /// </summary>
     public bool OriSet {
-      get {
-        return _oriSet;
-      }
+      get => _oriSet;
       set {
         if (value != _oriSet) {
           doNetUpdate = true;
@@ -63,7 +60,7 @@ namespace OriMod {
 
     // Transform variables used to hasten additional transforms
     internal bool HasTransformedOnce { get; private set; }
-    private const float RepeatedTransformRate = 2.5f;
+    private float RepeatedTransformRate => 2.5f;
 
     // Variables relating to fixing movement when Ori is active, such that you aren't slowed down mid-air after bashing.
     public bool IsGrounded { get; private set; }
@@ -72,9 +69,7 @@ namespace OriMod {
     /// When true, sets player.runSlowDown to 0 every frame until set to false
     /// </summary>
     public bool UnrestrictedMovement {
-      get {
-        return _unrestrictedMovement;
-      }
+      get => _unrestrictedMovement;
       set {
         if (value != _unrestrictedMovement) {
           doNetUpdate = true;
@@ -112,14 +107,12 @@ namespace OriMod {
     /// <value></value>
     /// <seealso cref="SeinMinionUpgrade" />
     public bool SeinMinionActive {
-      get {
-        return _seinMinionActive;
-      }
+      get => _seinMinionActive;
       internal set {
         if (value != _seinMinionActive) {
           doNetUpdate = true;
+          _seinMinionActive = value;
         }
-        _seinMinionActive = value;
       }
     }
     private bool _seinMinionActive = false;
@@ -131,14 +124,12 @@ namespace OriMod {
     /// <value></value>
     /// <seealso cref="SeinMinionActive" />
     public int SeinMinionUpgrade {
-      get {
-        return _seinMinionUpgrade;
-      }
+      get => _seinMinionUpgrade;
       internal set {
         if (value != _seinMinionUpgrade) {
           doNetUpdate = true;
+          _seinMinionUpgrade = value;
         }
-        _seinMinionUpgrade = value;
       }
     }
     private int _seinMinionUpgrade = 0;
@@ -150,11 +141,8 @@ namespace OriMod {
     /// 
     /// While transforming, all player input is disabled.
     /// </summary>
-    /// <value></value>
     public bool Transforming {
-      get {
-        return _transforming;
-      }
+      get => _transforming;
       internal set {
         if (value != _transforming) {
           doNetUpdate = true;
@@ -246,8 +234,8 @@ namespace OriMod {
     /// </summary>
     /// <value></value>
     public Point AnimTile {
-      get { return PixelToTile(AnimFrame); }
-      internal set { AnimFrame = TileToPixel(value); }
+      get => PixelToTile(AnimFrame);
+      internal set => AnimFrame = TileToPixel(value);
     }
     /// <summary>
     /// The name of the animation track currently playing
@@ -258,8 +246,8 @@ namespace OriMod {
       private set {
         if (value != _animName) {
           OnAnimNameChange(value);
+          _animName = value;
         }
-        _animName = value;
       }
     }
     private string _animName = "Default";
@@ -302,25 +290,22 @@ namespace OriMod {
     internal bool debugMode = false;
     private bool _mpcPlayerLight = false;
     internal bool MpcPlayerLight {
-      get {
-        return _mpcPlayerLight;
-      }
+      get =>  _mpcPlayerLight;
       set {
         if (value != _mpcPlayerLight) {
           doNetUpdate = true;
+          _mpcPlayerLight = value;
         }
-        _mpcPlayerLight = value;
       }
     }
     internal bool DoPlayerLight => (player.whoAmI == Main.myPlayer || OriMod.ConfigClient.GlobalPlayerLight) ? OriMod.ConfigClient.PlayerLight : MpcPlayerLight;
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
-        #endregion
+    #endregion
 
     internal void Debug(string msg) => Debug(msg, this);
     internal static void Debug(string msg, OriPlayer oPlayer) {
       if (oPlayer.debugMode && oPlayer.player.whoAmI == Main.myPlayer) {
         Main.NewText(msg);
-        // ErrorLogger.Log(msg);
       }
     }
     internal SoundEffectInstance PlayNewSound(string Path, float Volume=1, float Pitch=0) =>
@@ -333,8 +318,8 @@ namespace OriMod {
     /// </summary>
     /// <param name="length">Max letter indice to use</param>
     /// <returns>char between A and <c>alphabet[length]</c></returns>
-    private static char[] alphabet { get; } = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
     public static char RandomChar(int length) => alphabet[Main.rand.Next(length)];
+    private static char[] alphabet { get; } = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
     /// <summary>
     /// Retrieves a random, non-repeating character of an alphabet between indices 0 and <c>length</c>
     /// </summary>
@@ -342,24 +327,21 @@ namespace OriMod {
     /// <param name="exclude">Letter indice to exclude from result. Must be non-negative and less than length</param>
     /// <returns>char between A and <c>alphabet[length]</c>, except <c>alphabet[exclude]</c></returns>
     public static char RandomChar(int length, ref int exclude) {
-      char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-      if (exclude >= 0 && exclude < length) {
-        int[] ints = new int[length - 1];
-        int n = 0;
-        for (int i = 0; i < length; i++) {
-          if (i != exclude) {
-            ints[n] = i;
-            n++;
-          }
-        }
-        int num = Main.rand.Next(ints);
-        exclude = num;
-        return alphabet[num];
-      }
-      else {
+      if (exclude < 0 || exclude >= length) {
         exclude = length - 1;
         return RandomChar(length);
       }
+
+      int[] ints = new int[length - 1];
+      for (int i = 0, n = 0; i < length; i++) {
+        if (i == exclude) continue;
+        ints[n] = i;
+        n++;
+      }
+
+      int num = Main.rand.Next(ints);
+      exclude = num;
+      return alphabet[num];
     }
     
     // Class with all necessary animation frame info, should make frame work much more managable
