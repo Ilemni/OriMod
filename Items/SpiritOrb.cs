@@ -1,188 +1,56 @@
+using Microsoft.Xna.Framework;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+
 namespace OriMod.Items {
-  public class SpiritOrb1 : SpiritOrbBase {
-    public override void SetDefaults() {
-      base.SetDefaults();
-      Init(1);
-    }
-    public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(ItemID.SilverBar, 8);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
-      
-      recipe = new ModRecipe(mod);
-      recipe.AddIngredient(ItemID.TungstenBar, 8);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
+  public abstract class SpiritOrb : ModItem {
+    public int upgrade;
+    public override string Texture => "OriMod/Items/SpiritOrb";
 
-      // recipe = new ModRecipe(mod);
-      // recipe.AddIngredient(ItemID.DirtBlock);
-      // recipe.SetResult(this);
-      // recipe.AddRecipe();
-    }
-  }
-  public class SpiritOrb2 : SpiritOrbBase {
     public override void SetDefaults() {
-      base.SetDefaults();
-      Init(2);
+      item.summon = true;
+      item.mana = 10;
+      item.width = 18;
+      item.height = 18;
+      item.useTime = 21;
+      item.useAnimation = 21;
+      item.useStyle = 1;
+      item.noMelee = true;
+      item.UseSound = SoundID.Item44;
+      item.buffTime = 3600;
     }
-    public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.GetItem("SpiritOrb1"));
-      recipe.AddIngredient(ItemID.DemoniteBar, 12);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
-      
-      recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.GetItem("SpiritOrb1"));
-      recipe.AddIngredient(ItemID.CrimtaneBar, 12);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
 
-      // recipe = new ModRecipe(mod);
-      // recipe.AddIngredient(ItemID.DirtBlock);
-      // recipe.SetResult(this);
-      // recipe.AddRecipe();
+    // Called in factory SetDefaults
+    protected void Init(int upgradeID) {
+      SetDefaults();
+      SeinUpgrade u = OriMod.SeinUpgrades[upgradeID - 1];
+      item.damage = u.damage;
+      item.rare = u.rarity;
+      item.value = u.value;
+      item.shoot = mod.ProjectileType("Sein" + upgradeID);
+      item.buffType = mod.BuffType("SeinBuff" + upgradeID);
+      item.color = u.color;
+      upgrade = upgradeID;
     }
-  }
-  public class SpiritOrb3 : SpiritOrbBase {
-    public override void SetDefaults() {
-      base.SetDefaults();
-      Init(3);
-    }
-    public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.GetItem("SpiritOrb2"));
-      recipe.AddIngredient(ItemID.HellstoneBar, 15);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
 
-      // recipe = new ModRecipe(mod);
-      // recipe.AddIngredient(ItemID.DirtBlock);
-      // recipe.SetResult(this);
-      // recipe.AddRecipe();
-    }
-  }
-  public class SpiritOrb4 : SpiritOrbBase {
-    public override void SetDefaults() {
-      base.SetDefaults();
-      Init(4);
-    }
-    public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.GetItem("SpiritOrb3"));
-      recipe.AddIngredient(ItemID.MythrilBar, 12);
-      recipe.AddIngredient(ItemID.SoulofLight, 5);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
-      
-      recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.GetItem("SpiritOrb3"));
-      recipe.AddIngredient(ItemID.OrichalcumBar, 12);
-      recipe.AddIngredient(ItemID.SoulofLight, 5);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
+    public override bool AltFunctionUse(Player player) => true;
 
-      // recipe = new ModRecipe(mod);
-      // recipe.AddIngredient(ItemID.DirtBlock);
-      // recipe.SetResult(this);
-      // recipe.AddRecipe();
+    public override bool CanUseItem(Player player) {
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
+      if (player.altFunctionUse == 2 || oPlayer.SeinMinionActive && oPlayer.SeinMinionUpgrade == upgrade) return false;
+      return true;
     }
-  }
-  public class SpiritOrb5 : SpiritOrbBase {
-    public override void SetDefaults() {
-      base.SetDefaults();
-      Init(5);
-    }
-    public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.GetItem("SpiritOrb4"));
-      recipe.AddIngredient(ItemID.HallowedBar, 15);
-      recipe.AddIngredient(ItemID.SoulofLight, 10);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
 
-      // recipe = new ModRecipe(mod);
-      // recipe.AddIngredient(ItemID.DirtBlock);
-      // recipe.SetResult(this);
-      // recipe.AddRecipe();
-    }
-  }
-  public class SpiritOrb6 : SpiritOrbBase {
-    public override void SetDefaults() {
-      base.SetDefaults();
-      Init(6);
-    }
-    public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.GetItem("SpiritOrb5"));
-      recipe.AddIngredient(ItemID.SpectreBar, 12);
-      recipe.AddIngredient(ItemID.SoulofLight, 15);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
-
-      // recipe = new ModRecipe(mod);
-      // recipe.AddIngredient(ItemID.DirtBlock);
-      // recipe.SetResult(this);
-      // recipe.AddRecipe();
-    }
-  }
-  public class SpiritOrb7 : SpiritOrbBase {
-    public override void SetDefaults() {
-      base.SetDefaults();
-      Init(7);
-    }
-    public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.GetItem("SpiritOrb6"));
-      recipe.AddIngredient(ItemID.FragmentSolar, 5);
-      recipe.AddIngredient(ItemID.FragmentVortex, 5);
-      recipe.AddIngredient(ItemID.FragmentNebula, 5);
-      recipe.AddIngredient(ItemID.FragmentStardust, 5);
-      recipe.AddIngredient(ItemID.SoulofLight, 20);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
-
-      // recipe = new ModRecipe(mod);
-      // recipe.AddIngredient(ItemID.DirtBlock);
-      // recipe.SetResult(this);
-      // recipe.AddRecipe();
-    }
-  }
-  public class SpiritOrb8 : SpiritOrbBase {
-    public override void SetDefaults() {
-      base.SetDefaults();
-      Init(8);
-    }
-    public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.GetItem("SpiritOrb7"));
-      recipe.AddIngredient(ItemID.LunarBar, 12);
-      recipe.AddIngredient(ItemID.FragmentSolar, 10);
-      recipe.AddIngredient(ItemID.FragmentVortex, 10);
-      recipe.AddIngredient(ItemID.FragmentNebula, 10);
-      recipe.AddIngredient(ItemID.FragmentStardust, 10);
-      recipe.AddIngredient(ItemID.SoulofLight, 30);
-      recipe.AddTile(mod.GetTile("SpiritSapling"));
-      recipe.SetResult(this);
-      recipe.AddRecipe();
-
-      // recipe = new ModRecipe(mod);
-      // recipe.AddIngredient(ItemID.DirtBlock);
-      // recipe.SetResult(this);
-      // recipe.AddRecipe();
+    public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack) {
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+      oPlayer.RemoveSeinBuffs(exclude:upgrade);
+      oPlayer.SeinMinionUpgrade = upgrade;
+      oPlayer.SeinMinionActive = true;
+      if(player.altFunctionUse == 2) {
+        player.MinionNPCTargetAim();
+      }
+      return true;
     }
   }
 }
