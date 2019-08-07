@@ -72,16 +72,16 @@ namespace OriMod.Abilities {
       }
     }
     private bool BashNpcFilter(NPC npc) =>
-      npc.friendly || CannotBash.Contains(npc.type) || npc.boss || npc.aiStyle == 37;
+      !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBash.Contains(npc.type);
     private bool BashProjFilter(Projectile proj) =>
-      proj.minion || proj.sentry || proj.trap || CannotBashProj.Contains(proj.type);
+      !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains(proj.type);
     
     private bool BashStart() {
       int tempNpcID = byte.MaxValue;
       int tempProjID = ushort.MaxValue;
       float currDist = BashRange;
-      bool isBashingNpc = player.GetClosestEntity(Main.npc, ref currDist, out tempNpcID, filter:BashNpcFilter);
-      bool isBashingProj = player.GetClosestEntity(Main.projectile, ref currDist, out tempProjID, filter:BashProjFilter);
+      bool isBashingNpc = player.GetClosestEntity(Main.npc, ref currDist, out tempNpcID, condition:BashNpcFilter);
+      bool isBashingProj = player.GetClosestEntity(Main.projectile, ref currDist, out tempProjID, condition:BashProjFilter);
       if (!isBashingProj && !isBashingNpc) return false;
 
       TargetIsProjectile = isBashingProj;

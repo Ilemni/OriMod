@@ -4,45 +4,50 @@ using Terraria;
 
 namespace OriMod {
   public static class OriModUtils {
-    public static Point Add(this Point point, Point other) {
-      Point point3;
-      point3.X = point.X + other.X;
-      point3.Y = point.Y + other.Y;
-      return point3;
+    internal static Point Add(this Point p1, Point p2) {
+      Point p3;
+      p3.X = p1.X + p2.X;
+      p3.Y = p1.Y + p2.Y;
+      return p3;
     }
-    public static Point Add(this Point point, Vector2 other) {
-      Point point3;
-      point3.X = point.X + (int)other.X;
-      point3.Y = point.Y + (int)other.Y;
-      return point;
+    internal static Point Add(this Point p, Vector2 v) {
+      Point p2;
+      p2.X = p.X + (int)v.X;
+      p2.Y = p.Y + (int)v.Y;
+      return p;
     }
-    public static Vector2 Add(this Vector2 vector2, Point other) {
-      Vector2 newV;
-      newV.X = vector2.X + other.X;
-      newV.Y = vector2.Y + other.Y;
-      return newV;
+    internal static Vector2 Add(this Vector2 v, Point p) {
+      Vector2 v2;
+      v2.X = v.X + p.X;
+      v2.Y = v.Y + p.Y;
+      return v2;
     }
-    public static Point Multiply(this Point p1, Point p2) {
+    internal static Point Multiply(this Point p1, Point p2) {
       Point p3;
       p3.X = p1.X * p2.X;
       p3.Y = p1.Y * p2.Y;
       return p3;
     }
-    public static Vector2 Norm(this Vector2 vect) {
+    
+    /// <summary> Returns Normalize() without changing vect </summary>
+    internal static Vector2 Norm(this Vector2 vect) {
       Vector2 v = vect;
       v.Normalize();
       return v;
     }
-    public static void UpdateHitbox(this Point[] box, Point[] template, Vector2 center) {
+    
+    internal static void UpdateHitbox(this Point[] box, Point[] template, Vector2 center) =>
       box.UpdateHitbox(template, center.ToTileCoordinates());
-    }
-    public static void UpdateHitbox(this Point[] box, Point[] template, Point center) {
+    internal static void UpdateHitbox(this Point[] box, Point[] template, Point center) {
       for(int i = 0; i < box.Length; i++) {
         box[i] = template[i].Add(center);
       }
     }
-    public static void CheckAnyBossAlive() {
-      if (Main.time - 5 < lastBossCheck) return;
+    
+    private static double lastBossCheck = 0;
+    private static bool _isAnyBossAlive = false;
+    
+    private static void CheckAnyBossAlive() {
       lastBossCheck = Main.time;
       for(int i = 0; i < Main.maxNPCs; i++) {
         if (Main.npc[i].active && Main.npc[i].boss) {
@@ -52,52 +57,72 @@ namespace OriMod {
       }
       _isAnyBossAlive = false;
     }
-    private static double lastBossCheck = 0;
-    private static bool _isAnyBossAlive = false;
-    public static bool IsAnyBossAlive(bool check=false) {
-      if (check) CheckAnyBossAlive();
+    internal static bool IsAnyBossAlive(bool check=false) {
+      if (check || Main.time < lastBossCheck + 5) CheckAnyBossAlive();
       return _isAnyBossAlive;
     }
-    public static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float dist, out int entityId, Func<T, bool> filter=null) where T : Entity {
-      entityId = int.MaxValue;
-      float oldDist = dist;
-      dist = (float)Math.Pow(dist, 2);
+    
+    /// <summary> Get closest entity. Returns true if any are in range. </summary>
+    /// <param name="me">Y'know...</param>
+    /// <param name="arr">Array of entities, such as `Main.player`, `Main.npc`, `Main.projectile`</param>
+    /// <param name="dist">Maximum distance to be considered in-range. If 0 or less, range is infinite</param>
+    /// <param name="entityId">whoAmI of the closest entity in-range, or 255 if no entities are in range</param>
+    /// <param name="distSQCheck">How the closest distance is checked. Defaults to `DistanceShortSquared()`, getting closest distance between two entities</param>
+    /// <param name="condition">Extra condition to filter out entities. If false, the entity is skipped.</param>
+    /// <typeparam name="T">Type of Entity (i.e. Player, NPC, Projectile)</typeparam>
+    /// <returns>`true` if there is an Entity closer than `dist`, false otherwise</returns>
+    internal static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float dist, out int entityId, Func<Entity, T, float> distSQCheck=null, Func<T, bool> condition=null) where T : Entity {
+      if (dist <= 0) {
+        // Infinite range detect
+        dist = float.MaxValue;
+      }
+      else {
+        // Squared for proper DistanceSquared
+        dist = dist * dist;
+      }
+      if (distSQCheck == null) {
+        distSQCheck = (e1, e2) => e1.DistanceShortSquared(e2);
+      }
+      entityId = 255;
       bool inRange = false;
+      
       for (int e = 0; e < arr.Length; e++) {
         T entity = arr[e];
-        if (entity == null || !entity.active || (filter != null ? filter(entity) : false)) continue;
-        float newDist = me.DistanceShortSquared(entity);
+        if (entity == null) continue;
+        if (!entity.active || condition?.Invoke(entity) == false) continue;
+        
+        float newDist = distSQCheck(me, entity);
         if (newDist < dist) {
-          dist = newDist;
           inRange = true;
+          dist = newDist;
           entityId = entity.whoAmI;
         }
       }
+
       if (inRange) {
         dist = (float)Math.Sqrt(dist);
       }
-      else {
-        dist = oldDist;
-      }
       return inRange;
     }
-    public static Vector2 ClosestSideTo(this Entity me, Entity other) =>
+    
+    internal static Vector2 ClosestSideTo(this Entity me, Entity other) =>
       new Vector2(
-        me.Left.X > other.Left.X ? me.Left.X : me.Right.X < other.Right.Y ? me.Right.X : me.Center.X,
-        me.Top.Y > other.Top.Y ? me.Top.Y : me.Bottom.Y < other.Bottom.Y ? me.Bottom.Y : me.Center.Y
+        (me.Left.X > other.Left.X ? me.Left.X : me.Right.X) < other.Right.X ? me.Right.X : me.Center.X,
+        (me.Top.Y > other.Top.Y ? me.Top.Y : me.Bottom.Y) < other.Bottom.Y ? me.Bottom.Y : me.Center.Y
       );
-    public static Vector2 ClosestSideTo(this Entity me, Vector2 vect) =>
+    internal static Vector2 ClosestSideTo(this Entity me, Vector2 vect) =>
       new Vector2(
-        me.Left.X > vect.X ? me.Left.X : me.Right.X < vect.Y ? me.Right.X : me.Center.X,
-        me.Top.Y > vect.Y ? me.Top.Y : me.Bottom.Y < vect.Y ? me.Bottom.Y : me.Center.Y
+        (me.Left.X > vect.X ? me.Left.X : me.Right.X) < vect.X ? me.Right.X : me.Center.X,
+        (me.Top.Y > vect.Y ? me.Top.Y : me.Bottom.Y) < vect.Y ? me.Bottom.Y : me.Center.Y
       );
-    public static float DistanceShort(this Entity me, Entity other) =>
+    
+    internal static float DistanceShort(this Entity me, Entity other) =>
       Vector2.Distance(me.ClosestSideTo(other), other.ClosestSideTo(me));
-    public static float DistanceShortSquared(this Entity me, Entity other) =>
+    internal static float DistanceShortSquared(this Entity me, Entity other) =>
       Vector2.DistanceSquared(me.ClosestSideTo(other), other.ClosestSideTo(me));
-    public static float DistanceShort(this Entity me, Vector2 otherVect) =>
+    internal static float DistanceShort(this Entity me, Vector2 otherVect) =>
       Vector2.Distance(me.ClosestSideTo(otherVect), otherVect);
-    public static float DistanceShortSquared(this Entity me, Vector2 otherVect) =>
+    internal static float DistanceShortSquared(this Entity me, Vector2 otherVect) =>
       Vector2.DistanceSquared(me.ClosestSideTo(otherVect), otherVect);
   }
 }
