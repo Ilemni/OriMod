@@ -58,20 +58,17 @@ namespace OriMod.Abilities {
     
     internal void OnRespawn() {
       if (PlacedSoulLink && !Obstructed) {
-        oPlayer.Debug("Soul link respawn!");
         player.Center = SoulLinkLocation.ToWorldCoordinates();
         PlacedSoulLink = false;
       }
     }
-    protected override bool PreUpdate() {
+
+    internal override void Tick() {
       if (PlacedSoulLink && WasDead && !player.dead) {
         WasDead = false;
         OnRespawn();
       }
-      return base.PreUpdate();
-    }
 
-    internal override void Tick() {
       if (PlacedSoulLink) {
         CheckValidPlacement(Center, out Obstructed);
         if (Obstructed) {
