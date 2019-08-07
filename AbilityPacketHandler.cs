@@ -21,8 +21,7 @@ namespace OriMod {
           ReceiveAbilityState(reader, fromWho);
           break;
         default:
-          Main.NewText("Unknown AbilityPacket type" + packetType, Color.Red);
-          // ErrorLogger.Log("Unknown AbilityPacket type" + packetType);
+          OriMod.ErrorFormat("UnknownAbilityPacket", args: packetType);;
           break;
       }
     }

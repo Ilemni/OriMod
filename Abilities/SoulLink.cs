@@ -73,21 +73,21 @@ namespace OriMod.Abilities {
         CheckValidPlacement(Center, out Obstructed);
         if (Obstructed) {
           PlacedSoulLink = false;
-          Main.NewText("Your Soul Link has been blocked and despawned...");
+          OriMod.Error("SoulLinkObstructed", log:false);
         }
       }
       if (CanUse && OriMod.SoulLinkKey.Current) {
         if (OriMod.SoulLinkKey.JustPressed) {
           AnyBossAlive = OriModUtils.IsAnyBossAlive();
           if (AnyBossAlive) {
-            Main.NewText("Cannot place a Soul Link while powerful enemies are around");
+            OriMod.Error("SoulLinkBossActive", log:false);
             return;
           }
         }
         CheckValidPlacement(player.Center.ToTileCoordinates(), out bool tempObstructed, force:true);
         if (tempObstructed) {
           if (!WasObstructed) {
-            Main.NewText("Cannot place a Soul Link here...");
+            OriMod.Error("SoulLinkCannotPlace", log:false);
           }
           CurrCharge -= UnchargeRate;
           if (CurrCharge < 0) CurrCharge = 0;

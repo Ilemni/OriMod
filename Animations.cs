@@ -129,8 +129,7 @@ namespace OriMod {
       float rotRads = (float)(rotDegrees / 180 * Math.PI);
       if (!PlayerAnim.TrackNames.Contains(anim)) {
         if (anim != null && anim.Length > 0) {
-          Main.NewText("Error with animation: The animation sequence \"" + anim + "\" does not exist.", Color.Red);
-          // ErrorLogger.Log("Error with animation: The animation sequence \"" + anim + "\" does not exist.");
+          OriMod.ErrorFormat("BadTrack", args: anim);
         }
         anim = "Default";
         Track track = PlayerAnim[anim];
@@ -164,8 +163,7 @@ namespace OriMod {
         if (anim == oPlayer.AnimName) {
           int testFrame = Array.FindIndex(frames, f => (f.Tile == currFrame)); // Check if this frame already exists
           if (testFrame == -1) {
-            Main.NewText("Invalid frame for \"" + anim + "\": " + currFrame, Color.Red);
-            // ErrorLogger.Log("Invalid frame for \"" + anim + "\": " + currFrame);
+            OriMod.ErrorFormat("BadFrame", args: new object[] { anim, currFrame });
             frameIndex = header.Playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
           }
         }

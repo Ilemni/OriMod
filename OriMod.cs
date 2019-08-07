@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OriMod {
@@ -15,6 +16,41 @@ namespace OriMod {
     public static OriConfigClient2 ConfigAbilities { get; internal set; }
     
     internal static log4net.ILog Log => OriMod.Instance.Logger;
+    
+    /// <summary> Gets localiced text with key `Mods.OriMod.{key}`</summary>
+    /// <param name="key">Key in lang file</param>
+    internal static LocalizedText LangText(string key) => Language.GetText($"Mods.OriMod.{key}");
+    
+    /// <summary> Gets localiced text with key `Mods.OriMod.Error.{key}`</summary>
+    /// <param name="key">Key in lang file, starting with `Error.`</param>
+    internal static LocalizedText LangErr(string key) => Language.GetText($"Mods.OriMod.Error.{key}");
+    
+    /// <summary> Shows an error in chat and in the logger, using default localized text. </summary>
+    /// <param name="key">Key in lang file</param>
+    /// <param name="log">Write to logger</param>
+    internal static void Error(string key, bool log=true) =>
+      ErrorText(LangErr(key).Value, log);
+
+    /// <summary> Shows an error in chat and in the logger, using default localized text. Has formatting. </summary>
+    /// <param name="key">Key in lang file</param>
+    /// <param name="log">Write to logger</param>
+    /// <param name="args">Formatting args</param>
+    internal static void ErrorFormat(string key, bool log=true, params object[] args) =>
+      ErrorText(LangErr(key).Format(args), log);
+
+    /// <summary> Shows an error in chat and in the logger, using a string literal. </summary>
+    /// <param name="text">String literal to show</param>
+    /// <param name="log">Write to logger</param>
+    internal static void ErrorText(string text, bool log=true) {
+      if (log) {
+        Log.Error(text);
+      }
+      Main.NewText(text, Color.Red);
+    }
+
+    /// <summary> Write an error to the logger, using a key in the language file </summary>
+    /// <param name="key"></param>
+    internal static void LogError(string key) => Log.Error(LangErr(key));
 
     public static ModHotKey SoulLinkKey;
     public static ModHotKey BashKey;
@@ -130,8 +166,7 @@ namespace OriMod {
           abilityPacketHandler.HandlePacket(r, fromWho);
           break;
         default:
-          Main.NewText("Unknown Packet " + packetClass, Color.Red);
-          OriMod.Log.Warn("Unknown Packet " + packetClass);
+          OriMod.ErrorFormat("UnknownPacket", args: packetClass);
           break;
       }
     }

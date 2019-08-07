@@ -60,4 +60,18 @@ ItemName.SpiritSapling3=Spirit Tree
 MapObject.SpiritSapling3=Spirit Tree
 ItemTooltip.SpiritSapling3=A fully grown Spirit Tree, smaller in size than the most powerful ones.
 
-SeinUpgrade.Upgraded5=Your alliance with Sein grows even stronger.
+SeinUpgrade.Upgraded5=Your alliance with {$Mods.OriMod.Common.Sein} grows even stronger.
+SeinUpgrade.Upgraded8=Through battle with the great deity, {$Mods.OriMod.Common.Sein} has reached its greatest potential.
+
+Error.SoulLinkBossActive=Cannot place a Soul Link while powerful enemies are around.
+Error.SoulLinkObstructed=Your Soul Link has been blocked and despawned.
+Error.SoulLinkCannotPlace=Cannot place a Soul Link here.
+
+Error.UnknownPacket=Error with packet: Unknown Packet type {0}
+Error.UnknownOriStatePacket=Error with packet: Unknown OriStatePacket type {0}
+Error.UnknownAbilityPacket=Error with packet: Unknown AbilityPacket type {0}
+
+Error.BadTrack=Error with animation: The animation track {0} does not exist.
+Error.BadFrame=Error with animation: Invalid frame for {0}: {1}
+
+Error.CannotLoadSein=Error with Sein summon: Couldn't get number from {0}
