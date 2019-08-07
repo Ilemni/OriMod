@@ -56,7 +56,7 @@ namespace OriMod {
     internal float homingIncreaseRate = 0.04f;
     
     /// <summary> Ticks to wait before increasing homing strength by `homingIncreaseRate` </summary>
-    internal float homingIncreaseDelay = 16f;
+    internal int homingIncreaseDelay = 16;
     
     /// <summary> Speed of Spirit Flame when it is fired </summary>
     internal float projectileSpeedStart = 5f;
@@ -153,7 +153,7 @@ namespace OriMod {
         randDegrees = 60,
         projectileSpeedStart = 12.5f, 
         homingIncreaseRate = 0.05f, 
-        homingIncreaseDelay = 19.5f,
+        homingIncreaseDelay = 20,
         dustScale = 1.8f,
         lightStrength = 1.2f,
       });
@@ -166,7 +166,7 @@ namespace OriMod {
         shotsPerTarget = 2,
         maxShotsPerVolley = 5,
         pierce = 2, 
-        homingIncreaseDelay = 17f,
+        homingIncreaseDelay = 17,
         targetMaxDist = 440f,
         dustScale = 2.2f,
         lightStrength = 1.4f,
@@ -218,7 +218,7 @@ namespace OriMod {
         maxShotsPerVolley = 10,
         longCooldown = 55f, 
         homingStrengthStart = 0.05f, 
-        homingIncreaseDelay = 15f, 
+        homingIncreaseDelay = 15, 
         projectileSpeedStart = 20f, 
         projectileSpeedIncreaseRate = 1f, 
         projectileSpeedIncreaseDelay = 35, 

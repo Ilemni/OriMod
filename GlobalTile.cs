@@ -21,12 +21,6 @@ namespace OriMod {
         drawColor = Color.Lerp(orig, Color.White, 0.3f * dist);
       }
       drawColor.A = orig.A;
-      if (oPlayer.debugMode) {
-        Point pos = new Point(i, j);
-        if (oPlayer.burrow.BurrowInner.Contains(pos)) {
-          drawColor = Color.Red;
-        }
-      }
     }
     public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex) {
       OriPlayer oPlayer = localOriPlayer ?? (localOriPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>());
@@ -35,7 +29,10 @@ namespace OriMod {
       }
       if (oPlayer.debugMode) {
         Point pos = new Point(i, j);
-        if (oPlayer.burrow.BurrowEnter.Contains(pos)) {
+        if (oPlayer.burrow.BurrowInner.Contains(pos)) {
+          drawColor = Color.Red;
+        }
+        else if (oPlayer.burrow.BurrowEnter.Contains(pos)) {
           drawColor = Color.LimeGreen;
         }
         else if (oPlayer.burrow.BurrowEnterOuter.Contains(pos)) {

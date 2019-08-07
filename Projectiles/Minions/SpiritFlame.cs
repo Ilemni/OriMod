@@ -6,36 +6,36 @@ using Terraria.ModLoader;
 
 namespace OriMod.Projectiles.Minions {
   public class SpiritFlameBase : ModProjectile {
-    protected NPC target = null;
-    protected bool isTargetingNPC => projectile.ai[1] == 0;
+    // Our ai fields are a bit unique...
+    // If we are **not** targeting something, projectile.ai values are filled with a vector2 for where to land
+    // Otherwise, ai[0] is the npc id that we are targeting, and ai[1] is 0
+    // In gameplay, non-target position in ai[1] should *never* be 0
+    private NPC target => _target ?? (isTargetingNPC ? (_target = Main.npc[(int)projectile.ai[0]]) : null);
+    private NPC _target = null;
+    
+    private bool isTargetingNPC => projectile.ai[1] == 0;
     private Vector2 _nonTargetPos = Vector2.Zero;
-    protected Vector2 nonTargetPos {
-      get {
-        if (_nonTargetPos == Vector2.Zero) {
-          _nonTargetPos = new Vector2(projectile.ai[0], projectile.ai[1]);
-        }
-        return _nonTargetPos;
-      }
-    }
-    // Initial lerp value: 0 = no homing; 1 = full homing
-    protected float lerp;
-    // Value added to lerp every frame
-    protected float lerpSmoothRate;
-    protected float lerpDelay;
-    private float currLerpDelay;
-    protected float speed;
-    protected float acceleration;
-    protected float accelDelay;
-    private float currAccelDelay;
+    private Vector2 nonTargetPos => _nonTargetPos != Vector2.Zero ? _nonTargetPos : (_nonTargetPos = new Vector2(projectile.ai[0], projectile.ai[1]));
+    
     private Vector2 _lastTargetPos;
     private Vector2 lastTargetPos {
-      get {
-        return isTargetingNPC ? _lastTargetPos : nonTargetPos;
-      }
-      set {
-        if (isTargetingNPC) _lastTargetPos = value;
-      }
+      get => isTargetingNPC ? _lastTargetPos : nonTargetPos;
+      set => _lastTargetPos = value;
     }
+
+    // Projectile lerp with delay before increase
+    // 0 = no homing; 1 = full homing
+    private float lerp;
+    private float lerpRate;
+    private int lerpDelay;
+    private int currLerpDelay;
+
+    // Projectile speed with delay before increase
+    private float speed;
+    private float acceleration;
+    private int accelDelay;
+    private int currAccelDelay;
+
     protected int dustType; 
     protected int dustWidth;
     protected int dustHeight;
@@ -44,25 +44,8 @@ namespace OriMod.Projectiles.Minions {
     protected float lightStrength;
 
     public override string Texture => "OriMod/Projectiles/Minions/SpiritFlame";
-    internal void Init(int upgradeID) {
-      SeinUpgrade u = OriMod.SeinUpgrades[upgradeID];
-      
-      projectile.knockBack = u.knockback;
-      lerp = u.homingStrengthStart;
-      lerpSmoothRate = u.homingIncreaseRate;
-      lerpDelay = u.homingIncreaseDelay;
-      speed = u.projectileSpeedStart;
-      acceleration = u.projectileSpeedIncreaseRate;
-      accelDelay = u.projectileSpeedIncreaseDelay;
-      projectile.penetrate = projectile.maxPenetrate = u.pierce;
-      projectile.width = u.flameWidth;
-      projectile.height = u.flameHeight;
-      dustScale = u.dustScale;
-      dustType = mod.DustType("SFDustTrail");
-      color = u.color;
-      lightStrength = u.lightStrength * 0.6f;
-    }
-    
+
+    // There is probably a better way of doing this...
     public override void SetStaticDefaults() {
       ProjectileID.Sets.CanDistortWater[projectile.type] = true;
       ProjectileID.Sets.MinionShot[projectile.type] = true;
@@ -78,6 +61,26 @@ namespace OriMod.Projectiles.Minions {
       dustWidth = 10;
       dustHeight = 10;
     }
+    
+    internal void Init(int upgradeID) {
+      SeinUpgrade u = OriMod.SeinUpgrades[upgradeID];
+      
+      projectile.knockBack = u.knockback;
+      lerp = u.homingStrengthStart;
+      lerpRate = u.homingIncreaseRate;
+      lerpDelay = u.homingIncreaseDelay;
+      speed = u.projectileSpeedStart;
+      acceleration = u.projectileSpeedIncreaseRate;
+      accelDelay = u.projectileSpeedIncreaseDelay;
+      projectile.penetrate = projectile.maxPenetrate = u.pierce;
+      projectile.width = u.flameWidth;
+      projectile.height = u.flameHeight;
+      dustScale = u.dustScale;
+      dustType = mod.DustType("SFDustTrail");
+      color = u.color;
+      lightStrength = u.lightStrength * 0.6f;
+    }
+    
     private void CreateDust() {
       int dust = Dust.NewDust(projectile.position, dustWidth, dustHeight, dustType);
       Main.dust[dust].scale = dustScale;
@@ -92,67 +95,46 @@ namespace OriMod.Projectiles.Minions {
       Main.dust[dust].noGravity = true;
     }
 
+    // Increase time, or if time is => delay, increase currVal by rate
+    private void TickTimerOrValue(ref int time, int delay, ref float currVal, float rate, float maxVal) {
+      if (time < delay) {
+        time++;
+      }
+      else if (currVal < maxVal) {
+        currVal += rate;
+        if (currVal > maxVal) {
+          currVal = maxVal;
+        }
+      }
+    }
+
     public override void AI() {
       Lighting.AddLight(projectile.Center, color.ToVector3() * lightStrength);
-      float distance = Vector2.Distance(lastTargetPos, projectile.position);
-      if (isTargetingNPC) {
-        if (target == null) {
-          target = Main.npc[(int)projectile.ai[0]];
-        }
-        // If target dies before projectile hits, kill projectile when it reaches target
-        else if (!target.active) {
-          if (distance < speed) {
-            projectile.active = false;
-          }
-        }
-      }
-      // Increase homing strength over time
-      if (currLerpDelay < lerpDelay) {
-        currLerpDelay++;
-      } else {
-        if (lerp > 1) {
-          lerp = 1;
-        } else if (lerp < 1) {
-          lerp += lerpSmoothRate;
-        }
-      }
-      // Increase speed over time
-      if (currAccelDelay < accelDelay) {
-        currAccelDelay++;
-      }
-      else {
-        speed += acceleration;
-      }
-      if (distance < speed) {
-        lerp = lerpSmoothRate * 5f;
-        currLerpDelay = lerpDelay * 0.25f;
-      }
-
-      // Get the shoot trajectory from the projectile and target
-      Vector2 shootTo = Vector2.Zero;
-      // If target dies before projectile hits, target last live position
-      if (isTargetingNPC) {
-        if (target.active) {
-          lastTargetPos = target.position;
-          shootTo.X = target.position.X + (float)target.width * 0.5f - projectile.Center.X;
-          shootTo.Y = target.position.Y - projectile.Center.Y;
-        } else {
-          shootTo.X = lastTargetPos.X - projectile.Center.X;
-          shootTo.Y = lastTargetPos.Y - projectile.Center.Y;
-        }
-      }
-      else {
-        shootTo = nonTargetPos;
-      }
-      if (speed > 30) {
-        speed = 30;
-      }
-      Vector2 currVelocity = projectile.velocity;
-      currVelocity.Normalize();
-      shootTo.Normalize();
-      Vector2 newVelocity = Vector2.Lerp(currVelocity, shootTo, lerp) * speed;
-      projectile.velocity = newVelocity;
       CreateDust();
+      
+      // If target dies before projectile hits, target last live position
+      if (isTargetingNPC && target.active) {
+        lastTargetPos = target.Center;
+      }
+      
+      // If close enough to last live position, despawn projectile if target dead, or set lerp to max
+      float distance = Vector2.Distance(lastTargetPos, projectile.position);
+      if (distance < speed) {
+        if (isTargetingNPC && !target.active) {
+          projectile.active = false;
+          return;
+        }
+        lerp = 1;
+        currLerpDelay = lerpDelay;
+      }
+      
+      // Increase homing strength over time
+      TickTimerOrValue(ref currLerpDelay, lerpDelay, ref lerp, lerpRate, 1);
+      
+      // Increase speed over time
+      TickTimerOrValue(ref currAccelDelay, accelDelay, ref speed, acceleration, 30);
+
+      projectile.velocity = Vector2.Lerp(projectile.velocity.Norm(), (lastTargetPos - projectile.Center).Norm(), lerp) * speed;
     }
   }
 }
