@@ -1,10 +1,20 @@
+using Terraria;
+using Terraria.ModLoader;
+
 namespace OriMod.Buffs {
-  public sealed class SeinBuff1 : SeinBuffBase { }
-  public sealed class SeinBuff2 : SeinBuffBase { }
-  public sealed class SeinBuff3 : SeinBuffBase { }
-  public sealed class SeinBuff4 : SeinBuffBase { }
-  public sealed class SeinBuff5 : SeinBuffBase { }
-  public sealed class SeinBuff6 : SeinBuffBase { }
-  public sealed class SeinBuff7 : SeinBuffBase { }
-  public sealed class SeinBuff8 : SeinBuffBase { }
+  public abstract class SeinBuff : ModBuff {
+    public override void SetDefaults() {
+      Main.buffNoSave[Type] = true;
+      Main.buffNoTimeDisplay[Type] = true;
+    }
+
+    public override void Update(Player player, ref int buffIndex) {
+      player.buffTime[buffIndex] = 18000;
+    }
+    
+    public override bool Autoload(ref string name, ref string texture) {
+      texture = "OriMod/Buffs/SeinBuff";
+      return base.Autoload(ref name, ref texture);
+    }
+  }
 }
