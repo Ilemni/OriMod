@@ -1,14 +1,12 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Items
-{
-  public class SpiritSapling2 : ModItem
-  {
+namespace OriMod.Items {
+  public class SpiritSapling2 : ModItem {
+    public override bool Autoload(ref string name) => false;
     public override void SetStaticDefaults() {}
     public override string Texture => "OriMod/Items/SpiritSapling"; // TODO: Add SpiritSapling2 sprite
-    public override void SetDefaults()
-    {
+    public override void SetDefaults() {
       item.width = 12;
       item.height = 30;
       item.maxStack = 1;
@@ -21,8 +19,7 @@ namespace OriMod.Items
       item.value = 150000;
       item.createTile = mod.TileType("SpiritSapling2");
     }
-    public override void AddRecipes()
-    {
+    public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);
       recipe.AddIngredient(mod.ItemType("SpiritSapling"), 1);
       recipe.AddIngredient(ItemID.SoulofLight, 30);
