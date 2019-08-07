@@ -100,9 +100,13 @@ namespace OriMod {
     }
     internal void TickOtherClient() {
       Abilities.ForEach(ability => {
-        if (ability.InUse) {
-          ability.Tick();
-        }
+        if (ability.InUse) ability.Tick();
+      });
+    }
+    
+    internal void DisableAllAbilities() {
+      Abilities.ForEach(ability => {
+        ability.Inactive = true;
       });
     }
   }

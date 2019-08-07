@@ -10,6 +10,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using OriMod.Abilities;
+using System.Linq;
 
 namespace OriMod {
   public sealed class OriPlayer : ModPlayer {
@@ -903,6 +904,17 @@ namespace OriMod {
         damage = 0;
       }
     }
+
+    public override void OnRespawn(Player player) {
+      Abilities.DisableAllAbilities();
+    }
+
+    public override void PostUpdateMiscEffects() {
+      if (player.buffType.Contains(BuffID.TheTongue)) {
+        Abilities.DisableAllAbilities();
+      }
+    }
+
     private int hurtRand = 0;
     public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // effects when character is hurt
       if (!OriSet) return true;
