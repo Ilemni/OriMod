@@ -3,7 +3,10 @@ using Terraria.ModLoader;
 
 namespace OriMod.Items {
   public class SpiritOrb1 : SpiritOrb {
-    public override void SetDefaults() => Init(1);
+    public override void SetDefaults() {
+      base.SetDefaults();
+      Init(1);
+    }
 
     public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);
@@ -21,7 +24,10 @@ namespace OriMod.Items {
   }
 
   public class SpiritOrb2 : SpiritOrb {
-    public override void SetDefaults() => Init(2);
+    public override void SetDefaults() {
+      base.SetDefaults();
+      Init(2);
+    }
 
     public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);
@@ -41,7 +47,10 @@ namespace OriMod.Items {
   }
   
   public class SpiritOrb3 : SpiritOrb {
-    public override void SetDefaults() => Init(3);
+    public override void SetDefaults() {
+      base.SetDefaults();
+      Init(3);
+    }
 
     public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);
@@ -54,7 +63,10 @@ namespace OriMod.Items {
   }
   
   public class SpiritOrb4 : SpiritOrb {
-    public override void SetDefaults() => Init(4);
+    public override void SetDefaults() {
+      base.SetDefaults();
+      Init(4);
+    }
     
     public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);
@@ -76,7 +88,10 @@ namespace OriMod.Items {
   }
   
   public class SpiritOrb5 : SpiritOrb {
-    public override void SetDefaults() => Init(5);
+    public override void SetDefaults() {
+      base.SetDefaults();
+      Init(5);
+    }
 
     public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);
@@ -90,7 +105,10 @@ namespace OriMod.Items {
   }
   
   public class SpiritOrb6 : SpiritOrb {
-    public override void SetDefaults() => Init(6);
+    public override void SetDefaults() {
+      base.SetDefaults();
+      Init(6);
+    }
 
     public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);
@@ -104,7 +122,10 @@ namespace OriMod.Items {
   }
   
   public class SpiritOrb7 : SpiritOrb {
-    public override void SetDefaults() => Init(7);
+    public override void SetDefaults() {
+      base.SetDefaults();
+      Init(7);
+    }
 
     public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);
@@ -121,7 +142,10 @@ namespace OriMod.Items {
   }
   
   public class SpiritOrb8 : SpiritOrb {
-    public override void SetDefaults() => Init(8);
+    public override void SetDefaults() {
+      base.SetDefaults();
+      Init(8);
+    }
 
     public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);

@@ -23,7 +23,6 @@ namespace OriMod.Items {
 
     // Called in factory SetDefaults
     protected void Init(int upgradeID) {
-      SetDefaults();
       SeinUpgrade u = OriMod.SeinUpgrades[upgradeID - 1];
       item.damage = u.damage;
       item.rare = u.rarity;
