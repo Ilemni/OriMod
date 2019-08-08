@@ -963,7 +963,7 @@ namespace OriMod {
         Animations.BashAnim.Draw(layers);
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
         OriLayers.PlayerSprite.visible = (!player.dead && !player.invis);
-        OriLayers.Trail.visible = OriLayers.PlayerSprite.visible && !player.mount.Active;
+        OriLayers.Trail.visible = OriLayers.PlayerSprite.visible && !burrow.InUse && !player.mount.Active;
       }
     }
     private void DisableVanillaLayers() {
