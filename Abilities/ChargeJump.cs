@@ -10,9 +10,9 @@ namespace OriMod.Abilities {
     protected override int Cooldown => (int)(Config.CJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
     
-    internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && (Handler.lookUp.InUse || oPlayer.Input(OriMod.ChargeKey.Current));
+    internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && oPlayer.Input(OriMod.ChargeKey.Current);
     private int MaxCharge => 35;
-    private int ChargeGrace => 15;
+    private int ChargeGrace => 25;
     private static readonly float[] Speeds = new float[20] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
     };
