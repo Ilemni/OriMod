@@ -200,6 +200,9 @@ namespace OriMod {
     /// <summary> Called directly after `UpdateStarting()`, `UpdateActive()`, and `UpdateEnding()`</summary>
     protected virtual void UpdateUsing() { }
     
+    /// <summary> Rudimentary implementation, for now manually call in PlayerLayer </summary>
+    internal virtual void DrawEffects() { }
+
 
     public override string ToString() => $"Ability ID:{id} Player:{player.whoAmI} State:{State} Unlocked:{Unlocked} Cooldown:{CurrCooldown}/{Cooldown}";
     

@@ -169,6 +169,14 @@ namespace OriMod {
 
     [Header("Burrow")]
     
+    [Label("Duration"), Tooltip("How long Burrow can be used until suffocating, in seconds.\nDefault: 4")]
+    [DefaultValue(4), Range(1f, 30)]
+    public float BurrowDuration;
+
+    [Label("Recovery Rate"), Tooltip("Rate in which Burrow replenishes itself when not in use.\nDefault: 1")]
+    [DefaultValue(1), Range(0.1f, 3)]
+    public float BurrowRecoveryRate;
+
     [Label("Strength"), Tooltip("Determines which tiles Burrow can dig through. Based on Pickaxe power.\nDefault: 0")]
     [DefaultValue(0), Range(-1, 210)]
     public int BurrowStrength;

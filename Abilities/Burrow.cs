@@ -1,6 +1,8 @@
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,11 +15,16 @@ namespace OriMod.Abilities {
     protected override int Cooldown => 12;
     protected override Color RefreshColor => Color.SandyBrown;
 
+    private static int BurrowDurMax => (int)(Config.BurrowDuration * 60);
+    private static int UiIncrement => 60;
+    private static int UiMax { get; } = BurrowDurMax / UiIncrement;
+    private float BurrowDur = BurrowDurMax;
+    
     private bool inMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
     private float Speed => 8f; 
     private float SpeedExitMultiplier => 1.5f;
     protected int Strength;
-
+    
     internal bool CanBurrow(Tile t) {
       if (CanBurrowAny) return true;
       if (TileCollection.TilePickaxeMin[t.type] == -1) {
@@ -67,9 +74,9 @@ namespace OriMod.Abilities {
       BurrowEnter.UpdateHitbox(BurrowEnterTemplate, player.Center);
       BurrowEnterOuter.UpdateHitbox(BurrowEnterOuterTemplate, player.Center);
     }
-    private void UpdateBurrowInnerBox() {
+    private void UpdateBurrowInnerBox() =>
       BurrowInner.UpdateHitbox(BurrowInnerTemplate, player.Center + Velocity.Norm() * 16);
-    }
+    
     private void OnBurrowCollision(int hitboxIdx, ref bool didX, ref bool didY) {
       oPlayer.Debug("Bounce! " + hitboxIdx);
       switch (hitboxIdx) {
@@ -101,6 +108,9 @@ namespace OriMod.Abilities {
     }
     
     protected override void UpdateActive() {
+      if (BurrowDur > 0) {
+        BurrowDur--;
+      }
       player.position = LastPos;
       UpdateBurrowInnerBox();
       if (Velocity == Vector2.Zero) {
@@ -136,8 +146,8 @@ namespace OriMod.Abilities {
       bool didY = false;
       if (!CanBurrowAny) {
         for (int i = 0; i < BurrowInner.Length; i++) {
-          Point v = BurrowInner[i];
-          Tile t = Main.tile[(int)v.X, (int)v.Y];
+          Point p = BurrowInner[i];
+          Tile t = Main.tile[p.X, p.Y];
           // if (i == 0) oPlayer.Debug(!t.active() + " || " + t.inActive() + " || " + !t.nactive());
           if (!IsSolid(t)) continue;
           if (!CanBurrow(t)) {
@@ -156,7 +166,12 @@ namespace OriMod.Abilities {
       oPlayer.UnrestrictedMovement = true;
     }
     protected override void UpdateUsing() {
-      player.buffImmune[BuffID.Suffocation] = true;
+      if (BurrowDur > 0) {
+        player.buffImmune[BuffID.Suffocation] = true;
+      }
+      else {
+        player.AddBuff(BuffID.Suffocation, 1);
+      }
       player.noItems = true;
       player.gravity = 0;
       player.controlJump = false;
@@ -167,6 +182,35 @@ namespace OriMod.Abilities {
       oPlayer.KillGrapples();
       player.grapCount = 0;
     }
+
+    private Texture2D TimerTex => !_tex?.IsDisposed ?? false ? _tex : (_tex = OriMod.Instance.GetTexture("PlayerEffects/BurrowTimer"));
+    private Texture2D _tex;
+    internal override void DrawEffects() {
+      if (BurrowDur == BurrowDurMax) return;
+      
+      Vector2 drawPos = player.BottomRight - Main.screenPosition;
+      drawPos.X += 48;
+      drawPos.Y += 16;
+      Vector2 defaultDrawPos = drawPos;
+      int uiCount = (int)Math.Ceiling((double)BurrowDur / UiIncrement);
+      
+      for (int i = 0; i < uiCount; i++) {
+        if (i % 10 == 0) {
+          drawPos.X = defaultDrawPos.X;
+          drawPos.Y += 40;
+        }
+        drawPos.X += 24;
+        var color = Color.White;
+        int frameY = 0;
+        if (i * UiIncrement + UiIncrement > BurrowDur) {
+          frameY = 4 - ((int)BurrowDur % UiIncrement / (UiIncrement / 5));
+        }
+        if (!InUse) color *= 0.6f;
+        var data = new DrawData(TimerTex, drawPos, TimerTex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, TimerTex.Size() / 2, 1, SpriteEffects.None, 0);
+        Main.playerDrawData.Add(data);
+      }
+    }
+
     public void UpdateBurrowStrength(bool force=false) {
       if (!force && (int)Main.time % 64 != 0) return;
       int pick = OriMod.ConfigAbilities.BurrowStrength;
@@ -204,6 +248,9 @@ namespace OriMod.Abilities {
       }
       else {
         TickCooldown();
+        if (BurrowDur < BurrowDurMax) {
+          BurrowDur += Config.BurrowRecoveryRate;
+        }
       }
       if (CanUse && !InUse && (OriMod.BurrowKey.JustPressed || AutoBurrow)) {
         UpdateBurrowStrength(force:true);
