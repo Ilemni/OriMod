@@ -250,6 +250,9 @@ namespace OriMod.Abilities {
         TickCooldown();
         if (BurrowDur < BurrowDurMax) {
           BurrowDur += Config.BurrowRecoveryRate;
+          if (BurrowDur > BurrowDurMax) {
+            BurrowDur = BurrowDurMax;
+          }
         }
       }
       if (CanUse && !InUse && (OriMod.BurrowKey.JustPressed || AutoBurrow)) {

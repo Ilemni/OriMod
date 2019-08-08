@@ -173,7 +173,7 @@ namespace OriMod {
     [DefaultValue(4), Range(1f, 30)]
     public float BurrowDuration;
 
-    [Label("Recovery Rate"), Tooltip("Rate in which Burrow replenishes itself when not in use.\nDefault: 1")]
+    [Label("Recovery"), Tooltip("Rate that Burrow replenishes itself when not in use.\nDefault: 1")]
     [DefaultValue(1), Range(0.1f, 3)]
     public float BurrowRecoveryRate;
 
