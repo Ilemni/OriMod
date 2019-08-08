@@ -18,51 +18,31 @@ namespace OriMod {
       Handler = handler;
     }
     /// <summary>
-    /// All possible states that the Ability can be in.
-    /// 
-    /// Inactive: The ability will not perform any actions
-    /// 
-    /// Starting: The ability will use UpdateStarting() and UpdateUsing()
-    /// 
-    /// Active: The ability will use UpdateActive() and UpdateUsing()
-    /// 
-    /// Ending: The ability will use UpdateEnding() and UpdateUsing()
-    /// 
-    /// Failed: The ability will use UpdateFailed()
-    /// </summary>
-    public enum States {
-      Inactive = 0,
-      Starting = 1,
-      Active = 2,
-      Ending = 3,
-      Failed = 4
-    }
-    /// <summary>
     /// Current state of the ability
     /// 
-    /// <seealso cref="States" />
+    /// <seealso cref="State" />
     /// </summary>
     /// <value></value>
-    public States State { get; internal set; }
+    public AbilityState State { get; internal set; }
     public bool Active {
-      get => State == States.Active;
-      internal set => State = value ? States.Active : State;
+      get => State == AbilityState.Active;
+      internal set => State = value ? AbilityState.Active : State;
     }
     public bool Starting {
-      get => State == States.Starting;
-      internal set => State = value ? States.Starting : State;
+      get => State == AbilityState.Starting;
+      internal set => State = value ? AbilityState.Starting : State;
     }
     public bool Ending {
-      get => State == States.Ending;
-      internal set => State = value ? States.Ending : State;
+      get => State == AbilityState.Ending;
+      internal set => State = value ? AbilityState.Ending : State;
     }
     public bool Inactive {
-      get => State == States.Inactive;
-      internal set => State = value ? States.Inactive : State;
+      get => State == AbilityState.Inactive;
+      internal set => State = value ? AbilityState.Inactive : State;
     }
     public bool Failed {
-      get => State == States.Failed;
-      internal set => State = value ? States.Failed : State;
+      get => State == AbilityState.Failed;
+      internal set => State = value ? AbilityState.Failed : State;
     }
     /// <summary>
     /// Determines if the ability has been unlocked by the player.
@@ -95,7 +75,7 @@ namespace OriMod {
     public bool InUse => !Inactive && !Failed;
     
     internal void PreReadPacket(BinaryReader r) {
-      State = (States)r.ReadByte();
+      State = (AbilityState)r.ReadByte();
       ReadPacket(r);
       if (Main.netMode == Terraria.ID.NetmodeID.MultiplayerClient) {
         Update();
@@ -116,19 +96,19 @@ namespace OriMod {
     internal virtual bool Update() {
       if (!PreUpdate()) return false;
       switch (State) {
-        case States.Active:
+        case AbilityState.Active:
           UpdateActive();
           UpdateUsing();
           return true;
-        case States.Starting:
+        case AbilityState.Starting:
           UpdateStarting();
           UpdateUsing();
           return true;
-        case States.Ending:
+        case AbilityState.Ending:
           UpdateEnding();
           UpdateUsing();
           return true;
-        case States.Failed:
+        case AbilityState.Failed:
           UpdateFailed();
           return true;
         default:
@@ -161,5 +141,25 @@ namespace OriMod {
         }
       }
     }
+  }
+  /// <summary>
+  /// All possible states that the Ability can be in.
+  /// 
+  /// Inactive: The ability will not perform any actions
+  /// 
+  /// Starting: The ability will use UpdateStarting() and UpdateUsing()
+  /// 
+  /// Active: The ability will use UpdateActive() and UpdateUsing()
+  /// 
+  /// Ending: The ability will use UpdateEnding() and UpdateUsing()
+  /// 
+  /// Failed: The ability will use UpdateFailed()
+  /// </summary>
+  public enum AbilityState {
+    Inactive = 0,
+    Starting = 1,
+    Active = 2,
+    Ending = 3,
+    Failed = 4
   }
 }

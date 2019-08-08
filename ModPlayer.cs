@@ -408,24 +408,24 @@ namespace OriMod {
       }
       if (stomp.InUse) {
         switch (stomp.State) {
-          case Ability.States.Starting:
+          case AbilityState.Starting:
             Increment("AirJump");
             AnimRads = AnimTime;
             return;
-          case Ability.States.Active:
+          case AbilityState.Active:
             Increment("ChargeJump", rotDegrees:180f, overrideDur:2, overrideHeader:new Header(playback:PlaybackMode.PingPong));
             return;
         }
       }
       if (glide.InUse) {
         switch (glide.State) {
-          case Ability.States.Starting:
+          case AbilityState.Starting:
             Increment("GlideStart");
             return;
-          case Ability.States.Active:
+          case AbilityState.Active:
             Increment("Glide");
             return;
-          case Ability.States.Ending:
+          case AbilityState.Ending:
             Increment("GlideStart", overrideHeader:new Header(playback:PlaybackMode.Reverse));
             return;
         }
@@ -476,26 +476,26 @@ namespace OriMod {
       }
       if (lookUp.InUse) {
         switch (lookUp.State) {
-          case Ability.States.Starting:
+          case AbilityState.Starting:
             Increment("LookUpStart");
             return;
-          case Ability.States.Active:
+          case AbilityState.Active:
             Increment("LookUp");
             return;
-          case Ability.States.Ending:
+          case AbilityState.Ending:
             Increment("LookUpStart", overrideHeader:new Header(playback:PlaybackMode.Reverse));
             return;
         }
       }
       if (crouch.InUse) {
         switch (crouch.State) {
-          case Ability.States.Starting:
+          case AbilityState.Starting:
             Increment("CrouchStart");
             return;
-          case Ability.States.Active:
+          case AbilityState.Active:
             Increment("Crouch");
             return;
-          case Ability.States.Ending:
+          case AbilityState.Ending:
             Increment("CrouchStart", overrideHeader:new Header(playback:PlaybackMode.Reverse));
             return;
         }
