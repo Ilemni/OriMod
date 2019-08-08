@@ -835,10 +835,7 @@ namespace OriMod {
           else {
             player.velocity = new Vector2(0, -0.00055f * TransformTimer);
             player.gravity = 0;
-            if (TeatherTrailTimer == 0) {
-              CreateTeatherDust();
-              TeatherTrailTimer = Main.rand.Next(3, 8);
-            }
+            CreateTeatherDust();
           }
         }
         player.runAcceleration = 0;
@@ -862,21 +859,22 @@ namespace OriMod {
       }
       player.runSlowdown = UnrestrictedMovement ? 0 : 1;
     }
-    public void CreateTeatherDust() {
+    internal void CreateTeatherDust() {
+      if (TeatherTrailTimer > 0) return;
       Dust dust = Main.dust[Terraria.Dust.NewDust(player.position, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
       dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
       dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
       dust.noGravity = false;
+      TeatherTrailTimer = Transforming ? Main.rand.Next(3, 8) :
+        (dash.InUse || cDash.InUse) ? Main.rand.Next(2, 4) :
+        burrow.InUse ? Main.rand.Next(6, 10) :
+        Main.rand.Next(10, 15);
     }
     public override void FrameEffects() {
       if (!OriSet) return;
 
-      if (player.velocity != Vector2.Zero && TeatherTrailTimer == 0) {
+      if (player.velocity.LengthSquared() > 0.2f) {
         CreateTeatherDust();
-        TeatherTrailTimer = dash.InUse || cDash.InUse ? Main.rand.Next(2, 4) : Main.rand.Next(10, 15);
-      }
-      else if ((dash.InUse || cDash.InUse) && TeatherTrailTimer > 4) {
-        TeatherTrailTimer = Main.rand.Next(2, 4);
       }
       Flashing = player.immuneTime % 12 > 6 && !player.immuneNoBlink;
     }

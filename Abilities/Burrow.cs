@@ -148,6 +148,7 @@ namespace OriMod.Abilities {
       player.position += Velocity;
       player.velocity = Vector2.Zero;
       LastPos = player.position;
+      oPlayer.CreateTeatherDust();
     }
     protected override void UpdateEnding() {
       player.velocity = Velocity * SpeedExitMultiplier;
