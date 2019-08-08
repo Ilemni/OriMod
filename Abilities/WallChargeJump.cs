@@ -5,7 +5,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class WallChargeJump : Ability {
-    public WallChargeJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    public WallChargeJump(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.WallChargeJump;
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
@@ -41,7 +41,7 @@ namespace OriMod.Abilities {
     }
     
     private void StartWallChargeJump() {
-      oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref currRand));
+      oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref CurrSoundRand));
       Charged = false;
       CurrCharge = 0;
       Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("ChargeJumpProjectile"), 30, 0f, player.whoAmI, 0, 1)];

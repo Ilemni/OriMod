@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   public class Burrow : Ability {
-    internal Burrow(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal Burrow(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.Burrow;
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BurrowKey.Current);
     internal override bool CanUse => base.CanUse && !Handler.dash.InUse && !Handler.cDash.InUse && !inMenu;

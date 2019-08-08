@@ -3,7 +3,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class WallJump : Ability {
-    internal WallJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal WallJump(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.WallJump;
     internal override bool DoUpdate => (oPlayer.Input(OriPlayer.JustPressed.Jump) && oPlayer.OnWall && !oPlayer.IsGrounded);
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !Handler.wCJump.Charged;
@@ -16,7 +16,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateActive() {
       player.velocity.Y = WallJumpVelocity.Y * GravDir;
-      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + OriPlayer.RandomChar(5, ref currRand));
+      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + OriPlayer.RandomChar(5, ref CurrSoundRand));
     }
     protected override void UpdateEnding() {
       if (oPlayer.OnWall) player.velocity.Y -= GravDir;

@@ -2,7 +2,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class Crouch : Ability {
-    internal Crouch(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal Crouch(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.Crouch;
     internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.Current.Down); 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Restricted;

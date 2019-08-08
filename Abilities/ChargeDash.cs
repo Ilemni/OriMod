@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   public class ChargeDash : Ability {
-    internal ChargeDash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal ChargeDash(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.ChargeDash;
     internal override bool DoUpdate => !Handler.dash.DoUpdate && (InUse || (oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Handler.cDash.Refreshed));
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;

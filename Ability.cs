@@ -5,59 +5,97 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   public abstract class Ability {
-    public virtual int id => -1;
-    protected Player player { get; }
-    protected OriPlayer oPlayer { get; }
-    protected bool isLocalPlayer { get; }
-    protected OriAbilities Handler { get; }
-    protected static OriConfigClient2 Config => OriMod.ConfigAbilities;
-    internal Ability(OriPlayer oriPlayer, OriAbilities handler) {
-      player = oriPlayer.player;
-      oPlayer = oriPlayer;
-      isLocalPlayer = player.whoAmI == Main.myPlayer;
+    /// <summary> Only construct this in OriAbilities. </summary>
+    internal Ability(OriAbilities handler) {
       Handler = handler;
+      oPlayer = Handler.oPlayer;
+      player = oPlayer.player;
+      isLocalPlayer = player.whoAmI == Main.myPlayer;
     }
-    /// <summary>
-    /// Current state of the ability
-    /// 
-    /// <seealso cref="State" />
-    /// </summary>
-    /// <value></value>
-    public AbilityState State { get; internal set; }
-    public bool Active {
-      get => State == AbilityState.Active;
-      internal set => State = value ? AbilityState.Active : State;
-    }
-    public bool Starting {
-      get => State == AbilityState.Starting;
-      internal set => State = value ? AbilityState.Starting : State;
-    }
-    public bool Ending {
-      get => State == AbilityState.Ending;
-      internal set => State = value ? AbilityState.Ending : State;
-    }
+    
+    
+    /// <summary> Abilities Config </summary>
+    protected static OriConfigClient2 Config => OriMod.ConfigAbilities;
+    
+    
+    /// <summary> Unique ID of this ability. </summary>
+    public abstract int id { get; }
+
+    /// <summary> The `Player` this ability is attached to. </summary>
+    protected Player player { get; }
+
+    /// <summary> The `OriPlayer` this ability is attached to. </summary>
+    protected OriPlayer oPlayer { get; }
+
+    /// <summary> Short for player.whoAmI == Main.myPlayer </summary>
+    protected bool isLocalPlayer { get; }
+
+    /// <summary> Handler this ability is attached to. Same as oPlayer.Abilities </summary>
+    protected OriAbilities Handler { get; }
+
+
+    /// <summary> Condition required to call `Update()`. </summary>
+    internal abstract bool DoUpdate { get; }
+    
+    /// <summary> Condition required for the player to use this ability. </summary>
+    internal virtual bool CanUse => Unlocked && Refreshed;
+    
+    /// <summary> Cooldown of the ability. This should point to a Config option. </summary>
+    protected virtual int Cooldown { get; }
+    
+    /// <summary> Determines if the ability only goes on cooldown if a boss is active. </summary>
+    protected virtual bool CooldownOnlyOnBoss => false;
+
+    /// <summary> Color of dust spawned in `OnRefreshed()`</summary>
+    protected virtual Color RefreshColor => Color.White;
+
+    
+    /// <summary> Current state of the ability </summary>
+    public AbilityState State { get; private set; }
+    /// <summary> If State is Inactive. Setting only works when value is `true`</summary>
     public bool Inactive {
       get => State == AbilityState.Inactive;
       internal set => State = value ? AbilityState.Inactive : State;
     }
+    /// <summary> If State is Starting. Setting only works when value is `true`</summary>
+    public bool Starting {
+      get => State == AbilityState.Starting;
+      internal set => State = value ? AbilityState.Starting : State;
+    }
+    /// <summary> If State is Active. Setting only works when value is `true`</summary>
+    public bool Active {
+      get => State == AbilityState.Active;
+      internal set => State = value ? AbilityState.Active : State;
+    }
+    /// <summary> If State is Ending. Setting only works when value is `true`</summary>
+    public bool Ending {
+      get => State == AbilityState.Ending;
+      internal set => State = value ? AbilityState.Ending : State;
+    }
+    /// <summary> If State is Failed. Setting only works when value is `true`</summary>
     public bool Failed {
       get => State == AbilityState.Failed;
       internal set => State = value ? AbilityState.Failed : State;
     }
-    /// <summary>
-    /// Determines if the ability has been unlocked by the player.
-    /// 
-    /// Currently unimplemented
-    /// </summary>
-    /// <value></value>
+    
+    /// <summary> Checks if the ability is active </summary>
+    /// <value>True if the state is neither Inactive nor Failed</value>
+    public bool InUse => !Inactive && !Failed;
+
+    
+    /// <summary> Determines if the ability has been unlocked by the player. Currently unimplemented. </summary>
     internal bool Unlocked = true;
-    protected virtual int Cooldown { get; }
+    
+    /// <summary> Time left until the ability is no longer on cooldown. </summary>
     protected int CurrCooldown;
+
+    /// <summary> Time the ability was in the given State. </summary>
     protected int CurrTime;
-    protected virtual bool CooldownOnlyOnBoss => false;
-    internal virtual bool CanUse => Unlocked && Refreshed;
-    internal abstract bool DoUpdate { get; }
-    private bool _refreshed = true;
+
+    /// <summary> Previous sound index used to prevent the same sound from playing consectutively. </summary>
+    protected int CurrSoundRand = 0;
+    
+    /// <summary> True if ready to use, false if on cooldown. </summary>
     internal bool Refreshed {
       get => _refreshed;
       set {
@@ -67,72 +105,40 @@ namespace OriMod {
         _refreshed = value;
       }
     }
-    protected int currRand = 0; // Used for random sounds that don't repeat
-    /// <summary>
-    /// Checks if the ability is active
-    /// </summary>
-    /// <value>True if the state is neither Inactive nor Failed</value>
-    public bool InUse => !Inactive && !Failed;
-    
-    internal void PreReadPacket(BinaryReader r) {
-      State = (AbilityState)r.ReadByte();
-      ReadPacket(r);
-      if (Main.netMode == Terraria.ID.NetmodeID.MultiplayerClient) {
-        Update();
-      }
-    }
-    internal void PreWritePacket(ModPacket packet) {
-      packet.Write((byte)State);
-      WritePacket(packet);
-    }
-    protected virtual void ReadPacket(BinaryReader r) { }
-    protected virtual void WritePacket(ModPacket packet) { }
-    
-    protected virtual bool PreUpdate() {
-      if (!isLocalPlayer) return true;
-      if (!CanUse && !InUse) return false;
-      return true;
-    }
-    internal virtual bool Update() {
-      if (!PreUpdate()) return false;
-      switch (State) {
-        case AbilityState.Active:
-          UpdateActive();
-          UpdateUsing();
-          return true;
-        case AbilityState.Starting:
-          UpdateStarting();
-          UpdateUsing();
-          return true;
-        case AbilityState.Ending:
-          UpdateEnding();
-          UpdateUsing();
-          return true;
-        case AbilityState.Failed:
-          UpdateFailed();
-          return true;
-        default:
-          return false;
-      }
-    }
-    protected virtual void UpdateStarting() { }
-    protected virtual void UpdateActive() { }
-    protected virtual void UpdateEnding() { }
-    protected virtual void UpdateFailed() { }
-    protected virtual void UpdateUsing() { }
-    internal abstract void Tick();
-    protected virtual Color RefreshColor => Color.White;
+    private bool _refreshed = true;
+
+
+    /// <summary> Creates dust when refreshed. </summary>
     private void OnRefreshed() {
       for(int i = 0; i < 10; i++) {
         Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor:RefreshColor)];
       }
     }
-    internal virtual void PutOnCooldown(bool force=false) {
-      if (force || OriMod.ConfigClient.AbilityCooldowns && (CooldownOnlyOnBoss ? OriModUtils.IsAnyBossAlive(check:true) : true)) {
-        CurrCooldown = Cooldown;
-        Refreshed = false;
-      }
+    
+
+    /// <summary> Do not use this. </summary>
+    internal void PreReadPacket(BinaryReader r) {
+      State = (AbilityState)r.ReadByte();
+      ReadPacket(r);
     }
+    /// <summary> Do not use this. </summary>
+    internal void PreWritePacket(ModPacket packet) {
+      packet.Write((byte)State);
+      WritePacket(packet);
+    }
+    
+    /// <summary> Ability-specific data to read from packet. Use in conjunction with `WritePacket()` </summary>
+    protected virtual void ReadPacket(BinaryReader r) { }
+    /// <summary> Ability-specific data to write to packet. Use in conjunction with `ReadPacket()` </summary>
+    protected virtual void WritePacket(ModPacket packet) { }
+    
+
+    /// <summary> Called in `OriPlayer.PostUpdateRunSpeeds()`, directly before `this.Update()`
+    /// 
+    /// Always called, used for managing States </summary>
+    internal abstract void Tick();
+    
+    /// <summary> Simple cooldown ticking. Can be overwridden. </summary>
     protected virtual void TickCooldown() {
       if (CurrCooldown > 0 || !Refreshed) {
         CurrCooldown--;
@@ -141,7 +147,65 @@ namespace OriMod {
         }
       }
     }
+    
+    /// <summary> Put this ability on cooldown. </summary>
+    /// <param name="force">Put ability on cooldown regardless of config options. </param>
+    internal virtual void PutOnCooldown(bool force=false) {
+      if (force || OriMod.ConfigClient.AbilityCooldowns && (CooldownOnlyOnBoss ? OriModUtils.IsAnyBossAlive(check:true) : true)) {
+        CurrCooldown = Cooldown;
+        Refreshed = false;
+      }
+    }
+    
+    
+    /// <summary> Called before `Update()`. If this returns false, `Update()` will not run. Check source for default value. </summary>
+    protected bool PreUpdate() {
+      if (!isLocalPlayer) return true;
+      if (!CanUse && !InUse) return false;
+      return true;
+    }
+
+    /// <summary> Called in `OriPlayer.PostUpdateRunSpeeds()`, directly after `this.Tick()`, if `PreUpdate()` returns true. </summary>
+    internal void Update() {
+      if (!PreUpdate()) return;
+      switch (State) {
+        case AbilityState.Active:
+          UpdateActive();
+          UpdateUsing();
+          return;
+        case AbilityState.Starting:
+          UpdateStarting();
+          UpdateUsing();
+          return;
+        case AbilityState.Ending:
+          UpdateEnding();
+          UpdateUsing();
+          return;
+        case AbilityState.Failed:
+          UpdateFailed();
+          return;
+        default:
+          return;
+      }
+    }
+    
+    /// <summary> Called when this update is in the Starting state. </summary>
+    protected virtual void UpdateStarting() { }
+    /// <summary> Called when this update is in the Active state. </summary>
+    protected virtual void UpdateActive() { }
+    /// <summary> Called when this update is in the Ending state. </summary>
+    protected virtual void UpdateEnding() { }
+    /// <summary> Called when this update is in the Failed state. </summary>
+    protected virtual void UpdateFailed() { }
+    /// <summary> Called directly after `UpdateStarting()`, `UpdateActive()`, and `UpdateEnding()`</summary>
+    protected virtual void UpdateUsing() { }
+    
+
+    public override string ToString() => $"Ability ID:{id} Player:{player.whoAmI} State:{State} Unlocked:{Unlocked} Cooldown:{CurrCooldown}/{Cooldown}";
+    
+    public override int GetHashCode() => (player.whoAmI * Main.player.Length) + id;
   }
+  
   /// <summary>
   /// All possible states that the Ability can be in.
   /// 

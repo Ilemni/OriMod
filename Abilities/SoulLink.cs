@@ -4,7 +4,7 @@ using Terraria;
 
 namespace OriMod.Abilities {
   public class SoulLink : Ability {
-    public SoulLink(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    public SoulLink(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.SoulLink;
     internal override bool DoUpdate => OriMod.SoulLinkKey.Current || InUse;
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && player.CheckMana(ManaCost, blockQuickMana:true);

@@ -3,7 +3,7 @@ using Terraria;
 
 namespace OriMod.Abilities {
   public class ChargeJump : Ability {
-    internal ChargeJump(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal ChargeJump(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.ChargeJump;
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && !InUse && Charged && !Handler.burrow.InUse && !Handler.climb.InUse;
@@ -26,7 +26,7 @@ namespace OriMod.Abilities {
     public Projectile Proj { get; private set; }
     
     private void StartChargeJump() {
-      oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref currRand));
+      oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref CurrSoundRand));
       Charged = false;
       CurrCharge = 0;
       Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("ChargeJumpProjectile"), 30, 0f, player.whoAmI, 0, 1)];

@@ -46,20 +46,20 @@ namespace OriMod {
       oPlayer = o;
       player = o.player;
       Abilities = new List<Ability> {
-        { soulLink = new SoulLink(o, this) },
-        { wJump = new WallJump(o, this) },
-        { stomp = new Stomp(o, this) },
-        { airJump = new AirJump(o, this) },
-        { bash = new Bash(o, this) },
-        { glide = new Glide(o, this) },
-        { climb = new Climb(o, this) },
-        { cJump = new ChargeJump(o, this) },
-        { wCJump = new WallChargeJump(o, this) },
-        { dash = new Dash(o, this) },
-        { cDash = new ChargeDash(o, this) },
-        { crouch = new Crouch(o, this) },
-        { lookUp = new LookUp(o, this) },
-        { burrow = new Burrow(o, this) },
+        { soulLink = new SoulLink(this) },
+        { wJump = new WallJump(this) },
+        { stomp = new Stomp(this) },
+        { airJump = new AirJump(this) },
+        { bash = new Bash(this) },
+        { glide = new Glide(this) },
+        { climb = new Climb(this) },
+        { cJump = new ChargeJump(this) },
+        { wCJump = new WallChargeJump(this) },
+        { dash = new Dash(this) },
+        { cDash = new ChargeDash(this) },
+        { crouch = new Crouch(this) },
+        { lookUp = new LookUp(this) },
+        { burrow = new Burrow(this) },
       };
     }
     public Ability this[int index] => Abilities.Find(a => a.id == index);

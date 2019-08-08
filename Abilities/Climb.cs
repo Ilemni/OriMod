@@ -3,7 +3,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class Climb : Ability {
-    internal Climb(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal Climb(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.Climb;
     internal override bool DoUpdate => oPlayer.Input(OriMod.ClimbKey.Current) && oPlayer.OnWall;
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Handler.wJump.InUse && !Handler.wCJump.InUse;

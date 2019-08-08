@@ -6,7 +6,7 @@ using Terraria.ID;
 
 namespace OriMod.Abilities {
   public class Bash : Ability {
-    internal Bash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal Bash(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.Bash;
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BashKey.Current);
     internal override bool CanUse => base.CanUse && Inactive && !Handler.stomp.InUse && !Handler.cJump.InUse;
@@ -112,7 +112,7 @@ namespace OriMod.Abilities {
     protected override void UpdateEnding() {
       player.pulley = false;
       float bashAngle = player.AngleFrom(Main.MouseWorld);
-      oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + OriPlayer.RandomChar(3, ref currRand), /*0.7f*/ Main.soundVolume);
+      oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + OriPlayer.RandomChar(3, ref CurrSoundRand), /*0.7f*/ Main.soundVolume);
       oPlayer.UnrestrictedMovement = true;
       Vector2 bashVector = new Vector2((float)(0 - (Math.Cos(bashAngle))), (float)(0 - (Math.Sin(bashAngle))));
       player.velocity = bashVector * BashPlayerStrength;

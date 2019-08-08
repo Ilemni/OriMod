@@ -3,7 +3,7 @@ using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class Dash : Ability {
-    internal Dash(OriPlayer oriPlayer, OriAbilities handler) : base(oriPlayer, handler) { }
+    internal Dash(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.Dash;
     internal override bool DoUpdate => InUse || (oPlayer.Input(OriMod.DashKey.JustPressed) && !Handler.cDash.InUse);
     internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
@@ -23,7 +23,7 @@ namespace OriMod.Abilities {
     internal void StartDash() {
       CurrTime = 0;
       Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction;
-      oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3, ref currRand), 0.2f);
+      oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3, ref CurrSoundRand), 0.2f);
       player.pulley = false;
     }
     
