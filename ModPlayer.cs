@@ -313,6 +313,8 @@ namespace OriMod {
     
     internal SoundEffectInstance PlayFootstep(string Material, int rand, float Volume) =>
       PlayNewSound($"Ori/Footsteps/{Material}/{Material + RandomChar(rand, ref FootstepRand)}", Volume, 0.1f);
+    internal SoundEffectInstance PlayLanding(string Material, int rand, float Volume) =>
+      PlayNewSound($"Ori/Land/{Material}/seinLands{Material + RandomChar(rand, ref FootstepRand)}", Volume, 0.1f);
     /// <summary>
     /// Retrieves a random character of an alphabet between indices 0 and <c>length</c>
     /// </summary>
@@ -755,8 +757,41 @@ namespace OriMod {
       if (justJumped) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + RandomChar(5, ref JumpSoundRand), 0.75f);
       }
+      bool a = IsGrounded;
       CheckOnGround();
       CheckOnWall();
+      if (!a && IsGrounded)
+      {
+        TestStepMaterial();
+        switch (FloorMaterial){
+          case "Grass":
+            PlayLanding(FloorMaterial, 2, 1);
+            break;
+          case "Mushroom":
+            PlayLanding(FloorMaterial, 5, 0.75f);
+            break;
+          case "Water":
+            PlayLanding(FloorMaterial, 5, 0.25f);
+            break;
+          case "SpiritTreeRock":
+          case "Rock":
+            PlayLanding("Rock", 3, 1f);
+            break;
+          case "Snow":
+            PlayFootstep(FloorMaterial, 10, 0.85f);
+            break;
+          case "LightDark":
+            PlayNewSound("Ori/Footsteps/LightDark/JumpOnLightDarkPlatform" + RandomChar(4), 0.6f);
+            break;
+          case "SpiritTreeWood":
+          case "Wood":
+            PlayLanding("Wood", 5, 0.5f);
+            break;
+          case "Sand":
+            PlayFootstep(FloorMaterial, 8, 0.85f);
+            break;
+        }
+      }
     }
     private void CheckSeinBuffs() {
       if (SeinMinionActive) {
