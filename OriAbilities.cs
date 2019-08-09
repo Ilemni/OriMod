@@ -84,6 +84,7 @@ namespace OriMod {
       List<byte> changes = new List<byte>();
       for (int a = 0; a < Abilities.Count; a++) {
         if (Abilities[a].netUpdate) {
+          Abilities[a].netUpdate = false;
           changes.Add((byte)a);
         }
       }
@@ -97,7 +98,7 @@ namespace OriMod {
         if (a.DoUpdate) a.Update();
       });
     }
-    
+
     internal void TickOtherClient() {
       Abilities.ForEach(a => {
         if (a.InUse) a.Tick();
