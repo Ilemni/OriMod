@@ -4,29 +4,31 @@ using Terraria.ID;
 using OriMod.Abilities;
 
 namespace OriMod {
-  
-  // This partial class is for Ability-specific implementations    
   public static class AbilityID {
-    public static int SoulLink => 1;
-    public static int WallJump => 2;
-    public static int AirJump => 3;
-    public static int Bash => 4;
-    public static int Stomp => 5;
-    public static int Glide => 6;
-    public static int Climb => 7;
-    public static int ChargeJump => 8;
-    public static int WallChargeJump => 9;
-    public static int Dash => 10;
-    public static int ChargeDash => 11;
-    public static int Grenade => 12; // Unused
-    public static int LookUp => 13;
-    public static int Crouch => 14;
-    public static int Burrow => 15;
+    public static byte SoulLink => 1;
+    public static byte WallJump => 2;
+    public static byte AirJump => 3;
+    public static byte Bash => 4;
+    public static byte Stomp => 5;
+    public static byte Glide => 6;
+    public static byte Climb => 7;
+    public static byte ChargeJump => 8;
+    public static byte WallChargeJump => 9;
+    public static byte Dash => 10;
+    public static byte ChargeDash => 11;
+    public static byte Grenade => 12; // Unused
+    public static byte LookUp => 13;
+    public static byte Crouch => 14;
+    public static byte Burrow => 15;
   }
-  public sealed partial class OriAbilities {
-    public OriPlayer oPlayer { get; private set; }
-    public Player player { get; private set; }
-    public List<Ability> Abilities { get; private set; }
+  
+  public sealed class OriAbilities {
+    public OriPlayer oPlayer { get; }
+    public Player player { get; }
+    public List<Ability> Abilities { get; }
+
+    private Ability[] _a { get; }
+    public Ability this[int index] => _a[index];
 
     public SoulLink soulLink { get; }
     public WallJump wJump { get; }
@@ -42,6 +44,7 @@ namespace OriMod {
     public LookUp lookUp { get; }
     public Crouch crouch { get; }
     public Burrow burrow { get; }
+    
     internal OriAbilities(OriPlayer o) {
       oPlayer = o;
       player = o.player;
@@ -61,53 +64,46 @@ namespace OriMod {
         { lookUp = new LookUp(this) },
         { burrow = new Burrow(this) },
       };
+      _a = new Ability[Abilities.Count];
+      Abilities.ForEach(a => _a[a.id] = a);
     }
-    public Ability this[int index] => Abilities.Find(a => a.id == index);
+    
+    
     internal void Tick() {
-      if (oPlayer == null) return;
-
       if (player.whoAmI != Main.myPlayer) {
         TickOtherClient();
         return;
       }
 
-      byte[] prevStates = new byte[Abilities.Count];
-      for (int a = 0; a < Abilities.Count; a++) {
-        prevStates[a] = ((byte)Abilities[a].State);
-      }
+      Abilities.ForEach(a => a.Tick());
+    }
 
-      Abilities.ForEach(ability => {
-        ability.Tick();
-      });
-
+    internal void Sync() {
+      if (player.whoAmI != Main.myPlayer || Main.netMode != NetmodeID.MultiplayerClient) return;
+        
       List<byte> changes = new List<byte>();
       for (int a = 0; a < Abilities.Count; a++) {
-        if ((byte)Abilities[a].State != prevStates[a]) {
+        if (Abilities[a].netUpdate) {
           changes.Add((byte)a);
         }
       }
-
       if (changes.Count > 0) {
-        if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer) {
-          ModNetHandler.abilityPacketHandler.SendAbilityState(255, player.whoAmI, changes);
-        }
+        ModNetHandler.abilityPacketHandler.SendAbilityState(255, player.whoAmI, changes);
       }
     }
+
     internal void Update() {
-      Abilities.ForEach(ability => {
-        if (ability.DoUpdate) ability.Update();
-      });
-    }
-    internal void TickOtherClient() {
-      Abilities.ForEach(ability => {
-        if (ability.InUse) ability.Tick();
+      Abilities.ForEach(a => {
+        if (a.DoUpdate) a.Update();
       });
     }
     
-    internal void DisableAllAbilities() {
-      Abilities.ForEach(ability => {
-        ability.Inactive = true;
+    internal void TickOtherClient() {
+      Abilities.ForEach(a => {
+        if (a.InUse) a.Tick();
       });
     }
+    
+    internal void DisableAllAbilities() => Abilities.ForEach(a => a.Inactive = true);
   }
 }
