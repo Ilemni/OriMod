@@ -78,45 +78,45 @@ namespace OriMod {
     [Header("Soul Link")]
     
     [Label("Cooldown"), Tooltip("Cooldown of Soul Link, in seconds.\nDefault: 30")]
-    [DefaultValue(30), Range(0f, 150)]
+    [DefaultValue(30), Range(0f, 150), Increment(1f)]
     public float SoulLinkCooldown;
 
     [Label("Charge Time"), Tooltip("How long it takes to place a Soul Link, in seconds.\nDefault: 0.9")]
-    [DefaultValue(0.9f), Range(0.05f, 10)]
+    [DefaultValue(0.9f), Range(0.1f, 10), Increment(0.1f)]
     public float SoulLinkChargeRate;
 
-    [Label("Respawn Time"), Tooltip("How long after dying it takes to respawn at a Soul Link, in seconds.\nDefault: 1.2")]
-    [DefaultValue(1.2f), Range(1f, 10)]
+    [Label("Respawn Time"), Tooltip("How long after dying it takes to respawn at a Soul Link, in seconds.\nDefault: 2.4")]
+    [DefaultValue(2.4f), Range(1f, 10), Increment(0.1f)]
     public float SoulLinkRespawnTime;
 
     [Header("Air Jump")]
 
     [Label("Number of Jumps"), Tooltip("Amount of times the player can jump in the air.\nDefault: 2")]
-    [DefaultValue(2)]
+    [DefaultValue(2), Range(1, int.MaxValue)]
     public int AirJumpCount;
     
     [Header("Bash")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Bash, in seconds.\nDefault: 0.75")]
-    [DefaultValue(0.75f), Range(0f, 20)]
+    [DefaultValue(0.75f), Range(0f, 20), Increment(0.25f)]
     public float BashCooldown;
 
     [Label("Strength"), Tooltip("How far Bashing pushes the player and NPCs.\nDefault: 15")]
-    [DefaultValue(15), Range(0f, 50)]
+    [DefaultValue(15), Range(0f, 50), Increment(0.5f)]
     public float BashStrength;
 
-    [Label("Range"), Tooltip("Furthest distance from the player a target can be. 1 tile = 16 units.\nDefault: 48")]
-    [DefaultValue(48), Range(8f, 160)]
+    [Label("Range"), Tooltip("Furthest distance from the player a target can be. 1 tile = 16 units.\nDefault: 64")]
+    [DefaultValue(64), Range(8f, 160), Increment(8f)]
     public float BashRange;
 
     [Header("Stomp")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Stomp, in seconds.\nDefault: 6")]
-    [DefaultValue(6), Range(0f, 30)]
+    [DefaultValue(6), Range(0f, 30), Increment(0.25f)]
     public float StompCooldown;
 
     [Label("Fall Speed"), Tooltip("How fast the player falls while Stomping.\nDefault: 28")]
-    [DefaultValue(28), Range(1f, 100)]
+    [DefaultValue(28), Range(1f, 100), Increment(0.5f)]
     public float StompFallSpeed;
 
     [Label("Number of Targets"), Tooltip("How many targets Stomp can damage at once.\nDefault: 8")]
@@ -126,21 +126,21 @@ namespace OriMod {
     [Header("Charge Jump")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Charge Jump, in seconds.\nDefault: 6")]
-    [DefaultValue(6), Range(0f, 30)]
+    [DefaultValue(6), Range(0f, 30), Increment(0.25f)]
     public float CJumpCooldown;
 
     [Label("Speed"), Tooltip("How fast Charge Jump moves the player.\nDefault: 1")]
-    [DefaultValue(1), Range(0f, 10)]
+    [DefaultValue(1), Range(0f, 10), Increment(0.1f)]
     public float CJumpSpeedMultiplier;
 
     [Header("Wall Charge Jump")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Wall Charge Jump, in seconds.\nDefault: 4")]
-    [DefaultValue(4), Range(0f, 30)]
+    [DefaultValue(4), Range(0f, 30), Increment(0.25f)]
     public float WCJumpCooldown;
 
     [Label("Speed"), Tooltip("How fast Wall Charge Jump moves the player.\nDefault: 1")]
-    [DefaultValue(1), Range(0f, 10)]
+    [DefaultValue(1), Range(0f, 10), Increment(0.1f)]
     public float WCJumpSpeedMultipler;
 
     [Label("Max Angle"), Tooltip("How far up or down Wall Charge Jump can be aimed.\nDefault: 0.65")]
@@ -150,41 +150,41 @@ namespace OriMod {
     [Header("Dash")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Dash, in seconds.\nNote this is only when a boss is alive.\nDefault: 1")]
-    [DefaultValue(1), Range(0f, 10)]
+    [DefaultValue(1), Range(0f, 10), Increment(0.25f)]
     public float DashCooldown;
 
     [Label("Speed"), Tooltip("How fast Dash moves the player.\nDefault: 1")]
-    [DefaultValue(1), Range(0f, 10)]
+    [DefaultValue(1), Range(0f, 10), Increment(0.1f)]
     public float DashSpeedMultiplier;
 
     [Header("Charge Dash")]
     
     [Label("Cooldown"), Tooltip("Cooldown of Charge Dash, in seconds.\nNote this is only when a boss is alive.\nDefault: 3")]
-    [DefaultValue(3), Range(0f, 30)]
+    [DefaultValue(3), Range(0f, 30), Increment(0.25f)]
     public float CDashCooldown;
 
     [Label("Speed"), Tooltip("How fast Charge Dash moves the player.\nDefault: 1")]
-    [DefaultValue(1), Range(0f, 10)]
+    [DefaultValue(1), Range(0f, 10), Increment(0.1f)]
     public float CDashSpeedMultiplier;
 
     [Header("Burrow")]
     
     [Label("Duration"), Tooltip("How long Burrow can be used until suffocating, in seconds.\nDefault: 4")]
-    [DefaultValue(4), Range(1f, 30)]
+    [DefaultValue(4), Range(1f, 30), Increment(1f)]
     public float BurrowDuration;
 
     [Label("Recovery"), Tooltip("Rate that Burrow replenishes itself when not in use.\nDefault: 1")]
-    [DefaultValue(1), Range(0.1f, 3)]
+    [DefaultValue(1), Range(0.1f, 3), Increment(0.1f)]
     public float BurrowRecoveryRate;
 
     [Label("Strength"), Tooltip("Determines which tiles Burrow can dig through. Based on Pickaxe power.\nDefault: 0")]
-    [DefaultValue(0), Range(-1, 210)]
+    [DefaultValue(0), Range(-1, 210), Slider()]
     public int BurrowStrength;
 
     public override void OnLoaded() {
       OriMod.ConfigAbilities = this;
     }
-    
+
     [OnDeserialized]
     public void OnDeserializedMethod(StreamingContext stream) {
       if (AirJumpCount < 0) AirJumpCount = 0;

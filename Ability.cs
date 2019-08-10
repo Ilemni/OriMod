@@ -51,7 +51,16 @@ namespace OriMod {
 
     
     /// <summary> Current state of the ability </summary>
-    public AbilityState State { get; private set; }
+    public AbilityState State {
+      get => _state;
+      private set {
+        if (value != _state) {
+          netUpdate = true;
+          _state = value;
+        }
+      }
+    }
+    private AbilityState _state;
     /// <summary> If State is Inactive. Setting only works when value is `true`</summary>
     public bool Inactive {
       get => State == AbilityState.Inactive;
@@ -115,6 +124,7 @@ namespace OriMod {
       }
     }
     
+    internal bool netUpdate = false;
 
     /// <summary> Do not use this. </summary>
     internal void PreReadPacket(BinaryReader r) {

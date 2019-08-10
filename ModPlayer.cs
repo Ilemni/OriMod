@@ -760,8 +760,7 @@ namespace OriMod {
       bool a = IsGrounded;
       CheckOnGround();
       CheckOnWall();
-      if (!a && IsGrounded)
-      {
+      if (!a && IsGrounded) {
         TestStepMaterial();
         switch (FloorMaterial){
           case "Grass":
@@ -858,6 +857,7 @@ namespace OriMod {
         }
         Abilities.Tick();
         Abilities.Update();
+        Abilities.Sync();
       }
       if (Transforming) {
         player.direction = TransformDirection;
