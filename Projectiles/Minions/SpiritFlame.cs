@@ -5,10 +5,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Projectiles.Minions {
-  public class SpiritFlameBase : ModProjectile {
+  public abstract class SpiritFlameBase : ModProjectile {
     // Our ai fields are a bit unique...
     // If we are **not** targeting something, projectile.ai values are filled with a vector2 for where to land
     // Otherwise, ai[0] is the npc id that we are targeting, and ai[1] is 0
+    // Whichever this state is, is based on if ai[1] is 0
     // In gameplay, non-target position in ai[1] should *never* be 0
     private NPC target => _target ?? (isTargetingNPC ? (_target = Main.npc[(int)projectile.ai[0]]) : null);
     private NPC _target = null;
@@ -36,12 +37,12 @@ namespace OriMod.Projectiles.Minions {
     private int accelDelay;
     private int currAccelDelay;
 
-    protected int dustType; 
-    protected int dustWidth;
-    protected int dustHeight;
-    protected float dustScale;
-    protected Color color;
-    protected float lightStrength;
+    private int dustType; 
+    private int dustWidth;
+    private int dustHeight;
+    private float dustScale;
+    private Color color;
+    private float lightStrength;
 
     public override string Texture => "OriMod/Projectiles/Minions/SpiritFlame";
 
@@ -60,10 +61,13 @@ namespace OriMod.Projectiles.Minions {
       projectile.timeLeft = 150;
       dustWidth = 10;
       dustHeight = 10;
+      Initialize(Init);
     }
     
-    internal void Init(int upgradeID) {
-      SeinUpgrade u = OriMod.SeinUpgrades[upgradeID];
+    protected abstract int Init { get; }
+
+    private void Initialize(int upgradeID) {
+      SeinUpgrade u = OriMod.SeinUpgrades[upgradeID - 1];
       
       projectile.knockBack = u.knockback;
       lerp = u.homingStrengthStart;

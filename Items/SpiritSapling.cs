@@ -1,14 +1,9 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Items
-{
-  public class SpiritSapling : ModItem
-  {
-    public override void SetStaticDefaults() { }
-
-    public override void SetDefaults()
-    {
+namespace OriMod.Items {
+  public class SpiritSapling : ModItem {
+    public override void SetDefaults() {
       item.width = 12;
       item.height = 30;
       item.maxStack = 1;
@@ -21,8 +16,8 @@ namespace OriMod.Items
       item.value = 150;
       item.createTile = mod.TileType("SpiritSapling");
     }
-    public override void AddRecipes()
-    {
+
+    public override void AddRecipes() {
       ModRecipe recipe = new ModRecipe(mod);
       recipe.AddIngredient(ItemID.Wood, 10);
       recipe.AddRecipeGroup("OriMod:EnchantedItems", 1);
@@ -34,12 +29,6 @@ namespace OriMod.Items
       recipe2.AddRecipeGroup("OriMod:MovementAccessories", 3);
       recipe2.SetResult(this);
       recipe2.AddRecipe();
-
-      // Debug
-      // ModRecipe debugRecipe = new ModRecipe(mod);
-      // debugRecipe.AddIngredient(ItemID.DirtBlock, 1);
-      // debugRecipe.SetResult(this);
-      // debugRecipe.AddRecipe();
     }
   }
 }

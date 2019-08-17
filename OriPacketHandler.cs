@@ -6,9 +6,10 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   internal class OriPlayerPacketHandler : PacketHandler {
-    internal OriPlayerPacketHandler(byte handlerType) : base(handlerType)
-      => HandlerType = handlerType;
+    internal OriPlayerPacketHandler(byte handlerType) : base(handlerType) { }
+
     internal const byte OriState = 1;
+    
     internal override void HandlePacket(BinaryReader reader, int fromWho) {
       byte packetType = reader.ReadByte();
       if (Main.netMode == NetmodeID.MultiplayerClient) {
@@ -23,6 +24,7 @@ namespace OriMod {
           break;
       }
     }
+    
     internal void SendOriState(int toWho, int fromWho) {
       ModPacket packet = GetPacket(OriState, fromWho);
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
@@ -35,7 +37,7 @@ namespace OriMod {
       flags[4] = fromPlayer.SeinMinionActive;
       flags[5] = fromPlayer.MpcPlayerLight;
       packet.Write((byte)flags);
-      if (flags[2]) packet.Write((short)fromPlayer.TransformTimer);
+      if (flags[2]) packet.Write((ushort)fromPlayer.TransformTimer);
       if (flags[4]) packet.Write((byte)fromPlayer.SeinMinionUpgrade);
       packet.WriteRGB(fromPlayer.SpriteColor);
 
@@ -51,7 +53,7 @@ namespace OriMod {
       bool unrestrictedMovement = flags[3];
       bool seinMinionActive = flags[4];
       bool mpcPlayerLight = flags[5];
-      short transformTimer = flags[2] ? r.ReadInt16() : (short)0;
+      ushort transformTimer = flags[2] ? r.ReadUInt16() : (ushort)0;
       byte seinMinionUpgrade = flags[4] ? r.ReadByte() : (byte)0;
       Color spriteColor = r.ReadRGB();
 

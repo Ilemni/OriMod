@@ -3,6 +3,8 @@ using Terraria;
 
 namespace OriMod.Projectiles.Abilities {
   internal class ChargeJumpProjectile : AbilityProjectile {
+    internal override int abilityID => AbilityID.ChargeJump;
+
     public override void SetDefaults() {
       base.SetDefaults();
       projectile.width = 96;

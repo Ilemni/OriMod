@@ -14,16 +14,20 @@ using System.Linq;
 
 namespace OriMod {
   public sealed class OriPlayer : ModPlayer {
+    /// <summary> Shorthand for `PlayerInput.Triggers.JustPressed`. </summary>
     internal static TriggersSet JustPressed => PlayerInput.Triggers.JustPressed;
+    /// <summary> Shorthand for `PlayerInput.Triggers.JustReleased`. </summary>
     internal static TriggersSet JustReleased => PlayerInput.Triggers.JustReleased;
+    /// <summary> Shorthand for `PlayerInput.Triggers.Current`. </summary>
     internal static TriggersSet Current => PlayerInput.Triggers.Current;
+    
+    /// <summary> Checks if the key is pressed and this is LocalPlayer. </summary>
+    /// <param name="TriggerKey">The key that was pressed</param>
     internal bool Input(bool TriggerKey) => player.whoAmI == Main.myPlayer && TriggerKey;
 
     #region Variables
-    /// <summary>
-    /// Class that contains all of OriPlayer's abilities
-    /// </summary>
-    internal OriAbilities Abilities { get; private set; } // Class used for all of Ori's movements
+    /// <summary> Class that contains all of OriPlayer's abilities. </summary>
+    internal OriAbilities Abilities { get; private set; }
     
     public SoulLink soulLink => Abilities.soulLink;
     public WallJump wJump => Abilities.wJump;
@@ -42,11 +46,9 @@ namespace OriMod {
 
     internal bool doNetUpdate = false;
 
-    /// <summary>
-    /// When set to true, uses custom movement and player sprites.
+    /// <summary> When set to true, uses custom movement and player sprites.
     /// 
-    /// External mods that attempt to be compatible with this one will need to use this property.
-    /// </summary>
+    /// External mods that attempt to be compatible with this one will need to use this property. </summary>
     public bool OriSet {
       get => _oriSet;
       set {
@@ -58,16 +60,14 @@ namespace OriMod {
     }
     private bool _oriSet;
 
-    // Transform variables used to hasten additional transforms
+    /// <summary> Transform variables used to hasten additional transforms. </summary>
     internal bool HasTransformedOnce { get; private set; }
     private float RepeatedTransformRate => 2.5f;
 
-    // Variables relating to fixing movement when Ori is active, such that you aren't slowed down mid-air after bashing.
+    /// <summary> Represents if the player is on the ground. </summary>
     public bool IsGrounded { get; private set; }
     
-    /// <summary>
-    /// When true, sets player.runSlowDown to 0 every frame until set to false
-    /// </summary>
+    /// <summary> When true, sets player.runSlowDown to 0 every frame. </summary>
     public bool UnrestrictedMovement {
       get => _unrestrictedMovement;
       set {
@@ -78,34 +78,27 @@ namespace OriMod {
       }
     }
     private bool _unrestrictedMovement = false;
+    
+    /// <summary> Represents if the player is on a wall </summary>
     public bool OnWall { get; private set; }
+
+    /// <summary> A more persistent player.justJumped </summary>
     public bool justJumped { get; private set; }
 
     // Variables relating to visual or audible effects
     public bool doOriDeathParticles = true;
-    /// <summary>
-    /// Name of the current floor material that Ori is standing on.
+    /// <summary> Name of the current floor material that Ori is standing on.
     /// 
-    /// Used exclusively for footstep noises.
-    /// </summary>
-    /// <value></value>
+    /// Used exclusively for footstep noises. </summary>
     public string FloorMaterial { get; private set; }
-    /// <summary>
-    /// Name of the current wall material that Ori is standing on.
+    /// <summary> Name of the current wall material that Ori is standing on.
     /// 
-    /// This property is currently unused.
-    /// </summary>
-    /// <value></value>
-    /// <seealso cref="FloorMaterial" />
+    /// This property is currently unused. </summary>
     internal string WallMaterial { get; private set; }
     
-    // Variables relating to Sein
-    /// <summary>
-    /// Info about if this player has an OriMod Sein minion summoned.
-    /// Used to prevent having more than one Sein summoned per player.
-    /// </summary>
-    /// <value></value>
-    /// <seealso cref="SeinMinionUpgrade" />
+    /// <summary> Info about if this player has an OriMod Sein minion summoned.
+    /// 
+    /// Used to prevent having more than one Sein summoned per player. </summary>
     public bool SeinMinionActive {
       get => _seinMinionActive;
       internal set {
@@ -116,13 +109,9 @@ namespace OriMod {
       }
     }
     private bool _seinMinionActive = false;
-    /// <summary>
-    /// The current version of Sein that is summoned
+    /// <summary> The current version of Sein that is summoned
     /// 
-    /// Used to prevent re-summons of the same tier of Sein.
-    /// </summary>
-    /// <value></value>
-    /// <seealso cref="SeinMinionActive" />
+    /// Used to prevent re-summons of the same tier of Sein. </summary>
     public int SeinMinionUpgrade {
       get => _seinMinionUpgrade;
       internal set {
@@ -134,13 +123,10 @@ namespace OriMod {
     }
     private int _seinMinionUpgrade = 0;
 
-    // Variables relating to Transforming
     internal float TransformTimer = 0;
-    /// <summary>
-    /// Bool that represents if the player is currently transforming into Ori.
+    /// <summary> Represents if the player is currently transforming into Ori.
     /// 
-    /// While transforming, all player input is disabled.
-    /// </summary>
+    /// While transforming, all player input is disabled. </summary>
     public bool Transforming {
       get => _transforming;
       internal set {
@@ -151,96 +137,59 @@ namespace OriMod {
       }
     }
     private bool _transforming = false;
-    /// <summary>
-    /// Location of the Spirit Sapling that transformed Ori.
+    /// <summary> Location of the Spirit Sapling that transformed Ori.
     /// 
-    /// Used to create Dust effects.
-    /// </summary>
-    /// <value></value>
+    /// Used to create Dust effects. </summary>
     internal Vector2 TransformBlockLocation { get; set; }
     private int TransformDirection = 0;
 
     // Footstep materials
-    /// <summary>
-    /// TileIDs used by <c>floorMaterial</c> to create footstep noises that sound like walking on grass
-    /// 
-    /// <seealso cref="FloorMaterial" />
-    /// </summary>
+    
+    /// <summary> TileIDs used by `FloorMaterial` to create footstep noises that sound like walking on grass. </summary>
     public List<int> GrassFloorMaterials;
-    /// <summary>
-    /// TileIDs used by <c>floorMaterial</c> to create footstep noises that sound like walking on crystal or glass
-    /// 
-    /// <seealso cref="FloorMaterial" />
-    /// </summary>
+    /// <summary> TileIDs used by `FloorMaterial` to create footstep noises that sound like walking on crystal or glass. </summary>
     public List<int> LightDarkFloorMaterials;
-    /// <summary>
-    /// TileIDs used by <c>floorMaterial</c> to create footstep noises that sound like walking on mushroom blocks
-    /// 
-    /// <seealso cref="FloorMaterial" />
-    /// </summary>
+    /// <summary> TileIDs used by `FloorMaterial` to create footstep noises that sound like walking on mushroom blocks. </summary>
     public List<int> MushroomFloorMaterials;
-    /// <summary>
-    /// TileIDs used by <c>floorMaterial</c> to create footstep noises that sound like walking on stone
-    /// 
-    /// <seealso cref="FloorMaterial" />
-    /// </summary>
+    /// <summary> TileIDs used by `FloorMaterial` to create footstep noises that sound like walking on stone </summary>
     public List<int> RockFloorMaterials;
-    /// <summary>
-    /// TileIDs used by <c>floorMaterial</c> to create footstep noises that sound like walking on sand
-    /// 
-    /// <seealso cref="FloorMaterial" />
-    /// </summary>
+    /// <summary> TileIDs used by `FloorMaterial` to create footstep noises that sound like walking on sand </summary>
     public List<int> SandFloorMaterials;
-    /// <summary>
-    /// TileIDs used by <c>floorMaterial</c> to create footstep noises that sound like walking on snow
-    /// 
-    /// <seealso cref="FloorMaterial" />
-    /// </summary>
+    /// <summary> TileIDs used by `FloorMaterial` to create footstep noises that sound like walking on snow </summary>
     public List<int> SnowFloorMaterials;
-    /// <summary>
-    /// TileIDs used by <c>floorMaterial</c> to create footstep noises that sound like walking on rock, with an additional, echo-like effect
-    /// 
-    /// <seealso cref="FloorMaterial" />
-    /// </summary>
+    /// <summary> TileIDs used by `FloorMaterial` to create footstep noises that sound like walking on rock, with an additional, echo-like effect </summary>
     public List<int> SpiritTreeRockFloorMaterials;
-    /// <summary>
-    /// TileIDs used by <c>floorMaterial</c> to create footstep noises that sound like walking on wood, with an additional, echo-like effect
-    /// 
-    /// <seealso cref="FloorMaterial" />
-    /// </summary>
+    /// <summary> TileIDs used by `FloorMaterial` to create footstep noises that sound like walking on wood, with an additional, echo-like effect </summary>
     public List<int> SpiritTreeWoodFloorMaterials;
-    /// <summary>
-    /// TileIDs used by <c>floorMaterial</c> to create footstep noises that sound like walking on wood
-    /// 
-    /// <seealso cref="FloorMaterial" />
-    /// </summary>
+    /// <summary> TileIDs used by `FloorMaterial` to create footstep noises that sound like walking on wood </summary>
     public List<int> WoodFloorMaterials;
+    
+    /// <summary> List of vanilla tiles not assigned to any FloorMaterial lists. </summary>
     internal List<int> UnassignedTiles;
 
-    // Trail variables, for the trails Ori creates
+    /// <summary> Trails created when the player is moving. </summary>
     internal List<Trail> Trails;
+    /// <summary> Current Trail to modify. </summary>
     internal int TrailIndex = 0;
+
     private int TeatherTrailTimer = 0;
 
-    // Animation Variables
+    /// <summary> Shorthand for `AnimationHandler.PlayerAnim.TileSize.X`. </summary>
     internal static int SpriteWidth => AnimationHandler.PlayerAnim.TileSize.X;
+    /// <summary> Shorthand for `AnimationHandler.PlayerAnim.TileSize.Y`. </summary>
     internal static int SpriteHeight => AnimationHandler.PlayerAnim.TileSize.Y;
     internal Animations Animations;
     internal Point AnimFrame;
-    /// <summary>
-    /// The current sprite tile of the player in Ori state
+    
+    /// <summary> The current sprite tile of the player in Ori state.
     /// 
-    /// X and Y values are based on the sprite tile coordinates, not pixel coordinates 
-    /// </summary>
-    /// <value></value>
+    /// X and Y values are based on the sprite tile coordinates, not pixel coordinates. </summary>
     public Point AnimTile {
       get => PixelToTile(AnimFrame);
       internal set => AnimFrame = TileToPixel(value);
     }
-    /// <summary>
-    /// The name of the animation track currently playing
-    /// </summary>
-    /// <value></value>
+
+    /// <summary> The name of the animation track currently playing. </summary>
     public string AnimName {
       get => _animName;
       private set {
@@ -308,26 +257,24 @@ namespace OriMod {
         Main.NewText(msg);
       }
     }
+
     internal SoundEffectInstance PlayNewSound(string Path, float Volume=1, float Pitch=0) =>
       Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
-    
     internal SoundEffectInstance PlayFootstep(string Material, int rand, float Volume) =>
       PlayNewSound($"Ori/Footsteps/{Material}/{Material + RandomChar(rand, ref FootstepRand)}", Volume, 0.1f);
     internal SoundEffectInstance PlayLanding(string Material, int rand, float Volume) =>
       PlayNewSound($"Ori/Land/{Material}/seinLands{Material + RandomChar(rand, ref FootstepRand)}", Volume, 0.1f);
-    /// <summary>
-    /// Retrieves a random character of an alphabet between indices 0 and <c>length</c>
-    /// </summary>
+    
+    /// <summary> Retrieves a random character of an alphabet between indices 0 and `length` </summary>
     /// <param name="length">Max letter indice to use</param>
-    /// <returns>char between A and <c>alphabet[length]</c></returns>
+    /// <returns>Char between A and `alphabet[length]`</returns>
     public static char RandomChar(int length) => alphabet[Main.rand.Next(length)];
     private static char[] alphabet { get; } = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-    /// <summary>
-    /// Retrieves a random, non-repeating character of an alphabet between indices 0 and <c>length</c>
-    /// </summary>
+    
+    /// <summary> Retrieves a random, non-repeating character of an alphabet between indices 0 and `length` </summary>
     /// <param name="length">Max letter indice to use</param>
     /// <param name="exclude">Letter indice to exclude from result. Must be non-negative and less than length</param>
-    /// <returns>char between A and <c>alphabet[length]</c>, except <c>alphabet[exclude]</c></returns>
+    /// <returns>char between A and `alphabet[length]`, except `alphabet[exclude]`</returns>
     public static char RandomChar(int length, ref int exclude) {
       if (exclude < 0 || exclude >= length) {
         exclude = length - 1;
@@ -1053,7 +1000,7 @@ namespace OriMod {
       InitTestMaterial();
       Trails = new List<Trail>();
       for (int i = 0; i < 26; i++) {
-        Trails.Add(new Trail());
+        Trails.Add(new Trail(this));
       }
       TileCollection.Init();
     }

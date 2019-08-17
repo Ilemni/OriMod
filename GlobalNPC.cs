@@ -21,9 +21,13 @@ namespace OriMod {
         npc.Center = BashPos;
         return false;
       }
-      return base.PreAI(npc);
+      return true;
     }
     
+    /// <summary> Gets the down state before and after calling `NPCLoot()` on the given NPC. </summary>
+    /// <param name="npc">The NPC to call `NPCLoot()` for</param>
+    /// <param name="downedBoss">Bool to check downed state for</param>
+    /// <returns>True of the down state has changed</returns>
     private bool DoUpdate(NPC npc, ref bool downedBoss) {
       bool wasDowned = downedBoss;
       npc.NPCLoot();
@@ -33,11 +37,33 @@ namespace OriMod {
     
     private static bool Null = false;
 
+    /// <summary> Gets the down count before and after calling `NPCLoot()` on the given NPC. </summary>
+    /// <param name="npc">The NPC to call `NPCLoot()` for</param>
+    /// <param name="oldCount">Count before `NPCLoot()` is called</param>
+    /// <param name="newCount">Count after `NPCLoot()` is called</param>
+    /// <param name="downedBoss1">First boss to check downed state for</param>
+    /// <param name="downedBoss2">Second boss to check downed state for</param>
     private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2) =>
       GetDownCount(npc, out oldCount, out newCount, ref downedBoss1, ref downedBoss2, ref Null, ref Null);
+    
+    /// <summary> Gets the down count before and after calling `NPCLoot()` on the given NPC. </summary>
+    /// <param name="npc">The NPC to call `NPCLoot()` for</param>
+    /// <param name="oldCount">Count before `NPCLoot()` is called</param>
+    /// <param name="newCount">Count after `NPCLoot()` is called</param>
+    /// <param name="downedBoss1">First boss to check downed state for</param>
+    /// <param name="downedBoss2">Second boss to check downed state for</param>
+    /// <param name="downedBoss3">Third boss to check downed state for</param>
     private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2, ref bool downedBoss3) =>
       GetDownCount(npc, out oldCount, out newCount, ref downedBoss1, ref downedBoss2, ref downedBoss3, ref Null);
     
+    /// <summary> Gets the down count before and after calling `NPCLoot()` on the given NPC. </summary>
+    /// <param name="npc">The NPC to call `NPCLoot()` for</param>
+    /// <param name="oldCount">Count before `NPCLoot()` is called</param>
+    /// <param name="newCount">Count after `NPCLoot()` is called</param>
+    /// <param name="downedBoss1">First boss to check downed state for</param>
+    /// <param name="downedBoss2">Second boss to check downed state for</param>
+    /// <param name="downedBoss3">Third boss to check downed state for</param>
+    /// <param name="downedBoss4">Fourth boss to check downed state for</param>
     private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2, ref bool downedBoss3, ref bool downedBoss4) {
       oldCount = 0;
       newCount = 0;
@@ -54,7 +80,7 @@ namespace OriMod {
     
     public override bool SpecialNPCLoot(NPC npc) {
       if (!npc.boss) {
-        return base.SpecialNPCLoot(npc);
+        return false;
       }
       OriModUtils.IsAnyBossAlive(check:true);
       

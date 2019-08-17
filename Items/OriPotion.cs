@@ -6,8 +6,6 @@ using Terraria.ModLoader;
 
 namespace OriMod.Items {
   public class OriPotion : ModItem {
-    public override void SetStaticDefaults() { }
-
     public override void SetDefaults() {
       item.width = 24;
       item.height = 26;
@@ -19,7 +17,6 @@ namespace OriMod.Items {
       item.consumable = true;
     }
 
-    // Note that this item does not work in Multiplayer, but serves as a learning tool for other things.
     public override bool UseItem(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.OriSet = !oPlayer.OriSet;

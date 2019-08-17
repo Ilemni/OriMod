@@ -1,4 +1,3 @@
-using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.IO;
 using Terraria;
@@ -7,16 +6,16 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   partial class AbilityPacketHandler : PacketHandler {
-    internal AbilityPacketHandler(byte handlerType) : base(handlerType) {
-      HandlerType = handlerType;
-    }
+    internal AbilityPacketHandler(byte handlerType) : base(handlerType) { }
+    
     internal const byte AbilityState = 1;
-    internal override void HandlePacket(System.IO.BinaryReader reader, int fromWho) {
-      int packetType = reader.ReadByte();
+    
+    internal override void HandlePacket(BinaryReader reader, int fromWho) {
+      byte packetType = reader.ReadByte();
       if (Main.netMode == NetmodeID.MultiplayerClient) {
         fromWho = reader.ReadUInt16();
       }
-      switch (packetType) {
+      switch(packetType) {
         case AbilityState:
           ReceiveAbilityState(reader, fromWho);
           break;
@@ -37,9 +36,9 @@ namespace OriMod {
     }
     internal void ReceiveAbilityState(BinaryReader r, int fromWho) {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
-      int length = r.ReadByte();
+      int len = r.ReadByte();
       List<byte> changes = new List<byte>();
-      for (int m = 0; m < length; m++) {
+      for (int m = 0; m < len; m++) {
         byte id = r.ReadByte();
         changes.Add(id);
         fromPlayer.Abilities[id].PreReadPacket(r);

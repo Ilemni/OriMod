@@ -102,7 +102,7 @@ namespace OriMod {
         ),
       }
     );
-    internal static readonly AnimationSource BashAnim = new AnimationSource("PlayerEffects/bashArrow", 152, 20,
+    internal static readonly AnimationSource BashAnim = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
       new Dictionary<string, Track> {
         {"Bash", new Track(h(i:InitType.Select),
           f(0, 0)
@@ -361,15 +361,23 @@ namespace OriMod {
   }
   internal class Animation {
     internal Texture2D Texture => ActiveTrack.Header.Texture ?? Source.Texture;
-    private PlayerLayer PlayerLayer { get; }
+    internal PlayerLayer PlayerLayer { get; }
     internal bool Valid { get; private set; }
     internal Track ActiveTrack => Valid ? Source.Tracks[Handler.owner.AnimName] : Source.Tracks.First().Value;
     internal Frame ActiveFrame => ActiveTrack[Handler.owner.AnimIndex < ActiveTrack.Frames.Length ? Handler.owner.AnimIndex : 0];
     internal Rectangle ActiveTile => new Rectangle(ActiveFrame.Tile.X * Source.TileSize.X, ActiveFrame.Tile.Y * Source.TileSize.Y, Source.TileSize.X, Source.TileSize.Y);
     internal Animations Handler { get; }
     internal AnimationSource Source { get; }
-    internal void Draw(List<PlayerLayer> layers, int idx=0, bool force=false) {
+    internal void InsertInLayers(List<PlayerLayer> layers, int idx=0, bool force=false) {
       if (Valid || force) layers.Insert(idx, this.PlayerLayer);
+    }
+    /// <summary> Add the PlayerLayer of this animation to the given `layers`
+    /// 
+    /// This will not run if Valid is false, unless force is true </summary>
+    /// <param name="layers">The PlayerLayer list to add to</param>
+    /// <param name="force">Add this Player even if Valid is false </param>
+    internal void AddToLayers(List<PlayerLayer> layers, bool force=false) {
+      if (Valid || force) layers.Add(this.PlayerLayer);
     }
     internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
     internal Animation(Animations handler, AnimationSource source, PlayerLayer playerLayer) {

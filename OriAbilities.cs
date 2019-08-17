@@ -64,14 +64,15 @@ namespace OriMod {
         { lookUp = new LookUp(this) },
         { burrow = new Burrow(this) },
       };
-      _a = new Ability[Abilities.Count];
+      _a = new Ability[16];
       Abilities.ForEach(a => _a[a.id] = a);
     }
     
-    
     internal void Tick() {
       if (player.whoAmI != Main.myPlayer) {
-        TickOtherClient();
+        Abilities.ForEach(a => {
+          if (a.InUse) a.Tick();
+        });
         return;
       }
 
@@ -96,12 +97,6 @@ namespace OriMod {
     internal void Update() {
       Abilities.ForEach(a => {
         if (a.DoUpdate) a.Update();
-      });
-    }
-
-    internal void TickOtherClient() {
-      Abilities.ForEach(a => {
-        if (a.InUse) a.Tick();
       });
     }
     

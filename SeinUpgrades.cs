@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace OriMod {
   public class SeinUpgrade {
-    
     /// <summary> Damage of Spirit Flame </summary>
     public int damage = 12;
     
@@ -40,6 +39,7 @@ namespace OriMod {
     
     /// <summary> NPCs this distance from the player can be targeted by the minion, if there is line of sight between it and the player </summary>
     public float targetMaxDist = 240f;
+    
     /// <summary> NPCs this distance from the player can be targeted by the minion, regardless of line of sight </summary>
     public float targetThroughWallDist = 80f;
     
@@ -91,6 +91,9 @@ namespace OriMod {
   partial class OriMod {
     internal static List<SeinUpgrade> SeinUpgrades;
     
+    /// <summary> Loads all Sein variants. Sein stats are hardcoded into this method.
+    /// 
+    /// The only benefit to doing it this way over overrides is that the previous Sein level is automatically used when values are not provided.</summary>
     private void LoadSeinUpgrades() {
       var defaultSein = new SeinUpgrade();
       var fields = typeof(SeinUpgrade).GetFields();

@@ -14,8 +14,9 @@ namespace OriMod {
         proj.friendly = true;
         return false;
       }
-      return base.PreAI(proj);
+      return true;
     }
-    public override bool CanHitPlayer(Projectile projectile, Player target) => IsBashed && target == BashPlayer.player ? false : base.CanHitPlayer(projectile, target);
+    
+    public override bool CanHitPlayer(Projectile projectile, Player target) => !IsBashed || target != BashPlayer.player;
   }
 }

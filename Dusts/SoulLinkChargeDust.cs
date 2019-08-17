@@ -9,12 +9,14 @@ namespace OriMod.Dusts {
       texture = "OriMod/Dusts/AbilityRefreshedDust";
       return base.Autoload(ref name, ref texture);
     }
+
     public override void OnSpawn(Dust dust) {
       dust.alpha = 0;
       dust.rotation = 0;
       dust.noGravity = true;
       dust.velocity = Vector2.Zero;
     }
+    
     public override bool Update(Dust dust) {
       dust.position += (dust.customData as Player).velocity;
       dust.alpha += alphaRate;

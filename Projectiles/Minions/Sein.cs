@@ -81,9 +81,9 @@ namespace OriMod.Projectiles.Minions {
     protected float MaxTargetDist = 300f;
     protected float MaxTargetThroughWallDist = 0f;
 
-    protected Color Color;
-    protected float LightStrength;
-    internal void Init(int upgradeID) {
+    /// <summary> Assigns most fields based on `upgradeID` </summary>
+    /// <param name="upgradeID">Index of `OriMod.SeinUpgrades` to use. </param>
+    private void Initialize(int upgradeID) {
       SeinUpgrade u = OriMod.SeinUpgrades[upgradeID - 1];
       MaxShotsPerBurst = u.shotsPerBurst;
       MaxShotsPerVolley = u.maxShotsPerVolley;

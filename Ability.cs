@@ -126,12 +126,12 @@ namespace OriMod {
     
     internal bool netUpdate = false;
 
-    /// <summary> Do not use this. </summary>
+    /// <summary> Do not use this outside of AbilityPacketHandler. </summary>
     internal void PreReadPacket(BinaryReader r) {
       State = (AbilityState)r.ReadByte();
       ReadPacket(r);
     }
-    /// <summary> Do not use this. </summary>
+    /// <summary> Do not use this outside of AbilityPacketHandler. </summary>
     internal void PreWritePacket(ModPacket packet) {
       packet.Write((byte)State);
       WritePacket(packet);

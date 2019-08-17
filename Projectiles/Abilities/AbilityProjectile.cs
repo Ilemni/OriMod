@@ -3,9 +3,11 @@ using Terraria.ModLoader;
 
 namespace OriMod.Projectiles.Abilities {
   internal abstract class AbilityProjectile : ModProjectile {
-    internal virtual int abilityID => -1;
-    private OriPlayer _oPlayer;
+    internal abstract int abilityID { get; }
+    
     internal OriPlayer oPlayer => _oPlayer ?? (_oPlayer = Main.player[projectile.owner].GetModPlayer<OriPlayer>());
+    private OriPlayer _oPlayer;
+    
     internal Ability ability => oPlayer.Abilities[abilityID];
 
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
@@ -20,10 +22,11 @@ namespace OriMod.Projectiles.Abilities {
     }
     
     public override bool ShouldUpdatePosition() => false;
-    public override void AI() {
+    public override sealed void AI() {
       CheckAbilityActive();
       Behavior();
     }
+    
     /// <summary>
     /// Used to determine timeLeft or active state of the projectile.
     /// 
@@ -34,6 +37,7 @@ namespace OriMod.Projectiles.Abilities {
         projectile.timeLeft = 2;
       }
     }
+    
     /// <summary>
     /// How the projectile behaves.
     /// 

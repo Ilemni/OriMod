@@ -5,8 +5,8 @@ using Terraria.ModLoader;
 
 namespace OriMod.Dusts {
   public class AbilityRefreshedDust : ModDust {
-    protected int alphaRate = 12;
-    private int Speed = 3; 
+    protected int alphaRate => 12;
+    private int Speed => 3; 
     public override void OnSpawn(Dust dust) {
       dust.alpha = 0;
       dust.noGravity = true;

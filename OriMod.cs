@@ -15,6 +15,8 @@ namespace OriMod {
     public static OriConfigClient1 ConfigClient { get; internal set; }
     public static OriConfigClient2 ConfigAbilities { get; internal set; }
     
+    #region Logging Shortcuts
+    
     internal static log4net.ILog Log => OriMod.Instance.Logger;
     
     /// <summary> Gets localiced text with key `Mods.OriMod.{key}`</summary>
@@ -28,15 +30,13 @@ namespace OriMod {
     /// <summary> Shows an error in chat and in the logger, using default localized text. </summary>
     /// <param name="key">Key in lang file</param>
     /// <param name="log">Write to logger</param>
-    internal static void Error(string key, bool log=true) =>
-      ErrorText(LangErr(key).Value, log);
+    internal static void Error(string key, bool log=true) => ErrorText(LangErr(key).Value, log);
 
     /// <summary> Shows an error in chat and in the logger, using default localized text. Has formatting. </summary>
     /// <param name="key">Key in lang file</param>
     /// <param name="log">Write to logger</param>
     /// <param name="args">Formatting args</param>
-    internal static void ErrorFormat(string key, bool log=true, params object[] args) =>
-      ErrorText(LangErr(key).Format(args), log);
+    internal static void ErrorFormat(string key, bool log=true, params object[] args) => ErrorText(LangErr(key).Format(args), log);
 
     /// <summary> Shows an error in chat and in the logger, using a string literal. </summary>
     /// <param name="text">String literal to show</param>
@@ -52,6 +52,8 @@ namespace OriMod {
     /// <param name="key"></param>
     internal static void LogError(string key) => Log.Error(LangErr(key));
 
+    #endregion
+
     public static ModHotKey SoulLinkKey;
     public static ModHotKey BashKey;
     public static ModHotKey DashKey;
@@ -60,6 +62,7 @@ namespace OriMod {
     public static ModHotKey ChargeKey;
     public static ModHotKey BurrowKey;
     public static OriMod Instance;
+    
     public OriMod() {
       Properties = new ModProperties() {
         Autoload = true,
@@ -68,6 +71,7 @@ namespace OriMod {
       };
       Instance = this;
     }
+    
     public override void AddRecipeGroups() {
       // Creates a new recipe group
       RecipeGroup group1 = new RecipeGroup(() => "Any Enchanted Items", new int[] {
@@ -93,6 +97,7 @@ namespace OriMod {
       RecipeGroup.RegisterGroup("OriMod:EnchantedItems", group1);
       RecipeGroup.RegisterGroup("OriMod:MovementAccessories", group2);
     }
+    
     public override void Load() {
       SoulLinkKey = RegisterHotKey("SoulLink", "E");
       BashKey = RegisterHotKey("Bash", "Mouse2");
@@ -124,6 +129,7 @@ namespace OriMod {
     //   key.Close();
     //   return false;
     // }
+    
     public override void Unload() {
       BashKey = null;
       DashKey = null;
@@ -131,9 +137,10 @@ namespace OriMod {
       FeatherKey = null;
       ChargeKey = null;
     }
-    public override void HandlePacket(BinaryReader reader, int fromWho) {
-      ModNetHandler.HandlePacket(reader, fromWho);
-    }
+    
+    public override void HandlePacket(BinaryReader reader, int fromWho)
+      => ModNetHandler.HandlePacket(reader, fromWho);
+    
     public override object Call(params object[] args) {
       if (args.Length == 2) {
         string cmd = args[0] as string;
@@ -149,26 +156,6 @@ namespace OriMod {
         }
       }
       return null;
-    }
-  }
-  internal class ModNetHandler {
-    internal const byte OriState = 1;
-    internal const byte Ability = 2;
-    internal static OriPlayerPacketHandler oriPlayerHandler = new OriPlayerPacketHandler(OriState);
-    internal static AbilityPacketHandler abilityPacketHandler = new AbilityPacketHandler(Ability);
-    internal static void HandlePacket(BinaryReader r, int fromWho) {
-      byte packetClass = r.ReadByte();
-      switch (packetClass) {
-        case OriState:
-          oriPlayerHandler.HandlePacket(r, fromWho);
-          break;
-        case Ability:
-          abilityPacketHandler.HandlePacket(r, fromWho);
-          break;
-        default:
-          OriMod.ErrorFormat("UnknownPacket", args: packetClass);
-          break;
-      }
     }
   }
 }
