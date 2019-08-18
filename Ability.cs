@@ -1,10 +1,11 @@
+using System;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod {
-  public abstract class Ability {
+  public abstract class Ability : IDisposable {
     /// <summary> Only construct this in OriAbilities. </summary>
     internal Ability(OriAbilities handler) {
       Handler = handler;
@@ -22,16 +23,16 @@ namespace OriMod {
     public abstract int id { get; }
 
     /// <summary> The `Player` this ability is attached to. </summary>
-    protected Player player { get; }
+    protected Player player { get; private set; }
 
     /// <summary> The `OriPlayer` this ability is attached to. </summary>
-    protected OriPlayer oPlayer { get; }
+    protected OriPlayer oPlayer { get; private set; }
 
     /// <summary> Short for player.whoAmI == Main.myPlayer </summary>
     protected bool isLocalPlayer { get; }
 
     /// <summary> Handler this ability is attached to. Same as oPlayer.Abilities </summary>
-    protected OriAbilities Handler { get; }
+    protected OriAbilities Handler { get; private set; }
 
 
     /// <summary> Condition required to call `Update()`. </summary>
@@ -217,6 +218,12 @@ namespace OriMod {
     public override string ToString() => $"Ability ID:{id} Player:{player.whoAmI} State:{State} Unlocked:{Unlocked} Cooldown:{CurrCooldown}/{Cooldown}";
     
     public override int GetHashCode() => (player.whoAmI * Main.player.Length) + id;
+
+    public virtual void Dispose() {
+      Handler = null;
+      player = null;
+      oPlayer = null;
+    }
   }
   
   /// <summary>

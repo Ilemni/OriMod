@@ -1016,5 +1016,11 @@ namespace OriMod {
       SeinMinionActive = false;
       SeinMinionUpgrade = 0;
     }
+
+    internal void Unload() {
+      Animations.Dispose();
+      Animations = null;
+      Abilities = null;
+    }
   }
 }

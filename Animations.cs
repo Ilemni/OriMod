@@ -264,14 +264,14 @@ namespace OriMod {
       Reverse = 3,
       Random = 4,
   }
-  internal class Header {
+  internal class Header : IDisposable {
     internal InitType Init;
     internal LoopMode Loop;
     internal PlaybackMode Playback;
     internal Texture2D Texture => !_tex?.IsDisposed ?? false ? _tex : (TexturePath != null ? _tex = OriMod.Instance.GetTexture(TexturePath) : null);
     private Texture2D _tex;
     private string TexturePath;
-    internal string TransferTo { get; }
+    internal string TransferTo { get; private set; }
     internal Header(InitType init=InitType.None, LoopMode loop=LoopMode.None, PlaybackMode playback=PlaybackMode.None, string transferTo=null, string overrideTexturePath=null) {
       Init = init;
       Loop = loop;
@@ -289,6 +289,15 @@ namespace OriMod {
     internal static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
     public override string ToString()
       => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}" + (Texture != null ? $" | Texture Path: \"{Texture.Name}\"" : "");
+
+    public void Dispose() {
+      if (_tex != null) {
+        _tex.Dispose();
+        _tex = null;
+      }
+      TexturePath = null;
+      TransferTo = null;
+    }
   }
   internal class Frame {
     internal byte X;
@@ -314,9 +323,9 @@ namespace OriMod {
     }
     public override string ToString() => $"Tile [{X}, {Y}] Duration {Duration}";
   }
-  internal class Track {
-    internal Header Header { get; }
-    internal Frame[] Frames { get; }
+  internal class Track : IDisposable {
+    internal Header Header { get; private set; }
+    internal Frame[] Frames { get; private set; }
     internal int Duration { get; }
     internal Track(Header header, params Frame[] frames) {
       Header = header;
@@ -343,14 +352,19 @@ namespace OriMod {
       return newFrames.ToArray();
     }
     internal Frame this[int idx] => Frames[idx];
+    public void Dispose() {
+      Header.Dispose();
+      Header = null;
+      Frames = null;
+    }
   }
-  internal class AnimationSource {
-    internal Dictionary<string, Track> Tracks { get; }
+  internal class AnimationSource : IDisposable {
+    internal Dictionary<string, Track> Tracks { get; private set; }
     internal Point TileSize { get; }
     internal Texture2D Texture => !_tex?.IsDisposed ?? false ? _tex : (_tex = OriMod.Instance.GetTexture(texturePath));
     private Texture2D _tex;
     private string texturePath;
-    internal string[] TrackNames { get; }
+    internal string[] TrackNames { get; private set; }
     internal Track this[string name] => Tracks[name];
     internal AnimationSource(string texture, int x, int y, Dictionary<string, Track> tracks) {
       texturePath = texture;
@@ -358,16 +372,30 @@ namespace OriMod {
       TrackNames = tracks.Keys.ToArray();
       TileSize = new Point(x, y);
     }
+    public void Dispose() {
+      if (Tracks != null) {
+        foreach(var track in Tracks.Values) {
+          track.Dispose();
+        }
+        Tracks = null;
+      }
+      texturePath = null;
+      if (_tex != null) {
+        _tex.Dispose();
+        _tex = null;
+      }
+      TrackNames = null;
+    }
   }
-  internal class Animation {
+  internal class Animation : IDisposable {
     internal Texture2D Texture => ActiveTrack.Header.Texture ?? Source.Texture;
-    internal PlayerLayer PlayerLayer { get; }
+    internal PlayerLayer PlayerLayer { get; private set; }
     internal bool Valid { get; private set; }
     internal Track ActiveTrack => Valid ? Source.Tracks[Handler.owner.AnimName] : Source.Tracks.First().Value;
     internal Frame ActiveFrame => ActiveTrack[Handler.owner.AnimIndex < ActiveTrack.Frames.Length ? Handler.owner.AnimIndex : 0];
     internal Rectangle ActiveTile => new Rectangle(ActiveFrame.Tile.X * Source.TileSize.X, ActiveFrame.Tile.Y * Source.TileSize.Y, Source.TileSize.X, Source.TileSize.Y);
-    internal Animations Handler { get; }
-    internal AnimationSource Source { get; }
+    internal Animations Handler { get; private set; }
+    internal AnimationSource Source { get; private set; }
     internal void InsertInLayers(List<PlayerLayer> layers, int idx=0, bool force=false) {
       if (Valid || force) layers.Insert(idx, this.PlayerLayer);
     }
@@ -380,15 +408,27 @@ namespace OriMod {
       if (Valid || force) layers.Add(this.PlayerLayer);
     }
     internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
+
     internal Animation(Animations handler, AnimationSource source, PlayerLayer playerLayer) {
       Handler = handler;
       Source = source;
       this.PlayerLayer = playerLayer;
     }
+    
+    public void Dispose() {
+      this.PlayerLayer = null;
+      Handler = null;
+      Source.Dispose();
+      Source = null;
+    }
   }
   internal class Animations {
-    internal OriPlayer owner { get; }
-    internal readonly Animation PlayerAnim, SecondaryLayer, TrailAnim, BashAnim, GlideAnim;
+    internal OriPlayer owner { get; private set; }
+    internal Animation PlayerAnim { get; private set; }
+    internal Animation SecondaryLayer { get; private set; }
+    internal Animation TrailAnim { get; private set; }
+    internal Animation BashAnim { get; private set; }
+    internal Animation GlideAnim { get; private set; }
     internal Animations(OriPlayer oPlayer) {
       owner = oPlayer;
       PlayerAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.PlayerSprite);
@@ -396,6 +436,16 @@ namespace OriMod {
       TrailAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.Trail);
       BashAnim = new Animation(this, AnimationHandler.BashAnim, OriLayers.BashArrow);
       GlideAnim = new Animation(this, AnimationHandler.GlideAnim, OriLayers.FeatherSprite);
+    }
+    
+    internal void Dispose() {
+      owner = null;
+      PlayerAnim.Dispose();
+      SecondaryLayer.Dispose();
+      TrailAnim.Dispose();
+      BashAnim.Dispose();
+      GlideAnim.Dispose();
+      PlayerAnim = SecondaryLayer = TrailAnim = BashAnim = GlideAnim = null;
     }
   }
 }

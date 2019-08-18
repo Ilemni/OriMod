@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 // using Microsoft.Win32;
 using Microsoft.Xna.Framework;
@@ -136,6 +137,32 @@ namespace OriMod {
       ClimbKey = null;
       FeatherKey = null;
       ChargeKey = null;
+      BurrowKey = null;
+      SoulLinkKey = null;
+      SeinUpgrades = null;
+      Instance = null;
+      ConfigClient = null;
+      ConfigAbilities = null;
+      ModNetHandler.oriPlayerHandler = null;
+      ModNetHandler.abilityPacketHandler = null;
+      
+      // Unload ModPlayer
+      try {
+        for (int p = 0, len = Main.player.Length; p < len; p++) {
+          var player = Main.player[p];
+          OriPlayer oPlayer = null;
+          try {
+            oPlayer = player.GetModPlayer<OriPlayer>();
+          }
+          catch { // All OriPlayers unloaded
+            break;
+          }
+          oPlayer?.Unload();
+        }
+      }
+      catch (Exception ex) {
+        Log.Error($"Error while unloading OriPlayers, unload for OriPlayers cancelled.\n{ex}");
+      }
     }
     
     public override void HandlePacket(BinaryReader reader, int fromWho)

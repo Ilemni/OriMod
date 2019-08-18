@@ -294,5 +294,13 @@ namespace OriMod.Abilities {
         LastPos = player.position;
       }
     }
+
+    public override void Dispose() {
+      base.Dispose();
+      if (_tex != null) {
+        _tex.Dispose();
+        _tex = null;
+      }
+    }
   }
 }
