@@ -107,6 +107,17 @@ namespace OriMod.Abilities {
       }
     }
     
+    protected override void ReadPacket(System.IO.BinaryReader r) {
+      if (InUse) {
+        player.position = r.ReadPackedVector2();
+      }
+    }
+    protected override void WritePacket(ModPacket packet) {
+      if (InUse) {
+        packet.WritePackedVector2(player.position);
+      }
+    }
+
     protected override void UpdateActive() {
       if (BurrowDur > 0) {
         BurrowDur--;
@@ -224,6 +235,9 @@ namespace OriMod.Abilities {
         AutoBurrow = false;
       }
       if (InUse) {
+        if ((int)Main.time % 20 == 0) {
+          netUpdate = true;
+        }
         UpdateBurrowStrength();
         Handler.glide.Inactive = true;
         if (Active) {
