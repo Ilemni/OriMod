@@ -68,7 +68,12 @@ namespace OriMod.Abilities {
           packet.WriteVector2(playerStartPos);
         }
         packet.Write((bool)TargetIsProjectile);
-        packet.Write(TargetIsProjectile ? (ushort)ProjID : (byte)NpcID);
+        if (TargetIsProjectile) {
+          packet.Write((ushort)ProjID);
+        }
+        else {
+          packet.Write((byte)NpcID);
+        }
       }
     }
     private bool BashNpcFilter(NPC npc) =>
