@@ -96,6 +96,8 @@ namespace OriMod {
     /// This property is currently unused. </summary>
     internal string WallMaterial { get; private set; }
     
+    public int SeinMinionID { get; internal set; }
+    
     /// <summary> Info about if this player has an OriMod Sein minion summoned.
     /// 
     /// Used to prevent having more than one Sein summoned per player. </summary>

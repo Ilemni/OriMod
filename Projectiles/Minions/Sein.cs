@@ -195,11 +195,7 @@ namespace OriMod.Projectiles.Minions {
     internal override void CheckActive() {
       Player player = Main.player[projectile.owner];
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
-      if (player.dead) {
-        oPlayer.SeinMinionActive = false;
-      }
-
-      if (oPlayer.SeinMinionActive && Upgrade == oPlayer.SeinMinionUpgrade) {
+      if (projectile.whoAmI == oPlayer.SeinMinionID) {
         projectile.timeLeft = 2;
       }
     }

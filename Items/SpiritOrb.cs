@@ -46,10 +46,12 @@ namespace OriMod.Items {
       oPlayer.RemoveSeinBuffs(exclude:upgrade);
       oPlayer.SeinMinionUpgrade = upgrade;
       oPlayer.SeinMinionActive = true;
-      if(player.altFunctionUse == 2) {
+      if (player.altFunctionUse == 2) {
         player.MinionNPCTargetAim();
       }
-      return true;
+      int proj = Projectile.NewProjectile(player.position, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI, 0, 0);
+      oPlayer.SeinMinionID = proj;
+      return false;
     }
   }
 }
