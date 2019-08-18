@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -10,24 +9,21 @@ using Terraria.GameInput;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace OriMod.Projectiles.Minions {
-  public abstract class SeinBase : Minion {
-    protected int Upgrade;
-    public override string Texture => "OriMod/Projectiles/Minions/Sein";
-    public override bool? CanCutTiles() => false;
-    protected bool Autoshoot {
-      get {
-        Player player = Main.player[projectile.owner];
-        Item heldItem = player.HeldItem;
-        return !(heldItem.IsAir || heldItem.shoot == projectile.type);
-      }
-    }
-    public override void SetStaticDefaults() {
+  public abstract class Sein : Minion {
+    public override sealed string Texture => "OriMod/Projectiles/Minions/Sein";
+    
+    public override sealed bool? CanCutTiles() => false;
+
+    public override sealed void SetStaticDefaults() {
       Main.projFrames[projectile.type] = 3;
       Main.projPet[projectile.type] = true;
       ProjectileID.Sets.MinionSacrificable[projectile.type] = true;
       ProjectileID.Sets.Homing[projectile.type] = true;
       ProjectileID.Sets.MinionTargettingFeature[projectile.type] = true; //This is necessary for right-click targeting
     }
+    
+    protected abstract int Init { get; }
+
     public override void SetDefaults() {
       projectile.netImportant = true;
       projectile.friendly = true;
@@ -37,49 +33,13 @@ namespace OriMod.Projectiles.Minions {
       projectile.timeLeft = 18000;
       projectile.tileCollide = false;
       projectile.ignoreWater = true;
-      projectile.velocity = new Vector2(0, -maxVelocityInBounds);
+      projectile.velocity = new Vector2(0, -MaxVelocityInBounds);
       projectile.position = PlayerSpace();
-      targetSpawn = PlayerSpace(0, -32);
-      minionTargetLocation = PlayerSpace(0, -32);
-    }
-    protected int Cooldown {
-      get {
-        return (int)projectile.ai[0];
-      }
-      set {
-        if (value != projectile.ai[0]) {
-          projectile.netUpdate = true;
-        }
-        projectile.ai[0] = value;
-      }
+      BoxPos = TargetPos =  PlayerSpace(0, -32);
+      Initialize(Init);
     }
 
-    // ID of projectile to shoot
-    protected int ShootID;
-    // Number of shots that can be used before triggering longCooldown
-    protected int MaxShotsPerBurst = 2;
-    // Max number of shots that can be fired at once
-    protected int MaxShotsPerVolley = 1;
-    protected int ShotsToTarget = 1;
-    protected int ShotsToPrimaryTarget = 1;
-    private int currShots = 1;
-    // Maximum number of targets that can be fired upon at once
-    protected int MaxTargets = 3;
-    // Shortest cooldown between individual shots
-    protected float MinCooldown = 12f;
-    // Shortest cooldown to count as a seperate burst and not be punished by longCooldown
-    protected float ShortCooldown = 18f;
-    // Cooldown between bursts of shots dictated by numShots
-    protected float LongCooldown = 60f;
-    // Speed of the created projectile
-    protected float ShootSpeed = 50f;
-    protected int Pierce = 1;
-    protected float PrimaryDamageMultiplier = 1;
-    // Max rotation of randomness from target the projectile fires
-    protected float ManualShootDamageMultiplier = 1.4f;
-    protected int RandDegrees = 75;
-    protected float MaxTargetDist = 300f;
-    protected float MaxTargetThroughWallDist = 0f;
+    private Player player => Main.player[projectile.owner];
 
     /// <summary> Assigns most fields based on `upgradeID` </summary>
     /// <param name="upgradeID">Index of `OriMod.SeinUpgrades` to use. </param>
@@ -97,8 +57,8 @@ namespace OriMod.Projectiles.Minions {
       LongCooldown = u.longCooldown;
       RandDegrees = u.randDegrees;
       MaxTargetDist = u.targetMaxDist;
-      if (maxDistFromPlayer < MaxTargetDist * 0.8f) { 
-        maxDistFromPlayer = MaxTargetDist * 0.8f;
+      if (MaxDistFromPlayer < MaxTargetDist * 0.8f) { 
+        MaxDistFromPlayer = MaxTargetDist * 0.8f;
       }
       MaxTargetThroughWallDist = u.targetThroughWallDist;
       projectile.width = u.minionWidth;
@@ -109,52 +69,167 @@ namespace OriMod.Projectiles.Minions {
       Color = u.color;
       LightStrength = u.lightStrength;
 
-      
       SpiritFlameSound =
         Upgrade == 1 || Upgrade == 2 ? "" :
         Upgrade == 3 || Upgrade == 4 ? "LevelB" :
         Upgrade == 5 || Upgrade == 6 ? "LevelC" :
         Upgrade == 7 || Upgrade == 8 ? "LevelD" : "";
     }
-    public void SetUpgrade(int upgrade) {
-      Init(upgrade);
-    }
-    protected virtual void CreateDust() { }
-    protected virtual void SelectFrame() { }
-    
-    private float Lerp(float firstFloat, float secondFloat, float by) {
-     return firstFloat * (1 - by) + secondFloat * by;
-    }
-    private Vector2 minionTargetLocation;
-    private Vector2 targetSpawn;
-    private NPC mainTargetNPC;
-    private int targetSide = 1;
-    private Vector2 PlayerSpace(float x, float y) {
-      return PlayerSpace(new Vector2(x, y));
-    }
-    private Vector2 PlayerSpace(Vector2 coords=new Vector2()) {
-      return Main.player[projectile.owner].position + coords;
-    }
-    
-    // You will definitely need to tweak these.
-    protected float minVelocity = 0.1f;        // This is the slowest speed Sein can be at.
-    protected float maxVelocityInBounds = 1.32f;        // This is the fastest speed Sein can be at.
-    protected float maxVelocityOutOfBounds = 30f;
-    protected float nearThreshold = 13f;    // This is the distance from which Sein will begin to slow down.
-    protected float damping = 0.9f;    // This is how much Sein's speed is reduced every time Behavior() is called should she be closer than SeinNearThreshold.
-    protected float maxDampingOutOfBounds = 0.75f;
-    protected float accelerationInBounds = 1.06f;
-    protected float accelerationOutofBounds = 1.1f;
-    protected float triggerTargetMove = 0.5f;
-    protected float maxDistFromPlayer = 240f;
-    protected float minDistFromNPC = 64f;
-    protected string SpiritFlameSound;
-    
-    protected void PlaySpiritFlameSound(string Path, float Volume) =>
-      Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, ("Sounds/Custom/NewSFX/Ori/SpiritFlame/" + Path)).WithVolume(Volume), projectile.Center);
 
-    private int excludeRand = 0;
-    private static readonly Vector2[] TargetPositions = new Vector2[] {
+    /// <summary> False if the held item is the item that summoned this projectile. </summary>
+    private bool Autoshoot => !projectile.HeldItemShotThis();
+
+    /// <summary> ID of current SeinUpgrade </summary>
+    private int Upgrade;
+    
+    /// <summary> Current Cooldown of Spirit Flame </summary>
+    private int Cooldown {
+      get => (int)projectile.ai[0];
+      set {
+        if (value != projectile.ai[0]) {
+          projectile.netUpdate = true;
+          projectile.ai[0] = value;
+        }
+      }
+    }
+
+    /// <summary> ID of projectile to shoot.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private int ShootID;
+
+    /// <summary> Number of shots that can be used before triggering longCooldown.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private int MaxShotsPerBurst;
+    
+    /// <summary> Max number of shots that can be fired at once.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private int MaxShotsPerVolley;
+
+    /// <summary> Max number of shots that can be fired at a single target.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private int ShotsToTarget;
+
+    /// <summary> Max number of shots that can be fired at the first target.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private int ShotsToPrimaryTarget;
+    
+    /// <summary> Maximum number of targets that can be fired upon at once.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private int MaxTargets;
+    
+    /// <summary> Shortest cooldown between individual shots.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private float MinCooldown;
+    
+    /// <summary> Shortest cooldown to count as a seperate burst and not incur longCooldown.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private float ShortCooldown;
+    
+    /// <summary> Cooldown between bursts of shots dictated by numShots.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private float LongCooldown;
+    
+    /// <summary> Speed of the created projectile </summary>
+    private static float ShootSpeed => 50f;
+
+    /// <summary> Spirit Flame penetration
+    /// 
+    /// Assigned in `Init()` </summary>
+    private int Pierce = 1;
+
+    /// <summary> Spirit Flame damage to the first target in `Fire()`.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private float PrimaryDamageMultiplier;
+    
+    /// <summary> How much more manually firing Spirit Flame damages for. </summary>
+    private static float ManualShootDamageMultiplier => 1.4f;
+    
+    /// <summary> Degrees from direction to target NPC that a Spirit Flame can be shot at.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private int RandDegrees;
+
+    /// <summary> Range from player that NPCs can be targeted.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private float MaxTargetDist;
+
+    /// <summary> Range from player that NPCs can be targeted, ignoring walls.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private float MaxTargetThroughWallDist;
+
+    /// <summary> Color used for lighting and sprite drawing.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private Color Color;
+
+    /// <summary> Brightness of light cast by Sein.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private float LightStrength;
+
+    /// <summary> Position that Sein hovers around. This determines Sein's general location. </summary>
+    private Vector2 BoxPos;
+
+    /// <summary> Position that Sein is moving towards. This is specifically where Sein is moving towards. </summary>
+    private Vector2 TargetPos;
+
+    /// <summary> Targeted NPC using the minion targeting feature. </summary>
+    private NPC MainTargetNPC;
+    
+    /// <summary> Slowest speed Sein can be at. </summary>
+    private static float MinVelocity => 0.2f;
+
+    /// <summary> Fastest speed Sein can be at in-bounds. </summary>
+    private static float MaxVelocityInBounds => 1.32f;
+
+    /// <summary> Fastest speed Sein can be at out-of-bounds.</summary>
+    private static float MaxVelocityOutOfBounds => 30f;
+    
+    /// <summary> Distance that Sein will begin to slow down. </summary>
+    private static float NearThreshold => 13f;
+    
+    /// <summary> How much Sein's speed is reduced if Sein is closer than NearThreshold. </summary>
+    private static float Damping => 0.9f;
+
+    /// <summary> The most that Sein's speed can be reduced out of bounds. </summary>
+    private static float MaxDampingOutOfBounds => 0.75f;
+
+    /// <summary> How much Sein speeds up when in-bounds. </summary>
+    private static float AccelerationInBounds => 1.06f;
+
+    /// <summary> How much Sein speeds up when out-of-bounds. </summary>
+    private static float AccelerationOutofBounds => 1.1f;
+
+    /// <summary> Distance from Sein to `TargetPos` to call `SetNewMinionTarget()`. </summary>
+    private static float TriggerTargetMove => 0.5f;
+
+    /// <summary> The closest BoxPos must be to an NPC that it is moving towards. </summary>
+    private static float MinDistFromNPC => 64f;
+
+    /// <summary> The furthest BoxPos can be from the player.
+    /// 
+    /// May be modified in `Init()`</summary>
+    private float MaxDistFromPlayer = 240f;
+
+    /// <summary> Sound that plays when firing.
+    /// 
+    /// Assigned in `Init()` </summary>
+    private string SpiritFlameSound;
+    
+    /// <summary> Positions that Sein idly moves to </summary>
+    private static Vector2[] TargetPositions { get; } = new Vector2[] {
       new Vector2(-24, 7),
       new Vector2(24, -7),
       new Vector2(-24, -2),
@@ -162,268 +237,282 @@ namespace OriMod.Projectiles.Minions {
       new Vector2(-24, -7),
       new Vector2(24, -2),
     };
-    private static readonly Vector2 bounds = new Vector2(68f, 32f);
+
+    /// <summary> Current index of TargetPositions that is active. </summary>
     private int targetPosIndex = 0;
+
+    /// <summary> List of NPCs last targeted by Sein. </summary>
     private List<byte> targetIDs = new List<byte>();
-    private static Vector2 Normalize(Vector2 vec2) {
-        return vec2 / vec2.Length();
-    }
     
-    private void SetNewMinionTarget(int idx=-1) {
+    /// <summary> Current number of shots fired in rapid succession. Used to incur LongCooldown. </summary>
+    private int currShots = 1;
+
+    /// <summary> Zone around `targetSpawn` that is considered in-bounds. </summary>
+    private static Vector2 Bounds { get; } = new Vector2(68f, 32f);
+
+    
+    /// <summary> Checks if Sein is within bounds of `targetSpawn`. </summary>
+    private bool IsInBounds() {
+      Vector2 p = projectile.position;
+      return (
+        p.X < BoxPos.X + Bounds.X && 
+        p.X > BoxPos.X - Bounds.X && 
+        p.Y < BoxPos.Y + Bounds.Y && 
+        p.Y > BoxPos.Y - Bounds.Y
+      );
+    }
+
+    /// <summary> Coordinates relative to the player's Center. </summary>
+    private Vector2 PlayerSpace(float x, float y) => PlayerSpace(new Vector2(x, y));
+
+    /// <summary> Coordinates relative to the player's Center. </summary>
+    private Vector2 PlayerSpace(Vector2 coords=new Vector2()) => player.Center + coords;
+    
+    /// <summary> Increments or changes `targetPosIndex`. </summary>
+    /// <param name="idx">TargetPosition index to change to, or increments by default.</param>
+    private void ChangeTargetPos(int idx=-1) {
       targetPosIndex = idx != -1 ? idx : targetPosIndex + 1;
       if (targetPosIndex >= TargetPositions.Length) {
         targetPosIndex = 0;
       }
-      minionTargetLocation = targetSpawn + TargetPositions[targetPosIndex];
-      targetSide = -targetSide;
+      UpdateTargetPos();
     }
-    private bool IsInBounds() {
-      Vector2 p = projectile.position;
-      return (
-        p.X < targetSpawn.X + bounds.X && 
-        p.X > targetSpawn.X - bounds.X && 
-        p.Y < targetSpawn.Y + bounds.Y && 
-        p.Y > targetSpawn.Y - bounds.Y
-      );
-    }
+    private void UpdateTargetPos() => TargetPos = BoxPos + TargetPositions[targetPosIndex];
+
+    /// <summary> Sort method, sorts by NPC distance to player. </summary>
     private int SortByDistClosest(byte id1, byte id2) {
-      Vector2 playerPos =  Main.player[projectile.owner].position;
+      Vector2 playerPos =  player.Center;
       float length1 = (Main.npc[id1].position - playerPos).Length();
       float length2 = (Main.npc[id2].position - playerPos).Length();
       return length1.CompareTo(length2);
     }
-    internal override void CheckActive() {
-      Player player = Main.player[projectile.owner];
-      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
-      if (projectile.whoAmI == oPlayer.SeinMinionID) {
-        projectile.timeLeft = 2;
-      }
-    }
-    // This is the somewhat subtle swaying about Sein does at any given time in Blind Forest
+
+    private void PlaySpiritFlameSound(string Path, float Volume) =>
+      Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, ("Sounds/Custom/NewSFX/Ori/SpiritFlame/" + Path)).WithVolume(Volume), projectile.Center);
+    private int excludeRand = 0;
+
+    /// <summary> This is the somewhat subtle swaying about Sein does at any given time in Blind Forest </summary>
     private void SeinMovement() {
-      Player owner = Main.player[projectile.owner];
       if (projectile.position.HasNaNs()) {
-        projectile.position = owner.position;
+        projectile.position = player.position;
       }
       if (projectile.velocity.HasNaNs()) {
-        projectile.velocity = new Vector2(0, -maxVelocityInBounds);
+        projectile.velocity = new Vector2(0, -MaxVelocityInBounds);
       }
-      Vector2 oldVel = projectile.velocity;
-      if (oldVel.Length() == 0) { // Usually spawn, magnitide should never be 0 otherwise, and being 0 would break spawning
-        oldVel = new Vector2(0, -maxVelocityInBounds);
+      if ((TargetPos - PlayerSpace()).Length() > 1000 || (BoxPos - PlayerSpace()).Length() > 1000) {
+        BoxPos = PlayerSpace(0, -32);
+        UpdateTargetPos();
       }
-      Vector2 oldPos = projectile.position;
-      Vector2 oldDir = Normalize(oldVel);
-      if ((minionTargetLocation - PlayerSpace()).Length() > 1000 || (targetSpawn - PlayerSpace()).Length() > 1000) {
-        minionTargetLocation = PlayerSpace(0, -32);
-      }
-      Vector2 newDir = Normalize(minionTargetLocation - oldPos);
-      
-      float dist = (minionTargetLocation - oldPos).Length();
-      if (dist > 1050) { // Want to be 800
-        projectile.position = PlayerSpace(-newDir * 1000f); // also 800
-        projectile.velocity = newDir * maxVelocityOutOfBounds;
+
+      Vector2 oldVel = projectile.velocity != Vector2.Zero ? projectile.velocity : new Vector2(0, -MaxVelocityInBounds);
+      float oldSpd = oldVel.Length();
+
+      Vector2 vectToTarget = TargetPos - projectile.position;
+      float distToTarget = vectToTarget.Length();
+
+      Vector2 newDir = vectToTarget.Norm();
+      Vector2 newVel = newDir * oldSpd;
+
+      if (distToTarget > 1050) {
+        projectile.position = PlayerSpace(-newDir * 1000f);
+        projectile.velocity = newDir * MaxVelocityOutOfBounds;
         return;
       }
-      
-      Vector2 newVel = oldVel.Length() * newDir;
+
       if (IsInBounds()) {
-        if (dist < nearThreshold) {
-          newVel *= damping;
+        if (distToTarget < NearThreshold) {
+          newVel *= Damping;
         }
         else {
-          newVel *= accelerationInBounds;
-          if (newVel.Length() > maxVelocityInBounds) {
-            newVel = newDir * Lerp(newVel.Length(), maxVelocityInBounds, 0.22f);
+          newVel *= AccelerationInBounds;
+          if (newVel.Length() > MaxVelocityInBounds) {
+            newVel = newDir * OriModUtils.Lerp(newVel.Length(), MaxVelocityInBounds, 0.22f);
           }
         }
       }
       else {
-        SetNewMinionTarget(newVel.X > 0 ? 3 : 1);
-        newVel *= accelerationOutofBounds;
-        if (newVel.Length() > maxVelocityOutOfBounds) { // Too fast... maybe
-          if (newVel.Length() > owner.velocity.Length()) {
-            newVel = newDir * Lerp(newVel.Length(), owner.velocity.Length(), 0.7f);
+        ChangeTargetPos(newVel.X > 0 ? 3 : 1);
+        newVel *= AccelerationOutofBounds;
+        if (newVel.Length() > MaxVelocityOutOfBounds) { // Too fast... maybe
+          if (newVel.Length() > player.velocity.Length()) {
+            newVel = newDir * OriModUtils.Lerp(newVel.Length(), player.velocity.Length(), 0.7f);
           }
           else {
-            newVel = newDir * Lerp(newVel.Length(), maxVelocityOutOfBounds, 0.2f);
+            newVel = newDir * OriModUtils.Lerp(newVel.Length(), MaxVelocityOutOfBounds, 0.2f);
           }
         }
-        if (newVel.Length() < (oldVel.Length() * maxDampingOutOfBounds)) { // Damned more than necessary
-          newVel = newDir * Lerp(oldVel.Length(), newVel.Length(), maxDampingOutOfBounds);
+        if (newVel.Length() < (oldSpd * MaxDampingOutOfBounds)) { // Damned more than necessary
+          newVel = newDir * OriModUtils.Lerp(oldSpd, newVel.Length(), MaxDampingOutOfBounds);
         }
       }
-      if (newVel.Length() < minVelocity * 2f) { // Too slow
-        newVel = newDir * minVelocity * 2.1f;
-        SetNewMinionTarget();
+      if (newVel.Length() < MinVelocity * 2f) { // Too slow
+        newVel = newDir * MinVelocity * 2.1f;
+        ChangeTargetPos();
       }
 
-      if (dist < nearThreshold || dist > 85) {
-        projectile.velocity = Normalize(oldVel * 0.25f + newVel * 0.75f) * newVel.Length();
+      if (distToTarget < NearThreshold || distToTarget > 85) {
+        projectile.velocity = (oldVel * 0.25f + newVel * 0.75f).Norm() * newVel.Length();
       }
       else {
-        projectile.velocity = Normalize(oldVel * 0.8f + newVel * 0.2f) * newVel.Length();
+        projectile.velocity = (oldVel * 0.8f + newVel * 0.2f).Norm() * newVel.Length();
       }
     }
-    private void UpdateTargetPosIdle() {
-      targetSpawn = PlayerSpace(0, -24f);
-      minionTargetLocation = targetSpawn + TargetPositions[targetPosIndex];
-    }
-    private void UpdateTargetPosToNPC() {
-      int mainTarget = targetIDs[0];
-      Vector2 playerPos = Main.player[projectile.owner].position;
-      Vector2 npcPos = Main.npc[mainTarget].position;
-      Vector2 offset = PlayerSpace(0, -24f) - npcPos; 
-      offset.Y -= 12f;
-      Vector2 dir = Normalize(offset);
-      float dist = offset.Length();
 
-      if (dist > MaxTargetDist) { // Cannot reach targeted NPC
-        if (targetIDs.Count == 1 || Main.player[projectile.owner].HasMinionAttackTargetNPC) {
-          UpdateTargetPosIdle();
+    /// <summary> Moves `BoxPos` and `TargetPos` to the player's location. </summary>
+    private void MoveBoxPosToIdle() {
+      BoxPos = PlayerSpace(0, -32f);
+      TargetPos = BoxPos + TargetPositions[targetPosIndex];
+    }
+    
+    /// <summary> Moves `BoxPos` and `TargetPos` based on NPC position. </summary>
+    private void MoveBoxPosToNPC() {
+      Vector2 npcPos = Main.npc[targetIDs[0]].position;
+      Vector2 offset = PlayerSpace(0, -32f) - npcPos;
+
+      // Cannot reach targeted NPC
+      if (offset.Length() > MaxTargetDist) {
+        if (targetIDs.Count == 1 || player.HasMinionAttackTargetNPC) {
+          MoveBoxPosToIdle();
           return;
         }
-        else { // Try reaching closest NPC
-          mainTarget = targetIDs[1];
-          npcPos = Main.npc[mainTarget].position;
-          offset = PlayerSpace(0, -24f) - npcPos;
-          offset.Y -= 12f;
-          dist = offset.Length();
-          dir = Normalize(offset);
-          if (dist > MaxTargetDist) {
-            UpdateTargetPosIdle();
-            return;
-          }
+        npcPos = Main.npc[targetIDs[1]].position;
+        offset = PlayerSpace(0, -32f) - npcPos;
+        // Cannot reach closest NPC
+        if (offset.Length() > MaxTargetDist) {
+          MoveBoxPosToIdle();
+          return;
         }
       }
-      if (dist < minDistFromNPC) {
-        targetSpawn = PlayerSpace(0, -24f);
-      }
-      else if (dist > maxDistFromPlayer) {
-        targetSpawn = PlayerSpace() - dir * maxDistFromPlayer;
-      }
-      else {
-        targetSpawn = npcPos + dir * minDistFromNPC;
-      }
-      minionTargetLocation = targetSpawn + TargetPositions[targetPosIndex];
+      float dist = offset.Length();
+      BoxPos =
+        dist < MinDistFromNPC ? PlayerSpace(0, -32f) :
+        dist > MaxDistFromPlayer ? PlayerSpace() - offset.Norm() * MaxDistFromPlayer :
+        npcPos + offset.Norm() * MinDistFromNPC;
+      
+      TargetPos = BoxPos + TargetPositions[targetPosIndex];
     }
+
+    /// <summary> Calls `SetNewMinionTarget()` if close, and calls either `UpdateTargetPosIdle()` or `UpdateTargetPosToNPC()` based on condition. </summary>
     private void UpdateTargetsPos() {
-      Vector2 projToTarget = (projectile.position - minionTargetLocation);
-      if (projToTarget.Length() < triggerTargetMove && projectile.velocity.Length() > maxVelocityInBounds) {
-        SetNewMinionTarget();
-      }
-      if (targetIDs.Count == 0 || Main.npc[targetIDs[0]].active == false) { // Idle movement above Ori
-        UpdateTargetPosIdle();
-      }
-      else {
-        UpdateTargetPosToNPC();
-      }
+      if ((projectile.position - TargetPos).Length() < TriggerTargetMove && projectile.velocity.Length() > MaxVelocityInBounds)
+        ChangeTargetPos();
+      if (targetIDs.Count == 0 || Main.npc[targetIDs[0]].active == false)
+        MoveBoxPosToIdle();
+      else
+        MoveBoxPosToNPC();
     }
+
+    /// <summary> Creates one Spirit Flame projectile. </summary>
+    /// <param name="t">Index of target in TargetIDs</param>
     private void Fire(int t) {
-      Vector2 shootVel = Vector2.Zero;
+      Vector2 shootVel;
       Vector2 nonTargetPos = projectile.position;
-      float rand;
+      float rotation;
+      // Fire at enemy NPC
       if (t != -1) {
         shootVel = Main.npc[targetIDs[t]].position - projectile.Center;
-        rand = (float)Main.rand.Next(-RandDegrees, RandDegrees) / 180f * (float)Math.PI;
+        rotation = (float)Main.rand.Next(-RandDegrees, RandDegrees) / 180f * (float)Math.PI;
       }
+      // Fire at air
       else {
         shootVel = new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(24, 48));
-        rand = (float)Main.rand.Next(-180, 180) / 180f * (float)Math.PI;
+        rotation = (float)Main.rand.Next(-180, 180) / 180f * (float)Math.PI;
         nonTargetPos.Y += Main.rand.Next(8, 48);
         nonTargetPos = Utils.RotatedBy(nonTargetPos, (float)Main.rand.NextFloat((float)Math.PI * 2));
       }
       if (shootVel == Vector2.Zero) {
         shootVel.Y = 1f;
       }
-      shootVel.Normalize();
-      shootVel = Utils.RotatedBy(shootVel, rand);
-      shootVel *= ShootSpeed;
-      int dmg = projectile.damage;
-      dmg = (int)(dmg * Main.player[projectile.owner].minionDamage);
-      if (t == 0) dmg = (int)(dmg * PrimaryDamageMultiplier);
-      if (!Autoshoot) dmg = (int)(dmg * ManualShootDamageMultiplier);
-      int proj = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, 0, 0);
+      shootVel = shootVel.Norm() * ShootSpeed;
+      shootVel = Utils.RotatedBy(shootVel, rotation);
+
+      int dmg = (int)(projectile.damage * player.minionDamage *
+        (t != 0 ? 1 : PrimaryDamageMultiplier) *
+        (Autoshoot ? 1 : ManualShootDamageMultiplier));
+      
+      int p = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, 0, 0);
+      Projectile proj = Main.projectile[p];
       projectile.velocity += (shootVel * -0.015f);
       if (t == -1) {
-        Main.projectile[proj].ai[0] = nonTargetPos.X;
-        Main.projectile[proj].ai[1] = nonTargetPos.Y;
+        proj.ai[0] = nonTargetPos.X;
+        proj.ai[1] = nonTargetPos.Y;
+        proj.timeLeft = 15;
       }
       else {
-        Main.projectile[proj].ai[0] = targetIDs[t];
-        Main.projectile[proj].ai[1] = 0;
+        proj.ai[0] = targetIDs[t];
+        proj.ai[1] = 0;
+        proj.timeLeft = 300;
       }
-      Main.projectile[proj].timeLeft = t != -1 ? 300 : 15;
-      Main.projectile[proj].netUpdate = true;
-      Main.projectile[proj].penetrate = Pierce;
-      Main.projectile[proj].owner = projectile.owner;
+      proj.netUpdate = true;
+      proj.penetrate = Pierce;
+      proj.owner = projectile.owner;
     }
+
+    internal override void CheckActive() {
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>(mod);
+      if (projectile.whoAmI == oPlayer.SeinMinionID) {
+        projectile.timeLeft = 2;
+      }
+    }
+
     internal override void Behavior() {
-      if (!projectile.active) { return; }
       SeinMovement();
       UpdateTargetsPos();
       Lighting.AddLight(projectile.Center, Color.ToVector3() * LightStrength);
-      
-      Player player = Main.player[projectile.owner];
 
-      List<Vector2> targetPositions = new List<Vector2>();
-      List<byte> newTargetIDs = new List<byte>();
-      List<byte> wormIDs = new List<byte>();
-
-      Vector2 targetPos = projectile.position;
       bool targeting = false;
-      projectile.tileCollide = false;
       
       // If player specifies target, add that target to selection
-      if(player.HasMinionAttackTargetNPC) {
+      if (player.HasMinionAttackTargetNPC) {
         NPC npc = Main.npc[player.MinionAttackTargetNPC];
         if (npc.CanBeChasedBy(this, false)) {
-          float distance = Vector2.Distance(player.Center, npc.Center);
+          float dist = Vector2.Distance(player.Center, npc.Center);
           if (
-            distance < MaxTargetDist && 
-            (
-              Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height) || 
-              distance < MaxTargetThroughWallDist
-            )
+            dist < MaxTargetThroughWallDist ||
+            dist < MaxTargetDist && Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height)
           ) {
             targeting = true;
-            mainTargetNPC = npc;
+            MainTargetNPC = npc;
           }
         }
       }
 
-      // Otherwise set target based on different enemies, if they can hit
+      var newTargetIDs = new List<byte>();
+      var wormIDs = new List<byte>();
+
+      // Set target based on different enemies, if they can be hit
       for (int k = 0; k < Main.maxNPCs; k++) {
         NPC npc = Main.npc[k];
         if (!npc.CanBeChasedBy(this, false) || !npc.active) continue;
-        float distance = Vector2.Distance(player.Center, npc.Center);
+        float dist = Vector2.Distance(player.Center, npc.Center);
         if (
-          distance < MaxTargetThroughWallDist || distance < MaxTargetDist &&
-          Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height)
+          dist < MaxTargetThroughWallDist ||
+          dist < MaxTargetDist && Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height)
         ) {
+          // Worms...
           if (npc.aiStyle == 6 || npc.aiStyle == 37) { // TODO: Sort targeted worm piece by closest rather than whoAmI
-            if (!wormIDs.Contains((byte)npc.ai[3])) {
-              wormIDs.Add((byte)npc.ai[3]);
-            }
-            else {
-              continue;
-            }
+            if (wormIDs.Contains((byte)npc.ai[3])) continue;
+            wormIDs.Add((byte)npc.ai[3]);
           }
           targeting = true;
           newTargetIDs.Add((byte)npc.whoAmI);
         }
       }
-      bool doReplace = false;
-      int numExcepts = targetIDs.Except(newTargetIDs).Count();
-      if (newTargetIDs.Count != targetIDs.Count || numExcepts != 0) { // See if list needs to be replaced
-        doReplace = true; // Number of NPCs or the specific NPCs targeted was changed
+
+       // See if list needs to be replaced
+      bool replaceList = false;
+
+      // Cheap check, count is different or contains different NPCs
+      if (newTargetIDs.Count != targetIDs.Count || targetIDs.Except(newTargetIDs).Count() != 0) {
+        replaceList = true; 
       }
       else {
+        // Expensive check, compare position of each NPC
         float dist = 0;
         for (int t = 0; t < targetIDs.Count; t++) {
-          float npcDist = (player.position - Main.npc[targetIDs[t]].position).Length();
+          float npcDist = (player.Center - Main.npc[targetIDs[t]].position).Length();
           if (npcDist < dist) {
-            doReplace = true; // List of NPCs is no longer in order of distance
+            replaceList = true; // List of NPCs is no longer in order of distance
             break;
           }
           else {
@@ -432,99 +521,83 @@ namespace OriMod.Projectiles.Minions {
         }
       }
 
-      if (doReplace) { // Replace list
+      if (replaceList) {
         if (newTargetIDs.Count > 1) {
           newTargetIDs.Sort(SortByDistClosest);
         }
         targetIDs.Clear();
-        if (mainTargetNPC != null && mainTargetNPC.active) {
-          targetIDs.Add((byte)mainTargetNPC.whoAmI);
-          targetIDs.AddRange(newTargetIDs.GetRange(0, newTargetIDs.Count > MaxTargets - 1 ? MaxTargets - 1 : newTargetIDs.Count));
+        if (MainTargetNPC?.active ?? false) {
+          targetIDs.Add((byte)MainTargetNPC.whoAmI);
+          targetIDs.AddRange(newTargetIDs.GetRange(0, Math.Min(newTargetIDs.Count, MaxTargets - 1)));
         }
-        targetIDs.AddRange(newTargetIDs.GetRange(0, newTargetIDs.Count > MaxTargets ? MaxTargets : newTargetIDs.Count));
+        targetIDs.AddRange(newTargetIDs.GetRange(0, Math.Min(newTargetIDs.Count, MaxTargets)));
       }
-      
-      // If not in idle box, no collision
-      
-      projectile.rotation = projectile.velocity.X * 0.05f;
-      SelectFrame();
-      CreateDust();
-      // Orient minion based on movement direction (Commented out bc Sein)
-      // if (projectile.velocity.X > 0f) {
-      //   projectile.spriteDirection = (projectile.direction = -1);
-      // }
-      // else if (projectile.velocity.X < 0f) {
-      //   projectile.spriteDirection = (projectile.direction = 1);
-      // }
-      bool attemptFire = (Autoshoot && targeting) || (!Autoshoot && PlayerInput.Triggers.JustPressed.MouseLeft && !Main.LocalPlayer.mouseInterface);
+
       // Manage Cooldown
       float minCooldown = MinCooldown * (Autoshoot ? 1.5f : 1);
       float shortCooldown = ShortCooldown * (Autoshoot ? 1.5f : 1);
       float longCooldown = LongCooldown * (Autoshoot ? 2f : 1);
-      if (Cooldown > 0) { // If on cooldown, increase cooldown
+      if (Cooldown > 0) {
         Cooldown += 1;
         if (Cooldown > longCooldown) {
           Cooldown = 0;
           currShots = 1;
         }
       }
-      if (attemptFire && Cooldown > minCooldown && currShots < MaxShotsPerBurst) {
-        currShots = Cooldown > shortCooldown ? 1 : currShots + 1;
-        Cooldown = 0;
-      }
-      // If autoshoot
-      if (Cooldown == 0 && attemptFire) { // Can fire
-        // Orient minion based on target direction (Commnted out bc Sein)
-        // if ((targetPos - projectile.Center).X > 0f) {
-        //   projectile.spriteDirection = (projectile.direction = -1);
-        // } else if ((targetPos - projectile.Center).X < 0f) {
-        //   projectile.spriteDirection = (projectile.direction = 1);
-        // }
 
+      // Spirit Flame
+      bool attemptFire = Autoshoot ? targeting : (PlayerInput.Triggers.JustPressed.MouseLeft && !Main.LocalPlayer.mouseInterface);
+      if (attemptFire && (Cooldown == 0 || Cooldown > minCooldown && currShots < MaxShotsPerBurst)) {
+        currShots = Cooldown > shortCooldown ? 1 : currShots + 1;
         Cooldown = 1;
-        if (Main.myPlayer == projectile.owner) { // Fire
-          PlaySpiritFlameSound("Throw" + SpiritFlameSound + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
+
+        PlaySpiritFlameSound("Throw" + SpiritFlameSound + OriPlayer.RandomChar(3, ref excludeRand), 0.6f);
+        if (Main.myPlayer == projectile.owner) {
           if (!targeting) {
-            int i = 0;
-            while (i < ShotsToPrimaryTarget) {
+            // Fire at air - nothing to target
+            for (int i = 0; i < ShotsToPrimaryTarget; i++) {
               Fire(-1);
-              i++;
             }
             return;
           }
+
           int usedShots = 0;
           int loopCount = 0;
-          while (usedShots < MaxShotsPerVolley && loopCount < ShotsToPrimaryTarget) {
+          while (loopCount < ShotsToPrimaryTarget) {
             for (int t = 0; t < targetIDs.Count; t++) {
               if (loopCount < (t == 0 ? ShotsToPrimaryTarget : ShotsToTarget)) {
                 Fire(t);
-                usedShots++;
+                if (++usedShots >= MaxShotsPerVolley) break;
               }
             }
-            loopCount ++;
+            loopCount++;
           }
           projectile.netUpdate = true;
         }
       }
-      // Main.NewText("Sein Position: [" + (int)projectile.position.X + ", " + (int)projectile.position.Y + "]");
     }
+
     public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough) {
+      projectile.tileCollide = false;
       fallThrough = true;
       width = 4;
       height = 4;
       return false;
     }
-    private Texture2D GlowTex => _tex ?? (_tex = mod.GetTexture("Projectiles/Minions/Sein_Glow"));
+
+    /// <summary> Texture of the sprite </summary>
+    private Texture2D GlowTex => !_tex?.IsDisposed ?? false ? _tex : (_tex = mod.GetTexture("Projectiles/Minions/Sein_Glow"));
     private Texture2D _tex;
+
     public override void PostDraw(SpriteBatch spriteBatch, Color lightColor) {
-      Vector2 pos = new Vector2(projectile.BottomRight.X - Main.screenPosition.X, projectile.BottomRight.Y - Main.screenPosition.Y);
+      var pos = new Vector2(projectile.BottomRight.X - Main.screenPosition.X, projectile.BottomRight.Y - Main.screenPosition.Y);
       Vector2 orig = new Vector2(GlowTex.Width, GlowTex.Width) * 0.5f;
       for (int i = 0; i < 3; i++) {
         Color color = this.Color;
         color.A = 255;
         if (color == Color.Black) color = Color.White;
         color.A = (byte)(i == 0 ? 255 : i == 1 ? 200 : 175);
-        Rectangle sourceRect = new Rectangle(0, i * GlowTex.Height / 3, GlowTex.Width, GlowTex.Width);
+        var sourceRect = new Rectangle(0, i * GlowTex.Height / 3, GlowTex.Width, GlowTex.Width);
         spriteBatch.Draw(GlowTex, pos, sourceRect, color, projectile.rotation, orig, projectile.scale, SpriteEffects.None, 0f);
       }
     }

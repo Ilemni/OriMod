@@ -128,5 +128,14 @@ namespace OriMod {
       Vector2.Distance(me.ClosestSideTo(otherVect), otherVect);
     internal static float DistanceShortSquared(this Entity me, Vector2 otherVect) =>
       Vector2.DistanceSquared(me.ClosestSideTo(otherVect), otherVect);
+
+    internal static float Lerp(float f1, float f2, float by) => f1 * (1 - by) + f2 * by;
+
+    /// <summary> Checks if the held item shot a projectile of this type. </summary>
+    internal static bool HeldItemShotThis(this Projectile proj) {
+      if (proj.owner == 255) return false;
+      var item = Main.player[proj.owner].HeldItem;
+      return item.shoot == proj.type;
+    }
   }
 }
