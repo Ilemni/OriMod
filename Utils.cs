@@ -31,6 +31,7 @@ namespace OriMod {
     
     /// <summary> Returns Normalize() without changing vect </summary>
     internal static Vector2 Norm(this Vector2 vect) {
+      if (vect == Vector2.Zero) return vect;
       Vector2 v = vect;
       v.Normalize();
       return v;

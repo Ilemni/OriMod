@@ -189,16 +189,16 @@ namespace OriMod.Projectiles.Minions {
     private NPC MainTargetNPC;
     
     /// <summary> Slowest speed Sein can be at. </summary>
-    private static float MinVelocity => 0.2f;
+    private static float MinVelocity => 0.4f;
 
     /// <summary> Fastest speed Sein can be at in-bounds. </summary>
     private static float MaxVelocityInBounds => 1.32f;
 
     /// <summary> Fastest speed Sein can be at out-of-bounds.</summary>
-    private static float MaxVelocityOutOfBounds => 30f;
+    private static float MaxVelocityOutOfBounds => 20f;
     
     /// <summary> Distance that Sein will begin to slow down. </summary>
-    private static float NearThreshold => 13f;
+    private static float NearThreshold => 12f;
     
     /// <summary> How much Sein's speed is reduced if Sein is closer than NearThreshold. </summary>
     private static float Damping => 0.9f;
@@ -227,29 +227,28 @@ namespace OriMod.Projectiles.Minions {
     /// 
     /// Assigned in `Init()` </summary>
     private string SpiritFlameSound;
-    
-    /// <summary> Positions that Sein idly moves to </summary>
-    private static Vector2[] TargetPositions { get; } = new Vector2[] {
-      new Vector2(-24, 7),
-      new Vector2(24, -7),
-      new Vector2(-24, -2),
-      new Vector2(24, 7),
-      new Vector2(-24, -7),
-      new Vector2(24, -2),
-    };
 
     /// <summary> Current index of TargetPositions that is active. </summary>
     private int targetPosIndex = 0;
 
     /// <summary> List of NPCs last targeted by Sein. </summary>
-    private List<byte> targetIDs = new List<byte>();
+    private List<byte> targetIDs { get; } = new List<byte>();
     
     /// <summary> Current number of shots fired in rapid succession. Used to incur LongCooldown. </summary>
     private int currShots = 1;
 
     /// <summary> Zone around `targetSpawn` that is considered in-bounds. </summary>
-    private static Vector2 Bounds { get; } = new Vector2(68f, 32f);
+    private static Vector2 Bounds { get; } = new Vector2(78f, 40f);
 
+    /// <summary> Positions that Sein idly moves to </summary>
+    private static Vector2[] TargetPositions { get; } = new Vector2[] {
+      new Vector2(-32, 12),
+      new Vector2(32, -12),
+      new Vector2(-32, -12),
+      new Vector2(32, 12),
+      new Vector2(-32, -12),
+      new Vector2(32, -12),
+    };
     
     /// <summary> Checks if Sein is within bounds of `targetSpawn`. </summary>
     private bool IsInBounds() {
@@ -270,14 +269,14 @@ namespace OriMod.Projectiles.Minions {
     
     /// <summary> Increments or changes `targetPosIndex`. </summary>
     /// <param name="idx">TargetPosition index to change to, or increments by default.</param>
-    private void ChangeTargetPos(int idx=-1) {
+    private void ChangeTargetPosIdx(int idx=-1) {
       targetPosIndex = idx != -1 ? idx : targetPosIndex + 1;
       if (targetPosIndex >= TargetPositions.Length) {
         targetPosIndex = 0;
       }
       UpdateTargetPos();
     }
-    private void UpdateTargetPos() => TargetPos = BoxPos + TargetPositions[targetPosIndex];
+    private Vector2 UpdateTargetPos() => TargetPos = BoxPos + TargetPositions[targetPosIndex];
 
     /// <summary> Sort method, sorts by NPC distance to player. </summary>
     private int SortByDistClosest(byte id1, byte id2) {
@@ -310,52 +309,54 @@ namespace OriMod.Projectiles.Minions {
       Vector2 vectToTarget = TargetPos - projectile.position;
       float distToTarget = vectToTarget.Length();
 
+      if (distToTarget < TriggerTargetMove) {
+        vectToTarget = TargetPos - projectile.position;
+        distToTarget = vectToTarget.Length();
+      }
+      
       Vector2 newDir = vectToTarget.Norm();
-      Vector2 newVel = newDir * oldSpd;
-
+      
       if (distToTarget > 1050) {
         projectile.position = PlayerSpace(-newDir * 1000f);
         projectile.velocity = newDir * MaxVelocityOutOfBounds;
         return;
       }
 
-      if (IsInBounds()) {
-        if (distToTarget < NearThreshold) {
-          newVel *= Damping;
-        }
-        else {
-          newVel *= AccelerationInBounds;
-          if (newVel.Length() > MaxVelocityInBounds) {
-            newVel = newDir * OriModUtils.Lerp(newVel.Length(), MaxVelocityInBounds, 0.22f);
-          }
-        }
-      }
-      else {
-        ChangeTargetPos(newVel.X > 0 ? 3 : 1);
-        newVel *= AccelerationOutofBounds;
-        if (newVel.Length() > MaxVelocityOutOfBounds) { // Too fast... maybe
-          if (newVel.Length() > player.velocity.Length()) {
-            newVel = newDir * OriModUtils.Lerp(newVel.Length(), player.velocity.Length(), 0.7f);
-          }
-          else {
-            newVel = newDir * OriModUtils.Lerp(newVel.Length(), MaxVelocityOutOfBounds, 0.2f);
-          }
-        }
-        if (newVel.Length() < (oldSpd * MaxDampingOutOfBounds)) { // Damned more than necessary
-          newVel = newDir * OriModUtils.Lerp(oldSpd, newVel.Length(), MaxDampingOutOfBounds);
-        }
-      }
-      if (newVel.Length() < MinVelocity * 2f) { // Too slow
-        newVel = newDir * MinVelocity * 2.1f;
-        ChangeTargetPos();
+      bool inBounds = IsInBounds();
+
+      if (!inBounds) {
+        ChangeTargetPosIdx(vectToTarget.X > 0 ? 3 : 1);
       }
 
-      if (distToTarget < NearThreshold || distToTarget > 85) {
-        projectile.velocity = (oldVel * 0.25f + newVel * 0.75f).Norm() * newVel.Length();
+      Vector2 newVel = newDir * (distToTarget / 15);
+      float newSpd = newVel.Length();
+
+      if (inBounds) {
+        if (newSpd - oldSpd > oldSpd * (AccelerationInBounds - 1)) {
+          newVel = newVel.Norm() * oldSpd * AccelerationInBounds;
+        }
+        if (distToTarget < NearThreshold) {
+          newVel = newVel.Norm() * oldSpd * Damping;
+        }
+        newSpd = newVel.Length();
+        if (newSpd < MinVelocity) {
+          newVel = newDir * MinVelocity;
+        }
+        else if (newSpd > MaxVelocityInBounds) {
+          newVel = newDir * MaxVelocityInBounds;
+        }
       }
       else {
-        projectile.velocity = (oldVel * 0.8f + newVel * 0.2f).Norm() * newVel.Length();
+        if (newSpd - oldSpd > oldSpd * (AccelerationOutofBounds - 1)) {
+          newVel = newVel.Norm() * oldSpd * AccelerationOutofBounds;
+        }
+        newSpd = newVel.Length();
+        if (newSpd > MaxVelocityOutOfBounds) {
+          newVel = newDir * MaxVelocityOutOfBounds;
+        }
       }
+
+      projectile.velocity = newVel;
     }
 
     /// <summary> Moves `BoxPos` and `TargetPos` to the player's location. </summary>
@@ -367,35 +368,35 @@ namespace OriMod.Projectiles.Minions {
     /// <summary> Moves `BoxPos` and `TargetPos` based on NPC position. </summary>
     private void MoveBoxPosToNPC() {
       Vector2 npcPos = Main.npc[targetIDs[0]].position;
-      Vector2 offset = PlayerSpace(0, -32f) - npcPos;
+      Vector2 offset = player.Center - npcPos;
 
       // Cannot reach targeted NPC
-      if (offset.Length() > MaxTargetDist) {
+      float dist = offset.Length();
+      if (dist > MaxTargetDist) {
         if (targetIDs.Count == 1 || player.HasMinionAttackTargetNPC) {
           MoveBoxPosToIdle();
           return;
         }
         npcPos = Main.npc[targetIDs[1]].position;
-        offset = PlayerSpace(0, -32f) - npcPos;
+        offset = player.Center - npcPos;
+        dist = offset.Length();
         // Cannot reach closest NPC
-        if (offset.Length() > MaxTargetDist) {
+        if (dist > MaxTargetDist) {
           MoveBoxPosToIdle();
           return;
         }
       }
-      float dist = offset.Length();
       BoxPos =
-        dist < MinDistFromNPC ? PlayerSpace(0, -32f) :
-        dist > MaxDistFromPlayer ? PlayerSpace() - offset.Norm() * MaxDistFromPlayer :
+        (dist + MinDistFromNPC) > MaxDistFromPlayer ? player.Center - offset.Norm() * MaxDistFromPlayer :
         npcPos + offset.Norm() * MinDistFromNPC;
       
       TargetPos = BoxPos + TargetPositions[targetPosIndex];
     }
 
-    /// <summary> Calls `SetNewMinionTarget()` if close, and calls either `UpdateTargetPosIdle()` or `UpdateTargetPosToNPC()` based on condition. </summary>
+    /// <summary> Calls `ChangeTargetPos()` if close, and calls either `MoveBoxPosToIdle()` or `MoveBoxPosToNPC()` based on condition. </summary>
     private void UpdateTargetsPos() {
-      if ((projectile.position - TargetPos).Length() < TriggerTargetMove && projectile.velocity.Length() > MaxVelocityInBounds)
-        ChangeTargetPos();
+      if ((projectile.position - TargetPos).Length() < TriggerTargetMove)
+        ChangeTargetPosIdx();
       if (targetIDs.Count == 0 || Main.npc[targetIDs[0]].active == false)
         MoveBoxPosToIdle();
       else
