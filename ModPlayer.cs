@@ -935,16 +935,21 @@ namespace OriMod {
       if (Main.dedServ) return;
       if (OriSet || Transforming) {
         DisableVanillaLayers();
-        if (soulLink.PlacedSoulLink) layers.Insert(0, OriLayers.SoulLinkLayer);
-        Animations.PlayerAnim.Draw(layers, 9, force:true);
-        if (OriSet) {
-        Animations.SecondaryLayer.Draw(layers, 10, force:true);
+        if (soulLink.PlacedSoulLink) {
+          layers.Insert(0, OriLayers.SoulLinkLayer);
         }
-        Animations.TrailAnim.Draw(layers);
-        Animations.GlideAnim.Draw(layers);
-        Animations.BashAnim.Draw(layers);
+        if (OriSet) {
+          Animations.TrailAnim.AddToLayers(layers);
+          Animations.GlideAnim.AddToLayers(layers);
+          Animations.BashAnim.AddToLayers(layers);
+        }
+        if (!player.dead && !player.invis) {
+          layers.Add(Animations.PlayerAnim.PlayerLayer);
+          if (OriSet) {
+            layers.Add(Animations.SecondaryLayer.PlayerLayer);
+          }
+        }
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
-        OriLayers.PlayerSprite.visible = (!player.dead && !player.invis);
         OriLayers.Trail.visible = OriLayers.PlayerSprite.visible && !burrow.InUse && !player.mount.Active;
       }
     }
