@@ -109,6 +109,14 @@ namespace OriMod {
     [DefaultValue(64), Range(8f, 160), Increment(8f)]
     public float BashRange;
 
+    [Label("Allow Bashing Projectiles"), Tooltip("Allow bashing most projectiles.\nDefault: true")]
+    [DefaultValue(true)]
+    public bool BashOnProjectiles;
+
+    [Label("Allow Bashing Friendly Projectiles"), Tooltip("Allows you to bash projectiles that damage enemies.\n\"Allow Bashing Projectiles\" must be enabled.\nDefault: false")]
+    [DefaultValue(false)]
+    public bool BashOnProjectilesFriendly;
+
     [Header("Stomp")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Stomp, in seconds.\nDefault: 6")]

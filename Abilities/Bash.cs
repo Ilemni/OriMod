@@ -79,12 +79,13 @@ namespace OriMod.Abilities {
     private bool BashNpcFilter(NPC npc) =>
       !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBash.Contains(npc.type);
     private bool BashProjFilter(Projectile proj) =>
-      proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains(proj.type);
+      (proj.friendly ? Config.BashOnProjectilesFriendly : true) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains(proj.type);
     
     private bool BashStart() {
       float currDist = BashRange;
       bool isBashingNpc = player.GetClosestEntity(Main.npc, ref currDist, out int tempNpcID, condition:BashNpcFilter);
-      bool isBashingProj = player.GetClosestEntity(Main.projectile, ref currDist, out int tempProjID, condition:BashProjFilter);
+      int tempProjID = ushort.MaxValue;
+      bool isBashingProj = Config.BashOnProjectiles ? player.GetClosestEntity(Main.projectile, ref currDist, out tempProjID, condition:BashProjFilter) : false;
       if (!isBashingProj && !isBashingNpc) return false;
       if (isBashingNpc) {
         isBashingProj = false;
@@ -139,7 +140,7 @@ namespace OriMod.Abilities {
       player.position += npcBashVector * 10;
 
       player.immuneTime = 5;
-      
+
       if (TargetIsProjectile) {
         OriProjectile bashProj = BashProj.GetGlobalProjectile<OriProjectile>();
         bashProj.IsBashed = false;
