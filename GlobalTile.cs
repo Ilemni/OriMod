@@ -8,24 +8,24 @@ namespace OriMod {
   public class OriTile : GlobalTile {
     private int InnerRange => 4;
     private int OuterRange => 13;
-    private OriPlayer oPlayer => _localOPlayer ?? (_localOPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>());
-    private OriPlayer _localOPlayer;
+    private OriPlayer oPlayer => Main.LocalPlayer.GetModPlayer<OriPlayer>();
     
     private void BurrowEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex, OriPlayer oPlayer) {
       Color orig = drawColor;
-      Vector2 playerPos = Main.LocalPlayer.Center.ToTileCoordinates().ToVector2();
+      Vector2 playerPos = Main.LocalPlayer.Center / 16;
       float dist = Vector2.Distance(playerPos, new Vector2(i, j)) - InnerRange;
       dist = Utils.Clamp((OuterRange - dist) / OuterRange, 0, 1);
       if (Abilities.Burrow.CanBurrowAny || oPlayer.burrow.CanBurrow(Main.tile[i, j])) {
         drawColor = Color.Lerp(orig, Color.White, 0.8f * dist);
       }
-      else if (Main.tileSolid[type]) {
-        drawColor = Color.Lerp(orig, Color.White, 0.3f * dist);
+      else {
+        drawColor = Color.Lerp(orig, Color.White, 0.4f * dist);
       }
       drawColor.A = orig.A;
     }
     
     public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex) {
+      var oPlayer = this.oPlayer;
       if (oPlayer.burrow.InUse) {
         BurrowEffects(i, j, type, spriteBatch, ref drawColor, ref nextSpecialDrawIndex, oPlayer);
       }
