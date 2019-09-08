@@ -939,7 +939,28 @@ namespace OriMod {
         if (soulLink.PlacedSoulLink) {
           layers.Insert(0, OriLayers.SoulLinkLayer);
         }
+        int idx = Math.Min(layers.IndexOf(PlayerLayer.HeldItem), layers.IndexOf(PlayerLayer.HeldProjFront));
+        bool insert = idx >= 0;
+        if (insert) {
+          idx -= 2;
+          if (idx < 0) {
+            idx = 0;
+          }
         if (OriSet) {
+            Animations.TrailAnim.InsertInLayers(layers, idx++);
+            Animations.GlideAnim.InsertInLayers(layers, idx++);
+            Animations.BashAnim.InsertInLayers(layers, idx++);
+          }
+          if (!player.dead && !player.invis) {
+            layers.Insert(idx++, Animations.PlayerAnim.PlayerLayer);
+            if (OriSet) {
+              layers.Insert(idx++, Animations.SecondaryLayer.PlayerLayer);
+            }
+          }
+        }
+        else {
+          Main.NewText("Adding layers");
+          if (OriSet) {
           Animations.TrailAnim.AddToLayers(layers);
           Animations.GlideAnim.AddToLayers(layers);
           Animations.BashAnim.AddToLayers(layers);
@@ -949,6 +970,7 @@ namespace OriMod {
           if (OriSet) {
             layers.Add(Animations.SecondaryLayer.PlayerLayer);
           }
+        }
         }
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
         OriLayers.Trail.visible = OriLayers.PlayerSprite.visible && !burrow.InUse && !player.mount.Active;
