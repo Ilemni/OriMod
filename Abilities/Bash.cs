@@ -135,9 +135,9 @@ namespace OriMod.Abilities {
       Vector2 playerBashVector = bashVector * BashPlayerStrength;
       Vector2 npcBashVector = -bashVector * BashNpcStrength;
       player.velocity = playerBashVector;
-      player.position += playerBashVector * 10;
+      player.position += playerBashVector * 3;
       BashEntity.velocity = npcBashVector;
-      player.position += npcBashVector * 10;
+      player.position += npcBashVector * 5;
 
       player.immuneTime = 5;
 

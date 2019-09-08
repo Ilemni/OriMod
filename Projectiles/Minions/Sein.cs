@@ -404,22 +404,20 @@ namespace OriMod.Projectiles.Minions {
     }
 
     /// <summary> Creates one Spirit Flame projectile. </summary>
-    /// <param name="t">Index of target in TargetIDs</param>
-    private void Fire(int t) {
+    /// <param name="npc">NPC to target. If null, fires at the air randomly</param>
+    /// <param name="primary">If to increase damage by primary damage multiplier</param>
+    private void Fire(NPC npc=null, bool primary=false) {
       Vector2 shootVel;
-      Vector2 nonTargetPos = projectile.position;
       float rotation;
       // Fire at enemy NPC
-      if (t != -1) {
-        shootVel = Main.npc[targetIDs[t]].position - projectile.Center;
+      if (npc != null) {
+        shootVel = npc.position - projectile.Center;
         rotation = (float)Main.rand.Next(-RandDegrees, RandDegrees) / 180f * (float)Math.PI;
       }
       // Fire at air
       else {
         shootVel = new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(24, 48));
-        rotation = (float)Main.rand.Next(-180, 180) / 180f * (float)Math.PI;
-        nonTargetPos.Y += Main.rand.Next(8, 48);
-        nonTargetPos = Utils.RotatedBy(nonTargetPos, (float)Main.rand.NextFloat((float)Math.PI * 2));
+        rotation = (float)(Main.rand.Next(-180, 180) / 180f * Math.PI);
       }
       if (shootVel == Vector2.Zero) {
         shootVel.Y = 1f;
@@ -428,19 +426,21 @@ namespace OriMod.Projectiles.Minions {
       shootVel = Utils.RotatedBy(shootVel, rotation);
 
       int dmg = (int)(projectile.damage * player.minionDamage *
-        (t != 0 ? 1 : PrimaryDamageMultiplier) *
-        (Autoshoot ? 1 : ManualShootDamageMultiplier));
+        (primary ? PrimaryDamageMultiplier : 1) *
+        (!Autoshoot ? ManualShootDamageMultiplier : 1));
       
-      int p = Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, 0, 0);
-      Projectile proj = Main.projectile[p];
+      Projectile proj = Main.projectile[Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, 0, 0)];
       projectile.velocity += (shootVel * -0.015f);
-      if (t == -1) {
+      if (npc == null) {
+        Vector2 nonTargetPos = projectile.position;
+        nonTargetPos.Y += Main.rand.Next(8, 48);
+        nonTargetPos = Utils.RotatedBy(nonTargetPos, (float)Main.rand.NextFloat((float)Math.PI * 2));
         proj.ai[0] = nonTargetPos.X;
         proj.ai[1] = nonTargetPos.Y;
         proj.timeLeft = 15;
       }
       else {
-        proj.ai[0] = targetIDs[t];
+        proj.ai[0] = npc.whoAmI;
         proj.ai[1] = 0;
         proj.timeLeft = 300;
       }
@@ -557,7 +557,7 @@ namespace OriMod.Projectiles.Minions {
           if (!targeting) {
             // Fire at air - nothing to target
             for (int i = 0; i < ShotsToPrimaryTarget; i++) {
-              Fire(-1);
+              Fire();
             }
             return;
           }
@@ -566,8 +566,10 @@ namespace OriMod.Projectiles.Minions {
           int loopCount = 0;
           while (loopCount < ShotsToPrimaryTarget) {
             for (int t = 0; t < targetIDs.Count; t++) {
-              if (loopCount < (t == 0 ? ShotsToPrimaryTarget : ShotsToTarget)) {
-                Fire(t);
+              bool isPrimary = t == 0;
+              int shots = t == 0 ? ShotsToPrimaryTarget : ShotsToTarget;
+              if (loopCount < shots) {
+                Fire(Main.npc[targetIDs[t]], isPrimary);
                 if (++usedShots >= MaxShotsPerVolley) break;
               }
             }

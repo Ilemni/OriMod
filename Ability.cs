@@ -11,7 +11,6 @@ namespace OriMod {
       Handler = handler;
       oPlayer = Handler.oPlayer;
       player = oPlayer.player;
-      isLocalPlayer = player.whoAmI == Main.myPlayer;
     }
     
     
@@ -27,9 +26,6 @@ namespace OriMod {
 
     /// <summary> The `OriPlayer` this ability is attached to. </summary>
     protected OriPlayer oPlayer { get; private set; }
-
-    /// <summary> Short for player.whoAmI == Main.myPlayer </summary>
-    protected bool isLocalPlayer { get; }
 
     /// <summary> Handler this ability is attached to. Same as oPlayer.Abilities </summary>
     protected OriAbilities Handler { get; private set; }
@@ -169,16 +165,9 @@ namespace OriMod {
     }
     
     
-    /// <summary> Called before `Update()`. If this returns false, `Update()` will not run. Check source for default value. </summary>
-    protected bool PreUpdate() {
-      if (!isLocalPlayer) return true;
-      if (!CanUse && !InUse) return false;
-      return true;
-    }
-
-    /// <summary> Called in `OriPlayer.PostUpdateRunSpeeds()`, directly after `this.Tick()`, if `PreUpdate()` returns true. </summary>
+    /// <summary> Called in `OriPlayer.PostUpdateRunSpeeds()`, directly after `this.Tick()` </summary>
     internal void Update() {
-      if (!PreUpdate()) return;
+      if (!InUse) return;
       switch (State) {
         case AbilityState.Active:
           UpdateActive();

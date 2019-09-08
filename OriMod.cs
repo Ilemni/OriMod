@@ -169,16 +169,28 @@ namespace OriMod {
       => ModNetHandler.HandlePacket(reader, fromWho);
     
     public override object Call(params object[] args) {
-      if (args.Length == 2) {
-        string cmd = args[0] as string;
-        if (cmd == "ResetPlayerModData") {
-          Player player = args[1] as Player;
-          if (player != null) {
-            OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+      int len = args.Length;
+      if (len > 0 && args[0] is string cmd) {
+        switch (cmd) {
+          case "ResetPlayerModData": {
+            if (len < 2) {
+              Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected second argument of type Player, got {len}");  
+              return false;
+            }
+
+            OriPlayer oPlayer = null;
+            if (args[1] is Player player) {
+              oPlayer = player.GetModPlayer<OriPlayer>(this);
+            }
+            else if (args[1] is ModPlayer modPlayer) {
+              oPlayer = modPlayer.player.GetModPlayer<OriPlayer>(this);
+            }
+            else {
+              Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type Player, got {args[1].GetType()}");
+              return false;
+            }
             oPlayer.ResetData();
-          }
-          else {
-            Log.Warn(this.Name + ".Call() - ResetPlayerModData - Invalid player");
+            return true;
           }
         }
       }
