@@ -959,7 +959,6 @@ namespace OriMod {
           }
         }
         else {
-          Main.NewText("Adding layers");
           if (OriSet) {
           Animations.TrailAnim.AddToLayers(layers);
           Animations.GlideAnim.AddToLayers(layers);
