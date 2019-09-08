@@ -810,6 +810,7 @@ namespace OriMod {
       }
       if (Transforming) {
         player.direction = TransformDirection;
+        player.controlUseItem = false;
         int dur = AnimationHandler.PlayerAnim.Tracks["TransformEnd"].Duration;
         if (TransformTimer > dur - 10) {
           if (TransformTimer < dur) {
