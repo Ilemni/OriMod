@@ -23,7 +23,7 @@ namespace OriMod {
       }
       return true;
     }
-    
+
     /// <summary> Gets the down state before and after calling `NPCLoot()` on the given NPC. </summary>
     /// <param name="npc">The NPC to call `NPCLoot()` for</param>
     /// <param name="downedBoss">Bool to check downed state for</param>
@@ -34,18 +34,9 @@ namespace OriMod {
       bool nowDowned = downedBoss;
       return nowDowned && !wasDowned;
     }
-    
+
     private static bool Null = false;
 
-    /// <summary> Gets the down count before and after calling `NPCLoot()` on the given NPC. </summary>
-    /// <param name="npc">The NPC to call `NPCLoot()` for</param>
-    /// <param name="oldCount">Count before `NPCLoot()` is called</param>
-    /// <param name="newCount">Count after `NPCLoot()` is called</param>
-    /// <param name="downedBoss1">First boss to check downed state for</param>
-    /// <param name="downedBoss2">Second boss to check downed state for</param>
-    private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2) =>
-      GetDownCount(npc, out oldCount, out newCount, ref downedBoss1, ref downedBoss2, ref Null, ref Null);
-    
     /// <summary> Gets the down count before and after calling `NPCLoot()` on the given NPC. </summary>
     /// <param name="npc">The NPC to call `NPCLoot()` for</param>
     /// <param name="oldCount">Count before `NPCLoot()` is called</param>
@@ -55,7 +46,7 @@ namespace OriMod {
     /// <param name="downedBoss3">Third boss to check downed state for</param>
     private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2, ref bool downedBoss3) =>
       GetDownCount(npc, out oldCount, out newCount, ref downedBoss1, ref downedBoss2, ref downedBoss3, ref Null);
-    
+
     /// <summary> Gets the down count before and after calling `NPCLoot()` on the given NPC. </summary>
     /// <param name="npc">The NPC to call `NPCLoot()` for</param>
     /// <param name="oldCount">Count before `NPCLoot()` is called</param>
@@ -67,27 +58,50 @@ namespace OriMod {
     private void GetDownCount(NPC npc, out int oldCount, out int newCount, ref bool downedBoss1, ref bool downedBoss2, ref bool downedBoss3, ref bool downedBoss4) {
       oldCount = 0;
       newCount = 0;
-      if (downedBoss1) oldCount++;
-      if (downedBoss2) oldCount++;
-      if (downedBoss3) oldCount++;
-      if (downedBoss4) oldCount++;
+      if (downedBoss1) {
+        oldCount++;
+      }
+
+      if (downedBoss2) {
+        oldCount++;
+      }
+
+      if (downedBoss3) {
+        oldCount++;
+      }
+
+      if (downedBoss4) {
+        oldCount++;
+      }
+
       npc.NPCLoot();
-      if (downedBoss1) newCount++;
-      if (downedBoss2) newCount++;
-      if (downedBoss3) newCount++;
-      if (downedBoss4) newCount++;
+      if (downedBoss1) {
+        newCount++;
+      }
+
+      if (downedBoss2) {
+        newCount++;
+      }
+
+      if (downedBoss3) {
+        newCount++;
+      }
+
+      if (downedBoss4) {
+        newCount++;
+      }
     }
-    
+
     public override bool SpecialNPCLoot(NPC npc) {
       if (!npc.boss) {
         return false;
       }
-      OriModUtils.IsAnyBossAlive(check:true);
-      
+      OriModUtils.IsAnyBossAlive(check: true);
+
       bool doUpdate = false;
       byte upgrade = 0;
-      int oldCount = 0;
-      int newCount = 0;
+      int oldCount;
+      int newCount;
       switch (npc.type) {
         case NPCID.EyeofCthulhu:
           upgrade = 1;
@@ -153,10 +167,12 @@ namespace OriMod {
           doUpdate = DoUpdate(npc, ref NPC.downedMoonlord);
           break;
         default:
-          npc.NPCLoot();
-          break;
+          return false;
       }
-      if (doUpdate) OriWorld.UpdateOriPlayerSeinStates(upgrade);
+
+      if (doUpdate) {
+        OriWorld.UpdateOriPlayerSeinStates(upgrade);
+      }
       return true;
     }
   }

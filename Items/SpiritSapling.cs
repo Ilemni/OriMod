@@ -18,13 +18,13 @@ namespace OriMod.Items {
     }
 
     public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
+      var recipe = new ModRecipe(mod);
       recipe.AddIngredient(ItemID.Wood, 10);
       recipe.AddRecipeGroup("OriMod:EnchantedItems", 1);
       recipe.SetResult(this);
       recipe.AddRecipe();
 
-      ModRecipe recipe2 = new ModRecipe(mod);
+      var recipe2 = new ModRecipe(mod);
       recipe2.AddIngredient(ItemID.Wood, 10);
       recipe2.AddRecipeGroup("OriMod:MovementAccessories", 3);
       recipe2.SetResult(this);

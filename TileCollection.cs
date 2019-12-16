@@ -1,13 +1,10 @@
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod {
-  /// <summary>
-  /// This class is used purely to handle Burrowing.
+  /// <summary> This class is used purely to handle Burrowing.
   /// 
-  /// This class assigns and stores the Pickaxe power of each tile, with some exceptions.
-  /// </summary>
+  /// This class assigns and stores the Pickaxe power of each tile, with some exceptions. </summary>
   internal static class TileCollection {
     internal static int[] TilePickaxeMin;
 
@@ -19,7 +16,7 @@ namespace OriMod {
         arr[keys[i]] = value;
       }
     }
-    
+
     /// <summary> Add's a ModTile's minPick to the TilePickaxeMin list </summary>
     internal static void AddModTile(ModTile m) {
       OriMod.Log.Debug($"Adding to TilePickaxeMin <{m.Type}, {m.minPick}> (Name: {m.Name ?? "Unknown name"}, Mod {m.mod?.Name ?? "Unknown mod"})");
@@ -28,10 +25,12 @@ namespace OriMod {
 
     /// <summary> Only call in an initlalize class. </summary>
     internal static void Init() {
-      if (TilePickaxeMin != null) return;
-      
+      if (TilePickaxeMin != null) {
+        return;
+      }
+
       TilePickaxeMin = new int[ushort.MaxValue];
-      
+
       // Assign vanilla tiles to 2 (Sand-like is 0, Dirt-like is 1)
       for (int i = 0; i < TileID.Count; i++) {
         TilePickaxeMin[i] = 2;
@@ -40,7 +39,7 @@ namespace OriMod {
       for (int i = TileID.Count, len = TilePickaxeMin.Length; i < len; i++) {
         TilePickaxeMin[i] = -1;
       }
-      
+
       TilePickaxeMin.AddMultiKey(0, TileID.Sand, TileID.Slush, TileID.Silt);
       TilePickaxeMin.AddMultiKey(1,
         TileID.Dirt, TileID.Mud, TileID.ClayBlock, TileID.SnowBlock,
@@ -57,7 +56,6 @@ namespace OriMod {
       TilePickaxeMin.AddMultiKey(150, TileID.Adamantite, TileID.Titanium);
       TilePickaxeMin.AddMultiKey(200, TileID.Chlorophyte);
       TilePickaxeMin.AddMultiKey(210, TileID.LihzahrdBrick, TileID.LihzahrdAltar);
-
     }
   }
 }

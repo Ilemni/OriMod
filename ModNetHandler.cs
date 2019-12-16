@@ -4,8 +4,10 @@ namespace OriMod {
   internal class ModNetHandler {
     internal const byte OriState = 1;
     internal const byte Ability = 2;
-    internal static OriPlayerPacketHandler oriPlayerHandler = new OriPlayerPacketHandler(OriState);
-    internal static AbilityPacketHandler abilityPacketHandler = new AbilityPacketHandler(Ability);
+
+    internal static readonly OriPlayerPacketHandler oriPlayerHandler = new OriPlayerPacketHandler(OriState);
+    internal static readonly AbilityPacketHandler abilityPacketHandler = new AbilityPacketHandler(Ability);
+
     internal static void HandlePacket(BinaryReader r, int fromWho) {
       byte packetClass = r.ReadByte();
       switch (packetClass) {

@@ -9,35 +9,35 @@ namespace OriMod {
   [Label("Client Config")]
   public class OriConfigClient1 : ModConfig {
     public override ConfigScope Mode => ConfigScope.ClientSide;
-    
+
     [Header("Gameplay")]
-    
+
     [Label("Ability Cooldowns"), Tooltip("Determines if abilities have cooldowns. Keep enabled for a more balanced experience.\nDefault: true")]
     [DefaultValue(true)]
     public bool AbilityCooldowns;
-    
+
     [Label("Player Light"), Tooltip("Determines if your player faintly glows.\nDefault: true")]
     [DefaultValue(true)]
     public bool PlayerLight;
-    
+
     [Label("Global Player Light"), Tooltip("Determines if all other players glow based on your config or their config.\nDefault: false")]
     [DefaultValue(false)]
-    public bool GlobalPlayerLight;    
-    
+    public bool GlobalPlayerLight;
+
     [Header("Controls")]
-    
+
     [Label("Stomp Activation Delay"), Tooltip("Duration the Stomp key must be held until activating Stomp.\nDefault: 0")]
     [DefaultValue(0)]
     public float StompHoldDownDelay = 0;
-    
+
     [Label("Soft Crouch"), Tooltip("Allows moving while crouched.\nDefault: false")]
     [DefaultValue(false)]
     public bool SoftCrouch;
-    
+
     [Label("Smooth Camera"), Tooltip("Smooths the camera when it moves.\nDefault: true")]
     [DefaultValue(true)]
     public bool SmoothCamera;
-    
+
     // [Label("Auto Burrow"), Tooltip("After burrowing, if holding the Burrow key, automatically re-enter Burrow as soon as possible.\nDefault: false")]
     // [DefaultValue(false)]
     [JsonIgnore] // Buggy implementation
@@ -45,17 +45,17 @@ namespace OriMod {
 
     [JsonIgnore]
     internal bool BurrowToMouse => BurrowControls == "Mouse";
-    
+
     [Label("Burrow Control"), Tooltip("Determines which controls you use while burrowing.\nDefault: Mouse")]
-    [DefaultValue("Mouse"), OptionStrings(new string[] {"WASD", "Mouse"})]
+    [DefaultValue("Mouse"), OptionStrings(new string[] { "WASD", "Mouse" })]
     public string BurrowControls;
-    
+
     [Header("Aesthetics")]
 
     [Label("Player Color"), Tooltip("The color of your Spirit Guardian.\nDefault: 210, 255, 255")]
     [DefaultValue(typeof(Color), "210, 255, 255, 255")]
     public Color PlayerColor;
-    
+
     [Label("Player Color (Secondary)"), Tooltip("The secondary color of your Spirit Guardian.\nDefault: 0, 0, 0, 0")]
     [DefaultValue(typeof(Color), "0, 0, 0, 0")]
     public Color PlayerColorSecondary;
@@ -67,7 +67,9 @@ namespace OriMod {
     [OnDeserialized]
     public void OnDeserializedMethod(StreamingContext stream) {
       PlayerColor.A = 255;
-      if (StompHoldDownDelay  < 0) StompHoldDownDelay = 0;
+      if (StompHoldDownDelay < 0) {
+        StompHoldDownDelay = 0;
+      }
     }
   }
 
@@ -76,7 +78,7 @@ namespace OriMod {
     public override ConfigScope Mode => ConfigScope.ClientSide;
 
     [Header("Soul Link")]
-    
+
     [Label("Cooldown"), Tooltip("Cooldown of Soul Link, in seconds.\nDefault: 30")]
     [DefaultValue(30), Range(0f, 150), Increment(1f)]
     public float SoulLinkCooldown;
@@ -94,7 +96,7 @@ namespace OriMod {
     [Label("Number of Jumps"), Tooltip("Amount of times the player can jump in the air.\nDefault: 2")]
     [DefaultValue(2), Range(1, int.MaxValue)]
     public int AirJumpCount;
-    
+
     [Header("Bash")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Bash, in seconds.\nDefault: 0.75")]
@@ -166,7 +168,7 @@ namespace OriMod {
     public float DashSpeedMultiplier;
 
     [Header("Charge Dash")]
-    
+
     [Label("Cooldown"), Tooltip("Cooldown of Charge Dash, in seconds.\nNote this is only when a boss is alive.\nDefault: 3")]
     [DefaultValue(3), Range(0f, 30), Increment(0.25f)]
     public float CDashCooldown;
@@ -176,7 +178,7 @@ namespace OriMod {
     public float CDashSpeedMultiplier;
 
     [Header("Burrow")]
-    
+
     [Label("Duration"), Tooltip("How long Burrow can be used until suffocating, in seconds.\nDefault: 4")]
     [DefaultValue(4), Range(1f, 30), Increment(1f)]
     public float BurrowDuration;
@@ -195,8 +197,13 @@ namespace OriMod {
 
     [OnDeserialized]
     public void OnDeserializedMethod(StreamingContext stream) {
-      if (AirJumpCount < 0) AirJumpCount = 0;
-      if (StompNumTargets < 1) StompNumTargets = 1;
+      if (AirJumpCount < 0) {
+        AirJumpCount = 0;
+      }
+
+      if (StompNumTargets < 1) {
+        StompNumTargets = 1;
+      }
     }
   }
 }

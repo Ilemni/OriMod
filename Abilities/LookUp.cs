@@ -5,9 +5,10 @@ namespace OriMod.Abilities {
   public class LookUp : Ability {
     internal LookUp(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.LookUp;
-    internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.Current.Up);
+
+    internal override bool DoUpdate => InUse || oPlayer.Input(PlayerInput.Triggers.Current.Up);
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !Handler.crouch.InUse && !Handler.dash.InUse && !Handler.cDash.InUse;
-    
+
     private int StartDuration => 12;
     private int EndDuration => 8;
 

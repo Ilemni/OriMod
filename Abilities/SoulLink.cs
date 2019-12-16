@@ -6,8 +6,9 @@ namespace OriMod.Abilities {
   public class SoulLink : Ability {
     public SoulLink(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.SoulLink;
+
     internal override bool DoUpdate => OriMod.SoulLinkKey.Current || InUse;
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && player.CheckMana(ManaCost, blockQuickMana:true);
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && player.CheckMana(ManaCost, blockQuickMana: true);
     protected override int Cooldown => (int)(Config.SoulLinkCooldown * 30);
 
     private static Point p(int x, int y) => new Point(x, y);
@@ -32,14 +33,16 @@ namespace OriMod.Abilities {
     private bool AnyBossAlive;
     private bool WasDead;
     
-    private void CheckValidPlacement(Point? check, out bool obstructed, bool force=false) {
+    private void CheckValidPlacement(Point? check, out bool obstructed, bool force = false) {
       obstructed = false;
-      if (!force && Main.time % 20 != 0) return;
+      if (!force && Main.time % 20 != 0) {
+        return;
+      }
 
-      Point[] newBox = (Point[])Box.Clone();
-      newBox.UpdateHitbox(Template, check ?? Center);
-      for (int i = 0; i < newBox.Length; i++) {
-        Tile t = Main.tile[newBox[i].X, newBox[i].Y];
+      Box.UpdateHitbox(check ?? Center);
+      var points = Box.Points;
+      for (int i = 0, len = points.Length; i < len; i++) {
+        Tile t = Main.tile[points[i].X, points[i].Y];
         if (Burrow.IsSolid(t)) {
           obstructed = true;
           return;
@@ -49,7 +52,10 @@ namespace OriMod.Abilities {
     }
 
     internal void UpdateDead() {
-      if (!PlacedSoulLink) return;
+      if (!PlacedSoulLink) {
+        return;
+      }
+
       if (player.respawnTimer > RespawnTime) {
         player.respawnTimer = RespawnTime;
       }
@@ -73,24 +79,26 @@ namespace OriMod.Abilities {
         CheckValidPlacement(Center, out Obstructed);
         if (Obstructed) {
           PlacedSoulLink = false;
-          OriMod.Error("SoulLinkObstructed", log:false);
+          OriMod.Error("SoulLinkObstructed", log: false);
         }
       }
-      if (CanUse && OriMod.SoulLinkKey.Current) {
+      if (GetCanUse() && OriMod.SoulLinkKey.Current) {
         if (OriMod.SoulLinkKey.JustPressed) {
-          AnyBossAlive = OriModUtils.IsAnyBossAlive(check:true);
+          AnyBossAlive = OriModUtils.IsAnyBossAlive(check: true);
           if (AnyBossAlive) {
-            OriMod.Error("SoulLinkBossActive", log:false);
+            OriMod.Error("SoulLinkBossActive", log: false);
             return;
           }
         }
-        CheckValidPlacement(player.Center.ToTileCoordinates(), out bool tempObstructed, force:true);
+        CheckValidPlacement(player.Center.ToTileCoordinates(), out bool tempObstructed, force: true);
         if (tempObstructed) {
           if (!WasObstructed) {
-            OriMod.Error("SoulLinkCannotPlace", log:false);
+            OriMod.Error("SoulLinkCannotPlace", log: false);
           }
           CurrCharge -= UnchargeRate;
-          if (CurrCharge < 0) CurrCharge = 0;
+          if (CurrCharge < 0) {
+            CurrCharge = 0;
+          }
         }
         else {
           CurrCharge += ChargeRate;
@@ -102,7 +110,7 @@ namespace OriMod.Abilities {
             Box.UpdateHitbox(Template, player.Center.ToTileCoordinates());
             SoulLinkLocation = Center;
             oPlayer.Debug("Placed a Soul Link!");
-            PutOnCooldown(force:true);
+            PutOnCooldown(force: true);
           }
         }
         WasObstructed = tempObstructed;
@@ -114,7 +122,7 @@ namespace OriMod.Abilities {
         }
       }
       if (CurrCharge > 0 && CurrCharge < 1) {
-        Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("SoulLinkChargeDust"), newColor:Color.DeepSkyBlue)];
+        Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("SoulLinkChargeDust"), newColor: Color.DeepSkyBlue)];
         dust.customData = player;
         dust.position += -Vector2.UnitY.RotatedBy(CurrCharge * 2 * Math.PI) * 56;
       }

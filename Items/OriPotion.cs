@@ -20,7 +20,7 @@ namespace OriMod.Items {
     public override bool UseItem(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.OriSet = !oPlayer.OriSet;
-      
+
       for (int m = 0; m < 100; m++) { //does particles
         Vector2 pos = player.position;
         pos.Y += 4;
@@ -34,7 +34,7 @@ namespace OriMod.Items {
     }
 
     public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
+      var recipe = new ModRecipe(mod);
       recipe.AddIngredient(ItemID.Bottle);
       recipe.AddIngredient(ItemID.Moonglow);
       recipe.AddIngredient(ItemID.Shiverthorn);
@@ -43,7 +43,7 @@ namespace OriMod.Items {
       recipe.SetResult(this, 1);
       recipe.AddRecipe();
 
-      ModRecipe recipe2 = new ModRecipe(mod);
+      var recipe2 = new ModRecipe(mod);
       recipe2.AddIngredient(null, "OriPotionEmpty", 1);
       recipe2.AddTile(null, "SpiritSapling");
       recipe2.SetResult(this, 1);

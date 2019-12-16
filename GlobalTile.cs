@@ -9,7 +9,7 @@ namespace OriMod {
     private int InnerRange => 4;
     private int OuterRange => 13;
     private OriPlayer oPlayer => Main.LocalPlayer.GetModPlayer<OriPlayer>();
-    
+
     private void BurrowEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex, OriPlayer oPlayer) {
       Color orig = drawColor;
       Vector2 playerPos = Main.LocalPlayer.Center / 16;
@@ -23,21 +23,21 @@ namespace OriMod {
       }
       drawColor.A = orig.A;
     }
-    
+
     public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex) {
       var oPlayer = this.oPlayer;
       if (oPlayer.burrow.InUse) {
         BurrowEffects(i, j, type, spriteBatch, ref drawColor, ref nextSpecialDrawIndex, oPlayer);
       }
       if (oPlayer.debugMode) {
-        Point pos = new Point(i, j);
-        if (oPlayer.burrow.BurrowInner.Contains(pos)) {
+        var pos = new Point(i, j);
+        if (oPlayer.burrow.InnerHitbox.Points.Contains(pos)) {
           drawColor = Color.Red;
         }
-        else if (oPlayer.burrow.BurrowEnter.Contains(pos)) {
+        else if (oPlayer.burrow.EnterHitbox.Points.Contains(pos)) {
           drawColor = Color.LimeGreen;
         }
-        else if (oPlayer.burrow.BurrowEnterOuter.Contains(pos)) {
+        else if (oPlayer.burrow.OuterHitbox.Points.Contains(pos)) {
           drawColor = Color.Turquoise;
         }
       }

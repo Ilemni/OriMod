@@ -4,34 +4,42 @@ using Terraria;
 
 namespace OriMod {
   public static class OriModUtils {
+    #region Point Arithmetic
     internal static Point Add(this Point p1, Point p2) {
       Point p3;
       p3.X = p1.X + p2.X;
       p3.Y = p1.Y + p2.Y;
       return p3;
     }
+
     internal static Point Add(this Point p, Vector2 v) {
       Point p2;
       p2.X = p.X + (int)v.X;
       p2.Y = p.Y + (int)v.Y;
       return p;
     }
+
     internal static Vector2 Add(this Vector2 v, Point p) {
       Vector2 v2;
       v2.X = v.X + p.X;
       v2.Y = v.Y + p.Y;
       return v2;
     }
+
     internal static Point Multiply(this Point p1, Point p2) {
       Point p3;
       p3.X = p1.X * p2.X;
       p3.Y = p1.Y * p2.Y;
       return p3;
     }
+    #endregion
     
     /// <summary> Returns Normalize() without changing vect </summary>
     internal static Vector2 Norm(this Vector2 vect) {
-      if (vect == Vector2.Zero) return vect;
+      if (vect == Vector2.Zero) {
+        return vect;
+      }
+
       Vector2 v = vect;
       v.Normalize();
       return v;
@@ -47,10 +55,11 @@ namespace OriMod {
     
     private static double lastBossCheck = 0;
     internal static bool isAnyBossAlive = false;
-    
+
     private static bool CheckAnyBossAlive() {
-      for(int i = 0, len = Main.npc.Length; i < len; i++) {
-        if (Main.npc[i].active && Main.npc[i].boss) {
+      for (int i = 0, len = Main.npc.Length; i < len; i++) {
+        var npc = Main.npc[i];
+        if (npc.active && npc.boss) {
           isAnyBossAlive = true;
           return true;
         }
@@ -59,14 +68,15 @@ namespace OriMod {
       return false;
     }
 
-    internal static bool IsAnyBossAlive(bool check=false) {
+    internal static bool IsAnyBossAlive(bool check = false) {
       if (check || Main.time > lastBossCheck + 20) {
         lastBossCheck = Main.time;
         CheckAnyBossAlive();
       }
       return isAnyBossAlive;
     }
-    
+
+    #region Distance Checking
     /// <summary> Get closest entity. Returns true if any are in range. </summary>
     /// <param name="me">Y'know...</param>
     /// <param name="arr">Array of entities, such as `Main.player`, `Main.npc`, `Main.projectile`</param>
@@ -76,25 +86,26 @@ namespace OriMod {
     /// <param name="condition">Extra condition to filter out entities. If false, the entity is skipped.</param>
     /// <typeparam name="T">Type of Entity (i.e. Player, NPC, Projectile)</typeparam>
     /// <returns>`true` if there is an Entity closer than `dist`, false otherwise</returns>
-    internal static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float dist, out int entityId, Func<Entity, T, float> distSQCheck=null, Func<T, bool> condition=null) where T : Entity {
+    internal static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float dist, out int entityId, Func<Entity, T, float> distSQCheck = null, Func<T, bool> condition = null) where T : Entity {
       if (dist <= 0) {
         // Infinite range detect
         dist = float.MaxValue;
       }
       else {
         // Squared for proper DistanceSquared
-        dist = dist * dist;
+        dist *= dist;
       }
       if (distSQCheck == null) {
         distSQCheck = (e1, e2) => e1.DistanceShortSquared(e2);
       }
-      entityId = 255;
+      entityId = -1;
       bool inRange = false;
       
       for (int e = 0; e < arr.Length; e++) {
         T entity = arr[e];
-        if (entity == null) continue;
-        if (!entity.active || condition?.Invoke(entity) == false) continue;
+        if (entity == null || !entity.active || condition?.Invoke(entity) == false) {
+          continue;
+        }
         
         float newDist = distSQCheck(me, entity);
         if (newDist < dist) {
@@ -129,14 +140,8 @@ namespace OriMod {
       Vector2.Distance(me.ClosestSideTo(otherVect), otherVect);
     internal static float DistanceShortSquared(this Entity me, Vector2 otherVect) =>
       Vector2.DistanceSquared(me.ClosestSideTo(otherVect), otherVect);
+    #endregion
 
     internal static float Lerp(float f1, float f2, float by) => f1 * (1 - by) + f2 * by;
-
-    /// <summary> Checks if the held item shot a projectile of this type. </summary>
-    internal static bool HeldItemShotThis(this Projectile proj) {
-      if (proj.owner == 255) return false;
-      var item = Main.player[proj.owner].HeldItem;
-      return item.shoot == proj.type;
-    }
   }
 }

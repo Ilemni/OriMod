@@ -15,34 +15,34 @@ namespace OriMod {
 
     public static OriConfigClient1 ConfigClient { get; internal set; }
     public static OriConfigClient2 ConfigAbilities { get; internal set; }
-    
+
     #region Logging Shortcuts
-    
+
     internal static log4net.ILog Log => OriMod.Instance.Logger;
-    
+
     /// <summary> Gets localiced text with key `Mods.OriMod.{key}`</summary>
     /// <param name="key">Key in lang file</param>
     internal static LocalizedText LangText(string key) => Language.GetText($"Mods.OriMod.{key}");
-    
+
     /// <summary> Gets localiced text with key `Mods.OriMod.Error.{key}`</summary>
     /// <param name="key">Key in lang file, starting with `Error.`</param>
     internal static LocalizedText LangErr(string key) => Language.GetText($"Mods.OriMod.Error.{key}");
-    
+
     /// <summary> Shows an error in chat and in the logger, using default localized text. </summary>
     /// <param name="key">Key in lang file</param>
     /// <param name="log">Write to logger</param>
-    internal static void Error(string key, bool log=true) => ErrorText(LangErr(key).Value, log);
+    internal static void Error(string key, bool log = true) => ErrorText(LangErr(key).Value, log);
 
     /// <summary> Shows an error in chat and in the logger, using default localized text. Has formatting. </summary>
     /// <param name="key">Key in lang file</param>
     /// <param name="log">Write to logger</param>
     /// <param name="args">Formatting args</param>
-    internal static void ErrorFormat(string key, bool log=true, params object[] args) => ErrorText(LangErr(key).Format(args), log);
+    internal static void ErrorFormat(string key, bool log = true, params object[] args) => ErrorText(LangErr(key).Format(args), log);
 
     /// <summary> Shows an error in chat and in the logger, using a string literal. </summary>
     /// <param name="text">String literal to show</param>
     /// <param name="log">Write to logger</param>
-    internal static void ErrorText(string text, bool log=true) {
+    internal static void ErrorText(string text, bool log = true) {
       if (log) {
         Log.Error(text);
       }
@@ -63,7 +63,7 @@ namespace OriMod {
     public static ModHotKey ChargeKey;
     public static ModHotKey BurrowKey;
     public static OriMod Instance;
-    
+
     public OriMod() {
       Properties = new ModProperties() {
         Autoload = true,
@@ -72,15 +72,15 @@ namespace OriMod {
       };
       Instance = this;
     }
-    
+
     public override void AddRecipeGroups() {
-      // Creates a new recipe group
-      RecipeGroup group1 = new RecipeGroup(() => "Any Enchanted Items", new int[] {
+      var group1 = new RecipeGroup(() => "Any Enchanted Items", new int[] {
         ItemID.EnchantedSword,
         ItemID.EnchantedBoomerang,
         ItemID.Arkhalis
       });
-      RecipeGroup group2 = new RecipeGroup(() => "Any Basic Movement Accessories", new int[] {
+
+      var group2 = new RecipeGroup(() => "Any Basic Movement Accessories", new int[] {
         ItemID.Aglet,
         ItemID.AnkletoftheWind,
         ItemID.RocketBoots,
@@ -94,11 +94,12 @@ namespace OriMod {
         ItemID.ShoeSpikes,
         ItemID.ClimbingClaws
       });
+
       // Registers the new recipe group with the specified name
       RecipeGroup.RegisterGroup("OriMod:EnchantedItems", group1);
       RecipeGroup.RegisterGroup("OriMod:MovementAccessories", group2);
     }
-    
+
     public override void Load() {
       SoulLinkKey = RegisterHotKey("SoulLink", "E");
       BashKey = RegisterHotKey("Bash", "Mouse2");
@@ -106,7 +107,7 @@ namespace OriMod {
       ClimbKey = RegisterHotKey("Climbing", "LeftShift");
       FeatherKey = RegisterHotKey("Feather", "LeftShift");
       ChargeKey = RegisterHotKey("Charge", "W");
-      BurrowKey = RegisterHotKey("Burrow", "LeftShift");
+      BurrowKey = RegisterHotKey("Burrow", "LeftControl");
       if (!Main.dedServ) {
         // Add certain equip textures
         AddEquipTexture(null, EquipType.Head, "OriHead", "OriMod/PlayerEffects/OriHead");
@@ -120,6 +121,7 @@ namespace OriMod {
       //   Log.Info($"Ori is owned: {owned}");
       // }
     }
+
     // public static bool checkInstalled(string rkey, string rvalue="Installed", string checkValue="1") {
     //   RegistryKey key = Registry.CurrentUser.OpenSubKey(rkey);
     //   if (key == null) return false;
@@ -130,7 +132,7 @@ namespace OriMod {
     //   key.Close();
     //   return false;
     // }
-    
+
     public override void Unload() {
       BashKey = null;
       DashKey = null;
@@ -143,9 +145,7 @@ namespace OriMod {
       Instance = null;
       ConfigClient = null;
       ConfigAbilities = null;
-      ModNetHandler.oriPlayerHandler = null;
-      ModNetHandler.abilityPacketHandler = null;
-      
+
       // Unload ModPlayer
       try {
         for (int p = 0, len = Main.player.Length; p < len; p++) {
@@ -164,34 +164,33 @@ namespace OriMod {
         Log.Error($"Error while unloading OriPlayers, unload for OriPlayers cancelled.\n{ex}");
       }
     }
-    
+
     public override void HandlePacket(BinaryReader reader, int fromWho)
       => ModNetHandler.HandlePacket(reader, fromWho);
-    
+
     public override object Call(params object[] args) {
       int len = args.Length;
       if (len > 0 && args[0] is string cmd) {
         switch (cmd) {
           case "ResetPlayerModData": {
-            if (len < 2) {
-              Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected second argument of type Player, got {len}");  
-              return false;
+              if (len >= 2) {
+                OriPlayer oPlayer;
+                object obj = args[1];
+                if (obj is Player player) {
+                  oPlayer = player.GetModPlayer<OriPlayer>();
+                }
+                else if (obj is ModPlayer modPlayer) {
+                  oPlayer = modPlayer.player.GetModPlayer<OriPlayer>();
+                }
+                else {
+                  Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type Player, got {obj.GetType()}");
+                  return false;
+                }
+                oPlayer.ResetData();
+                return true;
+              }
+              break;
             }
-
-            OriPlayer oPlayer = null;
-            if (args[1] is Player player) {
-              oPlayer = player.GetModPlayer<OriPlayer>(this);
-            }
-            else if (args[1] is ModPlayer modPlayer) {
-              oPlayer = modPlayer.player.GetModPlayer<OriPlayer>(this);
-            }
-            else {
-              Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type Player, got {args[1].GetType()}");
-              return false;
-            }
-            oPlayer.ResetData();
-            return true;
-          }
         }
       }
       return null;

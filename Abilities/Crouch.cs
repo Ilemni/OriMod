@@ -4,12 +4,13 @@ namespace OriMod.Abilities {
   public class Crouch : Ability {
     internal Crouch(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.Crouch;
-    internal override bool DoUpdate => InUse || oPlayer.Input(OriPlayer.Current.Down); 
+
+    internal override bool DoUpdate => InUse || oPlayer.Input(PlayerInput.Triggers.Current.Down);
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Restricted;
     private bool Restricted => OriMod.ConfigClient.SoftCrouch ? player.controlLeft || player.controlRight : false;
     private int StartDuration => 10;
     private int EndDuration => 4;
-    
+
     protected override void UpdateUsing() {
       if (!OriMod.ConfigClient.SoftCrouch) {
         player.runAcceleration = 0;

@@ -5,25 +5,32 @@ namespace OriMod.Abilities {
   public class Glide : Ability {
     internal Glide(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.Glide;
+
     internal override bool DoUpdate => oPlayer.Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased);
     internal override bool CanUse =>
       base.CanUse && !Ending &&
       !Handler.airJump.InUse && !Handler.stomp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse &&
       !Handler.wCJump.InUse && !Handler.burrow.InUse &&
       player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active && !Handler.burrow.AutoBurrow;
-    
+
     private float MaxFallSpeed => 2f;
     private float RunSlowdown => 0.125f;
     private float RunAcceleration => 0.2f;
     private int StartDuration => 8;
     private int EndDuration => 10;
-    
+
     protected override void UpdateStarting() {
-      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
+      if (CurrTime == 0) {
+        oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
+      }
     }
+
     protected override void UpdateEnding() {
-      if (CurrTime == 0) oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + OriPlayer.RandomChar(3), 0.8f);
+      if (CurrTime == 0) {
+        oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + OriPlayer.RandomChar(3), 0.8f);
+      }
     }
+
     protected override void UpdateUsing() {
       if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
         oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + OriPlayer.RandomChar(5), 0.45f);
@@ -34,7 +41,7 @@ namespace OriMod.Abilities {
         player.runAcceleration = RunAcceleration;
       }
     }
-    
+
     internal override void Tick() {
       if (!InUse && CanUse && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
         Starting = true;
@@ -67,7 +74,7 @@ namespace OriMod.Abilities {
           else {
             Inactive = true;
           }
-        } 
+        }
         else if (OriMod.FeatherKey.JustReleased) {
           Ending = true;
           CurrTime = 0;

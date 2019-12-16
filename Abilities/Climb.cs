@@ -5,17 +5,18 @@ namespace OriMod.Abilities {
   public class Climb : Ability {
     internal Climb(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.Climb;
+
     internal override bool DoUpdate => oPlayer.Input(OriMod.ClimbKey.Current) && oPlayer.OnWall;
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Handler.wJump.InUse && !Handler.wCJump.InUse;
-    
-    internal bool IsCharging => Active && ((WallDir == 1 && PlayerInput.Triggers.Current.Left) || (WallDir == -1 && PlayerInput.Triggers.Current.Right));
-    
+
+    internal bool IsCharging => Active && (WallDir == 1 && PlayerInput.Triggers.Current.Left || WallDir == -1 && PlayerInput.Triggers.Current.Right);
+
     internal int WallDir;
-    
+
     private void StartClimb() {
       WallDir = player.direction;
     }
-    
+
     protected override void UpdateActive() {
       player.gravity = 0;
       player.runAcceleration = 0;
@@ -49,12 +50,8 @@ namespace OriMod.Abilities {
           StartClimb();
         }
       }
-      if (InUse) {
-        if (!CanUse || !OriMod.ClimbKey.Current) {
-          Inactive = true;
-        }
-      }
-      else {
+      else if (!CanUse || !OriMod.ClimbKey.Current) {
+        Inactive = true;
       }
     }
   }

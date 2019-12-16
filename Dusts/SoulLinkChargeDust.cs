@@ -16,7 +16,7 @@ namespace OriMod.Dusts {
       dust.noGravity = true;
       dust.velocity = Vector2.Zero;
     }
-    
+
     public override bool Update(Dust dust) {
       dust.position += (dust.customData as Player).velocity;
       dust.alpha += alphaRate;

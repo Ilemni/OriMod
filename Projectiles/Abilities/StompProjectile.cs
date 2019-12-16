@@ -10,7 +10,7 @@ namespace OriMod.Projectiles.Abilities {
       projectile.width = 40;
       projectile.height = 56;
     }
-    
+
     internal override void Behavior() {
       base.Behavior();
       projectile.height = Math.Max(56, (int)(oPlayer.player.velocity.Y * 2));

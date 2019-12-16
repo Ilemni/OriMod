@@ -1,16 +1,18 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class ChargeJump : Ability {
     internal ChargeJump(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.ChargeJump;
+
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && !InUse && Charged && !Handler.burrow.InUse && !Handler.climb.InUse;
     protected override int Cooldown => (int)(Config.CJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
-    
-    internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && oPlayer.Input(OriMod.ChargeKey.Current);
+
+    internal bool CanCharge => base.CanUse&& !InUse && oPlayer.IsGrounded && oPlayer.Input(OriMod.ChargeKey.Current);
     private int MaxCharge => 35;
     private int ChargeGrace => 25;
     private static readonly float[] Speeds = new float[20] {
@@ -18,13 +20,13 @@ namespace OriMod.Abilities {
     };
     private float SpeedMultiplier => Config.CJumpSpeedMultiplier * 0.35f;
     private int Duration => Speeds.Length;
-    
+
     private bool Charged;
     private int CurrCharge;
     private int CurrGrace;
-    
+
     public Projectile Proj { get; private set; }
-    
+
     private void StartChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref CurrSoundRand));
       Charged = false;
@@ -33,21 +35,23 @@ namespace OriMod.Abilities {
       PutOnCooldown();
       Handler.climb.Inactive = true;
     }
+
     private void UpdateCharged() {
       if (Main.rand.NextFloat() < 0.7f) {
-        Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor:Color.Blue)];
+        Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor: Color.Blue);
       }
     }
-    
+
     protected override void UpdateActive() {
       float speed = Speeds[CurrTime - 1] * SpeedMultiplier;
       player.velocity.Y = speed * -player.gravDir;
       oPlayer.ImmuneTimer = 12;
     }
+
     protected override void UpdateUsing() {
       player.controlJump = false;
     }
-    
+
     internal override void Tick() {
       if (Handler.burrow.InUse) {
         Charged = false;
@@ -92,7 +96,7 @@ namespace OriMod.Abilities {
       if (Active) {
         CurrTime++;
         if (CurrTime > Duration) {
-          if (oPlayer.Input(OriPlayer.Current.Jump)) {
+          if (oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
             Ending = true;
           }
           else {
@@ -101,7 +105,7 @@ namespace OriMod.Abilities {
           CurrTime = 0;
         }
       }
-      if (Ending && !oPlayer.Input(OriPlayer.Current.Jump)) {
+      if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
         Inactive = true;
       }
     }

@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Terraria;
 using Terraria.ID;
@@ -6,11 +5,11 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   internal abstract class PacketHandler {
-    internal byte HandlerType { get; set; }
-    
-    internal const byte OriStatus = 1;
-    internal const byte AbilityPacket = 2;
-    
+    internal readonly byte HandlerType;
+
+    internal readonly byte OriStatus = 1;
+    internal readonly byte AbilityPacket = 2;
+
     internal abstract void HandlePacket(BinaryReader reader, int fromWho);
 
     protected PacketHandler(byte handlerType) => HandlerType = handlerType;

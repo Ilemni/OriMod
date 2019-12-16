@@ -7,11 +7,12 @@ namespace OriMod.Abilities {
   public class WallChargeJump : Ability {
     public WallChargeJump(OriAbilities handler) : base(handler) { }
     public override int id => AbilityID.WallChargeJump;
+
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
     protected override int Cooldown => (int)(Config.WCJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
-    
+
     internal bool CanCharge => base.CanUse && Handler.climb.IsCharging;
     private int MaxCharge => 35;
     private int Duration => 20;
@@ -20,13 +21,13 @@ namespace OriMod.Abilities {
     };
     private float SpeedMultiplier => Config.WCJumpSpeedMultipler * 0.5f;
     private float MaxAngle => Config.WCJumpMaxAngle;
-    
+
     internal bool Charged;
     private int CurrCharge;
     private Vector2 Direction;
-    
+
     public Projectile Proj { get; private set; }
-    
+
     internal Vector2 GetMouseDirection() => GetMouseDirection(out float _);
     internal Vector2 GetMouseDirection(out float angle) {
       Vector2 mouse = Main.MouseWorld - player.Center;
@@ -39,7 +40,7 @@ namespace OriMod.Abilities {
       dir.Y *= player.gravDir;
       return dir;
     }
-    
+
     private void StartWallChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref CurrSoundRand));
       Charged = false;
@@ -49,22 +50,24 @@ namespace OriMod.Abilities {
       Direction = GetMouseDirection();
       player.velocity = Direction * Speeds[0] * SpeedMultiplier;
     }
+
     private void UpdateCharged() {
       if (Main.rand.NextFloat() < 0.7f) {
-        Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor:Color.Blue)];
+        Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor: Color.Blue);
       }
     }
-    
+
     protected override void UpdateActive() {
       float speed = Speeds[CurrTime - 1] * SpeedMultiplier;
       player.velocity = Direction * speed;
       player.direction = Math.Sign(player.velocity.X);
       player.maxFallSpeed = Math.Abs(player.velocity.Y);
     }
+
     protected override void UpdateUsing() {
       player.controlJump = false;
     }
-    
+
     internal override void Tick() {
       if (Handler.burrow.InUse) {
         Charged = false;
@@ -97,7 +100,7 @@ namespace OriMod.Abilities {
       if (Active) {
         CurrTime++;
         if (CurrTime > Duration) {
-          if (oPlayer.Input(OriPlayer.Current.Jump)) {
+          if (oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
             Ending = true;
           }
           else {
@@ -106,7 +109,7 @@ namespace OriMod.Abilities {
           CurrTime = 0;
         }
       }
-      if (Ending && !oPlayer.Input(OriPlayer.Current.Jump)) {
+      if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
         Inactive = true;
       }
     }

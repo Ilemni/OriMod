@@ -8,6 +8,7 @@ namespace OriMod {
     public bool IsBashed;
     public Vector2 BashPos;
     public OriPlayer BashPlayer;
+
     public override bool PreAI(Projectile proj) {
       if (IsBashed) {
         proj.Center = BashPos;
@@ -16,7 +17,7 @@ namespace OriMod {
       }
       return true;
     }
-    
+
     public override bool CanHitPlayer(Projectile projectile, Player target) => !IsBashed || target != BashPlayer.player;
   }
 }

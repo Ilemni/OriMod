@@ -21,7 +21,7 @@ namespace OriMod {
     public static byte Crouch => 14;
     public static byte Burrow => 15;
   }
-  
+
   public sealed class OriAbilities {
     public OriPlayer oPlayer { get; }
     public Player player { get; }
@@ -44,7 +44,7 @@ namespace OriMod {
     public LookUp lookUp { get; }
     public Crouch crouch { get; }
     public Burrow burrow { get; }
-    
+
     internal OriAbilities(OriPlayer o) {
       oPlayer = o;
       player = o.player;
@@ -67,11 +67,13 @@ namespace OriMod {
       _a = new Ability[16];
       Abilities.ForEach(a => _a[a.id] = a);
     }
-    
+
     internal void Tick() {
       if (player.whoAmI != Main.myPlayer) {
         Abilities.ForEach(a => {
-          if (a.InUse) a.Tick();
+          if (a.InUse) {
+            a.Tick();
+          }
         });
         return;
       }
@@ -79,10 +81,12 @@ namespace OriMod {
       Abilities.ForEach(a => a.Tick());
     }
 
-    internal void Sync() {
-      if (player.whoAmI != Main.myPlayer || Main.netMode != NetmodeID.MultiplayerClient) return;
-        
-      List<byte> changes = new List<byte>();
+    internal void NetSync() {
+      if (player.whoAmI != Main.myPlayer || Main.netMode != NetmodeID.MultiplayerClient) {
+        return;
+      }
+
+      var changes = new List<byte>();
       for (int a = 0; a < Abilities.Count; a++) {
         if (Abilities[a].netUpdate) {
           Abilities[a].netUpdate = false;
@@ -96,10 +100,12 @@ namespace OriMod {
 
     internal void Update() {
       Abilities.ForEach(a => {
-        if (a.DoUpdate) a.Update();
+        if (a.DoUpdate) {
+          a.Update();
+        }
       });
     }
-    
+
     internal void DisableAllAbilities() => Abilities.ForEach(a => a.Inactive = true);
   }
 }
