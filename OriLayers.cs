@@ -6,88 +6,71 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   public static class OriLayers {
-    private static Texture2D SecondaryTexture => !_tex2?.IsDisposed ?? false ? _tex2 : (_tex2 = OriMod.Instance.GetTexture("PlayerEffects/OriPlayerSecondary"));
-    private static Texture2D _tex2;
-
     internal static readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
-      Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
       DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.PlayerAnim);
-      data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TransformStart" ? Color.White : oPlayer.SpriteColor;
+      data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TransformStart" ? Color.White : oPlayer.SpriteColorPrimary;
       Main.playerDrawData.Add(data);
 
-      oPlayer.burrow.DrawEffects();
+      oPlayer.Abilities.burrow.DrawEffects();
     });
 
     internal static readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "SecondaryColor", delegate (PlayerDrawInfo drawInfo) {
-      Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
       DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.SecondaryLayer);
       data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TrasformStart" ? Color.White : oPlayer.SpriteColorSecondary;
-      data.texture = SecondaryTexture;
+      data.texture = OriTextures.Instance.PlayerSecondary;
       Main.playerDrawData.Add(data);
     });
 
     internal static readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
-      Mod mod = ModLoader.GetMod("OriMod");
       Player player = drawInfo.drawPlayer;
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       if (!player.dead && !player.invis) {
-        oPlayer.TrailIndex++;
-        if (oPlayer.TrailIndex > 25) {
-          oPlayer.TrailIndex = 0;
-        }
-        oPlayer.Trails[oPlayer.TrailIndex].Reset();
+        oPlayer.Trails.ResetNext();
       }
 
-      for (int i = 0; i < 26; i++) {
-        Trail trail = oPlayer.Trails[i];
-        trail.Tick();
-        Main.playerDrawData.Add(trail.GetDrawData());
-      }
+      oPlayer.Trails.AddTrailDrawData();
     });
 
     internal static readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
-      Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      Animation anim = oPlayer.Animations.BashAnim;
-      var pos = oPlayer.bash.BashEntity.Center - Main.screenPosition;
+      Animations.Animation anim = oPlayer.Animations.BashAnim;
+      var bash = oPlayer.Abilities.bash;
+
+      var pos = bash.BashEntity.Center - Main.screenPosition;
       var orig = anim.ActiveTile.Size() / 2;
-      int frame = oPlayer.bash.CurrDuration < 40 ? 0 : oPlayer.bash.CurrDuration < 50 ? 1 : 2;
+      int frame = bash.CurrDuration < 40 ? 0 : bash.CurrDuration < 50 ? 1 : 2;
       var rect = new Rectangle(0, frame * anim.Source.TileSize.Y, anim.Source.TileSize.X, anim.Source.TileSize.Y);
-      var rotation = oPlayer.bash.BashEntity.AngleTo(Main.MouseWorld);
+      var rotation = oPlayer.Abilities.bash.BashEntity.AngleTo(Main.MouseWorld);
       var effect = SpriteEffects.None;
       var data = new DrawData(anim.Texture, pos, rect, Color.White, rotation, orig, 1, effect, 0);
       Main.playerDrawData.Add(data);
     });
 
     internal static readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
-      Mod mod = ModLoader.GetMod("OriMod");
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
       Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.GlideAnim));
     });
 
-    private static Texture2D SoulLinkTexture => !_tex3?.IsDisposed ?? false ? _tex3 : (_tex3 = OriMod.Instance.GetTexture("PlayerEffects/RevSoulLinkSpritesheet"));
-    private static Texture2D _tex3;
-
     internal static readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
-      Mod mod = ModLoader.GetMod("OriMod");
+      var mod = OriMod.Instance;
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      Vector2 pos = oPlayer.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
+      Vector2 pos = oPlayer.Abilities.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
       int frame = (int)(Main.time % 48 / 8) * 64;
       var rect = new Rectangle(0, frame, 48, 64);
       Vector2 orig = rect.Size() / 2;
       orig.Y += 8;
       SpriteEffects effect = SpriteEffects.None;
 
-      var data = new DrawData(SoulLinkTexture, pos, rect, Color.White, 0, orig, 1, effect, 0);
+      var data = new DrawData(OriTextures.Instance.SoulLink, pos, rect, Color.White, 0, orig, 1, effect, 0);
       Main.playerDrawData.Add(data);
     });
 
-    private static DrawData DefaultDrawData(PlayerDrawInfo drawInfo, OriPlayer oPlayer, Animation anim) {
+    private static DrawData DefaultDrawData(PlayerDrawInfo drawInfo, OriPlayer oPlayer, Animations.Animation anim) {
       Player player = oPlayer.player;
       Texture2D texture = anim.Texture;
       Vector2 pos = drawInfo.position - Main.screenPosition + player.Size / 2;
@@ -102,7 +85,7 @@ namespace OriMod {
         effect |= SpriteEffects.FlipVertically;
       }
 
-      return new DrawData(texture, pos, rect, oPlayer.SpriteColor, player.direction * oPlayer.AnimRads, orig, 1, effect, 0);
+      return new DrawData(texture, pos, rect, oPlayer.SpriteColorPrimary, player.direction * oPlayer.AnimRads, orig, 1, effect, 0);
     }
   }
 }

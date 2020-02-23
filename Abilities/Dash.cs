@@ -1,13 +1,14 @@
 using Microsoft.Xna.Framework;
+using OriMod.Utilities;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class Dash : Ability {
-    internal Dash(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.Dash;
+    internal Dash(AbilityManager handler) : base(handler) { }
+    public override int Id => AbilityID.Dash;
 
-    internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.DashKey.JustPressed) && !Handler.cDash.InUse;
-    internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
+    internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.DashKey.JustPressed) && !Manager.cDash.InUse;
+    internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !Manager.stomp.InUse && !Manager.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.DashCooldown * 30);
     protected override bool CooldownOnlyOnBoss => true;
     protected override Color RefreshColor => Color.White;
@@ -21,10 +22,12 @@ namespace OriMod.Abilities {
 
     private int Direction;
 
+    private readonly RandomChar randChar = new RandomChar();
+
     internal void StartDash() {
       CurrTime = 0;
       Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction;
-      oPlayer.PlayNewSound("Ori/Dash/seinDash" + OriPlayer.RandomChar(3, ref CurrSoundRand), 0.2f);
+      oPlayer.PlayNewSound("Ori/Dash/seinDash" + randChar.NextNoRepeat(3), 0.2f);
       player.pulley = false;
     }
 
@@ -38,7 +41,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateActive() {
       if (PlayerInput.Triggers.JustPressed.Jump && (player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm)) {
-        Inactive = true;
+        SetState(State.Inactive);
         PutOnCooldown();
         return;
       }
@@ -56,7 +59,7 @@ namespace OriMod.Abilities {
     protected override void TickCooldown() {
       if (CurrCooldown > 0 || !Refreshed) {
         CurrCooldown--;
-        if (CurrCooldown < 0 && (Handler.bash.InUse || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
+        if (CurrCooldown < 0 && (Manager.bash.InUse || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
           Refreshed = true;
         }
       }
@@ -64,15 +67,15 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (CanUse && OriMod.DashKey.JustPressed) {
-        Active = true;
+        SetState(State.Active);
         StartDash();
         return;
       }
       TickCooldown();
       if (InUse) {
         CurrTime++;
-        if (CurrTime > Duration - 1 || oPlayer.OnWall || Handler.bash.InUse) {
-          Inactive = true;
+        if (CurrTime > Duration - 1 || oPlayer.OnWall || Manager.bash.InUse) {
+          SetState(State.Inactive);
           PutOnCooldown();
         }
       }

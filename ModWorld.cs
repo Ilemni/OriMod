@@ -23,7 +23,7 @@ namespace OriMod {
       //   OriPlayer oPlayer = p.GetModPlayer<OriPlayer>();
       //   oPlayer.SeinMinionUpgrade = GlobalSeinUpgrade;
       // }
-      LocalizedText text = OriMod.LangText($"SeinUpgrade.Upgraded{GlobalSeinUpgrade}");
+      LocalizedText text = OriMod.GetText($"SeinUpgrade.Upgraded{GlobalSeinUpgrade}");
       if (Main.netMode == 0) {
         // Main.NewText(text.ToString(), Color.White);
       }

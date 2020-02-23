@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod {
+namespace OriMod.Networking {
   internal class OriPlayerPacketHandler : PacketHandler {
     internal OriPlayerPacketHandler(byte handlerType) : base(handlerType) { }
 
@@ -30,7 +30,7 @@ namespace OriMod {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
 
       var flags = new BitsByte();
-      flags[0] = fromPlayer.OriSet;
+      flags[0] = fromPlayer.IsOri;
       flags[1] = fromPlayer.Flashing;
       flags[2] = fromPlayer.Transforming;
       flags[3] = fromPlayer.UnrestrictedMovement;
@@ -45,7 +45,7 @@ namespace OriMod {
         packet.Write((byte)fromPlayer.SeinMinionType);
       }
 
-      packet.WriteRGB(fromPlayer.SpriteColor);
+      packet.WriteRGB(fromPlayer.SpriteColorPrimary);
 
       packet.Send(toWho, fromWho);
     }
@@ -63,7 +63,7 @@ namespace OriMod {
       byte seinMinionType = flags[4] ? r.ReadByte() : (byte)0;
       Color spriteColor = r.ReadRGB();
 
-      fromPlayer.OriSet = oriSet;
+      fromPlayer.IsOri = oriSet;
       fromPlayer.Flashing = flashing;
       fromPlayer.Transforming = transforming;
       fromPlayer.UnrestrictedMovement = unrestrictedMovement;
@@ -71,7 +71,7 @@ namespace OriMod {
       fromPlayer.SeinMinionType = seinMinionType;
       fromPlayer.SeinMinionActive = seinMinionActive;
       fromPlayer.MpcPlayerLight = mpcPlayerLight;
-      fromPlayer.SpriteColor = spriteColor;
+      fromPlayer.SpriteColorPrimary = spriteColor;
 
       if (Main.netMode == NetmodeID.Server) {
         SendOriState(-1, fromWho);

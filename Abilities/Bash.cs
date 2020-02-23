@@ -1,4 +1,7 @@
 using Microsoft.Xna.Framework;
+using OriMod.NPCs;
+using OriMod.Projectiles;
+using OriMod.Utilities;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -6,11 +9,11 @@ using Terraria.ID;
 
 namespace OriMod.Abilities {
   public class Bash : Ability {
-    internal Bash(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.Bash;
+    internal Bash(AbilityManager handler) : base(handler) { }
+    public override int Id => AbilityID.Bash;
 
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BashKey.Current);
-    internal override bool CanUse => base.CanUse && Inactive && !Handler.stomp.InUse && !Handler.cJump.InUse;
+    internal override bool CanUse => base.CanUse && Inactive && !Manager.stomp.InUse && !Manager.cJump.InUse;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);
     protected override Color RefreshColor => Color.LightYellow;
 
@@ -38,15 +41,13 @@ namespace OriMod.Abilities {
     internal int CurrDuration { get; private set; }
     private Vector2 playerStartPos;
     private Vector2 targetStartPos;
-    public bool TargetIsProjectile { get; private set; }
-    private byte NpcID;
-    private byte WormID;
-    private ushort ProjID;
-    public bool IsBashingWorm => WormID < Main.maxNPCs;
-    public NPC BashNpc => NpcID < Main.maxNPCs ? Main.npc[NpcID] : null;
-    public NPC WormNpc => WormID < Main.maxNPCs ? Main.npc[WormID] : null;
-    public Projectile BashProj => ProjID < Main.projectile.Length ? Main.projectile[ProjID] : null;
-    public Entity BashEntity => TargetIsProjectile ? BashProj as Entity : BashNpc as Entity;
+    
+    public bool TargetIsNpc { get; private set; }
+    private ushort TargetID;
+    public IBashable BashTarget { get; private set; }
+    public Entity BashEntity { get; private set; }
+
+    private readonly RandomChar randChar = new RandomChar();
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
       if (InUse) {
@@ -54,13 +55,8 @@ namespace OriMod.Abilities {
           targetStartPos = r.ReadVector2();
           playerStartPos = r.ReadVector2();
         }
-        TargetIsProjectile = r.ReadBoolean();
-        if (TargetIsProjectile) {
-          ProjID = r.ReadUInt16();
-        }
-        else {
-          NpcID = r.ReadByte();
-        }
+        TargetIsNpc = r.ReadBoolean();
+        TargetID = r.ReadUInt16();
       }
     }
 
@@ -70,13 +66,8 @@ namespace OriMod.Abilities {
           packet.WriteVector2(targetStartPos);
           packet.WriteVector2(playerStartPos);
         }
-        packet.Write(TargetIsProjectile);
-        if (TargetIsProjectile) {
-          packet.Write(ProjID);
-        }
-        else {
-          packet.Write(NpcID);
-        }
+        packet.Write(TargetIsNpc);
+        packet.Write(TargetID);
       }
     }
 
@@ -89,16 +80,20 @@ namespace OriMod.Abilities {
     private bool BashStart() {
       float currDist = BashRange;
 
+      BashTarget = null;
+      BashEntity = null;
+
       // Check for Bashing NPCs
-      bool isBashingNpc = player.GetClosestEntity(Main.npc, ref currDist, out int tempNpcID, condition: BashNpcFilter);
+      bool isBashingNpc = player.GetClosestEntity(Main.npc, ref currDist, out NPC npc, condition: BashNpcFilter);
       if (isBashingNpc) {
-        NpcID = (byte)tempNpcID;
-        WormID = BashNpc.aiStyle == 6 ? (byte)BashNpc.ai[3] : (byte)255;
-        
-        var npc = IsBashingWorm ? WormNpc : BashNpc;
-        OriNPC oNpc = npc.GetGlobalNPC<OriNPC>();
-        oNpc.IsBashed = true;
-        oNpc.BashPos = npc.Center;
+        if (npc.aiStyle == 6) {
+          // Bash head of worm-like rather than body
+          npc = Main.npc[(int)npc.ai[3]];
+        }
+        TargetIsNpc = true;
+        TargetID = (ushort)npc.whoAmI;
+        BashEntity = npc;
+        BashTarget = npc.GetGlobalNPC<OriNPC>();
       }
       else {
         // If no NPCs to Bash, check for Projectiles
@@ -106,21 +101,23 @@ namespace OriMod.Abilities {
           return false;
         }
 
-        bool isBashingProj = player.GetClosestEntity(Main.projectile, ref currDist, out int tempProjID, condition: BashProjFilter);
+        currDist = BashRange;
+        bool isBashingProj = player.GetClosestEntity(Main.projectile, ref currDist, out Projectile proj, condition: BashProjFilter);
         if (!isBashingProj) {
           return false;
         }
         
-        TargetIsProjectile = true;
-        ProjID = (ushort)tempProjID;
-        OriProjectile oProj = BashProj.GetGlobalProjectile<OriProjectile>();
-        oProj.IsBashed = true;
-        oProj.BashPos = BashProj.Center;
+        TargetIsNpc = false;
+        TargetID = (ushort)proj.whoAmI;
+        BashEntity = proj;
+        BashTarget = proj.GetGlobalProjectile<OriProjectile>();
       }
       
+      BashTarget.IsBashed = true;
+      BashTarget.BashPosition = BashEntity.Center;
+
       playerStartPos = player.Center;
       targetStartPos = BashEntity.Center;
-
       oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.7f);
       return true;
     }
@@ -134,7 +131,7 @@ namespace OriMod.Abilities {
     protected override void UpdateEnding() {
       player.pulley = false;
       float bashAngle = player.AngleFrom(Main.MouseWorld);
-      oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + OriPlayer.RandomChar(3, ref CurrSoundRand), 0.7f);
+      oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + randChar.NextNoRepeat(3), 0.7f);
       oPlayer.UnrestrictedMovement = true;
       
       var bashVector = new Vector2((float)(0 - Math.Cos(bashAngle)), (float)(0 - Math.Sin(bashAngle)));
@@ -144,22 +141,18 @@ namespace OriMod.Abilities {
       player.position += playerBashVector * 3;
       BashEntity.velocity = npcBashVector;
       player.position += npcBashVector * 5;
-
-      player.immuneTime = 5;
-
-      if (TargetIsProjectile) {
-        OriProjectile bashProj = BashProj.GetGlobalProjectile<OriProjectile>();
-        bashProj.IsBashed = false;
-      }
-      else {
-        OriNPC bashNpc = (IsBashingWorm ? WormNpc : BashNpc).GetGlobalNPC<OriNPC>();
-        bashNpc.IsBashed = false;
-        int damage = BashDamage + OriWorld.GlobalSeinUpgrade * 9;
-        player.ApplyDamageToNPC(BashNpc, damage, 0, 1, false);
-      }
       if (oPlayer.IsGrounded) {
         player.position.Y -= 1f;
       }
+
+      player.immuneTime = 5;
+
+      BashTarget.IsBashed = false;
+      if (TargetIsNpc) {
+        int damage = BashDamage + OriWorld.GlobalSeinUpgrade * 9;
+        player.ApplyDamageToNPC(Main.npc[TargetID], damage, 0, 1, false);
+      }
+
       PutOnCooldown();
     }
 
@@ -172,11 +165,11 @@ namespace OriMod.Abilities {
         player.velocity = Vector2.Zero;
         player.gravity = 0;
       }
-      if (TargetIsProjectile) {
-        BashProj.netUpdate2 = true;
+      if (TargetIsNpc) {
+        ((NPC)BashEntity).netUpdate2 = true;
       }
       else {
-        BashNpc.netUpdate2 = true;
+        ((Projectile)BashEntity).netUpdate2 = true;
       }
       // Allow only quick heal and quick mana
       player.controlJump = false;
@@ -222,10 +215,10 @@ namespace OriMod.Abilities {
         CurrDuration = 0;
         bool didBash = BashStart();
         if (!didBash) {
-          Failed = true;
+          SetState(State.Failed);
         }
         else {
-          Starting = true;
+          SetState(State.Starting);
         }
         return;
       }
@@ -233,24 +226,24 @@ namespace OriMod.Abilities {
         CurrDuration++;
         if (Starting) {
           if (CurrDuration > MinBashDuration) {
-            Active = true;
+            SetState(State.Active);
           }
           return;
         }
         if (Active) {
           if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || BashEntity == null || !BashEntity.active) {
-            Ending = true;
+            SetState(State.Ending);
           }
           return;
         }
         if (Ending) {
-          Inactive = true;
+          SetState(State.Inactive);
           return;
         }
       }
       else {
         if (Failed) {
-          Inactive = true;
+          SetState(State.Inactive);
         }
         TickCooldown();
       }

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-// using Microsoft.Win32;
 using Microsoft.Xna.Framework;
+using OriMod.Networking;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -11,33 +11,32 @@ namespace OriMod {
   partial class OriMod : Mod {
     public static string GithubUserName => "TwiliChaos";
     public static string GithubProjectName => "OriMod";
-    internal static bool? OwnsBlindForest { get; private set; }
 
     public static OriConfigClient1 ConfigClient { get; internal set; }
     public static OriConfigClient2 ConfigAbilities { get; internal set; }
 
     #region Logging Shortcuts
 
-    internal static log4net.ILog Log => OriMod.Instance.Logger;
+    internal static log4net.ILog Log => Instance.Logger;
 
     /// <summary> Gets localiced text with key `Mods.OriMod.{key}`</summary>
     /// <param name="key">Key in lang file</param>
-    internal static LocalizedText LangText(string key) => Language.GetText($"Mods.OriMod.{key}");
+    internal static LocalizedText GetText(string key) => Language.GetText($"Mods.OriMod.{key}");
 
     /// <summary> Gets localiced text with key `Mods.OriMod.Error.{key}`</summary>
     /// <param name="key">Key in lang file, starting with `Error.`</param>
-    internal static LocalizedText LangErr(string key) => Language.GetText($"Mods.OriMod.Error.{key}");
+    internal static LocalizedText GetErrorText(string key) => Language.GetText($"Mods.OriMod.Error.{key}");
 
     /// <summary> Shows an error in chat and in the logger, using default localized text. </summary>
     /// <param name="key">Key in lang file</param>
     /// <param name="log">Write to logger</param>
-    internal static void Error(string key, bool log = true) => ErrorText(LangErr(key).Value, log);
+    internal static void Error(string key, bool log = true) => ErrorText(GetErrorText(key).Value, log);
 
     /// <summary> Shows an error in chat and in the logger, using default localized text. Has formatting. </summary>
     /// <param name="key">Key in lang file</param>
     /// <param name="log">Write to logger</param>
     /// <param name="args">Formatting args</param>
-    internal static void ErrorFormat(string key, bool log = true, params object[] args) => ErrorText(LangErr(key).Format(args), log);
+    internal static void ErrorFormat(string key, bool log = true, params object[] args) => ErrorText(GetErrorText(key).Format(args), log);
 
     /// <summary> Shows an error in chat and in the logger, using a string literal. </summary>
     /// <param name="text">String literal to show</param>
@@ -51,8 +50,7 @@ namespace OriMod {
 
     /// <summary> Write an error to the logger, using a key in the language file </summary>
     /// <param name="key"></param>
-    internal static void LogError(string key) => Log.Error(LangErr(key));
-
+    internal static void LogError(string key) => Log.Error(GetErrorText(key));
     #endregion
 
     public static ModHotKey SoulLinkKey;
@@ -112,27 +110,14 @@ namespace OriMod {
         // Add certain equip textures
         AddEquipTexture(null, EquipType.Head, "OriHead", "OriMod/PlayerEffects/OriHead");
       }
+
       LoadSeinUpgrades();
-      // if (OwnsBlindForest == null) {
-      //   bool owned =
-      //     checkInstalled(@"Software\Valve\Steam\Apps\387290") ||
-      //     checkInstalled(@"Software\Valve\Steam\Apps\261570") ||
-      //     checkInstalled(@"Software\GOG.com\Games\1384944984", checkValue:null);
-      //   Log.Info($"Ori is owned: {owned}");
-      // }
     }
 
-    // public static bool checkInstalled(string rkey, string rvalue="Installed", string checkValue="1") {
-    //   RegistryKey key = Registry.CurrentUser.OpenSubKey(rkey);
-    //   if (key == null) return false;
-    //   if (checkValue == null || key.GetValue(rvalue).ToString() == checkValue) {
-    //     key.Close();
-    //     return true;
-    //   }
-    //   key.Close();
-    //   return false;
-    // }
-
+    public override void PostSetupContent() {
+      FootstepManager.Load();
+      TileCollection.Load();
+    }
     public override void Unload() {
       BashKey = null;
       DashKey = null;
@@ -145,6 +130,10 @@ namespace OriMod {
       Instance = null;
       ConfigClient = null;
       ConfigAbilities = null;
+
+      FootstepManager.Unload();
+      TileCollection.Unload();
+      SeinUpgrades = null;
 
       // Unload ModPlayer
       try {
@@ -165,8 +154,7 @@ namespace OriMod {
       }
     }
 
-    public override void HandlePacket(BinaryReader reader, int fromWho)
-      => ModNetHandler.HandlePacket(reader, fromWho);
+    public override void HandlePacket(BinaryReader reader, int fromWho) => ModNetHandler.HandlePacket(reader, fromWho);
 
     public override object Call(params object[] args) {
       int len = args.Length;
@@ -174,15 +162,11 @@ namespace OriMod {
         switch (cmd) {
           case "ResetPlayerModData": {
               if (len >= 2) {
-                OriPlayer oPlayer;
                 object obj = args[1];
-                if (obj is Player player) {
-                  oPlayer = player.GetModPlayer<OriPlayer>();
-                }
-                else if (obj is ModPlayer modPlayer) {
-                  oPlayer = modPlayer.player.GetModPlayer<OriPlayer>();
-                }
-                else {
+                OriPlayer oPlayer =
+                  (obj is Player player) ? player.GetModPlayer<OriPlayer>() :
+                  (obj is ModPlayer modPlayer) ? modPlayer.player.GetModPlayer<OriPlayer>() : null;
+                if (oPlayer == null) {
                   Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type Player, got {obj.GetType()}");
                   return false;
                 }

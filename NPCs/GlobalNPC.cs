@@ -2,23 +2,29 @@
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
+using OriMod.Utilities;
 
-namespace OriMod {
-  public class OriNPC : GlobalNPC {
+namespace OriMod.NPCs {
+  public class OriNPC : GlobalNPC, IBashable {
     public override bool InstancePerEntity => true;
-    public bool IsBashed;
-    public Vector2 BashPos;
-    public OriPlayer BashPlayer;
+    public OriPlayer BashPlayer { get; set; }
+    public Entity BashEntity { get; set; }
+    public Vector2 BashPosition { get; set; }
+    public bool IsBashed { get; set; }
 
     public override void SetDefaults(NPC npc) {
       if (npc.boss) {
-        OriModUtils.isAnyBossAlive = true;
+                OriUtils.isAnyBossAlive = true;
       }
+    }
+
+    public void OnBashed(OriPlayer oPlayer) {
+
     }
 
     public override bool PreAI(NPC npc) {
       if (IsBashed) {
-        npc.Center = BashPos;
+        npc.Center = BashPosition;
         return false;
       }
       return true;
@@ -96,7 +102,7 @@ namespace OriMod {
       if (!npc.boss) {
         return false;
       }
-      OriModUtils.IsAnyBossAlive(check: true);
+            OriUtils.IsAnyBossAlive(check: true);
 
       bool doUpdate = false;
       byte upgrade = 0;

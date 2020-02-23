@@ -18,8 +18,9 @@ namespace OriMod.Projectiles.Abilities {
     }
 
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-      if (target.whoAmI == oPlayer.cDash.NpcID) {
-        oPlayer.cDash.End();
+      var cDash = oPlayer.Abilities.cDash;
+      if (target.whoAmI == cDash.NpcID) {
+        cDash.End();
       }
     }
   }

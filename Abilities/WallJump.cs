@@ -1,13 +1,14 @@
 using Microsoft.Xna.Framework;
+using OriMod.Utilities;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class WallJump : Ability {
-    internal WallJump(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.WallJump;
+    internal WallJump(AbilityManager handler) : base(handler) { }
+    public override int Id => AbilityID.WallJump;
 
     internal override bool DoUpdate => oPlayer.Input(PlayerInput.Triggers.JustPressed.Jump) && oPlayer.OnWall && !oPlayer.IsGrounded;
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !Handler.wCJump.Charged;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !Manager.wCJump.Charged;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private int EndTime => 12;
@@ -15,9 +16,11 @@ namespace OriMod.Abilities {
     private int WallDir;
     private int GravDir;
 
+    private readonly RandomChar randChar = new RandomChar();
+
     protected override void UpdateActive() {
       player.velocity.Y = WallJumpVelocity.Y * GravDir;
-      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + OriPlayer.RandomChar(5, ref CurrSoundRand));
+      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + randChar.NextNoRepeat(5));
     }
 
     protected override void UpdateEnding() {
@@ -34,19 +37,19 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
-        Active = true;
+        SetState(State.Inactive);
         WallDir = player.direction;
         GravDir = (int)player.gravDir;
-        Handler.climb.Inactive = true;
+        Manager.climb.SetState(State.Inactive);
       }
       else if (Active) {
-        Ending = true;
+        SetState(State.Ending);
         CurrTime = 0;
       }
       else if (Ending) {
         CurrTime++;
         if (CurrTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
-          Inactive = true;
+          SetState(State.Inactive);
         }
       }
     }

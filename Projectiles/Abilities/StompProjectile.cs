@@ -18,11 +18,9 @@ namespace OriMod.Projectiles.Abilities {
     }
 
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-      if (!crit && Main.rand.Next(5) == 1) {
-        crit = true;
-      }
-      if (target.life > 0 && oPlayer.stomp.InUse) {
-        oPlayer.stomp.EndStomp();
+      var stomp = oPlayer.Abilities.stomp;
+      if (target.life > 0 && stomp.InUse) {
+        stomp.EndStomp();
       }
     }
   }

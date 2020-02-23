@@ -33,19 +33,19 @@ namespace OriMod.Tiles {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
 
       Main.mouseRightRelease = false;
-      if (!oPlayer.OriSet && !oPlayer.Transforming) {
+      if (!oPlayer.IsOri && !oPlayer.Transforming) {
         oPlayer.TransformBlockLocation = new Vector2(i, j) * 16;
-        oPlayer.DoTransformation();
+        oPlayer.BeginTransformation();
         if (!oPlayer.HasTransformedOnce) {
           oPlayer.PlayNewSound("AbilityPedestal/abilityPedestalMusic", 0.25f);
         }
       }
       else {
         if (!oPlayer.Transforming) {
-          oPlayer.OriSet = false;
+          oPlayer.IsOri = false;
         }
         else {
-          oPlayer.OriSet = !oPlayer.OriSet;
+          oPlayer.IsOri ^= true;
           oPlayer.PlayNewSound("SavePoints/checkpointSpawnSound");
         }
 

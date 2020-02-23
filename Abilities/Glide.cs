@@ -1,17 +1,18 @@
+using OriMod.Utilities;
 using System;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class Glide : Ability {
-    internal Glide(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.Glide;
+    internal Glide(AbilityManager manager) : base(manager) { }
+    public override int Id => AbilityID.Glide;
 
     internal override bool DoUpdate => oPlayer.Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased);
     internal override bool CanUse =>
       base.CanUse && !Ending &&
-      !Handler.airJump.InUse && !Handler.stomp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse &&
-      !Handler.wCJump.InUse && !Handler.burrow.InUse &&
-      player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active && !Handler.burrow.AutoBurrow;
+      !Manager.airJump.InUse && !Manager.stomp.InUse && !Manager.dash.InUse && !Manager.cDash.InUse &&
+      !Manager.wCJump.InUse && !Manager.burrow.InUse &&
+      player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active;
 
     private float MaxFallSpeed => 2f;
     private float RunSlowdown => 0.125f;
@@ -19,22 +20,29 @@ namespace OriMod.Abilities {
     private int StartDuration => 8;
     private int EndDuration => 10;
 
+    private readonly RandomChar randCharStart = new RandomChar();
+    private readonly RandomChar randCharActive = new RandomChar();
+    private readonly RandomChar randCharEnd = new RandomChar();
+
     protected override void UpdateStarting() {
       if (CurrTime == 0) {
-        oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + OriPlayer.RandomChar(3), 0.8f);
+        oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + randCharStart.NextNoRepeat(3), 0.8f);
+      }
+    }
+
+    protected override void UpdateActive() {
+      if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
+        oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + randCharActive.NextNoRepeat(5), 0.45f);
       }
     }
 
     protected override void UpdateEnding() {
       if (CurrTime == 0) {
-        oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + OriPlayer.RandomChar(3), 0.8f);
+        oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + randCharEnd.NextNoRepeat(3), 0.8f);
       }
     }
 
     protected override void UpdateUsing() {
-      if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
-        oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + OriPlayer.RandomChar(5), 0.45f);
-      }
       player.maxFallSpeed = MaxFallSpeed;
       if (!oPlayer.UnrestrictedMovement) {
         player.runSlowdown = RunSlowdown;
@@ -44,12 +52,12 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (!InUse && CanUse && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
-        Starting = true;
+        SetState(State.Starting);
         CurrTime = 0;
         return;
       }
-      if (Handler.dash.InUse || Handler.airJump.InUse) {
-        Inactive = true;
+      if (Manager.dash.InUse || Manager.airJump.InUse) {
+        SetState(State.Inactive);
         CurrTime = 0;
         return;
       }
@@ -57,26 +65,26 @@ namespace OriMod.Abilities {
         if (Starting) {
           CurrTime++;
           if (CurrTime > StartDuration) {
-            Active = true;
+            SetState(State.Active);
             CurrTime = 0;
           }
         }
         else if (Ending) {
           CurrTime++;
           if (CurrTime > EndDuration) {
-            Inactive = true;
+            SetState(State.Inactive);
           }
         }
         if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded) {
           if (InUse) {
-            Ending = true;
+            SetState(State.Ending);
           }
           else {
-            Inactive = true;
+            SetState(State.Inactive);
           }
         }
         else if (OriMod.FeatherKey.JustReleased) {
-          Ending = true;
+          SetState(State.Ending);
           CurrTime = 0;
         }
       }

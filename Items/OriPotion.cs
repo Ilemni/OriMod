@@ -19,13 +19,13 @@ namespace OriMod.Items {
 
     public override bool UseItem(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-      oPlayer.OriSet = !oPlayer.OriSet;
+      oPlayer.IsOri = !oPlayer.IsOri;
 
       for (int m = 0; m < 100; m++) { //does particles
         Vector2 pos = player.position;
         pos.Y += 4;
         pos.X -= 2;
-        Dust dust = Main.dust[Terraria.Dust.NewDust(pos, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
+        Dust dust = Main.dust[Dust.NewDust(pos, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
       }
       player.GetModPlayer<OriPlayer>().PlayNewSound("SavePoints/checkpointSpawnSound");

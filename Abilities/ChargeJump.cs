@@ -1,14 +1,15 @@
 using Microsoft.Xna.Framework;
+using OriMod.Utilities;
 using Terraria;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class ChargeJump : Ability {
-    internal ChargeJump(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.ChargeJump;
+    internal ChargeJump(AbilityManager handler) : base(handler) { }
+    public override int Id => AbilityID.ChargeJump;
 
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
-    internal override bool CanUse => base.CanUse && !InUse && Charged && !Handler.burrow.InUse && !Handler.climb.InUse;
+    internal override bool CanUse => base.CanUse && !InUse && Charged && !Manager.burrow.InUse && !Manager.climb.InUse;
     protected override int Cooldown => (int)(Config.CJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
 
@@ -27,13 +28,15 @@ namespace OriMod.Abilities {
 
     public Projectile Proj { get; private set; }
 
+    private readonly RandomChar randChar = new RandomChar();
+
     private void StartChargeJump() {
-      oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref CurrSoundRand));
+      oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + randChar.NextNoRepeat(3));
       Charged = false;
       CurrCharge = 0;
       Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("ChargeJumpProjectile"), 30, 0f, player.whoAmI, 0, 1)];
       PutOnCooldown();
-      Handler.climb.Inactive = true;
+      Manager.climb.SetState(State.Inactive);
     }
 
     private void UpdateCharged() {
@@ -53,7 +56,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (Handler.burrow.InUse) {
+      if (Manager.burrow.InUse) {
         Charged = false;
         CurrCharge = 0;
         CurrGrace = 0;
@@ -77,7 +80,7 @@ namespace OriMod.Abilities {
       }
       if (CanUse && oPlayer.justJumped) {
         StartChargeJump();
-        Active = true;
+        SetState(State.Active);
       }
       else if (Charged) {
         UpdateCharged();
@@ -97,16 +100,16 @@ namespace OriMod.Abilities {
         CurrTime++;
         if (CurrTime > Duration) {
           if (oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
-            Ending = true;
+            SetState(State.Ending);
           }
           else {
-            Inactive = true;
+            SetState(State.Inactive);
           }
           CurrTime = 0;
         }
       }
       if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
-        Inactive = true;
+        SetState(State.Inactive);
       }
     }
   }

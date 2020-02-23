@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OriMod.Utilities;
 using System;
 using Terraria;
 using Terraria.GameInput;
@@ -6,11 +7,11 @@ using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   public class ChargeDash : Ability {
-    internal ChargeDash(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.ChargeDash;
+    internal ChargeDash(AbilityManager handler) : base(handler) { }
+    public override int Id => AbilityID.ChargeDash;
 
-    internal override bool DoUpdate => !Handler.dash.DoUpdate && (InUse || oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Handler.cDash.Refreshed);
-    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Handler.stomp.InUse && !Handler.bash.InUse && !player.mount.Active;
+    internal override bool DoUpdate => !Manager.dash.DoUpdate && (InUse || oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Manager.cDash.Refreshed);
+    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Manager.stomp.InUse && !Manager.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);
     protected override Color RefreshColor => Color.LightBlue;
 
@@ -25,6 +26,8 @@ namespace OriMod.Abilities {
     internal int Direction;
 
     public Projectile Proj { get; private set; }
+
+    private readonly RandomChar randChar = new RandomChar();
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
       NpcID = r.ReadByte();
@@ -49,7 +52,7 @@ namespace OriMod.Abilities {
     }
 
     internal void End(bool byNpcContact = false) {
-      Inactive = true;
+      SetState(State.Inactive);
       PutOnCooldown();
       if (byNpcContact) {
         player.position = Main.npc[NpcID].position;
@@ -57,7 +60,7 @@ namespace OriMod.Abilities {
         player.velocity *= Speeds[CurrTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
       }
       else if ((NpcID == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
-        Vector2 newVel = NpcID == 255 && !Handler.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
+        Vector2 newVel = NpcID == 255 && !Manager.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
         newVel.Normalize();
         newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
         player.velocity = newVel;
@@ -88,7 +91,7 @@ namespace OriMod.Abilities {
       else {
         Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction;
       }
-      oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + OriPlayer.RandomChar(3), .5f);
+      oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + randChar.NextNoRepeat(3), .5f);
       Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("ChargeDashProjectile"), 30, 0f, player.whoAmI, 0, 1)];
       Proj.damage = 12 + OriWorld.GlobalSeinUpgrade * 9;
     }
@@ -118,21 +121,21 @@ namespace OriMod.Abilities {
     internal override void Tick() {
       if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
         if (player.CheckMana(ManaCost, true, true)) {
-          Active = true;
+          SetState(State.Active);
           CurrTime = 0;
           UpdateStarting();
         }
-        else if (!Handler.dash.InUse) {
-          Handler.dash.StartDash();
+        else if (!Manager.dash.InUse) {
+          Manager.dash.StartDash();
         }
         return;
       }
       TickCooldown();
       if (InUse) {
-        Handler.dash.Inactive = true;
-        Handler.dash.Refreshed = false;
+        SetState(State.Inactive);
+        Manager.dash.Refreshed = false;
         CurrTime++;
-        if (CurrTime > Duration || oPlayer.OnWall || Handler.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
+        if (CurrTime > Duration || oPlayer.OnWall || Manager.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           End();
         }
       }

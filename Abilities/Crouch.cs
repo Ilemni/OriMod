@@ -2,11 +2,11 @@ using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class Crouch : Ability {
-    internal Crouch(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.Crouch;
+    internal Crouch(AbilityManager handler) : base(handler) { }
+    public override int Id => AbilityID.Crouch;
 
     internal override bool DoUpdate => InUse || oPlayer.Input(PlayerInput.Triggers.Current.Down);
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Handler.lookUp.InUse && !Handler.dash.InUse && !Handler.cDash.InUse && !Restricted;
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Manager.lookUp.InUse && !Manager.dash.InUse && !Manager.cDash.InUse && !Restricted;
     private bool Restricted => OriMod.ConfigClient.SoftCrouch ? player.controlLeft || player.controlRight : false;
     private int StartDuration => 10;
     private int EndDuration => 4;
@@ -39,20 +39,20 @@ namespace OriMod.Abilities {
     internal override void Tick() {
       if (!InUse) {
         if (CanUse && PlayerInput.Triggers.Current.Down) {
-          Starting = true;
+          SetState(State.Starting);
           CurrTime = 0;
         }
       }
       else if (!CanUse) {
-        Inactive = true;
+        SetState(State.Inactive);
         CurrTime = 0;
       }
       else if (!PlayerInput.Triggers.Current.Down && !Ending) {
         if (Active) {
-          Ending = true;
+          SetState(State.Ending);
         }
         else {
-          Inactive = true;
+          SetState(State.Inactive);
         }
         CurrTime = 0;
         return;
@@ -60,14 +60,14 @@ namespace OriMod.Abilities {
       else if (Starting) {
         CurrTime++;
         if (CurrTime > StartDuration) {
-          Active = true;
+          SetState(State.Active);
           CurrTime = 0;
         }
       }
       else if (Ending) {
         CurrTime++;
         if (CurrTime > EndDuration) {
-          Inactive = true;
+          SetState(State.Inactive);
           CurrTime = 0;
         }
       }

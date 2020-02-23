@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod {
+namespace OriMod.Networking {
   internal abstract class PacketHandler {
     internal readonly byte HandlerType;
 

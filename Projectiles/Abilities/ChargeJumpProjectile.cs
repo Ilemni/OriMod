@@ -12,7 +12,7 @@ namespace OriMod.Projectiles.Abilities {
     }
 
     internal override void CheckAbilityActive() {
-      if (oPlayer.cJump.InUse || oPlayer.wCJump.InUse) {
+      if (oPlayer.Abilities.cJump.InUse || oPlayer.Abilities.wCJump.InUse) {
         projectile.timeLeft = 2;
       }
     }

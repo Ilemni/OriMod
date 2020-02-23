@@ -1,26 +1,26 @@
 using System;
 using Microsoft.Xna.Framework;
+using OriMod.Utilities;
 using Terraria;
 
 namespace OriMod.Abilities {
   public class SoulLink : Ability {
-    public SoulLink(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.SoulLink;
+    public SoulLink(AbilityManager handler) : base(handler) { }
+    public override int Id => AbilityID.SoulLink;
 
     internal override bool DoUpdate => OriMod.SoulLinkKey.Current || InUse;
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && player.CheckMana(ManaCost, blockQuickMana: true);
     protected override int Cooldown => (int)(Config.SoulLinkCooldown * 30);
 
-    private static Point p(int x, int y) => new Point(x, y);
-    private static readonly Point[] Template = new Point[] {
-      p(-1, -1), p(0, -1), p(1, -1),
-      p(0, -1),  p(0, 0),  p(0, 1),
-      p(1, -1),  p(1, 0),  p(1, 1)
-    };
-    internal Point[] Box = new Point[Template.Length];
-    internal Point Center => PlacedSoulLink && Box[4] != Point.Zero ? Box[4] : player.Center.ToTileCoordinates();
+    private static Point P(int x, int y) => new Point(x, y);
+    private static readonly TileHitbox Box = new TileHitbox(
+      P(-1, -1), P(0, -1), P(1, -1),
+      P(0, -1), P(0, 0), P(0, 1),
+      P(1, -1), P(1, 0), P(1, 1)
+    );
+    internal Point Center => PlacedSoulLink && Box.Points[4] != Point.Zero ? Box.Points[4] : player.Center.ToTileCoordinates();
     internal Point SoulLinkLocation { get; private set; }
-    
+
     private float ChargeRate => 1 / (Config.SoulLinkChargeRate * 60);
     private float UnchargeRate => ChargeRate * 1.75f;
     private int RespawnTime => (int)(Config.SoulLinkRespawnTime * 30);
@@ -32,7 +32,7 @@ namespace OriMod.Abilities {
     private bool WasObstructed;
     private bool AnyBossAlive;
     private bool WasDead;
-    
+
     private void CheckValidPlacement(Point? check, out bool obstructed, bool force = false) {
       obstructed = false;
       if (!force && Main.time % 20 != 0) {
@@ -61,7 +61,7 @@ namespace OriMod.Abilities {
       }
       WasDead = true;
     }
-    
+
     internal void OnRespawn() {
       if (PlacedSoulLink && !Obstructed) {
         player.Center = SoulLinkLocation.ToWorldCoordinates();
@@ -82,9 +82,9 @@ namespace OriMod.Abilities {
           OriMod.Error("SoulLinkObstructed", log: false);
         }
       }
-      if (GetCanUse() && OriMod.SoulLinkKey.Current) {
+      if (CanUse && OriMod.SoulLinkKey.Current) {
         if (OriMod.SoulLinkKey.JustPressed) {
-          AnyBossAlive = OriModUtils.IsAnyBossAlive(check: true);
+          AnyBossAlive = OriUtils.IsAnyBossAlive(check: true);
           if (AnyBossAlive) {
             OriMod.Error("SoulLinkBossActive", log: false);
             return;
@@ -105,9 +105,9 @@ namespace OriMod.Abilities {
           if (CurrCharge > 1) {
             player.statMana -= ManaCost;
             CurrCharge = 0;
-            Active = true;
+            SetState(State.Active);
             PlacedSoulLink = true;
-            Box.UpdateHitbox(Template, player.Center.ToTileCoordinates());
+            Box.UpdateHitbox(player.Center);
             SoulLinkLocation = Center;
             oPlayer.Debug("Placed a Soul Link!");
             PutOnCooldown(force: true);

@@ -1,19 +1,20 @@
 using System;
 using Microsoft.Xna.Framework;
+using OriMod.Utilities;
 using Terraria;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class WallChargeJump : Ability {
-    public WallChargeJump(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.WallChargeJump;
+    public WallChargeJump(AbilityManager handler) : base(handler) { }
+    public override int Id => AbilityID.WallChargeJump;
 
     internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
     protected override int Cooldown => (int)(Config.WCJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
 
-    internal bool CanCharge => base.CanUse && Handler.climb.IsCharging;
+    internal bool CanCharge => base.CanUse && Manager.climb.IsCharging;
     private int MaxCharge => 35;
     private int Duration => 20;
     private static readonly float[] Speeds = new float[20] {
@@ -28,21 +29,23 @@ namespace OriMod.Abilities {
 
     public Projectile Proj { get; private set; }
 
+    private readonly RandomChar randChar = new RandomChar();
+
     internal Vector2 GetMouseDirection() => GetMouseDirection(out float _);
     internal Vector2 GetMouseDirection(out float angle) {
       Vector2 mouse = Main.MouseWorld - player.Center;
-      mouse.X *= -Handler.climb.WallDir;
+      mouse.X *= -Manager.climb.WallDir;
       mouse.Y *= player.gravDir;
       mouse += player.Center;
       angle = Utils.Clamp(player.AngleTo(mouse), -MaxAngle, MaxAngle);
       Vector2 dir = Vector2.UnitX.RotatedBy(angle);
-      dir.X *= -Handler.climb.WallDir;
+      dir.X *= -Manager.climb.WallDir;
       dir.Y *= player.gravDir;
       return dir;
     }
 
     private void StartWallChargeJump() {
-      oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + OriPlayer.RandomChar(3, ref CurrSoundRand));
+      oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + randChar.NextNoRepeat(3));
       Charged = false;
       CurrCharge = 0;
       Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("ChargeJumpProjectile"), 30, 0f, player.whoAmI, 0, 1)];
@@ -69,7 +72,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (Handler.burrow.InUse) {
+      if (Manager.burrow.InUse) {
         Charged = false;
         CurrCharge = 0;
         return;
@@ -87,7 +90,7 @@ namespace OriMod.Abilities {
       }
       if (CanUse && oPlayer.Input(PlayerInput.Triggers.JustPressed.Jump)) {
         StartWallChargeJump();
-        Active = true;
+        SetState(State.Active);
       }
       else if (Charged) {
         UpdateCharged();
@@ -101,16 +104,16 @@ namespace OriMod.Abilities {
         CurrTime++;
         if (CurrTime > Duration) {
           if (oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
-            Ending = true;
+            SetState(State.Ending);
           }
           else {
-            Inactive = true;
+            SetState(State.Inactive);
           }
           CurrTime = 0;
         }
       }
       if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
-        Inactive = true;
+        SetState(State.Inactive);
       }
     }
   }

@@ -4,8 +4,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod {
-  partial class AbilityPacketHandler : PacketHandler {
+namespace OriMod.Networking {
+  internal class AbilityPacketHandler : PacketHandler {
     internal AbilityPacketHandler(byte handlerType) : base(handlerType) { }
 
     internal const byte AbilityState = 1;

@@ -3,11 +3,11 @@ using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   public class Climb : Ability {
-    internal Climb(OriAbilities handler) : base(handler) { }
-    public override int id => AbilityID.Climb;
+    internal Climb(AbilityManager handler) : base(handler) { }
+    public override int Id => AbilityID.Climb;
 
     internal override bool DoUpdate => oPlayer.Input(OriMod.ClimbKey.Current) && oPlayer.OnWall;
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Handler.wJump.InUse && !Handler.wCJump.InUse;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Manager.wJump.InUse && !Manager.wCJump.InUse;
 
     internal bool IsCharging => Active && (WallDir == 1 && PlayerInput.Triggers.Current.Left || WallDir == -1 && PlayerInput.Triggers.Current.Right);
 
@@ -46,12 +46,12 @@ namespace OriMod.Abilities {
     internal override void Tick() {
       if (!InUse) {
         if (CanUse && OriMod.ClimbKey.Current) {
-          Active = true;
+          SetState(State.Active);
           StartClimb();
         }
       }
       else if (!CanUse || !OriMod.ClimbKey.Current) {
-        Inactive = true;
+        SetState(State.Inactive);
       }
     }
   }

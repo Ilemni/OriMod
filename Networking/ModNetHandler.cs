@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace OriMod {
+namespace OriMod.Networking {
   internal class ModNetHandler {
     internal const byte OriState = 1;
     internal const byte Ability = 2;
