@@ -10,19 +10,24 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using OriMod.Abilities;
+using OriMod.Upgrades;
 using OriMod.Networking;
 using OriMod.Utilities;
 using OriMod.Animations;
 
 namespace OriMod {
-  public sealed class OriPlayer : ModPlayer {
+    public sealed class OriPlayer : ModPlayer {
     #region Variables
     /// <summary>
     /// Manager for all Abilities on this OriPlayer instance.
     /// </summary>
     internal AbilityManager Abilities { get; private set; }
 
-    
+    /// <summary>
+    /// Manager for all Upgrades on this OriPlayer instance.
+    /// </summary>
+    internal UpgradeManager Upgrades { get; private set; }
+
     /// <summary>
     /// Container for all Animations on this OriPlayer instance.
     /// </summary>
@@ -52,6 +57,10 @@ namespace OriMod {
       }
     }
 
+    /// <summary>
+    /// Amount of Spirit Light the player has
+    /// </summary>
+    public long SpiritLight { get; internal set; }
 
     /// <summary>
     /// Represents if the player is currently transforming into Ori. While transforming, all player input is disabled.
@@ -245,11 +254,11 @@ namespace OriMod {
     #region Internal Methods
     internal SoundEffectInstance PlayNewSound(string Path, float Volume = 1, float Pitch = 0) =>
       Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
-    
+
     /// <summary> Checks if the key is pressed and this is LocalPlayer. </summary>
     /// <param name="TriggerKey">The key that was pressed</param>
     internal bool Input(bool TriggerKey) => TriggerKey && player.whoAmI == Main.myPlayer;
-    
+
     /// <summary>
     /// Prints a debug message if "debug mode" is enabled
     /// </summary>
@@ -274,7 +283,7 @@ namespace OriMod {
       AnimTime = time;
       AnimFrame = TileToPixel(frame.Tile);
       AnimRads = animRads;
-        }
+    }
 
     /// <summary>
     /// Begins the transformation process from normal state to Spirit state
@@ -283,7 +292,7 @@ namespace OriMod {
       Transforming = true;
       TransformDirection = player.direction;
       TransformTimer = Animations.PlayerAnim.Source.Tracks["TransformEnd"].Duration + Animations.PlayerAnim.Source.Tracks["TransformStart"].Duration;
-      }
+    }
 
     /// <summary>
     /// Removes all Sein-related buffs from the player.
@@ -291,7 +300,7 @@ namespace OriMod {
     internal void RemoveSeinBuffs() {
       for (int u = 1; u <= OriMod.SeinUpgrades.Count; u++) {
         player.ClearBuff(mod.GetBuff("SeinBuff" + u).Type);
-    }
+      }
     }
 
     /// <summary>
@@ -302,8 +311,8 @@ namespace OriMod {
         Projectile proj = Main.projectile[i];
         if (proj.active && proj.owner == player.whoAmI && proj.aiStyle == 7) {
           proj.Kill();
+        }
       }
-    }
     }
 
     /// <summary>
@@ -312,7 +321,7 @@ namespace OriMod {
     internal void CreatePlayerDust() {
       if (PlayerDustTimer > 0) {
         return;
-    }
+      }
 
       Dust dust = Main.dust[Dust.NewDust(player.position, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
       dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
@@ -486,7 +495,7 @@ namespace OriMod {
         return;
       }
       IncrementFrame("Running", overrideTime: AnimTime + (int)Math.Abs(player.velocity.X) / 3);
-      
+
       // Footsteps
       if (AnimIndex == 4 || AnimIndex == 9) {
         FootstepManager.Instance.PlayFootstepFromPlayer(player);
@@ -529,7 +538,7 @@ namespace OriMod {
     private void OnAnimNameChange(string value) {
       if (Main.dedServ) {
         return;
-    }
+      }
 
       Animations.PlayerAnim.OnAnimNameChange(value);
       Animations.SecondaryLayer.OnAnimNameChange(value);
@@ -555,18 +564,20 @@ namespace OriMod {
     internal void Unload() {
       Animations.Dispose();
       Animations = null;
+      Upgrades = null;
       Abilities = null;
-      }
+    }
     #endregion
 
     public override void Initialize() {
       Abilities = new AbilityManager(this);
+      Upgrades = new UpgradeManager(this);
 
       if (!Main.dedServ) {
         Animations = new AnimationContainer(this);
         Trails = new TrailManager(this, 26);
       }
-      }
+    }
 
     public override void ResetEffects() {
       if (Transforming) {
@@ -577,7 +588,7 @@ namespace OriMod {
           TransformTimer = 0;
           Transforming = false;
           IsOri = true;
-      }
+        }
       }
       if (IsOri) {
         if (PlayerDustTimer > 0) {
@@ -588,22 +599,23 @@ namespace OriMod {
         ModNetHandler.oriPlayerHandler.SendOriState(255, player.whoAmI);
         doNetUpdate = false;
       }
-      }
+    }
 
     public override void UpdateDead() {
       Abilities.soulLink.UpdateDead();
-      }
+    }
 
     public override TagCompound Save()
       => new TagCompound {
         {"OriSet", IsOri},
         {"Debug", debugMode},
+        {"SpiritLight", SpiritLight}
       };
 
     public override void Load(TagCompound tag) {
       IsOri = tag.GetBool("OriSet");
       debugMode = tag.GetBool("Debug");
-      }
+    }
 
     public override void PostUpdateMiscEffects() {
       if (player.HasBuff(BuffID.TheTongue)) {
@@ -621,7 +633,7 @@ namespace OriMod {
         player.jumpSpeedBoost += 2f;
         if (IsGrounded || player.whoAmI == Main.myPlayer && (PlayerInput.Triggers.Current.Left || Input(PlayerInput.Triggers.Current.Right))) {
           UnrestrictedMovement = false;
-      }
+        }
         player.runSlowdown = UnrestrictedMovement ? 0 : 1;
         #endregion
 
@@ -642,13 +654,13 @@ namespace OriMod {
           else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !Abilities.stomp.InUse) {
             player.gravity = 0.1f;
             player.maxFallSpeed = 6f;
-            }
-              }
+          }
+        }
 
         Abilities.Tick();
         Abilities.Update();
         Abilities.NetSync();
-            }
+      }
 
       if (Transforming) {
         player.direction = TransformDirection;
@@ -663,12 +675,12 @@ namespace OriMod {
             player.velocity = new Vector2(0, -0.00055f * TransformTimer);
             player.gravity = 0;
             CreatePlayerDust();
+          }
         }
-      }
         player.runAcceleration = 0;
         player.maxRunSpeed = 0;
         player.immune = true;
-    }
+      }
 
       if (ImmuneTimer > 0) {
         ImmuneTimer--;
@@ -742,7 +754,7 @@ namespace OriMod {
       if (!oldGrounded && IsGrounded) {
         FootstepManager.Instance.PlayLandingFromPlayer(player);
       }
-      }
+    }
 
     public override void FrameEffects() {
       if (!IsOri) {
@@ -773,29 +785,29 @@ namespace OriMod {
       }
       return true;
     }
-
+    
     public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit) {
       if (doPlaySound) {
         doPlaySound = false;
         PlayNewSound("Ori/Hurt/seinHurtRegular" + hurtRandChar.NextNoRepeat(4));
-    }
+      }
     }
 
     public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // similar to prehurt, but for death
       if (IsOri) {
         if (playSound) {
-        playSound = false;
-        switch (damageSource.SourceOtherIndex) {
-          case 1:
+          playSound = false;
+          switch (damageSource.SourceOtherIndex) {
+            case 1:
               PlayNewSound("Ori/Death/seinSwimmingDrowningDeath" + RandomChar.Next(3), 3f);
-            break;
-          case 2:
+              break;
+            case 2:
               PlayNewSound("Ori/Death/seinDeathLava" + RandomChar.Next(5));
-            break;
-          default:
+              break;
+            default:
               PlayNewSound("Ori/Death/seinDeathRegular" + RandomChar.Next(5));
-            break;
-        }
+              break;
+          }
         }
         if (genGore) {
           genGore = false;
@@ -871,7 +883,7 @@ namespace OriMod {
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
         OriLayers.Trail.visible = OriLayers.PlayerSprite.visible && !Abilities.burrow.InUse && !player.mount.Active;
       }
-      }
+    }
 
     public override void OnEnterWorld(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();

@@ -60,8 +60,43 @@ ItemName.SpiritSapling3=Spirit Tree
 MapObject.SpiritSapling3=Spirit Tree
 ItemTooltip.SpiritSapling3=A fully grown Spirit Tree, smaller in size than the most powerful ones.
 
-SeinUpgrade.Upgraded5=Your alliance with {$Mods.OriMod.Common.Sein} grows even stronger.
-SeinUpgrade.Upgraded8=Through battle with the great deity, {$Mods.OriMod.Common.Sein} has reached its greatest potential.
+
+Upgrade.Sein.Unlock.Name = Sein
+Upgrade.Sein.Unlock.Description = A companion, known as the Light and Eyes of the Spirit Tree.
+Upgrade.Sein.Unlock.Flavor = Once a valuable companion to Ori, Sein is willing to help you on your quest.
+
+Upgrade.WallJump.Unlock.Name = Wall Jump
+Upgrade.WallJump.Unlock.Description = Allows you to jump on walls to ascend.
+Upgrade.WallJump.Unlock.Flavor = Fil was the first of the fallen Spirit Guardians to grant Ori their gift, a legacy he had to leave behind so soon.
+
+Upgrade.AirJump.Unlock.Name = Double Jump
+Upgrade.AirJump.Unlock.Description = Allows you to jump again in the air.
+Upgrade.AirJump.Unlock.Flavor = A legacy left by Leru, this gift proved instumental in aiding Ori with their quest.
+
+Upgrade.Bash.Unlock.Name = Bash
+Upgrade.Bash.Unlock.Description = Allows you to Bash on enemies and projectiles, pushing you in one direction and the target in the opposite direction.
+Upgrade.Bash.Unlock.Flavor = When the Ginso Tree's waters turned poisonous, Reem tried to help, but he was not able to predict just how bad the plague would be when the forest went blind.
+
+Upgrade.Stomp.Unlock.Name = Stomp
+Upgrade.Stomp.Unlock.Description = Allows you to slam towards the ground, creating a powerful shockwave to damage nearby enemies.
+Upgrade.Stomp.Unlock.Flavor = Despite being known as the strongest of the Spirit Guardians, Ilo was a gentle spirit. When Kuro attacked a group of spirits in Thornfelt, he sacrificed his life so that they could escape. In the end, it did not matter.
+
+Upgrade.Glide.Unlock.Name = Glide
+Upgrade.Glide.Unlock.Description = Allows you to glide, staying in the air for longer and falling slower.
+Upgrade.Glide.Unlock.Flavor = This feather resembles the same one that Ori took when they tricked Kuro.
+
+Upgrade.Climb.Unlock.Name = Climb
+Upgrade.Climb.Unlock.Description = Allows you to hold on to and ascend walls.
+Upgrade.Climb.Unlock.Flavor = Tatsu and Atsu were hiding in Misty to avoid Kuro's onslaught, but without the Spirit Tree's aura, Atsu's light could not last. When Ori found Atsu, she was already an Ancestral Tree.
+
+Upgrade.ChargeJump.Unlock.Name = Charge Jump
+Upgrade.ChargeJump.Unlock.Description = Allows you to jump high into the air.
+Upgrade.ChargeJump.Unlock.Flavor = Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful spirit, the blinding of the forest and loss of all her friends caused a deep sadness. She remained in Sorrow Pass until her death.
+
+Upgrade.WallChargeJump.Unlock.Name = Wall Charge Jump
+Upgrade.WallChargeJump.Unlock.Description = Allows you to Charge Jump from walls.
+Upgrade.WallChargeJump.Unlock.Flavor = A union of Nir's and Tatsu's gifts, this was the final ability Ori used in their quest to save Nibel.
+
 
 Error.SoulLinkBossActive=Cannot place a Soul Link while powerful enemies are around.
 Error.SoulLinkObstructed=Your Soul Link has been blocked and despawned.
