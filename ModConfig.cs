@@ -53,7 +53,7 @@ namespace OriMod {
     [Header("Aesthetics")]
 
     [Label("Player Color"), Tooltip("The color of your Spirit Guardian.\nDefault: 210, 255, 255")]
-    [DefaultValue(typeof(Color), "210, 255, 255, 255")]
+    [DefaultValue(typeof(Color), "210, 255, 255, 255"), ColorNoAlpha]
     public Color PlayerColor;
 
     [Label("Player Color (Secondary)"), Tooltip("The secondary color of your Spirit Guardian.\nDefault: 0, 0, 0, 0")]
