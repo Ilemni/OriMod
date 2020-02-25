@@ -10,10 +10,6 @@ namespace OriMod.Projectiles {
     public bool IsBashed { get; set; }
     public Vector2 BashPosition { get; set; }
 
-    public void OnBashed(OriPlayer oPlayer) {
-
-    }
-
     public override bool PreAI(Projectile proj) {
       if (IsBashed) {
         proj.Center = BashPosition;

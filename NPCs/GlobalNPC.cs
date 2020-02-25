@@ -18,10 +18,6 @@ namespace OriMod.NPCs {
       }
     }
 
-    public void OnBashed(OriPlayer oPlayer) {
-
-    }
-
     public override bool PreAI(NPC npc) {
       if (IsBashed) {
         npc.Center = BashPosition;
