@@ -495,23 +495,6 @@ namespace OriMod {
         return;
       }
       IncrementFrame("Running", overrideTime: AnimTime + (int)Math.Abs(player.velocity.X) / 3);
-
-      // Footsteps
-      if (AnimIndex == 4 || AnimIndex == 9) {
-        FootstepManager.Instance.PlayFootstepFromPlayer(player);
-
-        var position = new Vector2(
-          drawPlayer.Top.X + (drawPlayer.direction == -1 ? -4 : 2),
-          drawPlayer.Top.Y + drawPlayer.height - 2);
-        for (int i = 0; i < 4; i++) {
-          Dust dust = Main.dust[Dust.NewDust(position, 2, 2, 111, 0f, -2.7f, 0, new Color(255, 255, 255), 1f)];
-          dust.noGravity = true;
-          dust.scale = 0.75f;
-          dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
-          dust.shader.UseColor(Color.White);
-          dust.fadeIn = 0.03947368f;
-        }
-      }
     }
 
     /// <summary>
@@ -750,9 +733,29 @@ namespace OriMod {
       OnWall = WorldGen.SolidTile(p.X, p.Y + 1) && WorldGen.SolidTile(p.X, p.Y + 2);
       #endregion
 
-      // If landing on ground, play sfx
-      if (!oldGrounded && IsGrounded) {
+      // Footstep effects
+      if (!Main.dedServ && IsGrounded) {
+        bool doDust = false;
+        if (!oldGrounded) {
+          doDust = true;
         FootstepManager.Instance.PlayLandingFromPlayer(player);
+      }
+        else if (AnimName == "Running" && AnimIndex == 4 || AnimIndex == 9) {
+          doDust = true;
+          FootstepManager.Instance.PlayFootstepFromPlayer(player);
+        }
+
+        if (doDust) {
+          var dustPos = player.Bottom + new Vector2(player.direction == -1 ? -4 : 2, -2);
+          for (int i = 0; i < 4; i++) {
+            Dust dust = Main.dust[Dust.NewDust(dustPos, 2, 2, 111, 0f, -2.7f, 0, new Color(255, 255, 255), 1f)];
+            dust.noGravity = true;
+            dust.scale = 0.75f;
+            dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
+            dust.shader.UseColor(Color.White);
+            dust.fadeIn = 0.03947368f;
+          }
+        }
       }
     }
 
