@@ -133,6 +133,7 @@ namespace OriMod {
 
       FootstepManager.Unload();
       TileCollection.Unload();
+      OriLayers.Unload();
       SeinUpgrades = null;
 
       // Unload ModPlayer

@@ -847,7 +847,7 @@ namespace OriMod {
         #endregion
 
         if (Abilities.soulLink.PlacedSoulLink) {
-          layers.Insert(0, OriLayers.SoulLinkLayer);
+          layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
         }
         int idx = Math.Min(layers.IndexOf(PlayerLayer.HeldItem), layers.IndexOf(PlayerLayer.HeldProjFront));
         if (idx >= 0) {
@@ -881,7 +881,7 @@ namespace OriMod {
           }
         }
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
-        OriLayers.Trail.visible = OriLayers.PlayerSprite.visible && !Abilities.burrow.InUse && !player.mount.Active;
+        OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !Abilities.burrow.InUse && !player.mount.Active;
       }
     }
 

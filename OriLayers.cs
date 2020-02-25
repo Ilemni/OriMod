@@ -5,8 +5,11 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OriMod {
-  public static class OriLayers {
-    internal static readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
+  internal class OriLayers {
+    internal static OriLayers Instance => _i ?? (_i = new OriLayers());
+    private static OriLayers _i;
+
+    internal readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
       DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.PlayerAnim);
@@ -16,7 +19,7 @@ namespace OriMod {
       oPlayer.Abilities.burrow.DrawEffects();
     });
 
-    internal static readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "SecondaryColor", delegate (PlayerDrawInfo drawInfo) {
+    internal readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "OriPlayer_SecondaryColor", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
       DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.SecondaryLayer);
@@ -25,17 +28,16 @@ namespace OriMod {
       Main.playerDrawData.Add(data);
     });
 
-    internal static readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
+    internal readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
       Player player = drawInfo.drawPlayer;
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       if (!player.dead && !player.invis) {
         oPlayer.Trails.ResetNext();
       }
-
       oPlayer.Trails.AddTrailDrawData();
     });
 
-    internal static readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
+    internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
       Animations.Animation anim = oPlayer.Animations.BashAnim;
       var bash = oPlayer.Abilities.bash;
@@ -50,13 +52,13 @@ namespace OriMod {
       Main.playerDrawData.Add(data);
     });
 
-    internal static readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
+    internal readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
       Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.GlideAnim));
     });
 
-    internal static readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
+    internal readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
       var mod = OriMod.Instance;
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
       Vector2 pos = oPlayer.Abilities.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
@@ -87,5 +89,7 @@ namespace OriMod {
 
       return new DrawData(texture, pos, rect, oPlayer.SpriteColorPrimary, player.direction * oPlayer.AnimRads, orig, 1, effect, 0);
     }
+
+    internal static void Unload() => _i = null;
   }
 }
