@@ -27,6 +27,9 @@ namespace OriMod.Abilities {
   public sealed class AbilityManager {
     internal AbilityManager(OriPlayer oPlayer) {
       this.oPlayer = oPlayer;
+      if (oPlayer.player.whoAmI == Main.myPlayer) {
+        Local = this;
+      }
       soulLink = new SoulLink(this);
       wJump = new WallJump(this);
       stomp = new Stomp(this);
@@ -42,6 +45,8 @@ namespace OriMod.Abilities {
       lookUp = new LookUp(this);
       burrow = new Burrow(this);
     }
+
+    public static AbilityManager Local { get; private set; }
 
     public readonly OriPlayer oPlayer;
 
@@ -143,5 +148,7 @@ namespace OriMod.Abilities {
         this[a].SetState(Ability.State.Inactive);
       }
     }
+
+    internal static void Unload() => Local = null;
   }
 }

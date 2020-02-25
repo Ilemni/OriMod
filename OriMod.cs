@@ -118,6 +118,7 @@ namespace OriMod {
       FootstepManager.Load();
       TileCollection.Load();
     }
+    
     public override void Unload() {
       BashKey = null;
       DashKey = null;
@@ -134,6 +135,7 @@ namespace OriMod {
       FootstepManager.Unload();
       TileCollection.Unload();
       OriLayers.Unload();
+      AbilityManager.Unload();
       SeinUpgrades = null;
 
       // Unload ModPlayer
