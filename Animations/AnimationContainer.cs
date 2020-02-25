@@ -1,4 +1,4 @@
-namespace OriMod.Animations {
+﻿namespace OriMod.Animations {
   internal class AnimationContainer {
     internal OriPlayer oPlayer { get; private set; }
     internal Animation PlayerAnim { get; private set; }

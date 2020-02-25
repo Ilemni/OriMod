@@ -30,7 +30,7 @@ namespace OriMod {
     private int Next {
       get {
         index++;
-        if (index > trails.Length) {
+        if (index >= trails.Length - 1) {
           index = 0;
         }
         return index;
