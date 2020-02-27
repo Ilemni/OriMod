@@ -11,14 +11,7 @@ namespace OriMod.Upgrades {
     /// <param name="requiredUpgrades">Previous upgrades required to unlock this Upgrade.</param>
     /// <param name="worldRequirement">Additional delegate requirement to unlock this Upgrade</param>
     public Upgrade(string name, int cost, Upgrade[] requiredUpgrades, ConditionResult worldRequirement = null) {
-      string baseKey = $"Mods.OriMod.Upgrade.{name}";
-      string nKey = $"{baseKey}.Name";
-      string dKey = $"{baseKey}.Description";
-      string fKey = $"{baseKey}.Flavor";
-
-      Name = Language.Exists(nKey) ? Language.GetTextValue(nKey) : name;
-      Description = Language.Exists(dKey) ? Language.GetTextValue(dKey) : string.Empty;
-      FlavorText = Language.Exists(fKey) ? Language.GetTextValue(fKey) : string.Empty;
+      LocalizedTextKey = $"Mods.OriMod.Upgrade.{name}";
 
       actualCost = cost;
       WorldRequirement = worldRequirement;
@@ -81,11 +74,17 @@ namespace OriMod.Upgrades {
     #endregion
 
     public readonly ConditionResult WorldRequirement;
-    
-    internal readonly string Name;
-    internal readonly string Description;
-    internal readonly string FlavorText;
+
     internal readonly int actualCost;
+
+    /// <summary>
+    /// Localized text key for this Upgrade, generally "Mods.OriMod.Upgrade.{name}"
+    /// </summary>
+    internal readonly string LocalizedTextKey;
+    internal string Name => Language.GetTextValue(LocalizedTextKey + ".Name");
+    internal string Description => Language.GetTextValue(LocalizedTextKey + ".Description");
+    internal string FlavorText => Language.GetTextValue(LocalizedTextKey + ".Flavor");
+
     private BitsByte flags;
 
     #region Methods
@@ -93,7 +92,7 @@ namespace OriMod.Upgrades {
 
     #region Unlocking
     public bool CanUnlock() {
-      if (RequiredUpgrades == null) {
+      if (RequiredUpgrades is null) {
         return true;
       }
 

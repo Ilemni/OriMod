@@ -4,6 +4,7 @@ using Terraria.ModLoader;
 
 namespace OriMod.Items {
   public class SpiritLight : ModItem {
+    public override bool Autoload(ref string name) => false; 
     public int Currency { get; }
 
     public void AddCurrencyToPlayer(Player player) => player.GetModPlayer<OriPlayer>().SpiritLight += Currency;

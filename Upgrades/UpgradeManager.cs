@@ -1,14 +1,18 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Terraria;
 
 namespace OriMod.Upgrades {
-  public class UpgradeManager {
-    public UpgradeManager(OriPlayer oPlayer) {
+  public sealed class UpgradeManager {
+    internal UpgradeManager(OriPlayer oPlayer) {
+      if (oPlayer.player.whoAmI == Main.myPlayer) {
+        Local = this;
+      }
+
       var ab = oPlayer.Abilities;
       Upgrades = new Dictionary<string, Upgrade> {
         ["Sein"] = new UnlockUpgrade("Sein", 100, null, null), // TODO: Sein inherit from IUnlockable
         ["WallJump"] = new UnlockUpgrade("WallJump", 150, ab.wJump, null, UpgradeConditions.DownedBoss1),
-        ["AirJump"] = new UnlockUpgrade("AirJump", 250, ab.wJump, null),
+        ["AirJump"] = new UnlockUpgrade("AirJump", 250, ab.airJump, null),
         ["Bash"] = new UnlockUpgrade("Bash", 500, ab.bash, null),
         ["Stomp"] = new UnlockUpgrade("Stomp", 800, ab.stomp, null),
         ["Glide"] = new UnlockUpgrade("Glide", 400, ab.glide, null),
@@ -22,21 +26,25 @@ namespace OriMod.Upgrades {
         .ChainUpgrade(this, new SpiritLightGrabRangeUpgrade("SpiritLight-GrabRange-IV", 1600, 13, null, null));
     }
 
+    public static UpgradeManager Local { get; private set; }
+
     public readonly Dictionary<string, Upgrade> Upgrades;
 
     internal Upgrade AddUpgrade(Upgrade u) {
       Upgrades.Add(u.Name, u);
       return u;
     }
+
+    internal static void Unload() => Local = null;
   }
 
   internal static class UpgradeConditions {
-    internal static bool DownedBoss1(out string reason) {
+    internal static bool DownedBoss1(out string failReason) {
       if (NPC.downedBoss1) {
-        reason = default;
+        failReason = default;
         return true;
       }
-      reason = "Defeat Eye of Cthuhlu";
+      failReason = "Defeat Eye of Cthuhlu";
       return false;
     }
   }

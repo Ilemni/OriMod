@@ -1,19 +1,36 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
+using OriMod.Abilities;
 using OriMod.Networking;
+using OriMod.UI;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using Terraria.UI;
 
 namespace OriMod {
-  partial class OriMod : Mod {
-    public static string GithubUserName => "TwiliChaos";
-    public static string GithubProjectName => "OriMod";
+  public partial class OriMod : Mod {
+    public OriMod() {
+      Properties = new ModProperties() {
+        Autoload = true,
+        AutoloadGores = true,
+        AutoloadSounds = true
+      };
+      Instance = this;
+    }
+    public static OriMod Instance;
 
     public static OriConfigClient1 ConfigClient { get; internal set; }
     public static OriConfigClient2 ConfigAbilities { get; internal set; }
+
+    public static string GithubUserName => "TwiliChaos";
+    public static string GithubProjectName => "OriMod";
+
+    internal UserInterface Interface;
+    internal UpgradeUI upgradeUI;
 
     #region Logging Shortcuts
 
@@ -60,15 +77,30 @@ namespace OriMod {
     public static ModHotKey FeatherKey;
     public static ModHotKey ChargeKey;
     public static ModHotKey BurrowKey;
-    public static OriMod Instance;
 
-    public OriMod() {
-      Properties = new ModProperties() {
-        Autoload = true,
-        AutoloadGores = true,
-        AutoloadSounds = true
-      };
-      Instance = this;
+    private GameTime _lastUpdateUiGameTime;
+
+    internal void ShowUpgradeUI() => Interface?.SetState(upgradeUI);
+
+    internal void HideUI() => Interface?.SetState(null);
+
+    public override void UpdateUI(GameTime gameTime) {
+      _lastUpdateUiGameTime = gameTime;
+      if (Interface?.CurrentState != null) {
+        Interface.Update(gameTime);
+      }
+    }
+
+    public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) {
+      int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
+      if (mouseTextIndex != -1) {
+        layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer("OriMod: UpgradeInterface", delegate {
+            if (_lastUpdateUiGameTime != null && Interface?.CurrentState != null) {
+              Interface.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
+            }
+            return true;
+        }, InterfaceScaleType.UI));
+      }
     }
 
     public override void AddRecipeGroups() {
@@ -107,8 +139,10 @@ namespace OriMod {
       ChargeKey = RegisterHotKey("Charge", "W");
       BurrowKey = RegisterHotKey("Burrow", "LeftControl");
       if (!Main.dedServ) {
-        // Add certain equip textures
         AddEquipTexture(null, EquipType.Head, "OriHead", "OriMod/PlayerEffects/OriHead");
+        Interface = new UserInterface();
+        upgradeUI = new UpgradeUI();
+        upgradeUI.Activate();
       }
 
       LoadSeinUpgrades();
@@ -137,6 +171,7 @@ namespace OriMod {
       OriLayers.Unload();
       AbilityManager.Unload();
       SeinUpgrades = null;
+      Interface = null;
 
       // Unload ModPlayer
       try {
