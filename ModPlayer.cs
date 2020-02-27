@@ -738,8 +738,8 @@ namespace OriMod {
         bool doDust = false;
         if (!oldGrounded) {
           doDust = true;
-        FootstepManager.Instance.PlayLandingFromPlayer(player);
-      }
+          FootstepManager.Instance.PlayLandingFromPlayer(player);
+        }
         else if (AnimName == "Running" && AnimIndex == 4 || AnimIndex == 9) {
           doDust = true;
           FootstepManager.Instance.PlayFootstepFromPlayer(player);

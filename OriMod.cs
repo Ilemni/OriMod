@@ -80,11 +80,24 @@ namespace OriMod {
 
     private GameTime _lastUpdateUiGameTime;
 
+    private bool uiShown = false;
+
     internal void ShowUpgradeUI() => Interface?.SetState(upgradeUI);
 
     internal void HideUI() => Interface?.SetState(null);
-
+    
     public override void UpdateUI(GameTime gameTime) {
+      // Temporary, for debug only
+      if (OriMod.SoulLinkKey.JustPressed) {
+        uiShown ^= true;
+        if (uiShown) {
+          ShowUpgradeUI();
+        }
+        else {
+          HideUI();
+        }
+      }
+
       _lastUpdateUiGameTime = gameTime;
       if (Interface?.CurrentState != null) {
         Interface.Update(gameTime);
