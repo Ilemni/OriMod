@@ -177,14 +177,13 @@ namespace OriMod {
       try {
         for (int p = 0, len = Main.player.Length; p < len; p++) {
           var player = Main.player[p];
-          OriPlayer oPlayer = null;
           try {
-            oPlayer = player.GetModPlayer<OriPlayer>();
+            var oPlayer = player.GetModPlayer<OriPlayer>();
+            oPlayer.Unload();
           }
-          catch { // All OriPlayers unloaded
+          catch { // All OriPlayers unloaded?
             break;
           }
-          oPlayer?.Unload();
         }
       }
       catch (Exception ex) {
@@ -201,14 +200,14 @@ namespace OriMod {
           case "ResetPlayerModData": {
               if (len >= 2) {
                 object obj = args[1];
-                OriPlayer oPlayer =
-                  (obj is Player player) ? player.GetModPlayer<OriPlayer>() :
-                  (obj is ModPlayer modPlayer) ? modPlayer.player.GetModPlayer<OriPlayer>() : null;
-                if (oPlayer == null) {
+                Player player =
+                  obj is Player p ? p :
+                  obj is ModPlayer modPlayer ? modPlayer.player : null;
+                if (player is null) {
                   Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type Player, got {obj.GetType()}");
                   return false;
                 }
-                oPlayer.ResetData();
+                player.GetModPlayer<OriPlayer>().ResetData();
                 return true;
               }
               break;

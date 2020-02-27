@@ -73,7 +73,7 @@ namespace OriMod.Utilities {
       else {
         dist *= dist; // Squared for DistanceSquared
       }
-      if (distSQCheck == null) {
+      if (distSQCheck is null) {
         distSQCheck = (e1, e2) => e1.DistanceShortSquared(e2);
       }
 
@@ -81,7 +81,7 @@ namespace OriMod.Utilities {
       int id = -1;
       for (int i = 0, len = arr.Length; i < len; i++) {
         T e = arr[i];
-        if (e == null || !e.active || condition?.Invoke(e) == false) {
+        if (e is null || !e.active || condition?.Invoke(e) == false) {
           continue;
         }
 

@@ -125,11 +125,11 @@ namespace OriMod.Animations {
     private static Header OverrideHeader = Header.Default;
 
     internal static void IncrementFrame(OriPlayer oPlayer, string anim = "Default", int overrideFrame = 0, float overrideTime = 0, int overrideDur = 0, Header overrideHeader = null, Vector2 drawOffset = new Vector2(), float rotDegrees = 0) {
-      if (oPlayer == null) {
+      if (oPlayer is null) {
         return;
       }
 
-      if (overrideHeader == null) {
+      if (overrideHeader is null) {
         overrideHeader = PlayerAnim[anim].Header;
       }
 

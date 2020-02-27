@@ -7,7 +7,7 @@ using Terraria;
 namespace OriMod {
   public class TileHitbox {
     public TileHitbox(params Point[] template) {
-      if (template == null) {
+      if (template is null) {
         throw new ArgumentNullException(nameof(template));
       }
       if (template.Length == 0) {

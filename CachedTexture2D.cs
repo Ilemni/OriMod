@@ -16,7 +16,7 @@ namespace OriMod {
   /// </remarks>
   public class CachedTexture2D {
     public CachedTexture2D(string texturePath) {
-      if (texturePath == null) {
+      if (texturePath is null) {
         throw new System.ArgumentNullException(nameof(texturePath));
       }
       
@@ -46,7 +46,7 @@ namespace OriMod {
     public static implicit operator CachedTexture2D(Texture2D tx) => new CachedTexture2D(tx.Name);
 
     public Texture2D GetTexture() {
-      if (texture == null || texture.IsDisposed) {
+      if (texture is null || texture.IsDisposed) {
         texture = thisMod ? OriMod.Instance.GetTexture(TexturePath) : ModContent.GetTexture(TexturePath);
       }
       return texture;

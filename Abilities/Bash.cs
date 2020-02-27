@@ -231,7 +231,7 @@ namespace OriMod.Abilities {
           return;
         }
         if (Active) {
-          if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || BashEntity == null || !BashEntity.active) {
+          if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || BashEntity is null || !BashEntity.active) {
             SetState(State.Ending);
           }
           return;

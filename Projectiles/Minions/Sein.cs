@@ -507,7 +507,7 @@ namespace OriMod.Projectiles.Minions {
       proj.penetrate = Pierce;
       proj.owner = projectile.owner;
 
-      if (npc == null) {
+      if (npc is null) {
         var pos = Utils.RotatedBy(new Vector2(projectile.position.X, projectile.position.Y + Main.rand.Next(8, 48)), Main.rand.NextFloat((float)Math.PI * 2));
         proj.ai[0] = pos.X;
         proj.ai[1] = pos.Y;

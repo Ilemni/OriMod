@@ -151,12 +151,8 @@ namespace OriMod {
           TileFootstepSounds[i] = FootstepSound.None;
           continue;
         }
-        var modTile = TileLoader.GetTile(i);
-        if (modTile == null) {
-          continue;
-        }
-
-        var name = modTile.Name.Substring(modTile.Name.LastIndexOf('.') + 1);
+        var tileName = TileLoader.GetTile(i).Name;
+        var name = tileName.Substring(tileName.LastIndexOf('.') + 1);
         TileFootstepSounds[i] = SoundFromName(name);
       }
     }

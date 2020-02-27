@@ -61,10 +61,6 @@ namespace OriMod {
 
       for (i = TileID.Count; i < TileLoader.TileCount; i++) {
         var modTile = TileLoader.GetTile(i);
-        if (modTile == null) {
-          continue;
-        }
-
         TilePickaxeMin[i] = modTile.minPick;
       }
     }
