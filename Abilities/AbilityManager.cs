@@ -139,7 +139,7 @@ namespace OriMod.Abilities {
         }
       }
       if (changes.Count > 0) {
-        ModNetHandler.abilityPacketHandler.SendAbilityState(255, oPlayer.player.whoAmI, changes);
+        ModNetHandler.Instance.abilityPacketHandler.SendAbilityState(255, oPlayer.player.whoAmI, changes);
       }
     }
 
@@ -149,6 +149,9 @@ namespace OriMod.Abilities {
       }
     }
 
-    internal static void Unload() => Local = null;
+    internal static void Unload() {
+      Local = null;
+      SoulLink.Unload();
+    }
   }
 }

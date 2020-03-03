@@ -13,11 +13,13 @@ namespace OriMod.Abilities {
     protected override int Cooldown => (int)(Config.SoulLinkCooldown * 30);
 
     private static Point P(int x, int y) => new Point(x, y);
-    private static readonly TileHitbox Box = new TileHitbox(
+    private static TileHitbox Box => _b ?? (_b = new TileHitbox(
       P(-1, -1), P(0, -1), P(1, -1),
       P(0, -1), P(0, 0), P(0, 1),
       P(1, -1), P(1, 0), P(1, 1)
-    );
+    ));
+    private static TileHitbox _b;
+
     internal Point Center => PlacedSoulLink && Box.Points[4] != Point.Zero ? Box.Points[4] : player.Center.ToTileCoordinates();
     internal Point SoulLinkLocation { get; private set; }
 
@@ -127,6 +129,10 @@ namespace OriMod.Abilities {
         dust.position += -Vector2.UnitY.RotatedBy(CurrCharge * 2 * Math.PI) * 56;
       }
       TickCooldown();
+    }
+
+    internal static void Unload() {
+      _b = null;
     }
   }
 }

@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.GameInput;
-using Microsoft.Xna.Framework.Graphics;
 using OriMod.Utilities;
 
 namespace OriMod.Projectiles.Minions {
-    public abstract class Sein : Minion {
+  public abstract class Sein : Minion {
     public override sealed string Texture => "OriMod/Projectiles/Minions/Sein";
 
     public override sealed bool? CanCutTiles() => false;
@@ -697,7 +697,7 @@ namespace OriMod.Projectiles.Minions {
       var tex = OriTextures.Instance.Sein.GetTexture();
       var orig = new Vector2(tex.Width, tex.Width) * 0.5f;
       for (int i = 0; i < 3; i++) {
-        Color color = this.Color;
+        var color = Color;
         color.A = 255;
         if (color == Color.Black) {
           color = Color.White;

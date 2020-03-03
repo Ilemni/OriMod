@@ -6,10 +6,11 @@ using System.Linq;
 namespace OriMod.Animations {
   internal static class AnimationHandler {
     private static Frame F(int frameX, int frameY, int duration = -1) => new Frame(frameX, frameY, duration);
-    private static Header H(InitType i = InitType.Range, LoopMode l = LoopMode.Always, PlaybackMode p = PlaybackMode.Normal, string s = null)
-      => new Header(init: i, loop: l, playback: p, overrideTexturePath: s);
+    private static Header H(InitType i = InitType.Range, LoopMode l = LoopMode.Always, PlaybackMode p = PlaybackMode.Normal, CachedTexture2D texture = null)
+      => new Header(init: i, loop: l, playback: p, ctx: texture);
 
-    internal static readonly AnimationSource PlayerAnim = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
+    private static AnimationSource _pa;
+    internal static AnimationSource PlayerAnim => _pa ?? (_pa = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
       new Dictionary<string, Track> {
         ["Default"] = new Track(Header.Default,
           F(0, 0)
@@ -89,7 +90,7 @@ namespace OriMod.Animations {
         ["Burrow"] = new Track(H(i: InitType.Range),
           F(7, 0, 3), F(7, 7, 3)
         ),
-        ["TransformStart"] = new Track(H(i: InitType.Select, l: LoopMode.Transfer, s: "PlayerEffects/Transform"),
+        ["TransformStart"] = new Track(H(i: InitType.Select, l: LoopMode.Transfer, texture: OriTextures.Instance.Transform), // TODO: Migrate TransformStart textures to OriPlayer
           F(0, 0, 2), F(0, 1, 60), F(0, 2, 60), F(0, 3, 120),
           F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30)
         ),
@@ -97,18 +98,20 @@ namespace OriMod.Animations {
           F(15, 8, 6), F(15, 9, 50), F(15, 10, 6), F(15, 11, 60),
           F(15, 12, 10), F(15, 13, 40), F(15, 14, 3), F(15, 15, 60)
         ),
-      }
+      })
     );
 
-    internal static readonly AnimationSource BashAnim = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
+    private static AnimationSource _ba;
+    internal static AnimationSource BashAnim => _ba ?? (_ba = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
       new Dictionary<string, Track> {
         {"Bash", new Track(H(i:InitType.Select),
           F(0, 0)
         )}
       }
-    );
+    ));
 
-    internal static readonly AnimationSource GlideAnim = new AnimationSource("PlayerEffects/Feather", 128, 128,
+    private static AnimationSource _ga;
+    internal static AnimationSource GlideAnim => _ga ?? (_ga = new AnimationSource("PlayerEffects/Feather", 128, 128,
       new Dictionary<string, Track> {
         {"GlideStart", new Track(H(l:LoopMode.Once),
           F(0, 0, 5), F(0, 2, 5)
@@ -120,10 +123,14 @@ namespace OriMod.Animations {
           F(0, 4, 5), F(0, 9, 5)
         )},
       }
-    );
+    ));
 
-    private static Header OverrideHeader = Header.Default;
-
+    private static Header OverrideHeader {
+      get => _oh ?? (_oh = Header.Default);
+      set => _oh = value;
+    }
+    private static Header _oh;
+    
     internal static void IncrementFrame(OriPlayer oPlayer, string anim = "Default", int overrideFrame = 0, float overrideTime = 0, int overrideDur = 0, Header overrideHeader = null, Vector2 drawOffset = new Vector2(), float rotDegrees = 0) {
       if (oPlayer is null) {
         return;
@@ -250,6 +257,13 @@ namespace OriMod.Animations {
         newFrame = frames[frameIndex];
         oPlayer.SetFrame(anim, frameIndex, time, newFrame, rotRads);
       }
+    }
+  
+    public static void Unload() {
+      _pa = null;
+      _ba = null;
+      _ga = null;
+      _oh = null;
     }
   }
 }

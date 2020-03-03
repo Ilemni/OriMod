@@ -540,16 +540,6 @@ namespace OriMod {
       SeinMinionActive = false;
       SeinMinionType = 0;
     }
-
-    /// <summary>
-    /// Unloads this OriPlayer instance. Was designed to dispose textures and may no longer be necessary
-    /// </summary>
-    internal void Unload() {
-      Animations.Dispose();
-      Animations = null;
-      Upgrades = null;
-      Abilities = null;
-    }
     #endregion
 
     public override void Initialize() {
@@ -579,7 +569,7 @@ namespace OriMod {
         }
       }
       if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer && doNetUpdate) {
-        ModNetHandler.oriPlayerHandler.SendOriState(255, player.whoAmI);
+        ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, player.whoAmI);
         doNetUpdate = false;
       }
     }

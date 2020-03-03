@@ -1,11 +1,5 @@
 ﻿namespace OriMod.Animations {
   internal class AnimationContainer {
-    internal OriPlayer oPlayer { get; private set; }
-    internal Animation PlayerAnim { get; private set; }
-    internal Animation SecondaryLayer { get; private set; }
-    internal Animation TrailAnim { get; private set; }
-    internal Animation BashAnim { get; private set; }
-    internal Animation GlideAnim { get; private set; }
     internal AnimationContainer(OriPlayer oPlayer) {
       this.oPlayer = oPlayer;
       PlayerAnim = new Animation(this, AnimationHandler.PlayerAnim, OriLayers.Instance.PlayerSprite);
@@ -15,14 +9,12 @@
       GlideAnim = new Animation(this, AnimationHandler.GlideAnim, OriLayers.Instance.FeatherSprite);
     }
 
-    internal void Dispose() {
-      oPlayer = null;
-      PlayerAnim.Dispose();
-      SecondaryLayer.Dispose();
-      TrailAnim.Dispose();
-      BashAnim.Dispose();
-      GlideAnim.Dispose();
-      PlayerAnim = SecondaryLayer = TrailAnim = BashAnim = GlideAnim = null;
-    }
+    internal readonly OriPlayer oPlayer;
+    
+    internal readonly Animation PlayerAnim;
+    internal readonly Animation SecondaryLayer;
+    internal readonly Animation TrailAnim;
+    internal readonly Animation BashAnim;
+    internal readonly Animation GlideAnim;
   }
 }

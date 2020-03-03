@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
@@ -167,6 +166,8 @@ namespace OriMod {
     }
     
     public override void Unload() {
+      Instance = null;
+
       BashKey = null;
       DashKey = null;
       ClimbKey = null;
@@ -175,36 +176,23 @@ namespace OriMod {
       BurrowKey = null;
       SoulLinkKey = null;
       SeinUpgrades = null;
-      Instance = null;
       ConfigClient = null;
       ConfigAbilities = null;
 
-      FootstepManager.Unload();
-      TileCollection.Unload();
-      OriLayers.Unload();
-      AbilityManager.Unload();
       SeinUpgrades = null;
       Interface = null;
 
-      // Unload ModPlayer
-      try {
-        for (int p = 0, len = Main.player.Length; p < len; p++) {
-          var player = Main.player[p];
-          try {
-            var oPlayer = player.GetModPlayer<OriPlayer>();
-            oPlayer.Unload();
-          }
-          catch { // All OriPlayers unloaded?
-            break;
-          }
-        }
-      }
-      catch (Exception ex) {
-        Log.Error($"Error while unloading OriPlayers, unload for OriPlayers cancelled.\n{ex}");
-      }
+      AbilityManager.Unload();
+      FootstepManager.Unload();
+      OriLayers.Unload();
+      OriTextures.Unload();
+      TileCollection.Unload();
+      Animations.AnimationHandler.Unload();
+      Upgrades.UpgradeManager.Unload();
+      Utilities.RandomChar.Unload();
     }
 
-    public override void HandlePacket(BinaryReader reader, int fromWho) => ModNetHandler.HandlePacket(reader, fromWho);
+    public override void HandlePacket(BinaryReader reader, int fromWho) => ModNetHandler.Instance.HandlePacket(reader, fromWho);
 
     public override object Call(params object[] args) {
       int len = args.Length;

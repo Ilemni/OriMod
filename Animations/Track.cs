@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace OriMod.Animations {
-  internal class Track : IDisposable {
+  internal class Track {
     internal Header Header { get; private set; }
     internal Frame[] Frames { get; private set; }
     internal int Duration { get; }
@@ -33,12 +32,6 @@ namespace OriMod.Animations {
         }
         Duration += f.Duration;
       }
-    }
-
-    public void Dispose() {
-      Header.Dispose();
-      Header = null;
-      Frames = null;
     }
   }
 }

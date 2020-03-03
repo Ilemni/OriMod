@@ -1,21 +1,17 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-
-namespace OriMod.Animations {
-  internal class Header : IDisposable {
+﻿namespace OriMod.Animations {
+  internal class Header {
     internal InitType Init;
     internal LoopMode Loop;
     internal PlaybackMode Playback;
-    internal Texture2D Texture => !_tex?.IsDisposed ?? false ? _tex : TexturePath != null ? _tex = OriMod.Instance.GetTexture(TexturePath) : null;
-    private Texture2D _tex;
-    private string TexturePath;
-    internal string TransferTo { get; private set; }
+    internal readonly string TransferTo;
+    internal readonly CachedTexture2D Texture = null;
 
-    internal Header(InitType init = InitType.None, LoopMode loop = LoopMode.None, PlaybackMode playback = PlaybackMode.None, string transferTo = null, string overrideTexturePath = null) {
+    internal Header(InitType init = InitType.None, LoopMode loop = LoopMode.None, PlaybackMode playback = PlaybackMode.None, string transferTo = null, CachedTexture2D ctx = null) {
       Init = init;
       Loop = loop;
       Playback = playback;
-      TexturePath = overrideTexturePath;
+      TransferTo = transferTo;
+      Texture = ctx;
     }
 
     internal Header CopySome(Header other) {
@@ -29,16 +25,7 @@ namespace OriMod.Animations {
     internal static Header Default => new Header(InitType.Range, LoopMode.Always, PlaybackMode.Normal);
     internal static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
     public override string ToString()
-      => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}" + (Texture != null ? $" | Texture Path: \"{Texture.Name}\"" : "");
-
-    public void Dispose() {
-      if (_tex != null) {
-        _tex.Dispose();
-        _tex = null;
-      }
-      TexturePath = null;
-      TransferTo = null;
-    }
+      => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}";
   }
 
   internal enum InitType {

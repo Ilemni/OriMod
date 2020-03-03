@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OriMod.Animations {
-  internal class AnimationSource : IDisposable {
+  internal class AnimationSource {
     internal Dictionary<string, Track> Tracks { get; private set; }
     internal Point TileSize { get; }
     internal readonly CachedTexture2D Texture;
@@ -18,17 +17,6 @@ namespace OriMod.Animations {
       TrackNames = tracks.Keys.ToArray();
       TileSize = new Point(x, y);
       Texture = new CachedTexture2D(texturePath);
-    }
-
-    public void Dispose() {
-      if (Tracks != null) {
-        foreach (var track in Tracks.Values) {
-          track.Dispose();
-        }
-        Tracks = null;
-      }
-      Texture.DisposeTexture();
-      TrackNames = null;
     }
   }
 }

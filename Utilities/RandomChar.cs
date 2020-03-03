@@ -54,7 +54,11 @@ namespace OriMod.Utilities {
 
     private int nextExclude = int.MaxValue; // Start as max value to avoid excludes on first use
 
-    private static readonly char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
     private static int RandMaxValue => 25;
+    
+    private static char[] alphabet => _a ?? (_a = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray());
+    private static char[] _a;
+
+    public static void Unload() => _a = null;
   }
 }

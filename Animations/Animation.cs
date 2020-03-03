@@ -1,20 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.ModLoader;
 
 namespace OriMod.Animations {
-  internal class Animation : IDisposable {
+  internal class Animation {
     internal Texture2D Texture => ActiveTrack.Header.Texture ?? Source.Texture;
-    internal PlayerLayer PlayerLayer { get; private set; }
+    internal readonly PlayerLayer PlayerLayer;
     internal bool Valid { get; private set; }
     internal Track ActiveTrack => Valid ? Source.Tracks[Handler.oPlayer.AnimName] : Source.Tracks.First().Value;
     internal Frame ActiveFrame => ActiveTrack.Frames[Handler.oPlayer.AnimIndex < ActiveTrack.Frames.Length ? Handler.oPlayer.AnimIndex : 0];
     internal Rectangle ActiveTile => new Rectangle(ActiveFrame.Tile.X * Source.TileSize.X, ActiveFrame.Tile.Y * Source.TileSize.Y, Source.TileSize.X, Source.TileSize.Y);
-    internal AnimationContainer Handler { get; private set; }
-    internal AnimationSource Source { get; private set; }
+    internal readonly AnimationContainer Handler;
+    internal readonly AnimationSource Source;
 
     internal Animation(AnimationContainer handler, AnimationSource source, PlayerLayer playerLayer) {
       Handler = handler;
@@ -39,12 +38,5 @@ namespace OriMod.Animations {
     }
 
     internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
-
-    public void Dispose() {
-      PlayerLayer = null;
-      Handler = null;
-      Source.Dispose();
-      Source = null;
-    }
   }
 }
