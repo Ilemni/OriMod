@@ -9,27 +9,8 @@ namespace OriMod {
   /// <summary>
   /// This class is used to handle creation of footstep sounds
   /// </summary>
-  public sealed class FootstepManager {
-    private FootstepManager() { }
-
-    public static FootstepManager Instance => _i ?? (_i = new FootstepManager());
-    private static FootstepManager _i;
-
-    public FootstepSound[] TileFootstepSounds { get; private set; }
-
-    private readonly RandomChar randomChar = new RandomChar();
-
-    #region Initialization Methods
-    internal static void Load() => Instance.Initialize();
-
-    internal static void Unload() {
-      if (_i != null) {
-        _i.TileFootstepSounds = null;
-        _i = null;
-      }
-    }
-
-    internal void Initialize() {
+  public sealed class FootstepManager : SingleInstance<FootstepManager> {
+    private FootstepManager() {
       int count = TileLoader.TileCount;
       TileFootstepSounds = new FootstepSound[count];
 
@@ -157,6 +138,10 @@ namespace OriMod {
       }
     }
 
+    public readonly FootstepSound[] TileFootstepSounds;
+
+    private readonly RandomChar randomChar = new RandomChar();
+
     private FootstepSound SoundFromName(string name) {
       name = name.ToLower();
       if (name.Contains("brick")) {
@@ -187,7 +172,6 @@ namespace OriMod {
       OriMod.Log.Warn($"Could not get appropriate sound from mod tile name \"{name}\"");
       return FootstepSound.NoModTranslation;
     }
-    #endregion
 
     #region Play Footstep Methods
     public SoundEffectInstance PlayFootstepFromPlayer(Player player) {

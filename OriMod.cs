@@ -161,8 +161,8 @@ namespace OriMod {
     }
 
     public override void PostSetupContent() {
-      FootstepManager.Load();
-      TileCollection.Load();
+      FootstepManager.Initialize();
+      TileCollection.Initialize();
     }
     
     public override void Unload() {

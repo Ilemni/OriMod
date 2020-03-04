@@ -5,9 +5,8 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OriMod {
-  internal class OriLayers {
-    internal static OriLayers Instance => _i ?? (_i = new OriLayers());
-    private static OriLayers _i;
+  internal class OriLayers : SingleInstance<OriLayers> {
+    private OriLayers() { }
 
     internal readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
@@ -32,7 +31,7 @@ namespace OriMod {
       Player player = drawInfo.drawPlayer;
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       if (!player.dead && !player.invis) {
-        oPlayer.Trails.ResetNext();
+        oPlayer.Trails.ResetNextTrail();
       }
       oPlayer.Trails.AddTrailDrawData();
     });
@@ -89,7 +88,5 @@ namespace OriMod {
 
       return new DrawData(texture, pos, rect, oPlayer.SpriteColorPrimary, player.direction * oPlayer.AnimRads, orig, 1, effect, 0);
     }
-
-    internal static void Unload() => _i = null;
   }
 }

@@ -25,7 +25,7 @@ namespace OriMod {
       }
     }
     
-    internal void ResetNext() => trails[Next].Reset();
+    internal void ResetNextTrail() => trails[Next].Reset();
 
     private int Next {
       get {

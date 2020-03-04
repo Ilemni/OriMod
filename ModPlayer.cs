@@ -16,7 +16,7 @@ using OriMod.Utilities;
 using OriMod.Animations;
 
 namespace OriMod {
-    public sealed class OriPlayer : ModPlayer {
+  public sealed class OriPlayer : ModPlayer {
     #region Variables
     /// <summary>
     /// Manager for all Abilities on this OriPlayer instance.

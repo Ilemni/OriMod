@@ -6,26 +6,8 @@ namespace OriMod {
   /// <summary> This class is used purely to handle Burrowing.
   /// 
   /// This class assigns and stores the Pickaxe power of each tile, with some exceptions. </summary>
-  internal class TileCollection {
-    internal static TileCollection Instance => _i ?? (_i = new TileCollection());
-    private static TileCollection _i;
-
-    internal int[] TilePickaxeMin { get; private set; }
-
-    #region Initialization Methods
-    internal static void Load() => Instance.Initialize();
-
-    internal static void Unload() {
-      if (_i != null) {
-        _i.TilePickaxeMin = null;
-        _i = null;
-      }
-    }
-
-    /// <summary>
-    /// Initializes the class. Only call in an initlalize method.
-    /// </summary>
-    internal void Initialize() {
+  internal class TileCollection : SingleInstance<TileCollection> {
+    private TileCollection() {
       if (TilePickaxeMin != null) {
         return;
       }
@@ -64,8 +46,9 @@ namespace OriMod {
         TilePickaxeMin[i] = modTile.minPick;
       }
     }
-    #endregion
-    
+
+    internal readonly int[] TilePickaxeMin;
+
     /// <summary>
     /// Add's a ModTile's minPick to the TilePickaxeMin list
     /// </summary>
