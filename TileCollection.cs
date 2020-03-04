@@ -1,27 +1,19 @@
-using OriMod.Utilities;
 using Terraria.ID;
 using Terraria.ModLoader;
+using OriMod.Utilities;
 
 namespace OriMod {
-  /// <summary> This class is used purely to handle Burrowing.
-  /// 
-  /// This class assigns and stores the Pickaxe power of each tile, with some exceptions. </summary>
+  /// <summary>
+  /// Contains the Pickaxe power of each tile. Used for Burrowing.
+  /// </summary>
   internal class TileCollection : SingleInstance<TileCollection> {
     private TileCollection() {
-      if (TilePickaxeMin != null) {
-        return;
-      }
-
       TilePickaxeMin = new int[TileLoader.TileCount];
 
       // Assign vanilla tiles to 2 (Sand-like is 0, Dirt-like is 1)
       int i;
       for (i = 0; i < TileID.Count; i++) {
         TilePickaxeMin[i] = 2;
-      }
-      // Assign ModTiles to -1 until they're assigned.
-      for (i = TileID.Count; i < TilePickaxeMin.Length; i++) {
-        TilePickaxeMin[i] = -1;
       }
 
       TilePickaxeMin.AssignValueToKeys(0, TileID.Sand, TileID.Slush, TileID.Silt);
@@ -48,13 +40,5 @@ namespace OriMod {
     }
 
     internal readonly int[] TilePickaxeMin;
-
-    /// <summary>
-    /// Add's a ModTile's minPick to the TilePickaxeMin list
-    /// </summary>
-    internal void AddModTile(ModTile m) {
-      OriMod.Log.Debug($"Adding to TilePickaxeMin <{m.Type}, {m.minPick}> (Name: {m.Name}, Mod {m.mod?.Name ?? "Unknown mod"})");
-      TilePickaxeMin[m.Type] = m.minPick;
-    }
   }
 }
