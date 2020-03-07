@@ -4,10 +4,13 @@
   /// </summary>
   public class UnlockUpgrade : ActionUpgrade {
     public UnlockUpgrade(string name, int cost, IUnlockable unlockable, Upgrade[] requiredUpgrades, ConditionResult condition = null)
-      : base($"{name}.Unlock", cost, requiredUpgrades, () => unlockable.Unlocked = true, () => unlockable.Unlocked = false, condition) {
+      : base($"{name}.Unlock", cost, requiredUpgrades, condition) {
       this.unlockable = unlockable;
     }
 
     public readonly IUnlockable unlockable;
+
+    public override void OnEnable() => unlockable.Unlocked = true;
+    public override void OnDisable() => unlockable.Unlocked = false;
   }
 }

@@ -694,7 +694,7 @@ namespace OriMod.Projectiles.Minions {
 
     public override void PostDraw(SpriteBatch spriteBatch, Color lightColor) {
       var pos = projectile.BottomRight - Main.screenPosition;
-      var tex = OriTextures.Instance.Sein.GetTexture();
+      var tex = OriTextures.Instance.Sein.texture;
       var orig = new Vector2(tex.Width, tex.Width) * 0.5f;
       for (int i = 0; i < 3; i++) {
         var color = Color;

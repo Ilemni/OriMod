@@ -44,28 +44,31 @@ namespace OriMod.Abilities {
     private int TimeLeft;
 
     private static Point P(int x, int y) => new Point(x, y);
-    internal readonly TileHitbox EnterHitbox = new TileHitbox(
+    internal static TileHitbox EnterHitbox => _eh ?? (_eh = new TileHitbox(
       P(0, -1), P(0, 0), P(0, 1), // Center
       P(-1, -1), P(-1, 0), P(-1, 1), // Left
       P(2, -1), P(2, 0), P(2, 1),  // Right
       P(0, -2), P(1, -2), // Top
       P(0, 2), P(1, 2),  // Bottom
       P(2, 2), P(2, -2), P(-1, 2), P(-1, -2) // Corners
-    );
-    internal readonly TileHitbox OuterHitbox = new TileHitbox(
+    ));
+    internal static TileHitbox OuterHitbox => _oh ?? (_oh = new TileHitbox(
       P(-2, -2), P(-2, -1), P(-2, 0), P(-2, 1), P(-2, 2),  // Left
       P(3, -2), P(3, -1), P(3, 0), P(3, 1), P(3, 2),   // Right
       P(-1, -2), P(0, -2), P(1, -2), P(2, -2),  // Top
       P(-1, 3), P(0, 3), P(1, 3), P(2, 3),   // Bottom
       P(3, 3), P(3, -3), P(-2, 3), P(-2, -3) // Corners
-    );
-    internal readonly TileHitbox InnerHitbox = new TileHitbox(
+    ));
+    internal static TileHitbox InnerHitbox => _ih ?? (_ih = new TileHitbox(
       P(0, -1), // Top
       P(0, 1),  // Bottom
       P(-1, 0), // Left
       P(1, 0)  // Right
-    );
-
+    ));
+    private static TileHitbox _eh;
+    private static TileHitbox _oh;
+    private static TileHitbox _ih;
+    
     private void OnCollision(int hitboxIdx, ref bool didX, ref bool didY) {
       oPlayer.Debug("Bounce! " + hitboxIdx);
       switch (hitboxIdx) {
@@ -219,7 +222,7 @@ namespace OriMod.Abilities {
             frameY = 4 - (int)Breath % UiIncrement / (UiIncrement / 5);
           }
 
-          var tex = OriTextures.Instance.BurrowTimer.GetTexture();
+          var tex = OriTextures.Instance.BurrowTimer.texture;
           Main.playerDrawData.Add(new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, SpriteEffects.None, 0));
         }
       }
@@ -321,6 +324,12 @@ namespace OriMod.Abilities {
           }
         }
       }
+    }
+
+    internal static void Unload() {
+      _eh = null;
+      _oh = null;
+      _ih = null;
     }
   }
 }

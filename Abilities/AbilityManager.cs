@@ -151,6 +151,7 @@ namespace OriMod.Abilities {
 
     internal static void Unload() {
       Local = null;
+      Burrow.Unload();
       SoulLink.Unload();
     }
   }

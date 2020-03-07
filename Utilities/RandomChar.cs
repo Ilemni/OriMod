@@ -1,7 +1,7 @@
 ﻿using Terraria;
 
 namespace OriMod.Utilities {
-  class RandomChar {
+  internal class RandomChar {
     /// <summary>
     /// Gets a random char between A and Z
     /// </summary>
@@ -37,14 +37,14 @@ namespace OriMod.Utilities {
         throw new System.ArgumentOutOfRangeException(nameof(length), "Value must be between 2 and " + RandMaxValue);
       }
 
-      int rand;
+      byte rand;
       if (nextExclude < 0 || nextExclude >= length) {
-        rand = Main.rand.Next(length);
+        rand = (byte)Main.rand.Next(length);
         nextExclude = rand;
         return alphabet[rand];
       }
 
-      rand = Main.rand.Next(length - 1);
+      rand = (byte)Main.rand.Next(length - 1);
       if (rand >= nextExclude) {
         rand += 1;
       }
@@ -52,9 +52,9 @@ namespace OriMod.Utilities {
       return alphabet[rand];
     }
 
-    private int nextExclude = int.MaxValue; // Start as max value to avoid excludes on first use
+    private byte nextExclude = RandMaxValue; // Start as max value to avoid excludes on first use
 
-    private static int RandMaxValue => 25;
+    private static byte RandMaxValue => 25;
     
     private static char[] alphabet => _a ?? (_a = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray());
     private static char[] _a;
