@@ -20,7 +20,7 @@ namespace OriMod.Networking {
           ReceiveOriState(reader, fromWho);
           break;
         default:
-          OriMod.ErrorFormat("UnknownOriStatePacket", args: packetType);
+          OriMod.Error("UnknownOriStatePacket", args: packetType);
           break;
       }
     }

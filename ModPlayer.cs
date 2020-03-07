@@ -1,7 +1,12 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using OriMod.Abilities;
+using OriMod.Animations;
+using OriMod.Networking;
+using OriMod.Upgrades;
+using OriMod.Utilities;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameInput;
@@ -9,11 +14,6 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using OriMod.Abilities;
-using OriMod.Upgrades;
-using OriMod.Networking;
-using OriMod.Utilities;
-using OriMod.Animations;
 
 namespace OriMod {
   public sealed class OriPlayer : ModPlayer {

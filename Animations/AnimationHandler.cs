@@ -143,7 +143,7 @@ namespace OriMod.Animations {
       float rotRads = (float)(rotDegrees / 180 * Math.PI);
       if (!PlayerAnim.TrackNames.Contains(anim)) {
         if (anim != null && anim.Length > 0) {
-          OriMod.ErrorFormat("BadTrack", args: anim);
+          OriMod.Error("BadTrack", args: anim);
         }
         anim = "Default";
         Track track = PlayerAnim[anim];
@@ -177,7 +177,7 @@ namespace OriMod.Animations {
         if (anim == oPlayer.AnimName) {
           int testFrame = Array.FindIndex(frames, f => f.Tile == currFrame); // Check if this frame already exists
           if (testFrame == -1) {
-            OriMod.ErrorFormat("BadFrame", args: new object[] { anim, currFrame });
+            OriMod.Error("BadFrame", args: new object[] { anim, currFrame });
             frameIndex = header.Playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
           }
         }

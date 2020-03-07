@@ -28,8 +28,8 @@ namespace OriMod {
     public static string GithubUserName => "TwiliChaos";
     public static string GithubProjectName => "OriMod";
 
-    internal UserInterface Interface;
-    internal UpgradeUI upgradeUI;
+    internal static UserInterface Interface;
+    internal static UpgradeUI upgradeUI;
 
     #region Logging Shortcuts
 
@@ -46,27 +46,23 @@ namespace OriMod {
     /// <summary> Shows an error in chat and in the logger, using default localized text. </summary>
     /// <param name="key">Key in lang file</param>
     /// <param name="log">Write to logger</param>
-    internal static void Error(string key, bool log = true) => ErrorText(GetErrorText(key).Value, log);
+    internal static void Error(string key, bool log = true) => PrintError(GetErrorText(key).Value, log);
 
     /// <summary> Shows an error in chat and in the logger, using default localized text. Has formatting. </summary>
     /// <param name="key">Key in lang file</param>
     /// <param name="log">Write to logger</param>
     /// <param name="args">Formatting args</param>
-    internal static void ErrorFormat(string key, bool log = true, params object[] args) => ErrorText(GetErrorText(key).Format(args), log);
+    internal static void Error(string key, bool log = true, params object[] args) => PrintError(GetErrorText(key).Format(args), log);
 
     /// <summary> Shows an error in chat and in the logger, using a string literal. </summary>
     /// <param name="text">String literal to show</param>
     /// <param name="log">Write to logger</param>
-    internal static void ErrorText(string text, bool log = true) {
+    internal static void PrintError(string text, bool log = true) {
       if (log) {
         Log.Error(text);
       }
       Main.NewText(text, Color.Red);
     }
-
-    /// <summary> Write an error to the logger, using a key in the language file </summary>
-    /// <param name="key"></param>
-    internal static void LogError(string key) => Log.Error(GetErrorText(key));
     #endregion
 
     public static ModHotKey SoulLinkKey;
@@ -87,7 +83,7 @@ namespace OriMod {
     
     public override void UpdateUI(GameTime gameTime) {
       // Temporary, for debug only
-      if (OriMod.SoulLinkKey.JustPressed) {
+      /*if (SoulLinkKey.JustPressed) {
         uiShown ^= true;
         if (uiShown) {
           ShowUpgradeUI();
@@ -95,7 +91,7 @@ namespace OriMod {
         else {
           HideUI();
         }
-      }
+      }*/
 
       _lastUpdateUiGameTime = gameTime;
       if (Interface?.CurrentState != null) {
@@ -181,6 +177,7 @@ namespace OriMod {
 
       SeinUpgrades = null;
       Interface = null;
+      upgradeUI = null;
 
       AbilityManager.Unload();
       FootstepManager.Unload();

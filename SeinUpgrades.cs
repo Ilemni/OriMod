@@ -140,7 +140,7 @@ namespace OriMod {
     internal float lightStrength;
   }
 
-  partial class OriMod {
+  public partial class OriMod {
     internal static List<SeinUpgrade> SeinUpgrades;
 
     /// <summary>

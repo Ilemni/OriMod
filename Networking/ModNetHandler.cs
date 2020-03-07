@@ -20,7 +20,7 @@ namespace OriMod.Networking {
           abilityPacketHandler.HandlePacket(r, fromWho);
           break;
         default:
-          OriMod.ErrorFormat("UnknownPacket", args: packetClass);
+          OriMod.Error("UnknownPacket", args: packetClass);
           break;
       }
     }

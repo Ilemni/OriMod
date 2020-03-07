@@ -20,7 +20,7 @@ namespace OriMod.Networking {
           ReceiveAbilityState(reader, fromWho);
           break;
         default:
-          OriMod.ErrorFormat("UnknownAbilityPacket", args: packetType);
+          OriMod.Error("UnknownAbilityPacket", args: packetType);
           break;
       }
     }
