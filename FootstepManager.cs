@@ -12,10 +12,10 @@ namespace OriMod {
   public sealed class FootstepManager : SingleInstance<FootstepManager> {
     private FootstepManager() {
       int count = TileLoader.TileCount;
-      TileFootstepSounds = new byte[count];
+      TileFootstepSounds = new FootstepSound[count];
 
       // Vanilla tiles
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.None, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.None, new int[] {
         TileID.Plants, TileID.Torches, TileID.Trees, TileID.ClosedDoor, TileID.OpenDoor, TileID.Heart, TileID.Bottles, TileID.Saplings,
         TileID.Chairs, TileID.Furnaces, TileID.Containers, TileID.CorruptPlants, TileID.DemonAltar, TileID.Sunflower, TileID.Pots, TileID.PiggyBank, TileID.ShadowOrbs,
         TileID.CorruptThorns, TileID.Candles, TileID.Chandeliers, TileID.Jackolanterns, TileID.Presents,
@@ -66,12 +66,12 @@ namespace OriMod {
         TileID.SandDrip, TileID.DjinnLamp, TileID.DefendersForge, TileID.WarTable, TileID.WarTableBanner,
         TileID.ElderCrystalStand, TileID.Containers2, TileID.FakeContainers2, TileID.Tables2
       });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.Grass, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Grass, new int[] {
         TileID.Dirt, TileID.Grass, TileID.CorruptGrass, TileID.ClayBlock, TileID.Mud, TileID.JungleGrass, TileID.MushroomGrass,
         TileID.HallowedGrass, TileID.PineTree, TileID.LeafBlock, TileID.FleshGrass, TileID.HayBlock, TileID.LavaMoss,
         TileID.LivingMahoganyLeaves
       });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.Rock, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Rock, new int[] {
         TileID.Stone, TileID.Iron, TileID.Copper, TileID.Gold, TileID.Silver, TileID.Demonite, TileID.Ebonstone,
         TileID.Meteorite, TileID.Obsidian, TileID.Hellstone, TileID.Sapphire, TileID.Ruby, TileID.Emerald, TileID.Topaz,
         TileID.Amethyst, TileID.Diamond, TileID.Cobalt, TileID.Mythril, TileID.Adamantite, TileID.Pearlstone,
@@ -83,24 +83,24 @@ namespace OriMod {
         TileID.HallowHardenedSand, TileID.HallowSandstone, TileID.DesertFossil, TileID.FossilOre, TileID.LunarOre,
         TileID.LunarBlockSolar, TileID.LunarBlockVortex, TileID.LunarBlockNebula, TileID.LunarBlockStardust
       });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.Wood, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Wood, new int[] {
         TileID.Tables, TileID.WorkBenches, TileID.Platforms, TileID.WoodBlock, TileID.Pianos, TileID.Dressers, TileID.Bookcases,
         TileID.TinkerersWorkbench, TileID.Ebonwood, TileID.RichMahogany, TileID.Pearlwood, TileID.Shadewood, TileID.WoodenSpikes, TileID.SpookyWood,
         TileID.DynastyWood, TileID.RedDynastyShingles, TileID.BlueDynastyShingles, TileID.BorealWood, TileID.PalmWood, TileID.FishingCrate, TileID.TrapdoorClosed
       });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.Sand, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Sand, new int[] {
         TileID.Sand, TileID.Ash, TileID.Ebonsand, TileID.Pearlsand, TileID.Silt, TileID.Hive, TileID.CrispyHoneyBlock, TileID.Crimsand
       });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.Snow, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Snow, new int[] {
         TileID.SnowBlock, TileID.RedStucco, TileID.YellowStucco, TileID.GreenStucco, TileID.GrayStucco,
         TileID.Cloud, TileID.RainCloud, TileID.Slush, TileID.HoneyBlock, TileID.SnowCloud
       });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.Mushroom, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Mushroom, new int[] {
         TileID.CandyCaneBlock, TileID.GreenCandyCaneBlock, TileID.CactusBlock, TileID.MushroomBlock, TileID.SlimeBlock,
         TileID.FrozenSlimeBlock, TileID.BubblegumBlock, TileID.PumpkinBlock, TileID.Coralstone, TileID.PinkSlimeBlock,
         TileID.SillyBalloonPink, TileID.SillyBalloonPurple, TileID.SillyBalloonGreen, TileID.SillyBalloonTile
       });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.LightDark, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.LightDark, new int[] {
         TileID.Glass, TileID.MagicalIceBlock, TileID.Sunplate, TileID.Teleporter, TileID.AmethystGemsparkOff, TileID.TopazGemsparkOff,
         TileID.SapphireGemsparkOff, TileID.EmeraldGemsparkOff, TileID.RubyGemsparkOff, TileID.DiamondGemsparkOff,
         TileID.AmberGemsparkOff, TileID.AmethystGemspark, TileID.TopazGemspark, TileID.SapphireGemspark,
@@ -111,7 +111,7 @@ namespace OriMod {
         TileID.TeamBlockYellowPlatform, TileID.TeamBlockPinkPlatform, TileID.TeamBlockWhitePlatform, TileID.SandFallBlock,
         TileID.SnowFallBlock
       });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.SpiritTreeRock, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.SpiritTreeRock, new int[] {
         TileID.Anvils, TileID.GrayBrick, TileID.RedBrick, TileID.BlueDungeonBrick, TileID.GreenDungeonBrick,
         TileID.PinkDungeonBrick, TileID.GoldBrick, TileID.SilverBrick, TileID.CopperBrick, TileID.Spikes, TileID.ObsidianBrick,
         TileID.HellstoneBrick, TileID.PearlstoneBrick, TileID.IridescentBrick, TileID.Mudstone, TileID.CobaltBrick,
@@ -122,29 +122,25 @@ namespace OriMod {
         TileID.ShroomitePlating, TileID.MartianConduitPlating, TileID.MarbleBlock, TileID.GraniteBlock, TileID.MeteoriteBrick,
         TileID.Fireplace, TileID.ConveyorBeltLeft, TileID.ConveyorBeltRight
       });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, (byte)FootstepSound.SpiritTreeWood, new int[] {
+      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.SpiritTreeWood, new int[] {
         TileID.LivingWood, TileID.LivingMahogany
       });
 
       // Mod tiles
       for (int i = TileID.Count; i < count; i++) {
         if (!Main.tileSolid[i] && !Main.tileSolidTop[i]) {
-          SetFootstepSound(i, FootstepSound.None);
+          TileFootstepSounds[i] = FootstepSound.None;
           continue;
         }
         var tileName = TileLoader.GetTile(i).Name;
         var name = tileName.Substring(tileName.LastIndexOf('.') + 1);
-        SetFootstepSound(i, SoundFromName(name));
+        TileFootstepSounds[i] = SoundFromName(name);
       }
     }
 
-    public readonly byte[] TileFootstepSounds;
+    public readonly FootstepSound[] TileFootstepSounds;
 
     private readonly RandomChar randomChar = new RandomChar();
-
-    public FootstepSound GetFootstepSound(int index) => (FootstepSound)TileFootstepSounds[index];
-    
-    public void SetFootstepSound(int index, FootstepSound value) => TileFootstepSounds[index] = (byte)value;
 
     private FootstepSound SoundFromName(string name) {
       name = name.ToLower();
@@ -254,12 +250,12 @@ namespace OriMod {
       testPos.Y += 12;
       tile = GetTile(testPos);
       if (tile.active()) {
-        return GetFootstepSound(tile.type);
+        return TileFootstepSounds[tile.type];
       }
       testPos.Y += 16;
       tile = GetTile(testPos);
       if (tile.active()) {
-        return GetFootstepSound(tile.type);
+        return TileFootstepSounds[tile.type];
       }
 
       // Nothing
