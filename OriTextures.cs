@@ -2,12 +2,12 @@ namespace OriMod {
   internal class OriTextures : SingleInstance<OriTextures> {
     private OriTextures() { }
 
-    internal readonly CachedTexture2D PlayerPrimary = new CachedTexture2D("PlayerEffects/OriPlayer");
-    internal readonly CachedTexture2D PlayerSecondary = new CachedTexture2D("PlayerEffects/OriPlayerSecondary");
-    internal readonly CachedTexture2D Transform = new CachedTexture2D("PlayerEffects/Transform");
-    internal readonly CachedTexture2D Trail = new CachedTexture2D("PlayerEffects/OriGlow");
-    internal readonly CachedTexture2D SoulLink = new CachedTexture2D("PlayerEffects/RevSoulLinkSpritesheet");
-    internal readonly CachedTexture2D BurrowTimer = new CachedTexture2D("PlayerEffects/BurrowTimer");
-    internal readonly CachedTexture2D Sein = new CachedTexture2D("Projectiles/Minions/Sein_Glow");
+    internal readonly ReferencedTexture2D PlayerPrimary = new ReferencedTexture2D("PlayerEffects/OriPlayer");
+    internal readonly ReferencedTexture2D PlayerSecondary = new ReferencedTexture2D("PlayerEffects/OriPlayerSecondary");
+    internal readonly ReferencedTexture2D Transform = new ReferencedTexture2D("PlayerEffects/Transform");
+    internal readonly ReferencedTexture2D Trail = new ReferencedTexture2D("PlayerEffects/OriGlow");
+    internal readonly ReferencedTexture2D SoulLink = new ReferencedTexture2D("PlayerEffects/RevSoulLinkSpritesheet");
+    internal readonly ReferencedTexture2D BurrowTimer = new ReferencedTexture2D("PlayerEffects/BurrowTimer");
+    internal readonly ReferencedTexture2D Sein = new ReferencedTexture2D("Projectiles/Minions/Sein_Glow");
   }
 }

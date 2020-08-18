@@ -12,8 +12,8 @@ namespace OriMod {
   /// for ModContent.GetTexture(), that is false and the reverse is true
   /// (ModContent.GetTexture() calls mod.GetTexture())
   /// </remarks>
-  public class CachedTexture2D {
-    public CachedTexture2D(string texturePath) {
+  public class ReferencedTexture2D {
+    public ReferencedTexture2D(string texturePath) {
       if (texturePath is null) {
         throw new System.ArgumentNullException(nameof(texturePath));
       }
@@ -31,7 +31,7 @@ namespace OriMod {
 
     public readonly Texture2D texture;
 
-    public static implicit operator Texture2D(CachedTexture2D ct) => ct.texture;
-    public static implicit operator CachedTexture2D(Texture2D tx) => new CachedTexture2D(tx.Name);
+    public static implicit operator Texture2D(ReferencedTexture2D ct) => ct.texture;
+    public static explicit operator ReferencedTexture2D(Texture2D tx) => new ReferencedTexture2D(tx.Name);
   }
 }

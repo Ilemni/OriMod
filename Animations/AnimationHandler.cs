@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,8 +6,8 @@ using System.Linq;
 namespace OriMod.Animations {
   internal static class AnimationHandler {
     private static Frame F(int frameX, int frameY, int duration = -1) => new Frame(frameX, frameY, duration);
-    private static Header H(InitType i = InitType.Range, LoopMode l = LoopMode.Always, PlaybackMode p = PlaybackMode.Normal, CachedTexture2D texture = null)
-      => new Header(init: i, loop: l, playback: p, ctx: texture);
+    private static Header H(InitType i = InitType.Range, LoopMode l = LoopMode.Always, PlaybackMode p = PlaybackMode.Normal, ReferencedTexture2D texture = null)
+      => new Header(init: i, loop: l, playback: p, rtx: texture);
 
     private static AnimationSource _pa;
     internal static AnimationSource PlayerAnim => _pa ?? (_pa = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,

@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,7 +6,7 @@ namespace OriMod.Animations {
   internal class AnimationSource {
     internal Dictionary<string, Track> Tracks { get; private set; }
     internal Point TileSize { get; }
-    internal readonly CachedTexture2D Texture;
+    public readonly ReferencedTexture2D texture;
     internal readonly string texturePath;
     internal string[] TrackNames { get; private set; }
     internal Track this[string name] => Tracks[name];

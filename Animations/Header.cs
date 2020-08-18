@@ -1,10 +1,10 @@
-﻿namespace OriMod.Animations {
+namespace OriMod.Animations {
   internal class Header {
     internal InitType Init;
     internal LoopMode Loop;
     internal PlaybackMode Playback;
     internal readonly string TransferTo;
-    internal readonly CachedTexture2D Texture = null;
+    public readonly ReferencedTexture2D Texture = null;
 
     internal Header(InitType init = InitType.None, LoopMode loop = LoopMode.None, PlaybackMode playback = PlaybackMode.None, string transferTo = null, CachedTexture2D ctx = null) {
       Init = init;
