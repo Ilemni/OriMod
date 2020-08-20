@@ -18,6 +18,9 @@ using Terraria.ModLoader.IO;
 namespace OriMod {
   public sealed class OriPlayer : ModPlayer {
     #region Variables
+    /// <summary>
+    /// Local instance of this OriPlayer
+    /// </summary>
     public static OriPlayer Local => Main.LocalPlayer.GetModPlayer<OriPlayer>();
 
     /// <summary>
@@ -129,6 +132,9 @@ namespace OriMod {
       }
     }
 
+    /// <summary>
+    /// The ID of the Sein that is summoned. This is the <see cref="Entity.whoAmI"/> of the Sein projectile.
+    /// </summary>
     public int SeinMinionID {
       get => _seinMinionID;
       internal set {
@@ -138,7 +144,7 @@ namespace OriMod {
         }
       }
     }
-
+    
     /// <summary>
     /// The current version of Sein that is summoned. Used to prevent re-summons of the same tier of Sein.
     /// </summary>
@@ -156,8 +162,8 @@ namespace OriMod {
 
     internal int ImmuneTimer = 0;
 
-    private readonly RandomChar jumpRand = new RandomChar();
-    private readonly RandomChar hurtRand = new RandomChar();
+    private readonly RandomChar randJump = new RandomChar();
+    private readonly RandomChar randHurt = new RandomChar();
 
     #region Animation Properties
     /// <summary>
@@ -502,9 +508,9 @@ namespace OriMod {
         IncrementFrame("Running", overrideTime: AnimTime + (int)Math.Abs(player.velocity.X) / 3);
         return;
       }
-        IncrementFrame(OnWall ? "IdleAgainst" : "Idle");
-        return;
-      }
+      IncrementFrame(OnWall ? "IdleAgainst" : "Idle");
+      return;
+    }
 
     /// <summary>
     /// Calls AnimationHandler.IncrememtFrame() with supplied arguments.
@@ -704,7 +710,7 @@ namespace OriMod {
 
       justJumped = player.justJumped;
       if (justJumped) {
-        PlayNewSound("Ori/Jump/seinJumpsGrass" + jumpRand.NextNoRepeat(5), 0.75f);
+        PlayNewSound("Ori/Jump/seinJumpsGrass" + randJump.NextNoRepeat(5), 0.75f);
       }
       bool oldGrounded = IsGrounded;
 
@@ -791,7 +797,7 @@ namespace OriMod {
     public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit) {
       if (useCustomHurtSound) {
         useCustomHurtSound = false;
-        PlayNewSound("Ori/Hurt/seinHurtRegular" + hurtRand.NextNoRepeat(4));
+        PlayNewSound("Ori/Hurt/seinHurtRegular" + randHurt.NextNoRepeat(4));
       }
     }
 

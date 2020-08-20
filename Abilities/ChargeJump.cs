@@ -6,6 +6,9 @@ using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for a large jump that can deal damage to enemies.
+  /// </summary>
   public sealed class ChargeJump : Ability {
     internal ChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeJump;
@@ -19,6 +22,9 @@ namespace OriMod.Abilities {
     private int MaxCharge => 35;
     private bool Charged => currentCharge >= MaxCharge;
 
+    /// <summary>
+    /// Coyote jump
+    /// </summary>
     private int ChargeGrace => 25;
 
     private static readonly float[] Speeds = new float[20] {
@@ -30,6 +36,12 @@ namespace OriMod.Abilities {
     private int currentCharge;
     private int currentGrace;
 
+    /// <summary>
+    /// Projectile created while Charge Jumping to damage enemies.
+    /// </summary>
+    /// <remarks>
+    /// This damage aspect is derived from the Ori games. May be unbalanced or unnecessary here.
+    /// </remarks>
     public Projectile PlayerHitboxProjectile { get; private set; }
 
     private readonly RandomChar rand = new RandomChar();

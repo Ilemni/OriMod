@@ -3,6 +3,9 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Dusts {
+  /// <summary>
+  /// Used for <see cref="Abilities.SoulLink"/>.
+  /// </summary>
   public class SoulLinkChargeDust : ModDust {
     protected int alphaRate = 16;
     public override bool Autoload(ref string name, ref string texture) {

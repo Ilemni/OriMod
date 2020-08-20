@@ -1,4 +1,7 @@
-namespace OriMod.Animations {
+﻿namespace OriMod.Animations {
+  /// <summary>
+  /// Container for various <see cref="Animation"/>s to be attached to an <see cref="OriPlayer"/>.
+  /// </summary>
   public class AnimationContainer {
     internal AnimationContainer(OriPlayer oPlayer) {
       PlayerAnim = new Animation(oPlayer, AnimationHandler.Instance.PlayerAnim, OriLayers.Instance.PlayerSprite);

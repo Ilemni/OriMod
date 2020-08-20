@@ -7,26 +7,73 @@ using Terraria.ID;
 
 namespace OriMod {
   public class OriWorld : ModWorld {
+    /// <summary>
+    /// Enum representing world progression for Ori-based upgrades.
+    /// </summary>
     public enum Upgrade : byte {
       None = 0,
+      /// <summary>
+      /// Defeated Eye of Cthuhlu, tied to <see cref="NPC.downedBoss1"/>.
+      /// </summary>
       DefeatedEyeOfCthuhlu = 1,
+      /// <summary>
+      /// Defeated either Brain of Cthuhlu or Eater of Worlds, tied to <see cref="NPC.downedBoss2"/>.
+      /// </summary>
       DefeatedDarkBoss = 2,
+      /// <summary>
+      /// Defeated Skeletron, tied to <see cref="NPC.downedBoss3"/>.
+      /// </summary>
       DefeatedSkeletron = 3,
+      /// <summary>
+      /// Entered Hard Mode, tied to <see cref="Main.hardMode"/>.
+      /// </summary>
       InHardMode = 4,
+      /// <summary>
+      /// Defeated at least one Mechanical Boss.
+      /// </summary>
       DefeatedAnyMechs = 5,
+      /// <summary>
+      /// Defeated all Mechanical Bosses.
+      /// </summary>
       DefeatedAllMechs = 6,
+      /// <summary>
+      /// Defeated Plantera, tied to <see cref="NPC.downedPlantBoss"/>.
+      /// </summary>
       DefeatedPlantera = 7,
+      /// <summary>
+      /// Defeated Golem, tied to <see cref="NPC.downedGolemBoss"/>.
+      /// </summary>
       DefeatedGolem = 8,
+      /// <summary>
+      /// Defeated Lunar Cultist, tied to <see cref="NPC.downedAncientCultist"/>.
+      /// </summary>
       DefeatedLunarCultist = 9,
+      /// <summary>
+      /// Defeated at least two Celestial Pillars.
+      /// </summary>
       DefeatedTwoPillars = 10,
+      /// <summary>
+      /// Defeated all four Celestial Pillars, tied to <see cref="NPC.downedTowers"/>.
+      /// </summary>
       DefeatedAllPillars = 11,
+      /// <summary>
+      /// Defeated Moon Lord, tied to <see cref="NPC.downedMoonlord"/>.
+      /// </summary>
       DefeatedMoonLord = 12
     }
 
+    /// <summary>
+    /// Upgrade will determine player abilities.
+    /// </summary>
     public static Upgrade GlobalUpgrade { get; private set; }
 
     public override bool Autoload(ref string name) => true;
 
+    /// <summary>
+    /// Update <see cref="GlobalUpgrade"/> based on <paramref name="upgrade"/>. Called when a boss is defeated.
+    /// <para><paramref name="upgrade"/> value should be based on bosses represented in <see cref="Upgrade"/>.</para>
+    /// </summary>
+    /// <param name="upgrade"></param>
     public static void UpdateOriPlayerSeinStates(byte upgrade) {
       if (upgrade <= (byte)GlobalUpgrade) {
         return;
@@ -51,7 +98,7 @@ namespace OriMod {
       ValidateSeinUpgrade();
       return new TagCompound {
         ["SeinUpgrade"] = GlobalUpgrade,
-    };
+      };
     }
 
     public override void Load(TagCompound tag) {
@@ -59,6 +106,9 @@ namespace OriMod {
       ValidateSeinUpgrade();
     }
 
+    /// <summary>
+    /// Ensures that <see cref="GlobalUpgrade"/> is correct.
+    /// </summary>
     internal static void ValidateSeinUpgrade() {
       Upgrade oldUpgrade = GlobalUpgrade;
       GlobalUpgrade = Upgrade.DefeatedMoonLord;
@@ -66,22 +116,22 @@ namespace OriMod {
       if (!NPC.downedMoonlord) {
         GlobalUpgrade = Upgrade.DefeatedAllPillars;
         if (!NPC.downedTowers) {
-        GlobalUpgrade = Upgrade.DefeatedTwoPillars;
-        int downs = 0;
-        if (NPC.downedTowerNebula) {
-          downs++;
-        }
-        if (NPC.downedTowerSolar) {
-          downs++;
-        }
-        if (NPC.downedTowerStardust) {
-          downs++;
-        }
-        if (NPC.downedTowerStardust) {
-          downs++;
-        }
-        if (downs < 2) {
-          GlobalUpgrade = Upgrade.DefeatedLunarCultist;
+          GlobalUpgrade = Upgrade.DefeatedTwoPillars;
+          int downs = 0;
+          if (NPC.downedTowerNebula) {
+            downs++;
+          }
+          if (NPC.downedTowerSolar) {
+            downs++;
+          }
+          if (NPC.downedTowerStardust) {
+            downs++;
+          }
+          if (NPC.downedTowerStardust) {
+            downs++;
+          }
+          if (downs < 2) {
+            GlobalUpgrade = Upgrade.DefeatedLunarCultist;
             if (!NPC.downedAncientCultist) {
               GlobalUpgrade = Upgrade.DefeatedGolem;
               if (!NPC.downedGolemBoss) {
@@ -101,16 +151,16 @@ namespace OriMod {
                             if (!NPC.downedBoss1) {
                               GlobalUpgrade = Upgrade.None;
                             }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
-      }
-      }
-      }
-      }
-      }
-      }
-      }
-      }
-      }
       }
 
       if (GlobalUpgrade != oldUpgrade) {

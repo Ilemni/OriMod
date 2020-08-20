@@ -3,6 +3,12 @@ using System;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for reducing fall velocity to a glide.
+  /// </summary>
+  /// <remarks>
+  /// This ability is derived from the Ori games, despite Terraria already allowing gliding with wings.
+  /// </remarks>
   public sealed class Glide : Ability {
     internal Glide(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Glide;

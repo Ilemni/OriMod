@@ -1,7 +1,10 @@
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 
 namespace OriMod.Utilities {
+  /// <summary>
+  /// Uses <see cref="byte"/>s to represent a point.
+  /// </summary>
   public struct PointByte : IEquatable<PointByte> {
     public PointByte(byte x, byte y) {
       X = x;

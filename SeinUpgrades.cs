@@ -15,7 +15,7 @@ namespace OriMod {
     public int targets = 1;
 
     /// <summary>
-    /// Maximum times the minion can fire with a delay of `minCooldown` before having a delay of `longCooldown`
+    /// Maximum times the minion can fire with a delay of <see cref="minCooldown"/> before having a delay of <see cref="longCooldown"/>
     /// </summary>
     public int shotsPerBurst = 2;
 
@@ -35,17 +35,17 @@ namespace OriMod {
     public int maxShotsPerVolley = 1;
 
     /// <summary>
-    /// Delay between each shot in `shotsPerBurst`
+    /// Delay between each shot in <see cref="shotsPerBurst"/>
     /// /summary>
     public float minCooldown = 12f;
 
     /// <summary>
-    /// Shortest time to wait during <c>shotsPerBurst</c> to reset burst count
+    /// Shortest time to wait during <see cref="shotsPerBurst"/> to reset burst count
     /// </summary>
     public float shortCooldown = 24f;
 
     /// <summary>
-    /// Delay between each series of shots, incurred when shots reaches `shotsPerBurst`
+    /// Delay between each series of shots, incurred when shots reaches <see cref="shotsPerBurst"/>
     /// </summary>
     public float longCooldown = 40f;
 
@@ -55,12 +55,12 @@ namespace OriMod {
     internal int randDegrees = 40;
 
     /// <summary>
-    /// NPCs this distance from the player can be targeted by the minion, if there is line of sight between it and the player
+    /// NPCs within this distance from the player can be targeted by the minion, if there is line of sight between it and the player
     /// </summary>
     public float targetMaxDist = 240f;
 
     /// <summary>
-    /// PCs this distance from the player can be targeted by the minion, regardless of line of sight
+    /// NPCs within this distance from the player can be targeted by the minion, regardless of line of sight
     /// </summary>
     public float targetThroughWallDist = 80f;
 
@@ -70,17 +70,17 @@ namespace OriMod {
     public float knockback = 0f;
 
     /// <summary>
-    /// tarting homing strength of Spirit Flame 
-    ///</summary>
+    /// Starting homing strength of Spirit Flame 
+    /// </summary>
     internal float homingStrengthStart = 0.07f;
 
     /// <summary>
-    /// Rate to increase homing strength every frame after `homingIncreaseDelay`
-    /// /summary>
+    /// Rate to increase homing strength every frame after <see cref="homingIncreaseDelay"/>
+    /// </summary>
     internal float homingIncreaseRate = 0.04f;
 
     /// <summary>
-    /// Ticks to wait before increasing homing strength by `homingIncreaseRate`
+    /// Ticks to wait before increasing homing strength by <see cref="homingIncreaseRate"/>
     /// </summary>
     internal int homingIncreaseDelay = 16;
 
@@ -90,12 +90,12 @@ namespace OriMod {
     internal float projectileSpeedStart = 5f;
 
     /// <summary>
-    /// Acceleration of Spirit Flame after waiting for `projectileSpeedIncreaseDelay`
+    /// Acceleration of Spirit Flame after waiting for <see cref="projectileSpeedIncreaseDelay"/>
     /// </summary>
     internal float projectileSpeedIncreaseRate = 0.5f;
 
     /// <summary>
-    /// Time to wait before increasing Spirit Flame speed by `projectileSpeedIncreaseRate`
+    /// Time to wait before increasing Spirit Flame speed by <see cref="projectileSpeedIncreaseRate"/>
     /// </summary>
     internal int projectileSpeedIncreaseDelay = 10;
 
@@ -135,8 +135,7 @@ namespace OriMod {
 
     /// <summary>
     /// Loads all Sein variants. Sein stats are hardcoded into this method.
-    /// 
-    /// The only benefit to doing it this way over overrides is that the previous Sein level is automatically used when values are not provided.
+    /// <para>The only benefit to doing it this way over overrides is that the previous Sein level is automatically used when values are not provided.</para>
     /// </summary>
     private void LoadSeinUpgrades() {
       var defaultSein = new SeinUpgrade();

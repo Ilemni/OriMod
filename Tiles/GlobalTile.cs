@@ -6,6 +6,9 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Tiles {
+  /// <summary>
+  /// Used for draw effects, specifically brightening solid areas when the player uses <see cref="Burrow"/>.
+  /// </summary>
   public sealed class OriTile : GlobalTile {
     private int InnerRange => 4;
     private int OuterRange => 13;

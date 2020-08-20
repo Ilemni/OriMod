@@ -2,9 +2,10 @@
 
 namespace OriMod {
   /// <summary>
-  /// Class used to hold a static reference to an instance of T. Classes inheriting from this should use a private constructor.
+  /// Class used to hold a single static reference to an instance of <see cref="T"/>.
+  /// <para>Classes inheriting from this should use a private constructor.</para>
   /// </summary>
-  /// <typeparam name="T"></typeparam>
+  /// <typeparam name="T">The type to make Singleton</typeparam>
   public abstract class SingleInstance<T> where T : SingleInstance<T> {
     private static readonly object _lock = new object();
     
@@ -21,6 +22,9 @@ namespace OriMod {
     }
     private static T _instance;
 
+    /// <summary>
+    /// Creates a new instance of <typeparamref name="T"/> if it does not already exist.
+    /// </summary>
     public static void Initialize() {
       if (_instance is null) {
         lock (_lock) {
@@ -32,7 +36,7 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Sets the static reference to null. If this type is IDisposable, Dispose is called first.
+    /// Sets the static reference of <see cref="SingleInstance{T}"/> to <c>null</c>. Calls <see cref="IDisposable.Dispose"/> first, if applicable.
     /// </summary>
     public static void Unload() {
       if (_instance is IDisposable dispoable) {

@@ -1,7 +1,16 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace OriMod.Animations {
+  /// <summary>
+  /// Animation Track created on startup
+  /// </summary>
   public class Track {
+    /// <summary>
+    /// Creates a track with the given Header and Frames.
+    /// <para>If <see cref="Header.Init"/> is <see cref="InitType.Range"/>, <paramref name="frames"/> will be filled automatically.</para>
+    /// </summary>
+    /// <param name="header"></param>
+    /// <param name="frames"></param>
     public Track(Header header, params Frame[] frames) {
       Header = header;
 
@@ -29,8 +38,20 @@ namespace OriMod.Animations {
         Duration += f.Duration;
       }
     }
+
+    /// <summary>
+    /// Header used for this track.
+    /// </summary>
     public readonly Header Header;
+
+    /// <summary>
+    /// All frames used for this track.
+    /// </summary>
     public readonly Frame[] Frames;
+    
+    /// <summary>
+    /// Total duration of the track, equal to total duration of <see cref="Frames"/>. May be -1, which is no duration.
+    /// </summary>
     public readonly short Duration;
   }
 }

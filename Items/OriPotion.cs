@@ -5,6 +5,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Items {
+  /// <summary>
+  /// Item that can transform the player to and from Ori state.
+  /// </summary>
   public class OriPotion : ModItem {
     public override void SetDefaults() {
       item.width = 24;
@@ -21,9 +24,9 @@ namespace OriMod.Items {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.IsOri ^= true;
 
-        Vector2 pos = player.position;
-        pos.Y += 4;
-        pos.X -= 2;
+      Vector2 pos = player.position;
+      pos.Y += 4;
+      pos.X -= 2;
       for (int m = 0; m < 100; m++) {
         Dust dust = Main.dust[Dust.NewDust(pos, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);

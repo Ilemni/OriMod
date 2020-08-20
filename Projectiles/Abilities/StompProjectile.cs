@@ -2,6 +2,10 @@ using System;
 using Terraria;
 
 namespace OriMod.Projectiles.Abilities {
+  /// <summary>
+  /// Projectile hitbox for when the player is in the stomping animation. Used to end <see cref="global::OriMod.Abilities.Stomp"/>.
+  /// <para>Ending stomp spawns a <see cref="StompEnd"/> projectile to deal damage.</para>
+  /// </summary>
   public sealed class StompProjectile : AbilityProjectile {
     public override byte abilityID => AbilityID.Stomp;
 
@@ -14,6 +18,7 @@ namespace OriMod.Projectiles.Abilities {
 
     public override void Behavior() {
       base.Behavior();
+      // Height is stretched based on velocity.
       projectile.height = Math.Max(56, (int)(oPlayer.player.velocity.Y * 2));
       projectile.position.Y += 10;
     }

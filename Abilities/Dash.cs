@@ -3,6 +3,12 @@ using OriMod.Utilities;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for a quick horizontal dash. May be used in the air.
+  /// </summary>
+  /// <remarks>
+  /// This ability is derived from the Ori games, despite Terraira already allowing dashing with the Shield of Cthuhlu.
+  /// </remarks>
   public sealed class Dash : Ability {
     internal Dash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Dash;

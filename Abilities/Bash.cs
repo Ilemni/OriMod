@@ -8,6 +8,9 @@ using Terraria;
 using Terraria.ID;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for pushing the player and enemies in opposite directions. Iconic ability of the Ori franchise.
+  /// </summary>
   public sealed class Bash : Ability {
     internal Bash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Bash;
@@ -42,9 +45,24 @@ namespace OriMod.Abilities {
     private Vector2 playerStartPos;
     private Vector2 targetStartPos;
     
+    /// <summary>
+    /// True if the target is an <see cref="NPC"/>, false if it's a <see cref="Projectile"/>.
+    /// </summary>
     public bool TargetIsNpc { get; private set; }
+    
+    /// <summary>
+    /// ID of either an <see cref="NPC"/> or <see cref="Projectile"/>.
+    /// </summary>
     private ushort TargetID;
+
+    /// <summary>
+    /// <see cref="OriNPC"/> or <see cref="OriProjectile"/> that is being targeted.
+    /// </summary>
     public IBashable BashTarget { get; private set; }
+    
+    /// <summary>
+    /// Entity that this player is Bashing.
+    /// </summary>
     public Entity BashEntity { get; private set; }
 
     private readonly RandomChar rand = new RandomChar();
@@ -71,9 +89,21 @@ namespace OriMod.Abilities {
       }
     }
 
+    /// <summary>
+    /// Filter to determine if this <see cref="NPC"/> can be bashed. Returns true if the NPC should be bashed.
+    /// <para>Excludes friendly NPCs, bosses, worms, and specific NPCs.</para>
+    /// </summary>
+    /// <param name="npc"></param>
+    /// <returns>True if the NPC should be bashed.</returns>
     private bool BashNpcFilter(NPC npc) =>
       !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBash.Contains(npc.type);
 
+    /// <summary>
+    /// Filter to determine if this <see cref="Projectile"/> can be bashed. Returns true if the projectile should be bashed.
+    /// <para>Excludes friendly if disallowed, 0 damage projectiles, minions, sentries, traps, and grapples.</para>
+    /// </summary>
+    /// <param name="proj"></param>
+    /// <returns>True if the projectile should be bashed.</returns>
     private bool BashProjFilter(Projectile proj) =>
       (!proj.friendly || Config.BashOnProjectilesFriendly) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains(proj.type);
 

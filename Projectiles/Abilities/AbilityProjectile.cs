@@ -3,12 +3,24 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Projectiles.Abilities {
+  /// <summary>
+  /// Base class for ability projectiles. These act more as hitboxes and have no visible texture.
+  /// </summary>
   public abstract class AbilityProjectile : ModProjectile {
+    /// <summary>
+    /// Correlates to a <see cref="AbilityID"/>.
+    /// </summary>
     public abstract byte abilityID { get; }
 
+    /// <summary>
+    /// THe <see cref="OriPlayer"/> that this <see cref="AbilityProjectile"/> belongs to.
+    /// </summary>
     public OriPlayer oPlayer => _oPlayer ?? (_oPlayer = Main.player[projectile.owner].GetModPlayer<OriPlayer>());
     private OriPlayer _oPlayer;
 
+    /// <summary>
+    /// The <see cref="Ability"/> that this <see cref="AbilityProjectile"/> belongs to.
+    /// </summary>
     public Ability ability => oPlayer.Abilities[abilityID];
 
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
@@ -30,8 +42,7 @@ namespace OriMod.Projectiles.Abilities {
 
     /// <summary>
     /// Used to determine timeLeft or active state of the projectile.
-    /// 
-    /// Defaults to keeping timeLeft above 0 if ability is in use.
+    /// <para>Defaults to keeping timeLeft above 0 if ability is in use.</para>
     /// </summary>
     public virtual void CheckAbilityActive() {
       if (ability.InUse) {
@@ -41,8 +52,7 @@ namespace OriMod.Projectiles.Abilities {
 
     /// <summary>
     /// How the projectile behaves.
-    /// 
-    /// Defaults to setting projectile center to player center.
+    /// <para>Defaults to setting projectile center to player center.</para>
     /// </summary>
     public virtual void Behavior() {
       projectile.Center = oPlayer.player.Center;

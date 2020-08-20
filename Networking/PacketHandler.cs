@@ -4,6 +4,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Networking {
+  /// <summary>
+  /// Base class for sending and handling received <see cref="ModPacket"/>s.
+  /// </summary>
   internal abstract class PacketHandler {
     internal readonly byte HandlerType;
 

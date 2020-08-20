@@ -8,6 +8,9 @@ namespace OriMod {
   internal class OriLayers : SingleInstance<OriLayers> {
     private OriLayers() { }
 
+    /// <summary>
+    /// <see cref="PlayerLayer"/> that represents the base sprite for the <see cref="OriPlayer"/> sprite.
+    /// </summary>
     internal readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
@@ -18,6 +21,9 @@ namespace OriMod {
       oPlayer.Abilities.burrow.DrawEffects();
     });
 
+    /// <summary>
+    /// <see cref="PlayerLayer"/> that represents secondary colors for the <see cref="OriPlayer"/> sprite.
+    /// </summary>
     internal readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "OriPlayer_SecondaryColor", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
@@ -27,6 +33,9 @@ namespace OriMod {
       Main.playerDrawData.Add(data);
     });
 
+    /// <summary>
+    /// <see cref="PlayerLayer"/> that represents the trail for the <see cref="OriPlayer"/>.
+    /// </summary>
     internal readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
       Player player = drawInfo.drawPlayer;
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
@@ -36,6 +45,9 @@ namespace OriMod {
       oPlayer.Trails.AddTrailDrawDataToMain();
     });
 
+    /// <summary>
+    /// <see cref="PlayerLayer"/> that represents the <see cref="Abilities.Bash"/> arrow when a player Bashes.
+    /// </summary>
     internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
       Animations.Animation anim = oPlayer.Animations.BashAnim;
@@ -51,12 +63,19 @@ namespace OriMod {
       Main.playerDrawData.Add(data);
     });
 
+    /// <summary>
+    /// <see cref="PlayerLayer"/> that represents the <see cref="Abilities.Glide"/> feather when a player Glides.
+    /// </summary>
     internal readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
       Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.GlideAnim));
     });
 
+    /// <summary>
+    /// <see cref="PlayerLayer"/> that represents the <see cref="Abilities.SoulLink"/> a player can place within the world.
+    /// <para>(Consider using <see cref="Dust"/>s instead of <see cref="PlayerLayer"/>s</para>
+    /// </summary>
     internal readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
       var mod = OriMod.Instance;
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();

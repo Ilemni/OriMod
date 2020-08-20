@@ -7,6 +7,9 @@ using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for a quick and fast horizontal dash. May be used in the air.
+  /// </summary>
   public sealed class ChargeDash : Ability {
     internal ChargeDash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeDash;
@@ -26,8 +29,16 @@ namespace OriMod.Abilities {
     private ushort NpcID = ushort.MaxValue;
     private sbyte Direction;
 
+    /// <summary>
+    /// Check if <paramref name="npc"/> is <see cref="Target"/>.
+    /// </summary>
+    /// <param name="npc"><see cref="NPC"/> to check.</param>
+    /// <returns>True if <paramref name="npc"/> is <see cref="Target"/>.</returns>
     public bool NpcIsTarget(NPC npc) => npc.whoAmI == NpcID;
-
+    
+    /// <summary>
+    /// Target of this Charge Dash. May be null.
+    /// </summary>
     public NPC Target {
       get {
         if (NpcID >= Main.npc.Length) {
@@ -37,7 +48,13 @@ namespace OriMod.Abilities {
       }
       set => NpcID = (ushort)(value?.whoAmI ?? ushort.MaxValue);
     }
-
+    
+    /// <summary>
+    /// Projectile created while Charge Dashing to damage enemies.
+    /// </summary>
+    /// <remarks>
+    /// This damage aspect is derived from the Ori games. May be unbalanced or unnecessary here.
+    /// </remarks>
     public Projectile PlayerHitboxProjectile { get; private set; }
 
     private readonly RandomChar rand = new RandomChar();
@@ -64,6 +81,10 @@ namespace OriMod.Abilities {
       }
     }
 
+    /// <summary>
+    /// End the Charge Dash. Ending behavior depends on <paramref name="byNpcContact"/>.
+    /// </summary>
+    /// <param name="byNpcContact">If the cause for ending is by player contact with <see cref="Target"/> (true), or for any other reason (false)</param>
     internal void End(bool byNpcContact = false) {
       SetState(State.Inactive);
       PutOnCooldown();

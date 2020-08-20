@@ -4,7 +4,7 @@ using OriMod.Utilities;
 
 namespace OriMod {
   /// <summary>
-  /// Contains the Pickaxe power of each tile. Used for Burrowing.
+  /// Contains the Pickaxe power of each tile. Used for <see cref="Abilities.Burrow"/>
   /// </summary>
   internal class TileCollection : SingleInstance<TileCollection> {
     private TileCollection() {

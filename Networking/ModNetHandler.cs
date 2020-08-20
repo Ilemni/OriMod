@@ -1,6 +1,9 @@
 using System.IO;
 
 namespace OriMod.Networking {
+  /// <summary>
+  /// Receives all <see cref="Terraria.ModLoader.ModPacket"/>s and distributes them to the desired <see cref="PacketHandler"/>.
+  /// </summary>
   internal class ModNetHandler : SingleInstance<ModNetHandler> {
     private ModNetHandler() { }
 

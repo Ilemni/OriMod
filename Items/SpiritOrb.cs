@@ -4,6 +4,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Items {
+  /// <summary>
+  /// Summoning item used to summon <see cref="Projectiles.Minions.Sein"/>
+  /// </summary>
   public abstract class SpiritOrb : ModItem {
     public override string Texture => "OriMod/Items/SpiritOrb";
 

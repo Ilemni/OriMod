@@ -4,6 +4,9 @@ using OriMod.Utilities;
 using Terraria;
 
 namespace OriMod {
+  /// <summary>
+  /// Primarily used for <see cref="Abilities.Burrow"/>, stores an array of points as a template, and retrieves tiles of that template when updated.
+  /// </summary>
   public class TileHitbox {
     public TileHitbox(params Point[] template) {
       if (template is null) {
@@ -19,12 +22,12 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Tile positions of the hitbox. This is a newly allocated array
+    /// Current world position of points in the hitbox, in tile coordinates.
     /// </summary>
     public Point[] Points { get; }
 
     /// <summary>
-    /// Shape of the hitbox, used for calculating Points
+    /// Local position of points in the hitbox, in tile coordinates.
     /// </summary>
     public Point[] Template { get; }
 
@@ -35,7 +38,7 @@ namespace OriMod {
     public void UpdateHitbox(Vector2 origin) => UpdateHitbox(origin.ToTileCoordinates());
 
     /// <summary>
-    /// Updates the position of the hitbox based on the given tile position.
+    /// Updates the world position of the hitbox based on the given tile position.
     /// </summary>
     /// <param name="origin">Position to use</param>
     public void UpdateHitbox(Point origin) {

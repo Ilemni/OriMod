@@ -1,6 +1,9 @@
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for crouching. No functional use.
+  /// </summary>
   public sealed class Crouch : Ability {
     internal Crouch(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Crouch;

@@ -4,26 +4,77 @@ using Terraria.ID;
 using OriMod.Networking;
 
 namespace OriMod {
+  /// <summary>
+  /// IDs for each <see cref="Abilities.Ability"/>
+  /// </summary>
   public static class AbilityID {
+    /// <summary>
+    /// ID for <see cref="Abilities.SoulLink"/>
+    /// </summary>
     public const byte SoulLink = 0;
+    /// <summary>
+    /// ID for <see cref="Abilities.WallJump"/>
+    /// </summary>
     public const byte WallJump = 1;
+    /// <summary>
+    /// ID for <see cref="Abilities.AirJump"/>
+    /// </summary>
     public const byte AirJump = 2;
+    /// <summary>
+    /// ID for <see cref="Abilities.Bash"/>
+    /// </summary>
     public const byte Bash = 3;
+    /// <summary>
+    /// ID for <see cref="Abilities.Stomp"/>
+    /// </summary>
     public const byte Stomp = 4;
+    /// <summary>
+    /// ID for <see cref="Abilities.Glide"/>
+    /// </summary>
     public const byte Glide = 5;
+    /// <summary>
+    /// ID for <see cref="Abilities.Climb"/>
+    /// </summary>
     public const byte Climb = 6;
+    /// <summary>
+    /// ID for <see cref="Abilities.ChargeJump"/>
+    /// </summary>
     public const byte ChargeJump = 7;
+    /// <summary>
+    /// ID for <see cref="Abilities.WallChargeJump"/>
+    /// </summary>
     public const byte WallChargeJump = 8;
+    /// <summary>
+    /// ID for <see cref="Abilities.Dash"/>
+    /// </summary>
     public const byte Dash = 9;
+    /// <summary>
+    /// ID for <see cref="Abilities.ChargeDash"/>
+    /// </summary>
     public const byte ChargeDash = 10;
+    /// <summary>
+    /// ID for <see cref="Abilities.LookUp"/>
+    /// </summary>
     public const byte LookUp = 11;
+    /// <summary>
+    /// ID for <see cref="Abilities.Crouch"/>
+    /// </summary>
     public const byte Crouch = 12;
+    /// <summary>
+    /// ID for <see cref="Abilities.Burrow"/>
+    /// </summary>
     public const byte Burrow = 13;
+    /// <summary>
+    /// ID count for iteration
+    /// </summary>
     public const int Count = 14;
   }
 }
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Class for containing and updating all <see cref="Ability"/>s on an <see cref="OriPlayer"/>.
+  /// </summary>
   public sealed class AbilityManager {
     internal AbilityManager(OriPlayer oPlayer) {
       this.oPlayer = oPlayer;
@@ -44,8 +95,9 @@ namespace OriMod.Abilities {
       burrow = new Burrow(this);
     }
 
-    public static AbilityManager Local { get; private set; }
-
+    /// <summary>
+    /// The <see cref="OriPlayer"/> this <see cref="AbilityManager"/> belongs to.
+    /// </summary>
     public readonly OriPlayer oPlayer;
 
     public readonly SoulLink soulLink;
@@ -80,6 +132,12 @@ namespace OriMod.Abilities {
       yield return burrow;
     }
 
+    /// <summary>
+    /// Get the <see cref="Ability"/> with the matching <see cref="AbilityID"/>.
+    /// </summary>
+    /// <param name="idx"></param>
+    /// <exception cref="ArgumentOutOfRangeException">The value does not match any <see cref="AbilityID"/>.</exception>
+    /// <returns></returns>
     public Ability this[int idx] {
       get {
         switch (idx) {
@@ -99,14 +157,19 @@ namespace OriMod.Abilities {
           case AbilityID.Burrow: return burrow;
           default: throw new System.ArgumentOutOfRangeException(nameof(idx));
         }
-        }
       }
+    }
 
+    /// <summary>
+    /// Update loop for abilities.
+    /// <para>If unable to use abilities: disables all abilities.</para>
+    /// <para>Conditionally calls <see cref="Ability.Tick"/> and <see cref="Ability.Update"/> on all abilities.</para>
+    /// </summary>
     internal void Update() {
       if (!CanUseAnyAbilities()) {
         DisableAllAbilities();
         return;
-    }
+      }
 
       // Tick
       if (oPlayer.player.whoAmI != Main.myPlayer) {
@@ -130,19 +193,24 @@ namespace OriMod.Abilities {
 
       // Net sync
       if (oPlayer.player.whoAmI == Main.myPlayer && Main.netMode == NetmodeID.MultiplayerClient) {
-      var changes = new List<byte>();
+        var changes = new List<byte>();
         foreach (var ability in this) {
           if (ability.netUpdate) {
             ability.netUpdate = false;
             changes.Add((byte)ability.Id);
+          }
+        }
+        if (changes.Count > 0) {
+          ModNetHandler.Instance.abilityPacketHandler.SendAbilityState(255, oPlayer.player.whoAmI, changes);
         }
       }
-      if (changes.Count > 0) {
-        ModNetHandler.Instance.abilityPacketHandler.SendAbilityState(255, oPlayer.player.whoAmI, changes);
-      }
-    }
     }
 
+    /// <summary>
+    /// Condition for if the player can use any abilities.
+    /// <para>Used to disable all abilities.</para>
+    /// </summary>
+    /// <returns></returns>
     public bool CanUseAnyAbilities() {
       var player = oPlayer.player;
       if (player.dead) {
@@ -155,6 +223,9 @@ namespace OriMod.Abilities {
       return true;
     }
 
+    /// <summary>
+    /// Deactivates all abilities.
+    /// </summary>
     public void DisableAllAbilities() {
       foreach (var ability in this) {
         ability.SetState(Ability.State.Inactive);

@@ -1,18 +1,23 @@
-using Terraria;
+﻿using Terraria;
 
 namespace OriMod.Utilities {
+  /// <summary>
+  /// Class to get randomized <see cref="char"/>s between A and Z. Always capitalized.
+  /// </summary>
   internal class RandomChar {
+    
     /// <summary>
-    /// Gets a random char between A and Z
+    /// Gets a random char between A and Z.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A char between A and Z.</returns>
     public static char Next() => Next(RandMaxValue);
 
     /// <summary>
-    /// Gets a random char between A and alphabet[length]
+    /// Gets a random char between A and alphabet[<paramref name="length"/>].
     /// </summary>
-    /// <param name="length"></param>
-    /// <returns></returns>
+    /// <param name="length">Highest char from A. Must be at least 1.</param>
+    /// <returns>A char between A and alphabet[<paramref name="length"/>].</returns>
+    /// <exception cref="System.ArgumentOutOfRangeException">Value must be between 1 and <see cref="RandMaxValue"/>.</exception>
     public static char Next(int length) {
       if (length < 1 || length > RandMaxValue) {
         throw new System.ArgumentOutOfRangeException(nameof(length), "Value must be between 1 and " + RandMaxValue);
@@ -28,7 +33,7 @@ namespace OriMod.Utilities {
     public char NextNoRepeat() => NextNoRepeat(RandMaxValue);
 
     /// <summary>
-    /// Gets a random char between A and alphabet[length], without repeating the previous result of this method
+    /// Gets a random char between A and alphabet[<paramref name="length"/>], without repeating the previous result of this method
     /// </summary>
     /// <param name="length"></param>
     /// <returns></returns>
@@ -42,8 +47,8 @@ namespace OriMod.Utilities {
         rand = (byte)Main.rand.Next(length);
       }
       else {
-      rand = (byte)Main.rand.Next(length - 1);
-      if (rand >= nextExclude) {
+        rand = (byte)Main.rand.Next(length - 1);
+        if (rand >= nextExclude) {
           rand++;
         }
       }

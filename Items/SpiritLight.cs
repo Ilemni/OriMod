@@ -1,8 +1,11 @@
-﻿using OriMod.Upgrades;
+using OriMod.Upgrades;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Items {
+  /// <summary>
+  /// Currency for Upgrade System.
+  /// </summary>
   public class SpiritLight : ModItem {
     public override bool Autoload(ref string name) => false; 
     public int Currency { get; }

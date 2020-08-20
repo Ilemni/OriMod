@@ -3,6 +3,12 @@ using OriMod.Utilities;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for jumping off walls.
+  /// </summary>
+  /// <remarks>
+  /// This ability is derived from the Ori games, despite Terraria already allowing wall jumps with some accessories.
+  /// </remarks>
   public sealed class WallJump : Ability {
     internal WallJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallJump;

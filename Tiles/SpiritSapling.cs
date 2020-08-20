@@ -7,6 +7,9 @@ using Terraria.ModLoader;
 using Terraria.ObjectData;
 
 namespace OriMod.Tiles {
+  /// <summary>
+  /// Tile used to transform the player from and to Ori state.
+  /// </summary>
   public class SpiritSapling : ModTile {
     public override void SetDefaults() {
       Main.tileFrameImportant[Type] = true;
@@ -43,12 +46,12 @@ namespace OriMod.Tiles {
         }
       }
       else {
-          oPlayer.IsOri = false;
-          oPlayer.PlayNewSound("SavePoints/checkpointSpawnSound");
-
-          Vector2 pos = player.position;
-          pos.Y += 4;
-          pos.X -= 2;
+        oPlayer.IsOri = false;
+        oPlayer.PlayNewSound("SavePoints/checkpointSpawnSound");
+      
+        Vector2 pos = player.position;
+        pos.Y += 4;
+        pos.X -= 2;
         for (int m = 0; m < 100; m++) {
           Dust dust = Main.dust[Dust.NewDust(pos, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
           dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);

@@ -8,6 +8,9 @@ using Terraria.ModLoader;
 using OriMod.Projectiles.Abilities;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for an air-to-ground Area of Effect attack.
+  /// </summary>
   public sealed class Stomp : Ability {
     internal Stomp(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Stomp;
@@ -21,6 +24,10 @@ namespace OriMod.Abilities {
     private float MaxFallSpeed => Config.StompFallSpeed;
     private int StartDuration => 24;
     private int MinDuration => 30;
+
+    /// <summary>
+    /// Minimum frames required to hold <see cref="TriggersSet.Down"/> before Stomp can start.
+    /// </summary>
     private int HoldDownDelay => (int)(OriMod.ConfigClient.StompHoldDownDelay * 30);
 
     private int currentHoldDown;

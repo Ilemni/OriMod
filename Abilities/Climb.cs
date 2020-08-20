@@ -2,6 +2,9 @@ using System;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for climbing on walls.
+  /// </summary>
   public sealed class Climb : Ability {
     internal Climb(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Climb;

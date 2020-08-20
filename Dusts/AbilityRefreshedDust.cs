@@ -4,6 +4,9 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Dusts {
+  /// <summary>
+  /// Dust used to display that a player's <see cref="Abilities.Ability"/> has just refreshed.
+  /// </summary>
   public class AbilityRefreshedDust : ModDust {
     private int alphaRate => 12;
     private int speed => 3;

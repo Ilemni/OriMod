@@ -3,6 +3,9 @@ using OriMod.Utilities;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for jumping in the air.
+  /// </summary>
   public sealed class AirJump : Ability {
     internal AirJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.AirJump;

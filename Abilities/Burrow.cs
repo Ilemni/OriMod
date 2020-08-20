@@ -8,6 +8,12 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for traveling through solid terrain.
+  /// </summary>
+  /// <remarks>
+  /// This ability was somewhat difficult to balance; the simplest solution was to restrict tiles to whatever pickaxe was in inventory.
+  /// </remarks>
   public sealed class Burrow : Ability {
     internal Burrow(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Burrow;
@@ -67,7 +73,7 @@ namespace OriMod.Abilities {
     private static TileHitbox _eh;
     private static TileHitbox _oh;
     private static TileHitbox _ih;
-    
+
     private void OnCollision(int hitboxIdx, ref bool didX, ref bool didY) {
       oPlayer.Debug("Bounce! " + hitboxIdx);
       switch (hitboxIdx) {

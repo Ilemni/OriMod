@@ -1,6 +1,10 @@
 using Terraria;
 
 namespace OriMod.Projectiles.Abilities {
+  /// <summary>
+  /// Projectile hitbox for the impact of a <see cref="global::OriMod.Abilities.Stomp"/>. Deals damage to NPCs.
+  /// <para>As the number of targets to hit grows, the damage dealt to the next target is reduced.</para>
+  /// </summary>
   public sealed class StompEnd : AbilityProjectile {
     public override byte abilityID => AbilityID.Stomp;
 

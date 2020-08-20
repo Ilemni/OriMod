@@ -7,6 +7,9 @@ using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Ability for a charged jump off walls.
+  /// </summary>
   public sealed class WallChargeJump : Ability {
     internal WallChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallChargeJump;

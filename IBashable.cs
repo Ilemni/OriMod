@@ -1,13 +1,15 @@
-using Microsoft.Xna.Framework;
-using Terraria;
+﻿using Microsoft.Xna.Framework;
 
 namespace OriMod {
+  /// <summary>
+  /// For <see cref="Terraria.ModLoader.GlobalNPC"/>s or <see cref="Terraria.ModLoader.GlobalProjectile"/>s that can be Bashed.
+  /// </summary>
   public interface IBashable {
     /// <summary>
-    /// The player that is bashing this
+    /// The player that is bashing this or last bashed this
     /// </summary>
     OriPlayer BashPlayer { get; set; }
-
+    
     /// <summary>
     /// The position where the entity was bashed
     /// </summary>

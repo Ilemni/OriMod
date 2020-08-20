@@ -124,10 +124,17 @@ namespace OriMod.Utilities {
       Vector2.DistanceSquared(me.ClosestSideTo(otherVect), otherVect);
     #endregion
 
+    /// <summary>
+    /// Linear interpoation between two <paramref name="f1"/> and <paramref name="f2"/> by <paramref name="by"/>.
+    /// </summary>
+    /// <param name="f1">First point</param>
+    /// <param name="f2">Second point</param>
+    /// <param name="by">Weight between the two, 0-1</param>
+    /// <returns></returns>
     internal static float Lerp(float f1, float f2, float by) => f1 * (1 - by) + f2 * by;
 
     /// <summary>
-    /// Assigns multiple indexes of an array to the same value
+    /// Assigns multiple indexes of an array to <paramref name="value"/>
     /// </summary>
     /// <param name="value">The value to assign to</param>
     /// <param name="keys">Indices of the array to assign to</param>

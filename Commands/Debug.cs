@@ -2,6 +2,9 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Commands {
+  /// <summary>
+  /// Enables debug mode, which is basically just more verbose logging and some visual things.
+  /// </summary>
   public sealed class DebugCommand : ModCommand {
     public override string Command => "debug";
     public override string Usage => "/debug";

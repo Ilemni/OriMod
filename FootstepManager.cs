@@ -140,8 +140,13 @@ namespace OriMod {
 
     public readonly FootstepSound[] TileFootstepSounds;
 
-    private readonly RandomChar randomChar = new RandomChar();
+    private readonly RandomChar rand = new RandomChar();
 
+    /// <summary>
+    /// For external mods, attempts to get a sound based on their name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     private FootstepSound SoundFromName(string name) {
       name = name.ToLower();
       if (name.Contains("brick")) {
@@ -174,13 +179,18 @@ namespace OriMod {
     }
 
     #region Play Footstep Methods
+    /// <summary>
+    /// Plays a footstep sound effect from the <paramref name="player"/>.
+    /// </summary>
+    /// <param name="player">Player to play sound effect from.</param>
+    /// <returns><see cref="SoundEffectInstance"/> representing the sound that is played.</returns>
     public SoundEffectInstance PlayFootstepFromPlayer(Player player) {
       var sound = GetSoundFromPlayerPosition(player);
       string mat = sound.ToString();
       int x = (int)player.Bottom.X, y = (int)player.Bottom.Y;
 
       SoundEffectInstance Footstep(int randLength, float volume)
-        => PlayFootstep($"{mat}/{mat}{randomChar.NextNoRepeat(randLength)}", x, y, volume);
+        => PlayFootstep($"{mat}/{mat}{rand.NextNoRepeat(randLength)}", x, y, volume);
 
       switch (sound) {
         case FootstepSound.Grass:
@@ -204,13 +214,21 @@ namespace OriMod {
       }
     }
 
+    /// <summary>
+    /// Plays a landing sound effect from the <paramref name="player"/> after they hit the ground.
+    /// </summary>
+    /// <remarks>
+    /// Not all <see cref="FootstepSound"/>s have an associated Landing sound. For those, a Footstep sound is used.
+    /// </remarks>
+    /// <param name="player">Player to play sound effect from.</param>
+    /// <returns><see cref="SoundEffectInstance"/> representing the sound that is played.</returns>
     public SoundEffectInstance PlayLandingFromPlayer(Player player) {
       var sound = GetSoundFromPlayerPosition(player);
       string mat = sound.ToString();
       int x = (int)player.Bottom.X, y = (int)player.Bottom.Y;
 
       SoundEffectInstance Landing(int randLength, float volume)
-        => PlayLanding($"{mat}/seinLands{mat}{randomChar.NextNoRepeat(randLength)}", x, y, volume);
+        => PlayLanding($"{mat}/seinLands{mat}{rand.NextNoRepeat(randLength)}", x, y, volume);
 
       switch (sound) {
         case FootstepSound.Grass:
@@ -232,6 +250,11 @@ namespace OriMod {
       }
     }
 
+    /// <summary>
+    /// Get a <see cref="FootstepSound"/> based on where the player is standing.
+    /// </summary>
+    /// <param name="player"><see cref="Player"/> to get footstep sound from.</param>
+    /// <returns>A <see cref="FootstepSound"/> based on <paramref name="player"/> position.</returns>
     private FootstepSound GetSoundFromPlayerPosition(Player player) {
       var testPos = player.Bottom + new Vector2(-12, 4);
       Tile tile = GetTile(testPos);
@@ -278,18 +301,48 @@ namespace OriMod {
       /// TileIDs pending assignment
       /// </summary>
       Unassigned = 0,
+      /// <summary>
+      /// Footsteps on grassy terrain.
+      /// </summary>
       Grass = 1,
+      /// <summary>
+      /// Footsteps on rocks and stones.
+      /// </summary>
       Rock = 2,
+      /// <summary>
+      /// Footsteps on wooden surfaces.
+      /// </summary>
       Wood = 3,
+      /// <summary>
+      /// Footsteps on sand and other grainy surfaces, and hive blocks.
+      /// </summary>
       Sand = 4,
+      /// <summary>
+      /// Footsteps on snowy terrain.
+      /// </summary>
       Snow = 5,
+      /// <summary>
+      /// Footsteps on mushroom terrain.
+      /// </summary>
       Mushroom = 6,
+      /// <summary>
+      /// Footsteps on glass surfaces.
+      /// </summary>
       LightDark = 7,
+      /// <summary>
+      /// Footsteps on bricks.
+      /// </summary>
       SpiritTreeRock = 8,
+      /// <summary>
+      /// Footsteps on Living Wood.
+      /// </summary>
       SpiritTreeWood = 9,
+      /// <summary>
+      /// Footsteps on liquids from using water walking.
+      /// </summary>
       Water = 10,
       /// <summary>
-      /// Failed attempt to convert string to a footstep sound
+      /// Failed attempt to convert mod tile name to a footstep sound
       /// </summary>
       NoModTranslation = 254,
       /// <summary>
