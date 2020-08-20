@@ -3,11 +3,11 @@ using OriMod.Utilities;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
-  public class Dash : Ability {
-    internal Dash(AbilityManager handler) : base(handler) { }
+  public sealed class Dash : Ability {
+    internal Dash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Dash;
 
-    internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.DashKey.JustPressed) && !Manager.cDash.InUse;
+    internal override bool UpdateCondition => InUse || oPlayer.Input(OriMod.DashKey.JustPressed) && !Manager.chargeDash.InUse;
     internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !Manager.stomp.InUse && !Manager.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.DashCooldown * 30);
     protected override bool CooldownOnlyOnBoss => true;
@@ -20,23 +20,23 @@ namespace OriMod.Abilities {
     private static float SpeedMultiplier => Config.DashSpeedMultiplier * 0.65f;
     private int Duration => Speeds.Length;
 
-    private int Direction;
+    private sbyte Direction;
 
-    private readonly RandomChar randChar = new RandomChar();
+    private readonly RandomChar rand = new RandomChar();
 
     internal void StartDash() {
-      CurrTime = 0;
-      Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction;
-      oPlayer.PlayNewSound("Ori/Dash/seinDash" + randChar.NextNoRepeat(3), 0.2f);
+      CurrentTime = 0;
+      Direction = (sbyte)(PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
+      oPlayer.PlayNewSound("Ori/Dash/seinDash" + rand.NextNoRepeat(3), 0.2f);
       player.pulley = false;
     }
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
-      Direction = r.ReadByte();
+      Direction = r.ReadSByte();
     }
 
     protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
-      packet.Write((byte)Direction);
+      packet.Write(Direction);
     }
 
     protected override void UpdateActive() {
@@ -45,21 +45,22 @@ namespace OriMod.Abilities {
         PutOnCooldown();
         return;
       }
-      player.velocity.X = Speeds[CurrTime] * SpeedMultiplier * Direction;
-      player.velocity.Y = 0.25f * (CurrTime + 1) * player.gravDir;
-      if (CurrTime > 20) {
+      player.velocity.X = Speeds[CurrentTime] * SpeedMultiplier * Direction;
+      player.velocity.Y = 0.25f * (CurrentTime + 1) * player.gravDir;
+      if (CurrentTime > 20) {
         player.runSlowdown = 26f;
       }
     }
+
     internal override void PutOnCooldown(bool force = false) {
       base.PutOnCooldown(force);
       Refreshed = false;
     }
 
     protected override void TickCooldown() {
-      if (CurrCooldown > 0 || !Refreshed) {
-        CurrCooldown--;
-        if (CurrCooldown < 0 && (Manager.bash.InUse || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
+      if (CurrentCooldown > 0 || !Refreshed) {
+        CurrentCooldown--;
+        if (CurrentCooldown < 0 && (Manager.bash.InUse || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
           Refreshed = true;
         }
       }
@@ -73,8 +74,8 @@ namespace OriMod.Abilities {
       }
       TickCooldown();
       if (InUse) {
-        CurrTime++;
-        if (CurrTime > Duration - 1 || oPlayer.OnWall || Manager.bash.InUse) {
+        CurrentTime++;
+        if (CurrentTime > Duration - 1 || oPlayer.OnWall || Manager.bash.InUse) {
           SetState(State.Inactive);
           PutOnCooldown();
         }

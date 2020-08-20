@@ -4,11 +4,11 @@ using OriMod.Utilities;
 using Terraria;
 
 namespace OriMod.Abilities {
-  public class SoulLink : Ability {
-    public SoulLink(AbilityManager handler) : base(handler) { }
+  public sealed class SoulLink : Ability {
+    internal SoulLink(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.SoulLink;
 
-    internal override bool DoUpdate => OriMod.SoulLinkKey.Current || InUse;
+    internal override bool UpdateCondition => OriMod.SoulLinkKey.Current || InUse;
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && player.CheckMana(ManaCost, blockQuickMana: true);
     protected override int Cooldown => (int)(Config.SoulLinkCooldown * 30);
 
@@ -28,12 +28,12 @@ namespace OriMod.Abilities {
     private int RespawnTime => (int)(Config.SoulLinkRespawnTime * 30);
     private int ManaCost => 20;
 
-    private float CurrCharge;
+    private float currentCharge;
     internal bool PlacedSoulLink;
     internal bool Obstructed;
-    private bool WasObstructed;
-    private bool AnyBossAlive;
-    private bool WasDead;
+    private bool wasObstructed;
+    private bool anyBossAlive;
+    private bool wasDead;
 
     private void CheckValidPlacement(Point? check, out bool obstructed, bool force = false) {
       obstructed = false;
@@ -61,7 +61,7 @@ namespace OriMod.Abilities {
       if (player.respawnTimer > RespawnTime) {
         player.respawnTimer = RespawnTime;
       }
-      WasDead = true;
+      wasDead = true;
     }
 
     internal void OnRespawn() {
@@ -72,8 +72,8 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (PlacedSoulLink && WasDead && !player.dead) {
-        WasDead = false;
+      if (PlacedSoulLink && wasDead && !player.dead) {
+        wasDead = false;
         OnRespawn();
       }
 
@@ -86,27 +86,27 @@ namespace OriMod.Abilities {
       }
       if (CanUse && OriMod.SoulLinkKey.Current) {
         if (OriMod.SoulLinkKey.JustPressed) {
-          AnyBossAlive = OriUtils.IsAnyBossAlive(check: true);
-          if (AnyBossAlive) {
+          anyBossAlive = OriUtils.IsAnyBossAlive(check: true);
+          if (anyBossAlive) {
             OriMod.Error("SoulLinkBossActive", log: false);
             return;
           }
         }
         CheckValidPlacement(player.Center.ToTileCoordinates(), out bool tempObstructed, force: true);
         if (tempObstructed) {
-          if (!WasObstructed) {
+          if (!wasObstructed) {
             OriMod.Error("SoulLinkCannotPlace", log: false);
           }
-          CurrCharge -= UnchargeRate;
-          if (CurrCharge < 0) {
-            CurrCharge = 0;
+          currentCharge -= UnchargeRate;
+          if (currentCharge < 0) {
+            currentCharge = 0;
           }
         }
         else {
-          CurrCharge += ChargeRate;
-          if (CurrCharge > 1) {
+          currentCharge += ChargeRate;
+          if (currentCharge > 1) {
             player.statMana -= ManaCost;
-            CurrCharge = 0;
+            currentCharge = 0;
             SetState(State.Active);
             PlacedSoulLink = true;
             Box.UpdateHitbox(player.Center);
@@ -115,18 +115,18 @@ namespace OriMod.Abilities {
             PutOnCooldown(force: true);
           }
         }
-        WasObstructed = tempObstructed;
+        wasObstructed = tempObstructed;
       }
-      else if (CurrCharge > 0) {
-        CurrCharge -= UnchargeRate;
-        if (CurrCharge < 0) {
-          CurrCharge = 0;
+      else if (currentCharge > 0) {
+        currentCharge -= UnchargeRate;
+        if (currentCharge < 0) {
+          currentCharge = 0;
         }
       }
-      if (CurrCharge > 0 && CurrCharge < 1) {
+      if (currentCharge > 0 && currentCharge < 1) {
         Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("SoulLinkChargeDust"), newColor: Color.DeepSkyBlue)];
         dust.customData = player;
-        dust.position += -Vector2.UnitY.RotatedBy(CurrCharge * 2 * Math.PI) * 56;
+        dust.position += -Vector2.UnitY.RotatedBy(currentCharge * 2 * Math.PI) * 56;
       }
       TickCooldown();
     }

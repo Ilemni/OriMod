@@ -191,7 +191,7 @@ namespace OriMod.Items {
       item.height = 18;
       item.useTime = 21;
       item.useAnimation = 21;
-      item.useStyle = 1;
+      item.useStyle = ItemUseStyleID.SwingThrow;
       item.noMelee = true;
       item.UseSound = SoundID.Item44;
       item.damage = damage;
@@ -220,7 +220,7 @@ namespace OriMod.Items {
       if (player.altFunctionUse == 2) {
         player.MinionNPCTargetAim();
       }
-      oPlayer.SeinMinionType = Projectile.NewProjectile(player.position, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI, 0, 0);
+      oPlayer.SeinMinionID = Projectile.NewProjectile(player.position, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI, 0, 0);
       return false;
     }
   }

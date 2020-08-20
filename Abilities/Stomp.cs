@@ -4,14 +4,16 @@ using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.GameInput;
 using OriMod.Utilities;
+using Terraria.ModLoader;
+using OriMod.Projectiles.Abilities;
 
 namespace OriMod.Abilities {
-  public class Stomp : Ability {
-    internal Stomp(AbilityManager handler) : base(handler) { }
+  public sealed class Stomp : Ability {
+    internal Stomp(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Stomp;
 
-    internal override bool DoUpdate => InUse || oPlayer.Input(PlayerInput.Triggers.JustPressed.Down);
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !Manager.dash.InUse && !Manager.cDash.InUse && !Manager.glide.Active && !Manager.climb.InUse && !Manager.stomp.Active && !player.mount.Active && player.grapCount == 0;
+    internal override bool UpdateCondition => InUse || oPlayer.Input(PlayerInput.Triggers.JustPressed.Down);
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !Manager.dash.InUse && !Manager.chargeDash.InUse && !Manager.glide.Active && !Manager.climb.InUse && !Manager.stomp.Active && !player.mount.Active && player.grapCount == 0;
     protected override int Cooldown => (int)(Config.StompCooldown * 30);
     protected override Color RefreshColor => Color.Orange;
 
@@ -21,17 +23,17 @@ namespace OriMod.Abilities {
     private int MinDuration => 30;
     private int HoldDownDelay => (int)(OriMod.ConfigClient.StompHoldDownDelay * 30);
 
-    private int CurrHoldDown;
+    private int currentHoldDown;
 
-    public Projectile Proj { get; private set; }
+    public Projectile PlayerHitboxProjectile { get; private set; }
 
-    private readonly RandomChar randCharStart = new RandomChar();
-    private readonly RandomChar randCharActive = new RandomChar();
-    private readonly RandomChar randCharEnd = new RandomChar();
+    private readonly RandomChar randStart = new RandomChar();
+    private readonly RandomChar randActive = new RandomChar();
+    private readonly RandomChar randEnd = new RandomChar();
 
     protected override void UpdateStarting() {
-      if (CurrTime == 0) {
-        oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + randCharStart.NextNoRepeat(3), 1f, 0.2f);
+      if (CurrentTime == 0) {
+        oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + randStart.NextNoRepeat(3), 1f, 0.2f);
       }
       player.velocity.X = 0;
       player.velocity.Y *= 0.9f;
@@ -39,10 +41,9 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      if (CurrTime == 0) {
-        oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randCharActive.NextNoRepeat(3));
-        Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("StompProjectile"), 30, 0f, player.whoAmI, 0, 1)];
-        Proj.damage = 9 + OriWorld.GlobalSeinUpgrade * 9;
+      if (CurrentTime == 0) {
+        oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3));
+        PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
       }
       if (Manager.airJump.Active) {
         return;
@@ -56,8 +57,8 @@ namespace OriMod.Abilities {
     }
 
     internal void EndStomp() {
-      oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + randCharEnd.NextNoRepeat(3));
-      Manager.airJump.CurrCount = 0;
+      oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + randEnd.NextNoRepeat(3));
+      Manager.airJump.CurrentCount = 0;
       player.velocity = Vector2.Zero;
       var position = new Vector2(player.position.X, player.position.Y + 32);
       for (int i = 0; i < 25; i++) {
@@ -67,8 +68,8 @@ namespace OriMod.Abilities {
         dust.velocity.Y = -Math.Abs(dust.velocity.Y);
       }
       PutOnCooldown();
-      Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("StompEnd"), Proj.damage, 0, player.whoAmI);
-      Proj = null;
+      Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompEnd>(), PlayerHitboxProjectile.damage, 0, player.whoAmI);
+      PlayerHitboxProjectile = null;
       SetState(State.Inactive);
     }
 
@@ -80,34 +81,34 @@ namespace OriMod.Abilities {
         player.controlRight = false;
       }
       player.controlHook = false;
-      oPlayer.KillGrapples();
       player.controlMount = false;
       player.controlThrow = false;
       player.controlUseItem = false;
       player.controlUseTile = false;
+      oPlayer.KillGrapples();
     }
 
     internal override void Tick() {
       if (PlayerInput.Triggers.Current.Down && CanUse) {
-        if (PlayerInput.Triggers.JustPressed.Down || CurrHoldDown > 0) {
-          CurrHoldDown++;
-          if (HoldDownDelay == 0 || CurrHoldDown > HoldDownDelay) {
+        if (PlayerInput.Triggers.JustPressed.Down || currentHoldDown > 0) {
+          currentHoldDown++;
+          if (HoldDownDelay == 0 || currentHoldDown > HoldDownDelay) {
             SetState(State.Starting);
-            CurrTime = 0;
-            CurrHoldDown = 0;
+            CurrentTime = 0;
+            currentHoldDown = 0;
           }
         }
       }
       else if (Starting) {
-        CurrTime++;
-        if (CurrTime > StartDuration) {
-          CurrTime = 0;
+        CurrentTime++;
+        if (CurrentTime > StartDuration) {
+          CurrentTime = 0;
           SetState(State.Active);
         }
       }
       else if (Active) {
-        CurrTime++;
-        if (CurrTime > MinDuration && !PlayerInput.Triggers.Current.Down) {
+        CurrentTime++;
+        if (CurrentTime > MinDuration && !PlayerInput.Triggers.Current.Down) {
           SetState(State.Inactive);
         }
         if (oPlayer.IsGrounded) {
@@ -115,7 +116,7 @@ namespace OriMod.Abilities {
         }
       }
       else {
-        CurrHoldDown = 0;
+        currentHoldDown = 0;
         TickCooldown();
       }
     }

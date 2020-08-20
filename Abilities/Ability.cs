@@ -10,9 +10,7 @@ namespace OriMod.Abilities {
     /// Only construct this in AbilityManager.
     /// </summary>
     internal Ability(AbilityManager manager) {
-      Manager = manager;
       oPlayer = manager.oPlayer;
-      player = oPlayer.player;
     }
 
     /// <summary>
@@ -21,29 +19,24 @@ namespace OriMod.Abilities {
     internal static OriConfigClient2 Config => OriMod.ConfigAbilities;
 
     /// <summary>
-    /// The Player this ability is attached to.
-    /// </summary>
-    public readonly Player player;
-
-    /// <summary>
     /// The OriPlayer this ability is attached to.
     /// </summary>
     public readonly OriPlayer oPlayer;
 
     /// <summary>
-    /// The OriAbilities this ability is attached to.
+    /// The Player this ability is attached to.
     /// </summary>
-    public readonly AbilityManager Manager;
+    public Player player => oPlayer.player;
+
+    /// <summary>
+    /// The AbilityManager this ability is attached to.
+    /// </summary>
+    public AbilityManager Manager => oPlayer.Abilities;
 
     /// <summary>
     /// Determines if the ability has been unlocked by the player. Currently unimplemented.
     /// </summary>
     public bool Unlocked { get; set; } = true;
-
-    /// <summary>
-    /// Previous sound index used to prevent the same sound from playing consectutively.
-    /// </summary>
-    protected int CurrSoundRand = 0;
 
     #region General Properties
     /// <summary>
@@ -54,7 +47,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Condition required to call Update()
     /// </summary>
-    internal abstract bool DoUpdate { get; }
+    internal abstract bool UpdateCondition { get; }
 
     /// <summary>
     /// Condition required for the player to use this ability.
@@ -121,12 +114,12 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Time left until the ability is no longer on cooldown.
     /// </summary>
-    protected int CurrCooldown;
+    protected int CurrentCooldown;
 
     /// <summary>
     /// Time the ability was in the given State.
     /// </summary>
-    protected int CurrTime;
+    protected int CurrentTime;
 
     /// <summary>
     /// True if ready to use, false if on cooldown.
@@ -156,8 +149,8 @@ namespace OriMod.Abilities {
     /// </summary>
     /// <param name="force">Force ignores config options</param>
     internal virtual void PutOnCooldown(bool force = false) {
-      if (force || OriMod.ConfigClient.AbilityCooldowns && (CooldownOnlyOnBoss ? OriUtils.IsAnyBossAlive(check: true) : true)) {
-                CurrCooldown = Cooldown;
+      if (force || OriMod.ConfigClient.AbilityCooldowns && (!CooldownOnlyOnBoss || OriUtils.IsAnyBossAlive(check: true))) {
+        CurrentCooldown = Cooldown;
                 Refreshed = false;
       }
     }
@@ -166,9 +159,9 @@ namespace OriMod.Abilities {
     /// Simple cooldown ticking. Can be overridden.
     /// </summary>
     protected virtual void TickCooldown() {
-      if (CurrCooldown > 0 || !Refreshed) {
-        CurrCooldown--;
-        if (CurrCooldown < 0) {
+      if (CurrentCooldown > 0 || !Refreshed) {
+        CurrentCooldown--;
+        if (CurrentCooldown < 0) {
           Refreshed = true;
         }
       }
@@ -273,14 +266,12 @@ namespace OriMod.Abilities {
     internal virtual void DrawEffects() { }
     #endregion
 
-    public override string ToString() => $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} Unlocked:{Unlocked} Cooldown:{CurrCooldown}/{Cooldown}";
-
-    public override int GetHashCode() => Id * Main.player.Length + player.whoAmI;
+    public override string ToString() => $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} Unlocked:{Unlocked} Cooldown:{CurrentCooldown}/{Cooldown}";
 
     /// <summary>
     /// States that the Ability can be in. Determines update logic.
     /// </summary>
-    public enum State {
+    public enum State : byte {
       /// <summary>
       /// The ability will not perform any Update logic.
       /// </summary>

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using Terraria;
@@ -15,14 +14,14 @@ namespace OriMod {
       }
 
       Template = template;
-      points = new Point[Template.Length];
+      Points = new Point[Template.Length];
+      UpdateHitbox(Point.Zero);
     }
 
     /// <summary>
     /// Tile positions of the hitbox. This is a newly allocated array
     /// </summary>
-    public Point[] Points => points.ToArray();
-    private readonly Point[] points;
+    public Point[] Points { get; }
 
     /// <summary>
     /// Shape of the hitbox, used for calculating Points
@@ -40,8 +39,8 @@ namespace OriMod {
     /// </summary>
     /// <param name="origin">Position to use</param>
     public void UpdateHitbox(Point origin) {
-      for (int i = 0; i < points.Length; i++) {
-        points[i] = Template[i].Add(origin);
+      for (int i = 0; i < Points.Length; i++) {
+        Points[i] = Template[i].Add(origin);
       }
     }
   }

@@ -1,18 +1,18 @@
 namespace OriMod.Animations {
-  internal class Header {
-    internal InitType Init;
-    internal LoopMode Loop;
-    internal PlaybackMode Playback;
-    internal readonly string TransferTo;
-    public readonly ReferencedTexture2D Texture = null;
-
-    internal Header(InitType init = InitType.None, LoopMode loop = LoopMode.None, PlaybackMode playback = PlaybackMode.None, string transferTo = null, CachedTexture2D ctx = null) {
+  public class Header {
+    public Header(InitType init = InitType.None, LoopMode loop = LoopMode.None, PlaybackMode playback = PlaybackMode.None, string transferTo = null, ReferencedTexture2D rtx = null) {
       Init = init;
       Loop = loop;
       Playback = playback;
       TransferTo = transferTo;
-      Texture = ctx;
+      Texture = rtx;
     }
+
+    public InitType Init;
+    public LoopMode Loop;
+    public PlaybackMode Playback;
+    public readonly string TransferTo;
+    public readonly ReferencedTexture2D Texture = null;
 
     internal Header CopySome(Header other) {
       return new Header(
@@ -22,28 +22,24 @@ namespace OriMod.Animations {
       );
     }
 
-    internal static Header Default => new Header(InitType.Range, LoopMode.Always, PlaybackMode.Normal);
-    internal static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
+    public static Header Default => new Header(InitType.Range, LoopMode.Always, PlaybackMode.None);
+    public static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
     public override string ToString()
       => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}";
   }
 
-  internal enum InitType {
+  public enum InitType : byte {
     None = 0,
     Range = 1,
-    Select = 2,
   }
-  internal enum LoopMode {
+  public enum LoopMode : byte {
     None = 0,
     Always = 1,
-    Once = 2,
-    Transfer = 3,
+    Transfer = 2,
   }
-  internal enum PlaybackMode {
+  public enum PlaybackMode : byte {
     None = 0,
-    Normal = 1,
-    PingPong = 2,
-    Reverse = 3,
-    Random = 4,
+    PingPong = 1,
+    Reverse = 2,
   }
 }

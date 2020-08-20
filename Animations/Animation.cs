@@ -1,42 +1,47 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.ModLoader;
 
 namespace OriMod.Animations {
-  internal class Animation {
-    internal Texture2D Texture => ActiveTrack.Header.Texture ?? Source.Texture;
-    internal readonly PlayerLayer PlayerLayer;
-    internal bool Valid { get; private set; }
-    internal Track ActiveTrack => Valid ? Source.Tracks[Handler.oPlayer.AnimName] : Source.Tracks.First().Value;
-    internal Frame ActiveFrame => ActiveTrack.Frames[Handler.oPlayer.AnimIndex < ActiveTrack.Frames.Length ? Handler.oPlayer.AnimIndex : 0];
-    internal Rectangle ActiveTile => new Rectangle(ActiveFrame.Tile.X * Source.TileSize.X, ActiveFrame.Tile.Y * Source.TileSize.Y, Source.TileSize.X, Source.TileSize.Y);
-    internal readonly AnimationContainer Handler;
-    internal readonly AnimationSource Source;
-
-    internal Animation(AnimationContainer handler, AnimationSource source, PlayerLayer playerLayer) {
-      Handler = handler;
-      Source = source;
-      PlayerLayer = playerLayer;
+  public class Animation {
+    public Animation(OriPlayer oPlayer, AnimationSource source, PlayerLayer playerLayer) {
+      this.oPlayer = oPlayer;
+      this.source = source;
+      this.playerLayer = playerLayer;
     }
 
-    internal void InsertInLayers(List<PlayerLayer> layers, int idx = 0, bool force = false) {
-      if (Valid || force) {
-        layers.Insert(idx, PlayerLayer);
+    public Texture2D Texture => ActiveTrack.Header.Texture ?? source.texture;
+    public Track ActiveTrack => Valid ? source.tracks[oPlayer.AnimName] : source.tracks.First().Value;
+    public Frame ActiveFrame => ActiveTrack.Frames[oPlayer.AnimIndex < ActiveTrack.Frames.Length ? oPlayer.AnimIndex : 0];
+
+    public Rectangle ActiveTile {
+      get {
+        var size = source.spriteSize;
+        var tile = ActiveFrame.Tile;
+        return new Rectangle(tile.X * size.X, tile.Y * size.Y, size.X, size.Y);
       }
     }
-    /// <summary> Add the PlayerLayer of this animation to the given `layers`
-    /// 
-    /// This will not run if Valid is false, unless force is true </summary>
+
+    public bool Valid { get; private set; }
+    public readonly PlayerLayer playerLayer;
+    public readonly OriPlayer oPlayer;
+    public readonly AnimationSource source;
+
+    public void InsertInLayers(List<PlayerLayer> layers, int idx = 0, bool force = false) {
+      if (Valid || force) {
+        layers.Insert(idx, playerLayer);
+      }
+    }
+
     /// <param name="layers">The PlayerLayer list to add to</param>
-    /// <param name="force">Add this Player even if Valid is false </param>
-    internal void AddToLayers(List<PlayerLayer> layers, bool force = false) {
+    public void AddToLayers(List<PlayerLayer> layers, bool force = false) {
       if (Valid || force) {
-        layers.Add(PlayerLayer);
+        layers.Add(playerLayer);
       }
     }
 
-    internal void OnAnimNameChange(string name) => Valid = Source.Tracks.ContainsKey(name);
+    public void CheckIfValid(string name) => Valid = source.tracks.ContainsKey(name);
   }
 }

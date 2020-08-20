@@ -69,7 +69,7 @@ namespace OriMod.Projectiles.Minions {
     protected abstract int Init { get; }
 
     private void Initialize(int upgradeID) {
-      SeinUpgrade u = OriMod.SeinUpgrades[upgradeID - 1];
+      SeinUpgrade u = OriMod.Instance.SeinUpgrades[upgradeID - 1];
 
       projectile.knockBack = u.knockback;
       lerp = u.homingStrengthStart;

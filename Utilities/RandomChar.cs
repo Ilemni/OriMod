@@ -1,4 +1,4 @@
-﻿using Terraria;
+using Terraria;
 
 namespace OriMod.Utilities {
   internal class RandomChar {
@@ -33,28 +33,27 @@ namespace OriMod.Utilities {
     /// <param name="length"></param>
     /// <returns></returns>
     public char NextNoRepeat(int length) {
-      if (length < 2 || length > RandMaxValue) {
-        throw new System.ArgumentOutOfRangeException(nameof(length), "Value must be between 2 and " + RandMaxValue);
+      if (length < 1 || length > RandMaxValue) {
+        throw new System.ArgumentOutOfRangeException(nameof(length), "Value must be between 1 and " + RandMaxValue);
       }
 
       byte rand;
-      if (nextExclude < 0 || nextExclude >= length) {
+      if (nextExclude == byte.MaxValue) {
         rand = (byte)Main.rand.Next(length);
-        nextExclude = rand;
-        return alphabet[rand];
       }
-
+      else {
       rand = (byte)Main.rand.Next(length - 1);
       if (rand >= nextExclude) {
-        rand += 1;
+          rand++;
+        }
       }
       nextExclude = rand;
       return alphabet[rand];
     }
 
-    private byte nextExclude = RandMaxValue; // Start as max value to avoid excludes on first use
+    private byte nextExclude = byte.MaxValue; // Start as max value to avoid excludes on first use
 
-    private static byte RandMaxValue => 25;
+    private const byte RandMaxValue = 25;
     
     private static char[] alphabet => _a ?? (_a = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray());
     private static char[] _a;

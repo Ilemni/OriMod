@@ -3,116 +3,133 @@ using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using Terraria.ID;
 
 namespace OriMod {
   public class OriWorld : ModWorld {
-    public static int GlobalSeinUpgrade { get; private set; }
+    public enum Upgrade : byte {
+      None = 0,
+      DefeatedEyeOfCthuhlu = 1,
+      DefeatedDarkBoss = 2,
+      DefeatedSkeletron = 3,
+      InHardMode = 4,
+      DefeatedAnyMechs = 5,
+      DefeatedAllMechs = 6,
+      DefeatedPlantera = 7,
+      DefeatedGolem = 8,
+      DefeatedLunarCultist = 9,
+      DefeatedTwoPillars = 10,
+      DefeatedAllPillars = 11,
+      DefeatedMoonLord = 12
+    }
 
-    internal string Version;
+    public static Upgrade GlobalUpgrade { get; private set; }
+
+    public string Version;
     
     public override bool Autoload(ref string name) => true;
 
     public static void UpdateOriPlayerSeinStates(byte upgrade) {
-      if (upgrade <= GlobalSeinUpgrade) {
+      if (upgrade <= (byte)GlobalUpgrade) {
         return;
       }
       // Main.NewText("Upgrade from " + GlobalSeinUpgrade + " to " + upgrade);
-      GlobalSeinUpgrade = upgrade;
+      GlobalUpgrade = (Upgrade)upgrade;
       // foreach(Player p in Main.player) {
       //   if (!p.active) continue;
       //   OriPlayer oPlayer = p.GetModPlayer<OriPlayer>();
       //   oPlayer.SeinMinionUpgrade = GlobalSeinUpgrade;
       // }
-      LocalizedText text = OriMod.GetText($"SeinUpgrade.Upgraded{GlobalSeinUpgrade}");
-      if (Main.netMode == 0) {
+      LocalizedText text = OriMod.GetText($"SeinUpgrade.Upgraded{GlobalUpgrade}");
+      if (Main.netMode == NetmodeID.SinglePlayer) {
         // Main.NewText(text.ToString(), Color.White);
       }
-      else if (Main.netMode == 2) {
+      else if (Main.netMode == NetmodeID.Server) {
         // NetMessage.BroadcastChatMessage(text.ToNetworkText(), Color.White);
       }
     }
 
-    public override TagCompound Save() => new TagCompound {
-      ["SeinUpgrade"] = GlobalSeinUpgrade,
-      ["Version"] = ModLoader.GetMod("OriMod").Version.ToString(),
+    public override TagCompound Save() {
+      ValidateSeinUpgrade();
+      return new TagCompound {
+        ["SeinUpgrade"] = GlobalUpgrade,
+        ["Version"] = OriMod.Instance.Version.ToString(),
     };
+    }
 
     public override void Load(TagCompound tag) {
-      GlobalSeinUpgrade = tag.GetAsInt("SeinUpgrade");
-      CheckSeinUpgrade();
+      GlobalUpgrade = (Upgrade)tag.GetAsInt("SeinUpgrade");
+      ValidateSeinUpgrade();
       Version = tag.GetString("Version");
     }
 
-    private void CheckSeinUpgrade() {
-      int oldUpgrade = GlobalSeinUpgrade;
+    private void ValidateSeinUpgrade() {
+      Upgrade oldUpgrade = GlobalUpgrade;
 
-      if (GlobalSeinUpgrade == 12 && !NPC.downedMoonlord) {
-        GlobalSeinUpgrade = 11;
+      if (GlobalUpgrade == Upgrade.DefeatedMoonLord && !NPC.downedMoonlord) {
+        GlobalUpgrade = Upgrade.DefeatedAllPillars;
       }
 
-      if (GlobalSeinUpgrade == 11 || GlobalSeinUpgrade == 10) {
+      if (GlobalUpgrade == Upgrade.DefeatedAllPillars && !NPC.downedTowers) {
+        GlobalUpgrade = Upgrade.DefeatedTwoPillars;
+      }
+
+      if (GlobalUpgrade == Upgrade.DefeatedTwoPillars) {
         int downs = 0;
         if (NPC.downedTowerNebula) {
-          downs += 1;
+          downs++;
         }
-
         if (NPC.downedTowerSolar) {
-          downs += 1;
+          downs++;
         }
-
         if (NPC.downedTowerStardust) {
-          downs += 1;
+          downs++;
         }
-
         if (NPC.downedTowerStardust) {
-          downs += 1;
-        }
-
-        if (downs < 4) {
-          GlobalSeinUpgrade = 10;
+          downs++;
         }
         if (downs < 2) {
-          GlobalSeinUpgrade = 9;
+          GlobalUpgrade = Upgrade.DefeatedLunarCultist;
         }
       }
 
-      if (GlobalSeinUpgrade == 9 && !NPC.downedAncientCultist) {
-        GlobalSeinUpgrade = 8;
+      if (GlobalUpgrade == Upgrade.DefeatedLunarCultist && !NPC.downedAncientCultist) {
+        GlobalUpgrade = Upgrade.DefeatedGolem;
       }
 
-      if (GlobalSeinUpgrade == 8 && !NPC.downedGolemBoss) {
-        GlobalSeinUpgrade = 7;
+      if (GlobalUpgrade == Upgrade.DefeatedGolem && !NPC.downedGolemBoss) {
+        GlobalUpgrade = Upgrade.DefeatedPlantera;
       }
 
-      if (GlobalSeinUpgrade == 7 && !NPC.downedPlantBoss) {
-        GlobalSeinUpgrade = 6;
+      if (GlobalUpgrade == Upgrade.DefeatedPlantera && !NPC.downedPlantBoss) {
+        GlobalUpgrade = Upgrade.DefeatedAllMechs;
       }
 
-      if (GlobalSeinUpgrade == 6 && !(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)) {
-        GlobalSeinUpgrade = 5;
+      if (GlobalUpgrade == Upgrade.DefeatedAllMechs && !(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)) {
+        GlobalUpgrade = Upgrade.DefeatedAnyMechs;
       }
 
-      if (GlobalSeinUpgrade == 5 && !(NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3)) {
-        GlobalSeinUpgrade = 4;
+      if (GlobalUpgrade == Upgrade.DefeatedAnyMechs && !(NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3)) {
+        GlobalUpgrade = Upgrade.InHardMode;
       }
 
-      if (GlobalSeinUpgrade == 4 && !Main.hardMode) {
-        GlobalSeinUpgrade = 3;
+      if (GlobalUpgrade == Upgrade.InHardMode && !Main.hardMode) {
+        GlobalUpgrade = Upgrade.DefeatedSkeletron;
       }
 
-      if (GlobalSeinUpgrade == 3 && !NPC.downedBoss3) {
-        GlobalSeinUpgrade = 2;
+      if (GlobalUpgrade == Upgrade.DefeatedSkeletron && !NPC.downedBoss3) {
+        GlobalUpgrade = Upgrade.DefeatedDarkBoss;
       }
 
-      if (GlobalSeinUpgrade == 2 && !NPC.downedBoss2) {
-        GlobalSeinUpgrade = 1;
+      if (GlobalUpgrade == Upgrade.DefeatedDarkBoss && !NPC.downedBoss2) {
+        GlobalUpgrade = Upgrade.DefeatedEyeOfCthuhlu;
       }
 
-      if (GlobalSeinUpgrade == 1 && !NPC.downedBoss1) {
-        GlobalSeinUpgrade = 0;
+      if (GlobalUpgrade == Upgrade.DefeatedEyeOfCthuhlu && !NPC.downedBoss1) {
+        GlobalUpgrade = Upgrade.None;
       }
 
-      if (GlobalSeinUpgrade != oldUpgrade) {
+      if (GlobalUpgrade != oldUpgrade) {
         // string text = "Due to the world being modified, Sein's upgrade regressed from " + oldUpgrade + " to " + GlobalSeinUpgrade;
         // Main.NewText(text);
         // ErrorLogger.Log(text);
@@ -120,11 +137,11 @@ namespace OriMod {
     }
 
     public override void NetSend(BinaryWriter writer) {
-      writer.Write(GlobalSeinUpgrade);
+      writer.Write((byte)GlobalUpgrade);
     }
 
     public override void NetReceive(BinaryReader reader) {
-      GlobalSeinUpgrade = reader.ReadByte();
+      GlobalUpgrade = (Upgrade)reader.ReadByte();
     }
   }
 }

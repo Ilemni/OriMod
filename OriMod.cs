@@ -202,7 +202,7 @@ namespace OriMod {
                   obj is Player p ? p :
                   obj is ModPlayer modPlayer ? modPlayer.player : null;
                 if (player is null) {
-                  Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type Player, got {obj.GetType()}");
+                  Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type {typeof(Player)}, got {obj.GetType()}");
                   return false;
                 }
                 player.GetModPlayer<OriPlayer>().ResetData();

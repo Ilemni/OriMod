@@ -4,28 +4,27 @@ using Microsoft.Xna.Framework.Graphics;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
-  public class Burrow : Ability {
-    internal Burrow(AbilityManager handler) : base(handler) { }
+  public sealed class Burrow : Ability {
+    internal Burrow(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Burrow;
 
-    internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BurrowKey.Current);
-    internal override bool CanUse => base.CanUse && !Manager.dash.InUse && !Manager.cDash.InUse && !InMenu;
+    internal override bool UpdateCondition => InUse || oPlayer.Input(OriMod.BurrowKey.Current);
+    internal override bool CanUse => base.CanUse && !Manager.dash.InUse && !Manager.chargeDash.InUse && !InMenu;
     protected override int Cooldown => 12;
     protected override Color RefreshColor => Color.SandyBrown;
 
-    private static int BurrowDurMax => (int)(Config.BurrowDuration * 60);
+    private static int MaxDuration => (int)(Config.BurrowDuration * 60);
     private static int UiIncrement => 60;
-    private float Breath = BurrowDurMax;
+    private float Breath = MaxDuration;
 
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
     private float Speed => 8f;
     private float SpeedExitMultiplier => 1.5f;
-    protected int Strength;
+    private int Strength;
 
     internal bool CanBurrow(Tile t) {
       if (CanBurrowAny && IsSolid(t)) {
@@ -39,7 +38,7 @@ namespace OriMod.Abilities {
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
 
     internal Vector2 Velocity;
-    internal Vector2 LastPos;
+    internal Vector2 LastPosition;
     internal bool AutoBurrow;
     private int TimeLeft;
 
@@ -157,7 +156,7 @@ namespace OriMod.Abilities {
       // Apply changes
       player.position += Velocity;
       player.velocity = Vector2.Zero;
-      LastPos = player.position;
+      LastPosition = player.position;
       oPlayer.CreatePlayerDust();
 
       // Breath
@@ -195,7 +194,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void DrawEffects() {
-      if (Breath != BurrowDurMax) {
+      if (Breath != MaxDuration) {
 
         // UI indication for breath
         Vector2 drawAnchor = player.BottomRight - Main.screenPosition;
@@ -275,7 +274,7 @@ namespace OriMod.Abilities {
         // Not in use
         TickCooldown();
 
-        if (CanUse && (OriMod.BurrowKey.JustPressed && PlayerInput.Triggers.Current.Down || AutoBurrow)) {
+        if (CanUse && (OriMod.BurrowKey.JustPressed && Manager.crouch.InUse || AutoBurrow)) {
           UpdateBurrowStrength(force: true);
           EnterHitbox.UpdateHitbox(player.position);
 
@@ -293,7 +292,7 @@ namespace OriMod.Abilities {
           if (vel != Vector2.Zero) {
             // Enter Burrow
             SetState(State.Active);
-            CurrCooldown = Cooldown;
+            CurrentCooldown = Cooldown;
 
             AutoBurrow = OriMod.ConfigClient.AutoBurrow && OriMod.BurrowKey.Current;
             if (AutoBurrow) {
@@ -313,14 +312,14 @@ namespace OriMod.Abilities {
             }
             Velocity = vel * Speed;
             player.position += Velocity;
-            LastPos = player.position;
+            LastPosition = player.position;
           }
         }
 
-        if (Breath < BurrowDurMax) {
+        if (Breath < MaxDuration) {
           Breath += Config.BurrowRecoveryRate;
-          if (Breath > BurrowDurMax) {
-            Breath = BurrowDurMax;
+          if (Breath > MaxDuration) {
+            Breath = MaxDuration;
           }
         }
       }

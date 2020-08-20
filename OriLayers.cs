@@ -33,7 +33,7 @@ namespace OriMod {
       if (!player.dead && !player.invis) {
         oPlayer.Trails.ResetNextTrail();
       }
-      oPlayer.Trails.AddTrailDrawData();
+      oPlayer.Trails.AddTrailDrawDataToMain();
     });
 
     internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
@@ -44,7 +44,7 @@ namespace OriMod {
       var pos = bash.BashEntity.Center - Main.screenPosition;
       var orig = anim.ActiveTile.Size() / 2;
       int frame = bash.CurrDuration < 40 ? 0 : bash.CurrDuration < 50 ? 1 : 2;
-      var rect = new Rectangle(0, frame * anim.Source.TileSize.Y, anim.Source.TileSize.X, anim.Source.TileSize.Y);
+      var rect = new Rectangle(0, frame * anim.source.spriteSize.Y, anim.source.spriteSize.X, anim.source.spriteSize.Y);
       var rotation = oPlayer.Abilities.bash.BashEntity.AngleTo(Main.MouseWorld);
       var effect = SpriteEffects.None;
       var data = new DrawData(anim.Texture, pos, rect, Color.White, rotation, orig, 1, effect, 0);

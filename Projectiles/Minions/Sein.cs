@@ -44,13 +44,11 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <param name="init">Index of OriMod.SeinUpgrades to use. </param>
     private void Initialize(int init) {
-      SeinUpgrade u = OriMod.SeinUpgrades[init - 1];
+      SeinUpgrade u = OriMod.Instance.SeinUpgrades[init - 1];
       MaxShotsPerBurst = u.shotsPerBurst;
       MaxShotsPerVolley = u.maxShotsPerVolley;
       ShotsToTarget = u.shotsPerTarget;
       ShotsToPrimaryTarget = u.shotsToPrimaryTarget;
-      PrimaryDamageMultiplier = u.primaryDamageMultiplier;
-      Pierce = u.pierce;
       MaxTargets = u.targets;
       MinCooldown = u.minCooldown;
       ShortCooldown = u.shortCooldown;
@@ -69,10 +67,10 @@ namespace OriMod.Projectiles.Minions {
       LightStrength = u.lightStrength;
 
       SpiritFlameSound =
-        init == 1 || init == 2 ? "" :
-        init == 3 || init == 4 ? "LevelB" :
-        init == 5 || init == 6 ? "LevelC" :
-        init == 7 || init == 8 ? "LevelD" : "";
+        init <= 2 ? "" :
+        init <= 4 ? "LevelB" :
+        init <= 6 ? "LevelC" :
+        init <= 8 ? "LevelD" : "";
     }
 
     /// <summary>
@@ -85,7 +83,7 @@ namespace OriMod.Projectiles.Minions {
         }
 
         var item = Main.player[projectile.owner].HeldItem;
-        return item.shoot == projectile.type;
+        return item.shoot != projectile.type;
       }
     }
 

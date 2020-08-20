@@ -1,5 +1,6 @@
 using Terraria;
 using Terraria.ModLoader;
+using Terraria.ID;
 
 namespace OriMod.Items {
   public class OriPotionEmpty : ModItem {
@@ -7,10 +8,10 @@ namespace OriMod.Items {
       item.width = 24;
       item.height = 26;
       item.maxStack = 1;
-      item.rare = 1;
+      item.rare = ItemRarityID.Blue;
       item.useAnimation = 10;
       item.useTime = 10;
-      item.useStyle = 3;
+      item.useStyle = ItemUseStyleID.Stabbing;
       item.consumable = false;
     }
 

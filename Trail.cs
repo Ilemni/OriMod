@@ -1,15 +1,16 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OriMod.Utilities;
 using Terraria;
 using Terraria.DataStructures;
 
 namespace OriMod {
-  internal class Trail {
-    internal Trail(OriPlayer oriPlayer) => oPlayer = oriPlayer;
+  public class Trail {
+    internal Trail(OriPlayer oPlayer) => this.oPlayer = oPlayer;
 
     private readonly OriPlayer oPlayer;
     private Vector2 Position;
-    private Point Frame;
+    private PointByte Tile;
     private float Alpha = 1;
     private float StartAlpha = 1;
     private SpriteEffects effect;
@@ -19,10 +20,10 @@ namespace OriMod {
     /// <summary>
     /// Resets various attributes to be based on the player's current attributes.
     /// </summary>
-    internal void Reset() {
+    public void Reset() {
       var player = oPlayer.player;
       Position = player.Center;
-      Frame = oPlayer.AnimFrame;
+      Tile = oPlayer.AnimTile;
       
       StartAlpha = player.velocity.Length() * 0.002f;
       if (StartAlpha > 0.08f) {
@@ -42,7 +43,7 @@ namespace OriMod {
     /// <summary>
     /// Decreases Alpha by a fixed amount.
     /// </summary>
-    internal void Tick() {
+    public void Tick() {
       Alpha -= StartAlpha / 26;
       if (Alpha < 0) {
         Alpha = 0;
@@ -52,11 +53,12 @@ namespace OriMod {
     /// <summary>
     /// Gets the Trail DrawData of this OriPlayer.
     /// </summary>
-    internal DrawData GetDrawData() {
-      Vector2 pos = Position - Main.screenPosition;
-      var rect = new Rectangle(Frame.X, Frame.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight);
+    public DrawData GetDrawData() {
+      var pos = Position - Main.screenPosition;
+      var frame = OriPlayer.TileToPixel(Tile);
+      var rect = new Rectangle(frame.X, frame.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight);
+      var color = oPlayer.SpriteColorPrimary * (Alpha * 10);
 
-      Color color = oPlayer.SpriteColorPrimary * (Alpha * 10);
       return new DrawData(OriTextures.Instance.Trail, pos, rect, color, 0, Origin, 1, effect, 0);
     }
   }

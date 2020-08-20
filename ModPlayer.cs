@@ -18,6 +18,8 @@ using Terraria.ModLoader.IO;
 namespace OriMod {
   public sealed class OriPlayer : ModPlayer {
     #region Variables
+    public static OriPlayer Local => Main.LocalPlayer.GetModPlayer<OriPlayer>();
+
     /// <summary>
     /// Manager for all Abilities on this OriPlayer instance.
     /// </summary>
@@ -42,25 +44,20 @@ namespace OriMod {
 
     internal bool debugMode = false;
 
-    private bool doPlaySound = false;
+    private bool useCustomHurtSound = false;
 
     /// <summary>
     /// When set to true, uses custom movement and player sprites. External mods that attempt to be compatible with this one will need to use this property.
     /// </summary>
     public bool IsOri {
-      get => _oriSet;
+      get => _isOri;
       set {
-        if (value != _oriSet) {
+        if (value != _isOri) {
           doNetUpdate = true;
-          _oriSet = value;
+          _isOri = value;
         }
       }
     }
-
-    /// <summary>
-    /// Amount of Spirit Light the player has
-    /// </summary>
-    public long SpiritLight { get; internal set; }
 
     /// <summary>
     /// Represents if the player is currently transforming into Ori. While transforming, all player input is disabled.
@@ -78,16 +75,16 @@ namespace OriMod {
     internal float TransformTimer = 0;
 
     /// <summary>
+    /// Amount of Spirit Light the player has
+    /// </summary>
+    public long SpiritLight { get; internal set; }
+
+    /// <summary>
     /// Transform variables used to hasten repeat transforms.
     /// </summary>
     internal bool HasTransformedOnce { get; private set; }
 
     private float RepeatedTransformRate => 2.5f;
-
-    /// <summary>
-    /// Location of the Spirit Sapling that transformed Ori. Used to create Dust effects.
-    /// </summary>
-    internal Vector2 TransformBlockLocation;
 
     private int TransformDirection = 0;
 
@@ -132,6 +129,16 @@ namespace OriMod {
       }
     }
 
+    public int SeinMinionID {
+      get => _seinMinionID;
+      internal set {
+        if (value != _seinMinionID) {
+          doNetUpdate = true;
+          _seinMinionID = value;
+        }
+      }
+    }
+
     /// <summary>
     /// The current version of Sein that is summoned. Used to prevent re-summons of the same tier of Sein.
     /// </summary>
@@ -149,29 +156,32 @@ namespace OriMod {
 
     internal int ImmuneTimer = 0;
 
-    private readonly RandomChar jumpRandChar = new RandomChar();
-    private readonly RandomChar hurtRandChar = new RandomChar();
+    private readonly RandomChar jumpRand = new RandomChar();
+    private readonly RandomChar hurtRand = new RandomChar();
 
     #region Animation Properties
     /// <summary>
     /// Shorthand for AnimationHandler.PlayerAnim.TileSize.X.
     /// </summary>
-    internal static int SpriteWidth => AnimationHandler.PlayerAnim.TileSize.X;
+    internal static int SpriteWidth => AnimationHandler.Instance.PlayerAnim.spriteSize.X;
     
     /// <summary>
     /// Shorthand for `AnimationHandler.PlayerAnim.TileSize.Y.
     /// </summary>
-    internal static int SpriteHeight => AnimationHandler.PlayerAnim.TileSize.Y;
+    internal static int SpriteHeight => AnimationHandler.Instance.PlayerAnim.spriteSize.Y;
 
-    internal Point AnimFrame;
-
-    /// <summary> The current sprite tile of the player in Ori state.
-    /// 
-    /// X and Y values are based on the sprite tile coordinates, not pixel coordinates. </summary>
-    public Point AnimTile {
-      get => PixelToTile(AnimFrame);
-      internal set => AnimFrame = TileToPixel(value);
+    /// <summary>
+    /// Current pixel placement of the current animation tile on the spritesheet.
+    /// </summary>
+    public Point AnimFrame {
+      get => TileToPixel(AnimTile);
+      set => AnimTile = PixelToTile(value);
     }
+
+    /// <summary>
+    /// Current tile placement of the animation on the spritesheet. X and Y values are based on the sprite tile coordinates, not pixel coordinates.
+    /// </summary>
+    public PointByte AnimTile;
 
     /// <summary>
     /// The name of the animation track currently playing.
@@ -192,16 +202,13 @@ namespace OriMod {
     internal bool AnimReversed = false;
     internal bool Flashing = false;
 
-    private static Point PixelToTile(Point pixel) {
-      pixel.X /= SpriteWidth;
-      pixel.Y /= SpriteHeight;
-      return pixel;
-    }
+    internal static PointByte PixelToTile(Point pixel) => new PointByte((byte)(pixel.X / SpriteWidth), (byte)(pixel.Y / SpriteHeight));
 
-    private static Point TileToPixel(Point tile) {
-      tile.X *= SpriteWidth;
-      tile.Y *= SpriteHeight;
-      return tile;
+    internal static Point TileToPixel(PointByte tile) {
+      var result = (Point)tile;
+      result.X *= SpriteWidth;
+      result.Y *= SpriteHeight;
+      return result;
     }
     #endregion
 
@@ -239,9 +246,10 @@ namespace OriMod {
     #endregion
 
     #region Backing fields
-    private bool _oriSet;
+    private bool _isOri;
     private bool _unrestrictedMovement = false;
     private bool _seinMinionActive = false;
+    private int _seinMinionID;
     private int _seinMinionType = 0;
     private bool _transforming = false;
     private string _animName = "Default";
@@ -256,8 +264,8 @@ namespace OriMod {
       Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
 
     /// <summary> Checks if the key is pressed and this is LocalPlayer. </summary>
-    /// <param name="TriggerKey">The key that was pressed</param>
-    internal bool Input(bool TriggerKey) => TriggerKey && player.whoAmI == Main.myPlayer;
+    /// <param name="triggerKey">The key that was pressed</param>
+    internal bool Input(bool triggerKey) => triggerKey && player.whoAmI == Main.myPlayer;
 
     /// <summary>
     /// Prints a debug message if "debug mode" is enabled
@@ -291,14 +299,14 @@ namespace OriMod {
     internal void BeginTransformation() {
       Transforming = true;
       TransformDirection = player.direction;
-      TransformTimer = Animations.PlayerAnim.Source.Tracks["TransformEnd"].Duration + Animations.PlayerAnim.Source.Tracks["TransformStart"].Duration;
+      TransformTimer = Animations.PlayerAnim.source.tracks["TransformEnd"].Duration + Animations.PlayerAnim.source.tracks["TransformStart"].Duration;
     }
 
     /// <summary>
     /// Removes all Sein-related buffs from the player.
     /// </summary>
     internal void RemoveSeinBuffs() {
-      for (int u = 1; u <= OriMod.SeinUpgrades.Count; u++) {
+      for (int u = 1; u <= OriMod.Instance.SeinUpgrades.Count; u++) {
         player.ClearBuff(mod.GetBuff("SeinBuff" + u).Type);
       }
     }
@@ -328,7 +336,7 @@ namespace OriMod {
       dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
       dust.noGravity = false;
       PlayerDustTimer = Transforming ? Main.rand.Next(3, 8)
-        : Abilities.dash.InUse || Abilities.cDash.InUse ? Main.rand.Next(2, 4)
+        : Abilities.dash.InUse || Abilities.chargeDash.InUse ? Main.rand.Next(2, 4)
         : Abilities.burrow.InUse ? Main.rand.Next(6, 10)
         : Main.rand.Next(10, 15);
     }
@@ -364,7 +372,7 @@ namespace OriMod {
         IncrementFrame("Burrow", rotDegrees: deg);
         return;
       }
-      if (Abilities.wCJump.Active) {
+      if (Abilities.wallChargeJump.Active) {
         float rad = (float)Math.Atan2(player.velocity.Y, player.velocity.X);
         float deg = rad * (float)(180 / Math.PI) * player.direction;
         if (player.direction == -1) {
@@ -373,11 +381,11 @@ namespace OriMod {
         IncrementFrame("Dash", overrideFrame: 0, rotDegrees: deg);
         return;
       }
-      if (Abilities.wJump.InUse) {
+      if (Abilities.wallJump.InUse) {
         IncrementFrame("WallJump");
         return;
       }
-      if (Abilities.airJump.InUse && !(Abilities.dash.InUse || Abilities.cDash.InUse)) {
+      if (Abilities.airJump.InUse && !(Abilities.dash.InUse || Abilities.chargeDash.InUse)) {
         IncrementFrame("AirJump");
         AnimRads = AnimTime * 0.8f;
         return;
@@ -412,12 +420,12 @@ namespace OriMod {
       }
       if (Abilities.climb.InUse) {
         if (Abilities.climb.IsCharging) {
-          if (!Abilities.wCJump.Charged) {
-            IncrementFrame("WallChargeJumpCharge", overrideFrame: Abilities.wCJump.Refreshed ? -1 : 0);
+          if (!Abilities.wallChargeJump.Charged) {
+            IncrementFrame("WallChargeJumpCharge", overrideFrame: Abilities.wallChargeJump.Refreshed ? -1 : 0);
             return;
           }
           int frame = 0;
-          Abilities.wCJump.GetMouseDirection(out float angle);
+          Abilities.wallChargeJump.GetMouseDirection(out float angle);
           if (angle < -0.46f) {
             frame = 2;
           }
@@ -445,7 +453,7 @@ namespace OriMod {
         IncrementFrame("WallSlide");
         return;
       }
-      if (Abilities.dash.InUse || Abilities.cDash.InUse) {
+      if (Abilities.dash.InUse || Abilities.chargeDash.InUse) {
         if (Math.Abs(player.velocity.X) > 18f) {
           IncrementFrame("Dash");
         }
@@ -481,21 +489,22 @@ namespace OriMod {
         }
       }
 
-      if (Abilities.cJump.Active) {
+      if (Abilities.chargeJump.Active) {
         IncrementFrame("ChargeJump");
         return;
       }
       if (!IsGrounded) {
-        // XOR so opposite signs means jumping
+        // XOR so opposite signs (negative value) means jumping regardless of gravity
         IncrementFrame(((int)drawPlayer.velocity.Y ^ (int)drawPlayer.gravity) <= 0 ? "Jump" : "Falling");
         return;
       }
-      if (Math.Abs(drawPlayer.velocity.X) < 0.2f) {
+      if (Math.Abs(drawPlayer.velocity.X) > 0.2f) {
+        IncrementFrame("Running", overrideTime: AnimTime + (int)Math.Abs(player.velocity.X) / 3);
+        return;
+      }
         IncrementFrame(OnWall ? "IdleAgainst" : "Idle");
         return;
       }
-      IncrementFrame("Running", overrideTime: AnimTime + (int)Math.Abs(player.velocity.X) / 3);
-    }
 
     /// <summary>
     /// Calls AnimationHandler.IncrememtFrame() with supplied arguments.
@@ -508,10 +517,13 @@ namespace OriMod {
     /// <param name="drawOffset">Override draw position of the frame</param>
     /// <param name="rotDegrees">Rotation of the sprite, in degrees</param>
     private void IncrementFrame(string anim = "Default", int overrideFrame = -1, float overrideTime = 0, int overrideDur = 0, Header overrideHeader = null, Vector2 drawOffset = new Vector2(), float rotDegrees = 0) {
-      if (AnimName != null) {
-        // Main.NewText($"Frame called: {AnimName}, Time: {AnimTime}, AnimIndex: {AnimIndex}/{Animations.PlayerAnim.Tracks[AnimName].Frames.Length}"); // Debug
+      if (AnimName != null && debugMode) {
+        Main.NewText($"Frame called: {AnimName}, Time: {AnimTime}, AnimIndex: {AnimIndex}/{Animations.PlayerAnim.ActiveTrack.Frames.Length}"); // Debug
+        var frame = Animations.PlayerAnim.ActiveFrame;
+        var tile = Animations.PlayerAnim.ActiveTile;
+        Main.NewText($"Frame info: {frame} => {tile}");
       }
-      AnimationHandler.IncrementFrame(this, anim, overrideFrame, overrideTime, overrideDur, overrideHeader, drawOffset, rotDegrees);
+      AnimationHandler.Instance.IncrementFrame(this, anim, overrideFrame, overrideTime, overrideDur, overrideHeader, drawOffset, rotDegrees);
     }
 
     /// <summary>
@@ -523,11 +535,11 @@ namespace OriMod {
         return;
       }
 
-      Animations.PlayerAnim.OnAnimNameChange(value);
-      Animations.SecondaryLayer.OnAnimNameChange(value);
-      Animations.TrailAnim.OnAnimNameChange(value);
-      Animations.BashAnim.OnAnimNameChange(value);
-      Animations.GlideAnim.OnAnimNameChange(value);
+      Animations.PlayerAnim.CheckIfValid(value);
+      Animations.SecondaryLayer.CheckIfValid(value);
+      Animations.TrailAnim.CheckIfValid(value);
+      Animations.BashAnim.CheckIfValid(value);
+      Animations.GlideAnim.CheckIfValid(value);
     }
 
     /// <summary>
@@ -557,7 +569,7 @@ namespace OriMod {
         float rate = HasTransformedOnce ? RepeatedTransformRate : 1;
         AnimTime += rate - 1;
         TransformTimer -= rate;
-        if (TransformTimer < 0 || HasTransformedOnce && TransformTimer < Animations.PlayerAnim.Source.Tracks["TransformEnd"].Duration - 62) {
+        if (TransformTimer < 0 || HasTransformedOnce && TransformTimer < Animations.PlayerAnim.source.tracks["TransformEnd"].Duration - 62) {
           TransformTimer = 0;
           Transforming = false;
           IsOri = true;
@@ -630,15 +642,13 @@ namespace OriMod {
           }
         }
 
-        Abilities.Tick();
         Abilities.Update();
-        Abilities.NetSync();
       }
 
       if (Transforming) {
         player.direction = TransformDirection;
         player.controlUseItem = false;
-        int dur = AnimationHandler.PlayerAnim.Tracks["TransformEnd"].Duration;
+        int dur = AnimationHandler.Instance.PlayerAnim.tracks["TransformEnd"].Duration;
         if (TransformTimer > dur - 10) {
           if (TransformTimer < dur) {
             player.gravity = 9f;
@@ -694,7 +704,7 @@ namespace OriMod {
 
       justJumped = player.justJumped;
       if (justJumped) {
-        PlayNewSound("Ori/Jump/seinJumpsGrass" + jumpRandChar.NextNoRepeat(5), 0.75f);
+        PlayNewSound("Ori/Jump/seinJumpsGrass" + jumpRand.NextNoRepeat(5), 0.75f);
       }
       bool oldGrounded = IsGrounded;
 
@@ -761,28 +771,27 @@ namespace OriMod {
     }
 
     public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // effects when character is hurt
-      doPlaySound = false;
+      useCustomHurtSound = false;
       if (!IsOri) {
         return true;
       }
 
       genGore = false;
-      if (Abilities.stomp.InUse || Abilities.cDash.InUse || Abilities.cJump.InUse) {
-        damage = 0;
+      if (Abilities.stomp.InUse || Abilities.chargeDash.InUse || Abilities.chargeJump.InUse) {
         return false;
       }
       if (playSound) {
         playSound = false;
-        doPlaySound = true;
+        useCustomHurtSound = true;
         UnrestrictedMovement = true;
       }
       return true;
     }
     
     public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit) {
-      if (doPlaySound) {
-        doPlaySound = false;
-        PlayNewSound("Ori/Hurt/seinHurtRegular" + hurtRandChar.NextNoRepeat(4));
+      if (useCustomHurtSound) {
+        useCustomHurtSound = false;
+        PlayNewSound("Ori/Hurt/seinHurtRegular" + hurtRand.NextNoRepeat(4));
       }
     }
 
@@ -834,7 +843,7 @@ namespace OriMod {
         PlayerLayer.ShoeAcc.visible = false;
         PlayerLayer.HandOnAcc.visible = false;
         PlayerLayer.HandOffAcc.visible = false;
-        if (Abilities.stomp.InUse || Abilities.airJump.InUse || Abilities.burrow.InUse || Abilities.cJump.InUse || Abilities.wCJump.InUse || OnWall || Transforming) {
+        if (Abilities.stomp.InUse || Abilities.airJump.InUse || Abilities.burrow.InUse || Abilities.chargeJump.InUse || Abilities.wallChargeJump.InUse || OnWall || Transforming) {
           PlayerLayer.Wings.visible = false;
         }
         #endregion
@@ -854,9 +863,9 @@ namespace OriMod {
             Animations.BashAnim.InsertInLayers(layers, idx++);
           }
           if (!player.dead && !player.invis) {
-            layers.Insert(idx++, Animations.PlayerAnim.PlayerLayer);
+            layers.Insert(idx++, Animations.PlayerAnim.playerLayer);
             if (IsOri) {
-              layers.Insert(idx++, Animations.SecondaryLayer.PlayerLayer);
+              layers.Insert(idx++, Animations.SecondaryLayer.playerLayer);
             }
           }
         }
@@ -867,9 +876,9 @@ namespace OriMod {
             Animations.BashAnim.AddToLayers(layers);
           }
           if (!player.dead && !player.invis) {
-            layers.Add(Animations.PlayerAnim.PlayerLayer);
+            layers.Add(Animations.PlayerAnim.playerLayer);
             if (IsOri) {
-              layers.Add(Animations.SecondaryLayer.PlayerLayer);
+              layers.Add(Animations.SecondaryLayer.playerLayer);
             }
           }
         }

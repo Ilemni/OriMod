@@ -1,15 +1,17 @@
 using System;
 using Microsoft.Xna.Framework;
+using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.GameInput;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
-  public class WallChargeJump : Ability {
-    public WallChargeJump(AbilityManager handler) : base(handler) { }
+  public sealed class WallChargeJump : Ability {
+    internal WallChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallChargeJump;
 
-    internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
+    internal override bool UpdateCondition => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
     protected override int Cooldown => (int)(Config.WCJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
@@ -23,32 +25,31 @@ namespace OriMod.Abilities {
     private float SpeedMultiplier => Config.WCJumpSpeedMultipler * 0.5f;
     private float MaxAngle => Config.WCJumpMaxAngle;
 
-    internal bool Charged;
-    private int CurrCharge;
+    internal bool Charged => currentCharge >= MaxCharge;
+    private int currentCharge;
     private Vector2 Direction;
 
-    public Projectile Proj { get; private set; }
+    public Projectile PlayerHitboxProjectile { get; private set; }
 
     private readonly RandomChar randChar = new RandomChar();
 
     internal Vector2 GetMouseDirection() => GetMouseDirection(out float _);
     internal Vector2 GetMouseDirection(out float angle) {
       Vector2 mouse = Main.MouseWorld - player.Center;
-      mouse.X *= -Manager.climb.WallDir;
+      mouse.X *= -Manager.climb.wallDirection;
       mouse.Y *= player.gravDir;
       mouse += player.Center;
       angle = Utils.Clamp(player.AngleTo(mouse), -MaxAngle, MaxAngle);
       Vector2 dir = Vector2.UnitX.RotatedBy(angle);
-      dir.X *= -Manager.climb.WallDir;
+      dir.X *= -Manager.climb.wallDirection;
       dir.Y *= player.gravDir;
       return dir;
     }
 
     private void StartWallChargeJump() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + randChar.NextNoRepeat(3));
-      Charged = false;
-      CurrCharge = 0;
-      Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("ChargeJumpProjectile"), 30, 0f, player.whoAmI, 0, 1)];
+      currentCharge = 0;
+      PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
       PutOnCooldown();
       Direction = GetMouseDirection();
       player.velocity = Direction * Speeds[0] * SpeedMultiplier;
@@ -61,7 +62,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      float speed = Speeds[CurrTime - 1] * SpeedMultiplier;
+      float speed = Speeds[CurrentTime - 1] * SpeedMultiplier;
       player.velocity = Direction * speed;
       player.direction = Math.Sign(player.velocity.X);
       player.maxFallSpeed = Math.Abs(player.velocity.Y);
@@ -73,18 +74,16 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (Manager.burrow.InUse) {
-        Charged = false;
-        CurrCharge = 0;
+        currentCharge = 0;
         return;
       }
       TickCooldown();
       if (!Charged && CanCharge) {
-        if (CurrCharge == 0) {
+        if (currentCharge == 0) {
           oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
         }
-        CurrCharge++;
-        if (CurrCharge > MaxCharge) {
-          Charged = true;
+        currentCharge++;
+        if (currentCharge > MaxCharge) {
           oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
         }
       }
@@ -95,21 +94,20 @@ namespace OriMod.Abilities {
       else if (Charged) {
         UpdateCharged();
         if (!CanCharge) {
-          Charged = false;
-          CurrCharge = 0;
+          currentCharge = 0;
           oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
         }
       }
       if (Active) {
-        CurrTime++;
-        if (CurrTime > Duration) {
+        CurrentTime++;
+        if (CurrentTime > Duration) {
           if (oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
             SetState(State.Ending);
           }
           else {
             SetState(State.Inactive);
           }
-          CurrTime = 0;
+          CurrentTime = 0;
         }
       }
       if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {

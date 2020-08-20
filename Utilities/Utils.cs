@@ -61,11 +61,11 @@ namespace OriMod.Utilities {
     /// <param name="arr">Array of entities, such as `Main.player`, `Main.npc`, `Main.projectile`</param>
     /// <param name="dist">Maximum distance to be considered in-range. If 0 or less, range is infinite</param>
     /// <param name="entity">whoAmI of the closest entity in-range, or 255 if no entities are in range</param>
-    /// <param name="distSQCheck">How the closest distance is checked. Defaults to `DistanceShortSquared()`, getting closest distance between two entities</param>
+    /// <param name="distanceSquaredCheck">How the closest distance is checked. Defaults to `DistanceShortSquared()`, getting closest distance between two entities</param>
     /// <param name="condition">Extra condition to filter out entities. If false, the entity is skipped.</param>
     /// <typeparam name="T">Type of Entity (i.e. Player, NPC, Projectile)</typeparam>
     /// <returns>`true` if there is an Entity closer than `dist`, false otherwise</returns>
-    internal static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float dist, out T entity, Func<Entity, T, float> distSQCheck = null, Func<T, bool> condition = null) where T : Entity {
+    internal static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float dist, out T entity, Func<Entity, T, float> distanceSquaredCheck = null, Func<T, bool> condition = null) where T : Entity {
       // Setup method
       if (dist <= 0) {
         dist = float.MaxValue; // Infinite range detect
@@ -73,8 +73,8 @@ namespace OriMod.Utilities {
       else {
         dist *= dist; // Squared for DistanceSquared
       }
-      if (distSQCheck is null) {
-        distSQCheck = (e1, e2) => e1.DistanceShortSquared(e2);
+      if (distanceSquaredCheck is null) {
+        distanceSquaredCheck = (e1, e2) => e1.DistanceShortSquared(e2);
       }
 
       // Search for closest entity
@@ -85,7 +85,7 @@ namespace OriMod.Utilities {
           continue;
         }
 
-        float newDist = distSQCheck(me, e);
+        float newDist = distanceSquaredCheck(me, e);
         if (newDist < dist) {
           dist = newDist;
           id = e.whoAmI;

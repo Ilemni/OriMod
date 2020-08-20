@@ -3,19 +3,19 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Projectiles.Abilities {
-  internal abstract class AbilityProjectile : ModProjectile {
-    internal abstract int abilityID { get; }
+  public abstract class AbilityProjectile : ModProjectile {
+    public abstract byte abilityID { get; }
 
-    internal OriPlayer oPlayer => _oPlayer ?? (_oPlayer = Main.player[projectile.owner].GetModPlayer<OriPlayer>());
+    public OriPlayer oPlayer => _oPlayer ?? (_oPlayer = Main.player[projectile.owner].GetModPlayer<OriPlayer>());
     private OriPlayer _oPlayer;
 
-    internal Ability ability => oPlayer.Abilities[abilityID];
+    public Ability ability => oPlayer.Abilities[abilityID];
 
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
 
     public override void SetDefaults() {
       projectile.timeLeft = 2;
-      projectile.penetrate = 999;
+      projectile.penetrate = int.MaxValue;
       projectile.magic = true;
       projectile.tileCollide = false;
       projectile.ignoreWater = true;
@@ -33,7 +33,7 @@ namespace OriMod.Projectiles.Abilities {
     /// 
     /// Defaults to keeping timeLeft above 0 if ability is in use.
     /// </summary>
-    internal virtual void CheckAbilityActive() {
+    public virtual void CheckAbilityActive() {
       if (ability.InUse) {
         projectile.timeLeft = 2;
       }
@@ -44,7 +44,7 @@ namespace OriMod.Projectiles.Abilities {
     /// 
     /// Defaults to setting projectile center to player center.
     /// </summary>
-    internal virtual void Behavior() {
+    public virtual void Behavior() {
       projectile.Center = oPlayer.player.Center;
     }
   }

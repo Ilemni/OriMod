@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Terraria;
 
 namespace OriMod {
@@ -9,11 +9,6 @@ namespace OriMod {
     OriPlayer BashPlayer { get; set; }
 
     /// <summary>
-    /// The entity that is being bashed
-    /// </summary>
-    Entity BashEntity { get; set; }
-    
-    /// <summary>
     /// The position where the entity was bashed
     /// </summary>
     Vector2 BashPosition { get; set; }
@@ -22,5 +17,10 @@ namespace OriMod {
     /// Whether or not the entity is being bashed
     /// </summary>
     bool IsBashed { get; set; }
+
+    /// <summary>
+    /// Time since this was last Bashed, in frames. 0 if <see cref="IsBashed"/> is <c>true</c>, positive value otherwise.
+    /// </summary>
+    int FramesSinceLastBash { get; }
   }
 }

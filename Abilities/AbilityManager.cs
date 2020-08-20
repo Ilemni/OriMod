@@ -5,21 +5,21 @@ using OriMod.Networking;
 
 namespace OriMod {
   public static class AbilityID {
-    public static byte SoulLink => 0;
-    public static byte WallJump => 1;
-    public static byte AirJump => 2;
-    public static byte Bash => 3;
-    public static byte Stomp => 4;
-    public static byte Glide => 5;
-    public static byte Climb => 6;
-    public static byte ChargeJump => 7;
-    public static byte WallChargeJump => 8;
-    public static byte Dash => 9;
-    public static byte ChargeDash => 10;
-    public static byte LookUp => 11;
-    public static byte Crouch => 12;
-    public static byte Burrow => 13;
-    public static int Count => 14;
+    public const byte SoulLink = 0;
+    public const byte WallJump = 1;
+    public const byte AirJump = 2;
+    public const byte Bash = 3;
+    public const byte Stomp = 4;
+    public const byte Glide = 5;
+    public const byte Climb = 6;
+    public const byte ChargeJump = 7;
+    public const byte WallChargeJump = 8;
+    public const byte Dash = 9;
+    public const byte ChargeDash = 10;
+    public const byte LookUp = 11;
+    public const byte Crouch = 12;
+    public const byte Burrow = 13;
+    public const int Count = 14;
   }
 }
 
@@ -27,22 +27,20 @@ namespace OriMod.Abilities {
   public sealed class AbilityManager {
     internal AbilityManager(OriPlayer oPlayer) {
       this.oPlayer = oPlayer;
-      if (oPlayer.player.whoAmI == Main.myPlayer) {
-        Local = this;
-      }
+
       soulLink = new SoulLink(this);
-      wJump = new WallJump(this);
+      wallJump = new WallJump(this);
       stomp = new Stomp(this);
       airJump = new AirJump(this);
       bash = new Bash(this);
       glide = new Glide(this);
       climb = new Climb(this);
-      cJump = new ChargeJump(this);
-      wCJump = new WallChargeJump(this);
+      chargeJump = new ChargeJump(this);
+      wallChargeJump = new WallChargeJump(this);
       dash = new Dash(this);
-      cDash = new ChargeDash(this);
-      crouch = new Crouch(this);
+      chargeDash = new ChargeDash(this);
       lookUp = new LookUp(this);
+      crouch = new Crouch(this);
       burrow = new Burrow(this);
     }
 
@@ -51,106 +49,119 @@ namespace OriMod.Abilities {
     public readonly OriPlayer oPlayer;
 
     public readonly SoulLink soulLink;
-    public readonly WallJump wJump;
+    public readonly WallJump wallJump;
     public readonly AirJump airJump;
     public readonly Bash bash;
     public readonly Stomp stomp;
     public readonly Glide glide;
     public readonly Climb climb;
-    public readonly ChargeJump cJump;
-    public readonly WallChargeJump wCJump;
+    public readonly ChargeJump chargeJump;
+    public readonly WallChargeJump wallChargeJump;
     public readonly Dash dash;
-    public readonly ChargeDash cDash;
+    public readonly ChargeDash chargeDash;
     public readonly LookUp lookUp;
     public readonly Crouch crouch;
     public readonly Burrow burrow;
 
-    public Ability this[int index] {
-      get {
-        switch (index) {
-          case 0:
-            return soulLink;
-          case 1:
-            return wJump;
-          case 2:
-            return airJump;
-          case 3:
-            return bash;
-          case 4:
-            return stomp;
-          case 5:
-            return glide;
-          case 6:
-            return climb;
-          case 7:
-            return cJump;
-          case 8:
-            return wCJump;
-          case 9:
-            return dash;
-          case 10:
-            return cDash;
-          case 11:
-            return lookUp;
-          case 12:
-            return crouch;
-          case 13:
-            return burrow;
-          default:
-            throw new System.ArgumentOutOfRangeException();
-        }
-      }
+    public IEnumerator<Ability> GetEnumerator() {
+      yield return soulLink;
+      yield return wallJump;
+      yield return airJump;
+      yield return bash;
+      yield return stomp;
+      yield return glide;
+      yield return climb;
+      yield return chargeJump;
+      yield return wallChargeJump;
+      yield return dash;
+      yield return chargeDash;
+      yield return lookUp;
+      yield return crouch;
+      yield return burrow;
     }
 
-    internal void Tick() {
+    public Ability this[int idx] {
+      get {
+        switch (idx) {
+          case AbilityID.SoulLink: return soulLink;
+          case AbilityID.WallJump: return wallJump;
+          case AbilityID.AirJump: return airJump;
+          case AbilityID.Bash: return bash;
+          case AbilityID.Stomp: return stomp;
+          case AbilityID.Glide: return glide;
+          case AbilityID.Climb: return climb;
+          case AbilityID.ChargeJump: return chargeJump;
+          case AbilityID.WallChargeJump: return wallChargeJump;
+          case AbilityID.Dash: return dash;
+          case AbilityID.ChargeDash: return chargeDash;
+          case AbilityID.LookUp: return lookUp;
+          case AbilityID.Crouch: return crouch;
+          case AbilityID.Burrow: return burrow;
+          default: throw new System.ArgumentOutOfRangeException(nameof(idx));
+        }
+        }
+      }
+
+    internal void Update() {
+      if (!CanUseAnyAbilities()) {
+        DisableAllAbilities();
+        return;
+    }
+
+      // Tick
       if (oPlayer.player.whoAmI != Main.myPlayer) {
-        for (int a = 0; a < AbilityID.Count; a++) {
-          var ability = this[a];
+        foreach (var ability in this) {
           if (ability.InUse) {
             ability.Tick();
           }
         }
         return;
       }
-      for (int a = 0; a < AbilityID.Count; a++) {
-        this[a].Tick();
+      foreach (var ability in this) {
+        ability.Tick();
       }
-    }
 
-    internal void Update() {
-      for (int a = 0; a < AbilityID.Count; a++) {
-        var ability = this[a];
-        if (ability.DoUpdate) {
+      // Update
+      foreach (var ability in this) {
+        if (ability.UpdateCondition) {
           ability.Update();
         }
       }
-    }
 
-    internal void NetSync() {
-      if (oPlayer.player.whoAmI != Main.myPlayer || Main.netMode != NetmodeID.MultiplayerClient) {
-        return;
-      }
-
+      // Net sync
+      if (oPlayer.player.whoAmI == Main.myPlayer && Main.netMode == NetmodeID.MultiplayerClient) {
       var changes = new List<byte>();
-      for (int a = 0; a < AbilityID.Count; a++) {
-        if (this[a].netUpdate) {
-          this[a].netUpdate = false;
-          changes.Add((byte)a);
+        foreach (var ability in this) {
+          if (ability.netUpdate) {
+            ability.netUpdate = false;
+            changes.Add((byte)ability.Id);
         }
       }
       if (changes.Count > 0) {
         ModNetHandler.Instance.abilityPacketHandler.SendAbilityState(255, oPlayer.player.whoAmI, changes);
       }
     }
+    }
 
-    internal void DisableAllAbilities() {
-      for (int a = 0; a < AbilityID.Count; a++) {
-        this[a].SetState(Ability.State.Inactive);
+    public bool CanUseAnyAbilities() {
+      var player = oPlayer.player;
+      if (player.dead) {
+        return false;
+      }
+      if (player.mount?.Active ?? false) {
+        return false;
+      }
+      
+      return true;
+    }
+
+    public void DisableAllAbilities() {
+      foreach (var ability in this) {
+        ability.SetState(Ability.State.Inactive);
       }
     }
 
     internal static void Unload() {
-      Local = null;
       Burrow.Unload();
       SoulLink.Unload();
     }

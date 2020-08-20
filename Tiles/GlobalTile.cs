@@ -6,10 +6,9 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Tiles {
-  public class OriTile : GlobalTile {
+  public sealed class OriTile : GlobalTile {
     private int InnerRange => 4;
     private int OuterRange => 13;
-    private OriPlayer oPlayer => Main.LocalPlayer.GetModPlayer<OriPlayer>();
 
     private void BurrowEffects(int i, int j, ref Color drawColor, OriPlayer oPlayer) {
       Color orig = drawColor;
@@ -26,7 +25,7 @@ namespace OriMod.Tiles {
     }
 
     public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex) {
-      var oPlayer = this.oPlayer;
+      var oPlayer = OriPlayer.Local;
       var burrow = oPlayer.Abilities.burrow;
       if (burrow.InUse) {
         BurrowEffects(i, j, ref drawColor, oPlayer);

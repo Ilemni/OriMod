@@ -2,7 +2,7 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Dusts {
-  public class SFDustTrail : ModDust {
+  public class SpiritFlameDustTrail : ModDust {
     private int AlphaRate => 1;
 
     public override bool Autoload(ref string name, ref string texture) {

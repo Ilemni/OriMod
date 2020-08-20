@@ -10,26 +10,26 @@ namespace OriMod.Items {
       item.width = 24;
       item.height = 26;
       item.maxStack = 1;
-      item.rare = 1;
+      item.rare = ItemRarityID.Blue;
       item.useAnimation = 17;
       item.useTime = 30;
-      item.useStyle = 2;
+      item.useStyle = ItemUseStyleID.EatingUsing;
       item.consumable = true;
     }
 
     public override bool UseItem(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-      oPlayer.IsOri = !oPlayer.IsOri;
+      oPlayer.IsOri ^= true;
 
-      for (int m = 0; m < 100; m++) { //does particles
         Vector2 pos = player.position;
         pos.Y += 4;
         pos.X -= 2;
+      for (int m = 0; m < 100; m++) {
         Dust dust = Main.dust[Dust.NewDust(pos, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
       }
-      player.GetModPlayer<OriPlayer>().PlayNewSound("SavePoints/checkpointSpawnSound");
-      Item.NewItem(player.getRect(), mod.ItemType("OriPotionEmpty"), noGrabDelay: true);
+      oPlayer.PlayNewSound("SavePoints/checkpointSpawnSound");
+      Item.NewItem(player.getRect(), ModContent.ItemType<OriPotionEmpty>(), noGrabDelay: true);
       return true;
     }
 

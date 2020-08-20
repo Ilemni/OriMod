@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ID;
@@ -8,8 +8,8 @@ namespace OriMod.NPCs {
   public class OriNPC : GlobalNPC, IBashable {
     public override bool InstancePerEntity => true;
     public OriPlayer BashPlayer { get; set; }
-    public Entity BashEntity { get; set; }
     public Vector2 BashPosition { get; set; }
+    public int FramesSinceLastBash { get; private set; }
     public bool IsBashed { get; set; }
 
     public override void SetDefaults(NPC npc) {
@@ -20,9 +20,11 @@ namespace OriMod.NPCs {
 
     public override bool PreAI(NPC npc) {
       if (IsBashed) {
+        FramesSinceLastBash = 0;
         npc.Center = BashPosition;
         return false;
       }
+      FramesSinceLastBash++;
       return true;
     }
 
@@ -176,6 +178,13 @@ namespace OriMod.NPCs {
         OriWorld.UpdateOriPlayerSeinStates(upgrade);
       }
       return true;
+    }
+
+    public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) {
+      if (IsBashed && target.whoAmI == BashPlayer.player.whoAmI) {
+        return false;
+      }
+      return base.CanHitPlayer(npc, target, ref cooldownSlot);
     }
   }
 }

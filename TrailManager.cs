@@ -1,7 +1,7 @@
-﻿using Terraria;
+using Terraria;
 
 namespace OriMod {
-  internal class TrailManager {
+  public class TrailManager {
     internal TrailManager(OriPlayer oPlayer, int trailCount) {
       if (trailCount < 1) {
         throw new System.ArgumentOutOfRangeException(nameof(trailCount), "Expected value of 1 or greater");
@@ -13,31 +13,27 @@ namespace OriMod {
       }
     }
     
-    internal void UpdateTrails() {
-      for (int i = 0, len = trails.Length; i < len; i++) {
-        trails[i].Tick();
-      }
-    }
-
-    internal void AddTrailDrawData() {
-      for (int i = 0, len = trails.Length; i < len; i++) {
-        Main.playerDrawData.Add(trails[i].GetDrawData());
-      }
-    }
-    
-    internal void ResetNextTrail() => trails[Next].Reset();
-
     private int Next {
       get {
-        index++;
-        if (index >= trails.Length - 1) {
-          index = 0;
-        }
+        index = (index + 1) % trails.Length;
         return index;
       }
     }
 
+    internal readonly Trail[] trails;
     private int index = 0;
-    internal Trail[] trails;
+    public void UpdateTrails() {
+      foreach (var trail in trails) {
+        trail.Tick();
+      }
+    }
+
+    public void AddTrailDrawDataToMain() {
+      foreach (var trail in trails) {
+        Main.playerDrawData.Add(trail.GetDrawData());
+      }
+    }
+    
+    internal void ResetNextTrail() => trails[Next].Reset();
   }
 }

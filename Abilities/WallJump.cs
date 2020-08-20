@@ -3,52 +3,52 @@ using OriMod.Utilities;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
-  public class WallJump : Ability {
-    internal WallJump(AbilityManager handler) : base(handler) { }
+  public sealed class WallJump : Ability {
+    internal WallJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallJump;
 
-    internal override bool DoUpdate => oPlayer.Input(PlayerInput.Triggers.JustPressed.Jump) && oPlayer.OnWall && !oPlayer.IsGrounded;
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !Manager.wCJump.Charged;
+    internal override bool UpdateCondition => oPlayer.Input(PlayerInput.Triggers.JustPressed.Jump) && oPlayer.OnWall && !oPlayer.IsGrounded;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !Manager.wallChargeJump.Charged;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private int EndTime => 12;
 
-    private int WallDir;
-    private int GravDir;
+    private sbyte wallDirection;
+    private sbyte gravDirection;
 
-    private readonly RandomChar randChar = new RandomChar();
+    private readonly RandomChar rand = new RandomChar();
 
     protected override void UpdateActive() {
-      player.velocity.Y = WallJumpVelocity.Y * GravDir;
-      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + randChar.NextNoRepeat(5));
+      player.velocity.Y = WallJumpVelocity.Y * gravDirection;
+      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + rand.NextNoRepeat(5));
     }
 
     protected override void UpdateEnding() {
       if (oPlayer.OnWall) {
-        player.velocity.Y -= GravDir;
+        player.velocity.Y -= gravDirection;
       }
     }
 
     protected override void UpdateUsing() {
-      player.velocity.X = WallJumpVelocity.X * -WallDir;
-      player.direction = WallDir;
+      player.velocity.X = WallJumpVelocity.X * -wallDirection;
+      player.direction = wallDirection;
       oPlayer.UnrestrictedMovement = true;
     }
 
     internal override void Tick() {
       if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
         SetState(State.Inactive);
-        WallDir = player.direction;
-        GravDir = (int)player.gravDir;
+        wallDirection = (sbyte)player.direction;
+        gravDirection = (sbyte)player.gravDir;
         Manager.climb.SetState(State.Inactive);
       }
       else if (Active) {
         SetState(State.Ending);
-        CurrTime = 0;
+        CurrentTime = 0;
       }
       else if (Ending) {
-        CurrTime++;
-        if (CurrTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
+        CurrentTime++;
+        if (CurrentTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
           SetState(State.Inactive);
         }
       }

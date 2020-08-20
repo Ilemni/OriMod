@@ -1,13 +1,13 @@
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
-  public class Crouch : Ability {
-    internal Crouch(AbilityManager handler) : base(handler) { }
+  public sealed class Crouch : Ability {
+    internal Crouch(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Crouch;
 
-    internal override bool DoUpdate => InUse || oPlayer.Input(PlayerInput.Triggers.Current.Down);
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Manager.lookUp.InUse && !Manager.dash.InUse && !Manager.cDash.InUse && !Restricted;
-    private bool Restricted => OriMod.ConfigClient.SoftCrouch ? player.controlLeft || player.controlRight : false;
+    internal override bool UpdateCondition => InUse || oPlayer.Input(PlayerInput.Triggers.Current.Down);
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Manager.lookUp.InUse && !Manager.dash.InUse && !Manager.chargeDash.InUse && !Restricted;
+    private bool Restricted => OriMod.ConfigClient.SoftCrouch && (player.controlLeft || player.controlRight);
     private int StartDuration => 10;
     private int EndDuration => 4;
 
@@ -40,12 +40,12 @@ namespace OriMod.Abilities {
       if (!InUse) {
         if (CanUse && PlayerInput.Triggers.Current.Down) {
           SetState(State.Starting);
-          CurrTime = 0;
+          CurrentTime = 0;
         }
       }
       else if (!CanUse) {
         SetState(State.Inactive);
-        CurrTime = 0;
+        CurrentTime = 0;
       }
       else if (!PlayerInput.Triggers.Current.Down && !Ending) {
         if (Active) {
@@ -54,21 +54,21 @@ namespace OriMod.Abilities {
         else {
           SetState(State.Inactive);
         }
-        CurrTime = 0;
+        CurrentTime = 0;
         return;
       }
       else if (Starting) {
-        CurrTime++;
-        if (CurrTime > StartDuration) {
+        CurrentTime++;
+        if (CurrentTime > StartDuration) {
           SetState(State.Active);
-          CurrTime = 0;
+          CurrentTime = 0;
         }
       }
       else if (Ending) {
-        CurrTime++;
-        if (CurrTime > EndDuration) {
+        CurrentTime++;
+        if (CurrentTime > EndDuration) {
           SetState(State.Inactive);
-          CurrTime = 0;
+          CurrentTime = 0;
         }
       }
     }

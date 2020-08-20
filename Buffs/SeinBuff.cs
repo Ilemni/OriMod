@@ -16,7 +16,6 @@ namespace OriMod.Buffs {
     protected abstract int ProjectileType();
 
     public override void Update(Player player, ref int buffIndex) {
-      Main.NewText(GetType());
       if (player.ownedProjectileCounts[ProjectileType()] > 0) {
         player.buffTime[buffIndex] = 18000;
       }

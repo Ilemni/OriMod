@@ -1,16 +1,17 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OriMod.Animations {
-  internal static class AnimationHandler {
+  internal sealed class AnimationHandler : SingleInstance<AnimationHandler> {
+    private AnimationHandler() { }
+
     private static Frame F(int frameX, int frameY, int duration = -1) => new Frame(frameX, frameY, duration);
-    private static Header H(InitType i = InitType.Range, LoopMode l = LoopMode.Always, PlaybackMode p = PlaybackMode.Normal, ReferencedTexture2D texture = null)
+    private static Header H(InitType i = InitType.Range, LoopMode l = LoopMode.Always, PlaybackMode p = PlaybackMode.None, ReferencedTexture2D texture = null)
       => new Header(init: i, loop: l, playback: p, rtx: texture);
 
-    private static AnimationSource _pa;
-    internal static AnimationSource PlayerAnim => _pa ?? (_pa = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
+    private AnimationSource _pa;
+    public AnimationSource PlayerAnim => _pa ?? (_pa = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
       new Dictionary<string, Track> {
         ["Default"] = new Track(Header.Default,
           F(0, 0)
@@ -36,22 +37,22 @@ namespace OriMod.Animations {
         ["Running"] = new Track(Header.Default,
           F(2, 0, 4), F(2, 10, 4)
         ),
-        ["Dash"] = new Track(H(i: InitType.Select, l: LoopMode.Once),
+        ["Dash"] = new Track(Header.None,
           F(2, 12, 36), F(2, 13, 12)
         ),
-        ["Bash"] = new Track(H(i: InitType.Select, l: LoopMode.Once),
+        ["Bash"] = new Track(Header.None,
           F(2, 14, 40), F(2, 13)
         ),
         ["AirJump"] = new Track(Header.Default,
           F(3, 0, 32)
         ),
-        ["Jump"] = new Track(H(i: InitType.Select, p: PlaybackMode.Reverse),
+        ["Jump"] = new Track(H(i: InitType.None, p: PlaybackMode.Reverse),
           F(3, 1), F(3, 2, 14)
         ),
-        ["IntoJumpBall"] = new Track(H(i: InitType.Select, l: LoopMode.Once),
+        ["IntoJumpBall"] = new Track(Header.None,
           F(3, 3, 6), F(3, 4, 4)
         ),
-        ["ChargeJump"] = new Track(H(l: LoopMode.Once, p: PlaybackMode.PingPong),
+        ["ChargeJump"] = new Track(H(l: LoopMode.None, p: PlaybackMode.PingPong),
           F(3, 5, 4), F(3, 8, 4)
         ),
         ["Falling"] = new Track(Header.Default,
@@ -60,7 +61,7 @@ namespace OriMod.Animations {
         ["FallNoAnim"] = new Track(Header.Default,
           F(3, 13)
         ),
-        ["GlideStart"] = new Track(H(l: LoopMode.Once),
+        ["GlideStart"] = new Track(H(l: LoopMode.None),
           F(4, 0, 5), F(4, 2, 5)
         ),
         ["GlideIdle"] = new Track(Header.Default,
@@ -90,30 +91,30 @@ namespace OriMod.Animations {
         ["Burrow"] = new Track(H(i: InitType.Range),
           F(7, 0, 3), F(7, 7, 3)
         ),
-        ["TransformStart"] = new Track(H(i: InitType.Select, l: LoopMode.Transfer, texture: OriTextures.Instance.Transform), // TODO: Migrate TransformStart textures to OriPlayer
+        ["TransformStart"] = new Track(H(i: InitType.None, l: LoopMode.Transfer, texture: OriTextures.Instance.Transform), // TODO: Migrate TransformStart textures to OriPlayer
           F(0, 0, 2), F(0, 1, 60), F(0, 2, 60), F(0, 3, 120),
           F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30)
         ),
-        ["TransformEnd"] = new Track(H(i: InitType.Select),
+        ["TransformEnd"] = new Track(H(i: InitType.None),
           F(15, 8, 6), F(15, 9, 50), F(15, 10, 6), F(15, 11, 60),
           F(15, 12, 10), F(15, 13, 40), F(15, 14, 3), F(15, 15, 60)
         ),
       })
     );
 
-    private static AnimationSource _ba;
-    internal static AnimationSource BashAnim => _ba ?? (_ba = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
+    private AnimationSource _ba;
+    public AnimationSource BashAnim => _ba ?? (_ba = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
       new Dictionary<string, Track> {
-        {"Bash", new Track(H(i:InitType.Select),
+        {"Bash", new Track(H(i:InitType.None),
           F(0, 0)
         )}
       }
     ));
 
-    private static AnimationSource _ga;
-    internal static AnimationSource GlideAnim => _ga ?? (_ga = new AnimationSource("PlayerEffects/Feather", 128, 128,
+    private AnimationSource _ga;
+    public AnimationSource GlideAnim => _ga ?? (_ga = new AnimationSource("PlayerEffects/Feather", 128, 128,
       new Dictionary<string, Track> {
-        {"GlideStart", new Track(H(l:LoopMode.Once),
+        {"GlideStart", new Track(H(l:LoopMode.None),
           F(0, 0, 5), F(0, 2, 5)
         )},
         {"GlideIdle", new Track(H(),
@@ -125,34 +126,36 @@ namespace OriMod.Animations {
       }
     ));
 
-    private static Header OverrideHeader {
-      get => _oh ?? (_oh = Header.Default);
-      set => _oh = value;
-    }
-    private static Header _oh;
+    // TODO: move to OriPlayer
+    private Header OverrideHeader = Header.Default;
     
-    internal static void IncrementFrame(OriPlayer oPlayer, string anim = "Default", int overrideFrame = 0, float overrideTime = 0, int overrideDur = 0, Header overrideHeader = null, Vector2 drawOffset = new Vector2(), float rotDegrees = 0) {
+    internal void IncrementFrame(OriPlayer oPlayer, string anim = "Default", int overrideFrameIndex = 0, float overrideTime = 0, int overrideDur = 0, Header overrideHeader = null, Vector2 drawOffset = new Vector2(), float rotation = 0) {
       if (oPlayer is null) {
-        return;
+        throw new ArgumentNullException(nameof(oPlayer));
+      }
+      if (string.IsNullOrWhiteSpace(anim)) {
+        throw new ArgumentException($"{nameof(anim)} cannot be empty.", nameof(anim));
       }
 
+      Track track = PlayerAnim[anim];
+      Frame[] frames = track.Frames;
+      float radians = (float)(rotation / 180 * Math.PI);
+      
       if (overrideHeader is null) {
-        overrideHeader = PlayerAnim[anim].Header;
+        overrideHeader = track.Header;
       }
 
-      float rotRads = (float)(rotDegrees / 180 * Math.PI);
-      if (!PlayerAnim.TrackNames.Contains(anim)) {
-        if (anim != null && anim.Length > 0) {
+      if (!PlayerAnim.tracks.ContainsKey(anim)) {
+        // Bad animation, set defaults and return
           OriMod.Error("BadTrack", args: anim);
-        }
         anim = "Default";
-        Track track = PlayerAnim[anim];
         oPlayer.AnimReversed = false;
-        oPlayer.SetFrame(anim, 1, overrideTime, track.Frames[0], rotRads);
+        oPlayer.SetFrame(anim, 1, overrideTime, frames[0], radians);
         return;
       }
-      Frame[] frames = PlayerAnim[anim].Frames;
-      Header header = PlayerAnim[anim].Header.CopySome(overrideHeader); // X is incrementType (no reason to be used in IncrementFrame()), Y is loopMode, Z is playbackMode
+
+      // During refactoring, noticed that use of OverrideHeader may cause unwanted visual behavior in multiplayer scenarios, as it is currently a singleton field.
+      Header header = track.Header.CopySome(overrideHeader);
       if (anim != oPlayer.AnimName) {
         OverrideHeader = Header.Default;
       }
@@ -163,19 +166,23 @@ namespace OriMod.Animations {
       if (OverrideHeader != Header.None && anim == oPlayer.AnimName) {
         header = OverrideHeader;
       }
-      Frame newFrame;
-      if (overrideFrame != -1 && overrideFrame < frames.Length) { // If override frame, just set frame
-        newFrame = frames[overrideFrame];
+
+      if (overrideFrameIndex != -1 && overrideFrameIndex < frames.Length) {
+        // If overrideFrame was specified, simply set frame
         oPlayer.AnimReversed = header.Playback == PlaybackMode.Reverse;
-        oPlayer.SetFrame(anim, overrideFrame, 0, newFrame, rotRads);
+        oPlayer.SetFrame(anim, overrideFrameIndex, 0, frames[overrideFrameIndex], radians);
+        return;
       }
-      else { // Else actually do work
-        int frameIndex = oPlayer.AnimIndex; // frameIndex's lowest value is 1, as frames[0] contains header data for the track
+      
+      // Figure out the desired frame
+      int frameIndex = oPlayer.AnimIndex;
         float time = overrideTime != 0 ? overrideTime : oPlayer.AnimTime;
         Point currFrame = oPlayer.AnimTile;
 
+      // Logic for switching frames
         if (anim == oPlayer.AnimName) {
-          int testFrame = Array.FindIndex(frames, f => f.Tile == currFrame); // Check if this frame already exists
+        // If keeping frame, ensure current frame already exists
+        int testFrame = Array.FindIndex(frames, f => f.Tile == currFrame);
           if (testFrame == -1) {
             OriMod.Error("BadFrame", args: new object[] { anim, currFrame });
             frameIndex = header.Playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
@@ -185,8 +192,10 @@ namespace OriMod.Animations {
           frameIndex = header.Playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
           time = 0;
         }
+
+      // Increment frames based on time
+      int framesToAdvance = 0;
         int dur = overrideDur != 0 ? overrideDur : frames[frameIndex].Duration;
-        int framesToAdvance = 0;
         while (time > dur && dur != -1) {
           time -= dur;
           framesToAdvance++;
@@ -194,8 +203,10 @@ namespace OriMod.Animations {
             time %= dur;
           }
         }
+      
+      // Loop logic
         if (framesToAdvance != 0) {
-          if (header.Playback == PlaybackMode.Normal) {
+        if (header.Playback == PlaybackMode.None) {
             oPlayer.AnimReversed = false;
             if (frameIndex == frames.Length - 1) {
               if (header.Loop == LoopMode.Transfer) {
@@ -203,7 +214,7 @@ namespace OriMod.Animations {
                 frameIndex = 0;
                 time = 0;
               }
-              else if (header.Loop != LoopMode.Once) {
+            else if (header.Loop == LoopMode.Always) {
                 frameIndex = 0;
               }
             }
@@ -215,14 +226,14 @@ namespace OriMod.Animations {
             }
           }
           else if (header.Playback == PlaybackMode.PingPong) {
-            if (frameIndex == 0 && header.Loop != LoopMode.Once) {
+          if (frameIndex == 0 && header.Loop == LoopMode.Always) {
               oPlayer.AnimReversed = false;
               frameIndex += framesToAdvance;
               if (frameIndex > frames.Length - 1) {
                 frameIndex = frames.Length - 1;
               }
             }
-            else if (frameIndex == frames.Length - 1 && header.Loop != LoopMode.Once) {
+          else if (frameIndex == frames.Length - 1 && header.Loop == LoopMode.Always) {
               oPlayer.AnimReversed = true;
               frameIndex -= framesToAdvance;
               if (frameIndex < 0) {
@@ -242,7 +253,7 @@ namespace OriMod.Animations {
           else if (header.Playback == PlaybackMode.Reverse) {
             oPlayer.AnimReversed = true;
             if (frameIndex == 0) {
-              if (header.Loop != LoopMode.Once) {
+            if (header.Loop == LoopMode.Always) {
                 frameIndex = frames.Length - 1;
               }
             }
@@ -254,16 +265,8 @@ namespace OriMod.Animations {
             }
           }
         }
-        newFrame = frames[frameIndex];
-        oPlayer.SetFrame(anim, frameIndex, time, newFrame, rotRads);
-      }
-    }
   
-    public static void Unload() {
-      _pa = null;
-      _ba = null;
-      _ga = null;
-      _oh = null;
+      oPlayer.SetFrame(anim, frameIndex, time, frames[frameIndex], radians);
     }
   }
 }

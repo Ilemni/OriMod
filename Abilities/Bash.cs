@@ -8,12 +8,12 @@ using Terraria;
 using Terraria.ID;
 
 namespace OriMod.Abilities {
-  public class Bash : Ability {
-    internal Bash(AbilityManager handler) : base(handler) { }
+  public sealed class Bash : Ability {
+    internal Bash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Bash;
 
-    internal override bool DoUpdate => InUse || oPlayer.Input(OriMod.BashKey.Current);
-    internal override bool CanUse => base.CanUse && Inactive && !Manager.stomp.InUse && !Manager.cJump.InUse;
+    internal override bool UpdateCondition => InUse || oPlayer.Input(OriMod.BashKey.Current);
+    internal override bool CanUse => base.CanUse && Inactive && !Manager.stomp.InUse && !Manager.chargeJump.InUse;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);
     protected override Color RefreshColor => Color.LightYellow;
 
@@ -47,7 +47,7 @@ namespace OriMod.Abilities {
     public IBashable BashTarget { get; private set; }
     public Entity BashEntity { get; private set; }
 
-    private readonly RandomChar randChar = new RandomChar();
+    private readonly RandomChar rand = new RandomChar();
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
       if (InUse) {
@@ -75,7 +75,7 @@ namespace OriMod.Abilities {
       !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBash.Contains(npc.type);
 
     private bool BashProjFilter(Projectile proj) =>
-      (proj.friendly ? Config.BashOnProjectilesFriendly : true) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains(proj.type);
+      (!proj.friendly || Config.BashOnProjectilesFriendly) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains(proj.type);
 
     private bool BashStart() {
       float currDist = BashRange;
@@ -131,7 +131,7 @@ namespace OriMod.Abilities {
     protected override void UpdateEnding() {
       player.pulley = false;
       float bashAngle = player.AngleFrom(Main.MouseWorld);
-      oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + randChar.NextNoRepeat(3), 0.7f);
+      oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.7f);
       oPlayer.UnrestrictedMovement = true;
       
       var bashVector = new Vector2((float)(0 - Math.Cos(bashAngle)), (float)(0 - Math.Sin(bashAngle)));

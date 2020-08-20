@@ -2,26 +2,26 @@ using System;
 using Terraria.GameInput;
 
 namespace OriMod.Abilities {
-  public class Climb : Ability {
-    internal Climb(AbilityManager handler) : base(handler) { }
+  public sealed class Climb : Ability {
+    internal Climb(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Climb;
 
-    internal override bool DoUpdate => oPlayer.Input(OriMod.ClimbKey.Current) && oPlayer.OnWall;
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Manager.wJump.InUse && !Manager.wCJump.InUse;
+    internal override bool UpdateCondition => oPlayer.Input(OriMod.ClimbKey.Current) && oPlayer.OnWall;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Manager.wallJump.InUse && !Manager.wallChargeJump.InUse;
 
-    internal bool IsCharging => Active && (WallDir == 1 && PlayerInput.Triggers.Current.Left || WallDir == -1 && PlayerInput.Triggers.Current.Right);
+    internal bool IsCharging => Active && (wallDirection == 1 && PlayerInput.Triggers.Current.Left || wallDirection == -1 && PlayerInput.Triggers.Current.Right);
 
-    internal int WallDir;
+    internal sbyte wallDirection;
 
     private void StartClimb() {
-      WallDir = player.direction;
+      wallDirection = (sbyte)player.direction;
     }
 
     protected override void UpdateActive() {
       player.gravity = 0;
       player.runAcceleration = 0;
       player.maxRunSpeed = 0;
-      player.direction = WallDir;
+      player.direction = wallDirection;
       player.velocity.X = 0;
       player.controlLeft = false;
       player.controlRight = false;

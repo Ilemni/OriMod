@@ -7,8 +7,8 @@ namespace OriMod.Networking {
   internal abstract class PacketHandler {
     internal readonly byte HandlerType;
 
-    internal readonly byte OriStatus = 1;
-    internal readonly byte AbilityPacket = 2;
+    internal byte OriStatus => 1;
+    internal byte AbilityPacket => 2;
 
     internal abstract void HandlePacket(BinaryReader reader, int fromWho);
 

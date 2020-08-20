@@ -6,19 +6,23 @@ namespace OriMod.Projectiles {
   public class OriProjectile : GlobalProjectile, IBashable {
     public override bool InstancePerEntity => true;
     public OriPlayer BashPlayer { get; set; }
-    public Entity BashEntity { get; set; }
-    public bool IsBashed { get; set; }
     public Vector2 BashPosition { get; set; }
+    public int FramesSinceLastBash { get; private set; }
+    public bool IsBashed { get; set; }
 
     public override bool PreAI(Projectile proj) {
       if (IsBashed) {
+        FramesSinceLastBash = 0;
         proj.Center = BashPosition;
         proj.friendly = true;
         return false;
       }
+      FramesSinceLastBash++;
       return true;
     }
 
-    public override bool CanHitPlayer(Projectile projectile, Player target) => !IsBashed || target != BashPlayer.player;
+    public override bool CanHitPlayer(Projectile projectile, Player target) {
+      return !IsBashed || target != BashPlayer.player;
+    }
   }
 }

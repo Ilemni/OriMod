@@ -2,16 +2,17 @@ using System;
 using Terraria;
 
 namespace OriMod.Projectiles.Abilities {
-  internal class StompProjectile : AbilityProjectile {
-    internal override int abilityID => AbilityID.Stomp;
+  public sealed class StompProjectile : AbilityProjectile {
+    public override byte abilityID => AbilityID.Stomp;
 
     public override void SetDefaults() {
       base.SetDefaults();
       projectile.width = 40;
       projectile.height = 56;
+      projectile.damage = 9 + (int)OriWorld.GlobalUpgrade * 9;
     }
 
-    internal override void Behavior() {
+    public override void Behavior() {
       base.Behavior();
       projectile.height = Math.Max(56, (int)(oPlayer.player.velocity.Y * 2));
       projectile.position.Y += 10;

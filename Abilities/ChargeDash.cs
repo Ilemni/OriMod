@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using System;
 using Terraria;
@@ -6,11 +7,11 @@ using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
-  public class ChargeDash : Ability {
-    internal ChargeDash(AbilityManager handler) : base(handler) { }
+  public sealed class ChargeDash : Ability {
+    internal ChargeDash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeDash;
 
-    internal override bool DoUpdate => !Manager.dash.DoUpdate && (InUse || oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Manager.cDash.Refreshed);
+    internal override bool UpdateCondition => !Manager.dash.UpdateCondition && (InUse || oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Manager.chargeDash.Refreshed);
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Manager.stomp.InUse && !Manager.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);
     protected override Color RefreshColor => Color.LightBlue;
@@ -22,15 +23,27 @@ namespace OriMod.Abilities {
     };
     private static float SpeedMultiplier => Config.CDashSpeedMultiplier * 0.8f;
 
-    public byte NpcID { get; internal set; } = 255;
-    internal int Direction;
+    private ushort NpcID = ushort.MaxValue;
+    private sbyte Direction;
 
-    public Projectile Proj { get; private set; }
+    public bool NpcIsTarget(NPC npc) => npc.whoAmI == NpcID;
 
-    private readonly RandomChar randChar = new RandomChar();
+    public NPC Target {
+      get {
+        if (NpcID >= Main.npc.Length) {
+          return null;
+        }
+        return Main.npc[NpcID];
+      }
+      set => NpcID = (ushort)(value?.whoAmI ?? ushort.MaxValue);
+    }
+
+    public Projectile PlayerHitboxProjectile { get; private set; }
+
+    private readonly RandomChar rand = new RandomChar();
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
-      NpcID = r.ReadByte();
+      NpcID = r.ReadUInt16();
     }
 
     protected override void WritePacket(ModPacket packet) {
@@ -43,9 +56,9 @@ namespace OriMod.Abilities {
     }
 
     protected override void TickCooldown() {
-      if (!Refreshed || CurrCooldown > 0) {
-        CurrCooldown--;
-        if (CurrCooldown < 0 && !OriMod.ChargeKey.Current) {
+      if (!Refreshed || CurrentCooldown > 0) {
+        CurrentCooldown--;
+        if (CurrentCooldown < 0 && !OriMod.ChargeKey.Current) {
           Refreshed = true;
         }
       }
@@ -54,19 +67,23 @@ namespace OriMod.Abilities {
     internal void End(bool byNpcContact = false) {
       SetState(State.Inactive);
       PutOnCooldown();
+      var target = Target;
+      Target = null;
       if (byNpcContact) {
-        player.position = Main.npc[NpcID].position;
+        // Force player position to same as target's, and reduce speed.
+        player.position = target.position;
         player.position.Y -= 32f;
-        player.velocity *= Speeds[CurrTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
+        player.velocity *= Speeds[CurrentTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
       }
-      else if ((NpcID == 255 || CurrTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
-        Vector2 newVel = NpcID == 255 && !Manager.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
+      else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
+        // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
+        Vector2 newVel = target is null && !Manager.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
         newVel.Normalize();
         newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
         player.velocity = newVel;
       }
-      Proj = null;
-      NpcID = 255;
+      PlayerHitboxProjectile = null;
+      Target = null;
     }
 
     protected override void UpdateStarting() {
@@ -85,33 +102,35 @@ namespace OriMod.Abilities {
         }
       }
       if (tempNPC != -1) {
-        NpcID = (byte)tempNPC;
-        Direction = player.direction = player.position.X - Main.npc[NpcID].position.X < 0 ? 1 : -1;
+        Target = null;
+        Direction = (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
       }
       else {
-        Direction = PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction;
+        Direction = (sbyte)(PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
       }
-      oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + randChar.NextNoRepeat(3), .5f);
-      Proj = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, oPlayer.mod.ProjectileType("ChargeDashProjectile"), 30, 0f, player.whoAmI, 0, 1)];
-      Proj.damage = 12 + OriWorld.GlobalSeinUpgrade * 9;
+      oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + rand.NextNoRepeat(3), 0.5f);
+      PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeDashProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
+      PlayerHitboxProjectile.damage = 12 + (int)OriWorld.GlobalUpgrade * 9;
     }
 
     protected override void UpdateUsing() {
-      float speed = Speeds[CurrTime] * SpeedMultiplier;
+      float speed = Speeds[CurrentTime] * SpeedMultiplier;
       player.gravity = 0;
-      if (NpcID < Main.maxNPCs && Main.npc[NpcID].active) {
+      var target = Target;
+
+      if (target?.active ?? false) {
         player.maxFallSpeed = speed;
-        Vector2 dir = Main.npc[NpcID].position - player.position;
+        Vector2 dir = target.position - player.position;
         dir.Y -= 32f;
         dir.Normalize();
         player.velocity = dir * speed;
-        if (CurrTime < Duration && (player.position - Main.npc[NpcID].position).Length() < speed) {
+        if (CurrentTime < Duration && (player.position - target.position).Length() < speed) {
           End(byNpcContact: true);
         }
       }
       else {
         player.velocity.X = speed * Direction * 0.8f;
-        player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrTime + 1)) * player.gravDir;
+        player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrentTime + 1)) * player.gravDir;
       }
 
       player.runSlowdown = 26f;
@@ -122,7 +141,7 @@ namespace OriMod.Abilities {
       if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
         if (player.CheckMana(ManaCost, true, true)) {
           SetState(State.Active);
-          CurrTime = 0;
+          CurrentTime = 0;
           UpdateStarting();
         }
         else if (!Manager.dash.InUse) {
@@ -134,8 +153,8 @@ namespace OriMod.Abilities {
       if (InUse) {
         SetState(State.Inactive);
         Manager.dash.Refreshed = false;
-        CurrTime++;
-        if (CurrTime > Duration || oPlayer.OnWall || Manager.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
+        CurrentTime++;
+        if (CurrentTime > Duration || oPlayer.OnWall || Manager.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           End();
         }
       }
