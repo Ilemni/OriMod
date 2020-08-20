@@ -25,8 +25,6 @@ namespace OriMod {
 
     public static Upgrade GlobalUpgrade { get; private set; }
 
-    public string Version;
-    
     public override bool Autoload(ref string name) => true;
 
     public static void UpdateOriPlayerSeinStates(byte upgrade) {
@@ -53,28 +51,22 @@ namespace OriMod {
       ValidateSeinUpgrade();
       return new TagCompound {
         ["SeinUpgrade"] = GlobalUpgrade,
-        ["Version"] = OriMod.Instance.Version.ToString(),
     };
     }
 
     public override void Load(TagCompound tag) {
       GlobalUpgrade = (Upgrade)tag.GetAsInt("SeinUpgrade");
       ValidateSeinUpgrade();
-      Version = tag.GetString("Version");
     }
 
-    private void ValidateSeinUpgrade() {
+    internal static void ValidateSeinUpgrade() {
       Upgrade oldUpgrade = GlobalUpgrade;
+      GlobalUpgrade = Upgrade.DefeatedMoonLord;
 
-      if (GlobalUpgrade == Upgrade.DefeatedMoonLord && !NPC.downedMoonlord) {
+      if (!NPC.downedMoonlord) {
         GlobalUpgrade = Upgrade.DefeatedAllPillars;
-      }
-
-      if (GlobalUpgrade == Upgrade.DefeatedAllPillars && !NPC.downedTowers) {
+        if (!NPC.downedTowers) {
         GlobalUpgrade = Upgrade.DefeatedTwoPillars;
-      }
-
-      if (GlobalUpgrade == Upgrade.DefeatedTwoPillars) {
         int downs = 0;
         if (NPC.downedTowerNebula) {
           downs++;
@@ -90,43 +82,35 @@ namespace OriMod {
         }
         if (downs < 2) {
           GlobalUpgrade = Upgrade.DefeatedLunarCultist;
+            if (!NPC.downedAncientCultist) {
+              GlobalUpgrade = Upgrade.DefeatedGolem;
+              if (!NPC.downedGolemBoss) {
+                GlobalUpgrade = Upgrade.DefeatedPlantera;
+                if (!NPC.downedPlantBoss) {
+                  GlobalUpgrade = Upgrade.DefeatedAllMechs;
+                  if (!(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)) {
+                    GlobalUpgrade = Upgrade.DefeatedAnyMechs;
+                    if (!(NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3)) {
+                      GlobalUpgrade = Upgrade.InHardMode;
+                      if (!Main.hardMode) {
+                        GlobalUpgrade = Upgrade.DefeatedSkeletron;
+                        if (!NPC.downedBoss3) {
+                          GlobalUpgrade = Upgrade.DefeatedDarkBoss;
+                          if (!NPC.downedBoss2) {
+                            GlobalUpgrade = Upgrade.DefeatedEyeOfCthuhlu;
+                            if (!NPC.downedBoss1) {
+                              GlobalUpgrade = Upgrade.None;
+                            }
         }
       }
-
-      if (GlobalUpgrade == Upgrade.DefeatedLunarCultist && !NPC.downedAncientCultist) {
-        GlobalUpgrade = Upgrade.DefeatedGolem;
       }
-
-      if (GlobalUpgrade == Upgrade.DefeatedGolem && !NPC.downedGolemBoss) {
-        GlobalUpgrade = Upgrade.DefeatedPlantera;
       }
-
-      if (GlobalUpgrade == Upgrade.DefeatedPlantera && !NPC.downedPlantBoss) {
-        GlobalUpgrade = Upgrade.DefeatedAllMechs;
       }
-
-      if (GlobalUpgrade == Upgrade.DefeatedAllMechs && !(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)) {
-        GlobalUpgrade = Upgrade.DefeatedAnyMechs;
       }
-
-      if (GlobalUpgrade == Upgrade.DefeatedAnyMechs && !(NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3)) {
-        GlobalUpgrade = Upgrade.InHardMode;
       }
-
-      if (GlobalUpgrade == Upgrade.InHardMode && !Main.hardMode) {
-        GlobalUpgrade = Upgrade.DefeatedSkeletron;
       }
-
-      if (GlobalUpgrade == Upgrade.DefeatedSkeletron && !NPC.downedBoss3) {
-        GlobalUpgrade = Upgrade.DefeatedDarkBoss;
       }
-
-      if (GlobalUpgrade == Upgrade.DefeatedDarkBoss && !NPC.downedBoss2) {
-        GlobalUpgrade = Upgrade.DefeatedEyeOfCthuhlu;
       }
-
-      if (GlobalUpgrade == Upgrade.DefeatedEyeOfCthuhlu && !NPC.downedBoss1) {
-        GlobalUpgrade = Upgrade.None;
       }
 
       if (GlobalUpgrade != oldUpgrade) {
