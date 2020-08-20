@@ -146,16 +146,6 @@ namespace OriMod.Projectiles.Minions {
     private static float ShootSpeed => 50f;
 
     /// <summary>
-    /// Spirit Flame penetration. Assigned in Init()
-    /// </summary>
-    private int Pierce = 1;
-
-    /// <summary>
-    /// Spirit Flame damage to the first target in Fire(). Assigned in Init()
-    /// </summary>
-    private float PrimaryDamageMultiplier;
-
-    /// <summary>
     /// How much more manually firing Spirit Flame damages for.
     /// </summary>
     private static float ManualShootDamageMultiplier => 1.4f;
@@ -213,7 +203,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Fastest speed this projectile can be at out-of-bounds.
     /// </summary>
-    private static float MaxVelocityOutOfBounds => 20f;
+    private static float MaxVelocityOutOfBounds => 5f;
 
     /// <summary>
     /// Distance that this projectile will begin to slow down.
@@ -248,7 +238,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// The furthest BoxPos can be from the player. May be modified in Init()
     /// </summary>
-    private float MaxDistFromPlayer = 240f;
+    private float MaxDistFromPlayer = 200f;
 
     /// <summary>
     /// Sound that plays when firing. Assigned in Init()
@@ -344,7 +334,7 @@ namespace OriMod.Projectiles.Minions {
     private void PlaySpiritFlameSound(string Path, float Volume) =>
       Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/Ori/SpiritFlame/" + Path).WithVolume(Volume), projectile.Center);
 
-    private readonly RandomChar randomChar = new RandomChar();
+    private readonly RandomChar rand = new RandomChar();
 
     /// <summary>
     /// This is the somewhat subtle swaying about Sein does at any given time in Blind Forest
@@ -356,7 +346,7 @@ namespace OriMod.Projectiles.Minions {
       if (projectile.velocity.HasNaNs()) {
         projectile.velocity = new Vector2(0, -MaxVelocityInBounds);
       }
-      if ((TargetPos - PlayerSpace()).LengthSquared() > 1000 * 1000 || (BoxPos - PlayerSpace()).LengthSquared() > 1000 * 1000) {
+      if ((TargetPos - PlayerSpace()).LengthSquared() > 1000000 || (BoxPos - PlayerSpace()).LengthSquared() > 1000000) {
         BoxPos = PlayerSpace(0, -32);
         UpdateTargetLocation();
       }
@@ -477,7 +467,7 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <param name="npc">NPC to target. If null, fires at the air randomly</param>
     /// <param name="primary">If to increase damage by primary damage multiplier</param>
-    private void Fire(NPC npc = null, bool primary = false) {
+    private void Fire(NPC npc) {
       Vector2 shootVel;
       float rotation;
       // Fire at enemy NPC
@@ -496,13 +486,11 @@ namespace OriMod.Projectiles.Minions {
       shootVel = Utils.RotatedBy(shootVel * ShootSpeed, rotation);
 
       int dmg = (int)(projectile.damage * Main.player[projectile.owner].minionDamage *
-        (primary ? PrimaryDamageMultiplier : 1) *
         (!Autoshoot ? ManualShootDamageMultiplier : 1));
 
       Projectile proj = Main.projectile[Projectile.NewProjectile(projectile.Center, shootVel, ShootID, dmg, projectile.knockBack, Main.myPlayer, 0, 0)];
-      projectile.velocity += shootVel * -0.015f;
+      projectile.velocity += shootVel.SafeNormalize(Vector2.Zero) * -0.2f;
       proj.netUpdate = true;
-      proj.penetrate = Pierce;
       proj.owner = projectile.owner;
 
       if (npc is null) {
@@ -514,7 +502,7 @@ namespace OriMod.Projectiles.Minions {
       else {
         proj.ai[0] = npc.whoAmI;
         proj.ai[1] = 0;
-        proj.timeLeft = 300;
+        proj.timeLeft = 30;
       }
     }
 
@@ -526,7 +514,7 @@ namespace OriMod.Projectiles.Minions {
       if (player.dead || !player.active) {
         oPlayer.RemoveSeinBuffs();
       }
-      else if (projectile.type == oPlayer.SeinMinionType && player.HasBuff(BuffType())) {
+      else if (projectile.type == oPlayer.SeinMinionType && projectile.whoAmI == oPlayer.SeinMinionID && player.HasBuff(BuffType())) {
         projectile.timeLeft = 2;
       }
     }
@@ -536,6 +524,10 @@ namespace OriMod.Projectiles.Minions {
       SeinMovement();
       UpdateTargetsPos();
       Lighting.AddLight(projectile.Center, Color.ToVector3() * LightStrength);
+
+      if (player.whoAmI != Main.myPlayer) {
+        return;
+      }
 
       #region Targeting
       bool inSight(NPC npc) => Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height);
@@ -651,34 +643,32 @@ namespace OriMod.Projectiles.Minions {
         }
         Cooldown = 1;
 
-        if (Main.myPlayer == projectile.owner) {
-          PlaySpiritFlameSound("Throw" + SpiritFlameSound + randomChar.NextNoRepeat(3), 0.6f);
+        PlaySpiritFlameSound("Throw" + SpiritFlameSound + rand.NextNoRepeat(3), 0.6f);
 
-          if (!hasTarget) {
-            // Fire at air - nothing to target
-            for (int i = 0; i < ShotsToPrimaryTarget; i++) {
-              Fire();
-            }
-            return;
+        if (!hasTarget) {
+          // Fire at air - nothing to target
+          for (int i = 0; i < ShotsToPrimaryTarget; i++) {
+            Fire(null);
           }
+          return;
+        }
 
-          int usedShots = 0;
-          int loopCount = 0;
-          while (loopCount < ShotsToPrimaryTarget) {
-            for (int t = 0; t < TargetIDs.Count; t++) {
-              bool isPrimary = t == 0;
-              int shots = isPrimary ? ShotsToPrimaryTarget : ShotsToTarget;
-              if (loopCount < shots) {
-                Fire(Main.npc[TargetIDs[t]], isPrimary);
-                if (++usedShots >= MaxShotsPerVolley) {
-                  break;
-                }
+        int usedShots = 0;
+        int loopCount = 0;
+        while (loopCount < ShotsToPrimaryTarget) {
+          for (int t = 0; t < TargetIDs.Count; t++) {
+            bool isPrimary = t == 0;
+            int shots = isPrimary ? ShotsToPrimaryTarget : ShotsToTarget;
+            if (loopCount < shots) {
+              Fire(Main.npc[TargetIDs[t]]);
+              if (++usedShots >= MaxShotsPerVolley) {
+                break;
               }
             }
-            loopCount++;
           }
-          projectile.netUpdate = true;
+          loopCount++;
         }
+        projectile.netUpdate = true;
       }
       #endregion
     }

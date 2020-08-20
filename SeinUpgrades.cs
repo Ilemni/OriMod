@@ -10,11 +10,6 @@ namespace OriMod {
     public int damage = 12;
 
     /// <summary>
-    /// Multiplier of damage dealt to the primary target
-    /// </summary>
-    public float primaryDamageMultiplier = 1;
-
-    /// <summary>
     /// Number of NPCs that can be targeted at once
     /// </summary>
     public int targets = 1;
@@ -68,11 +63,6 @@ namespace OriMod {
     /// PCs this distance from the player can be targeted by the minion, regardless of line of sight
     /// </summary>
     public float targetThroughWallDist = 80f;
-
-    /// <summary>
-    /// The amount of times Spirit Flame can hit enemies before disappearing
-    /// </summary>
-    public int pierce = 1;
 
     /// <summary>
     /// The knockback of Spirit Flame
@@ -141,7 +131,7 @@ namespace OriMod {
   }
 
   public partial class OriMod {
-    internal static List<SeinUpgrade> SeinUpgrades;
+    internal List<SeinUpgrade> SeinUpgrades;
 
     /// <summary>
     /// Loads all Sein variants. Sein stats are hardcoded into this method.
@@ -177,11 +167,13 @@ namespace OriMod {
       AddNewSein(new SeinUpgrade());
 
       // Tier 2 (Demonite/Crimsane)
+      // Increased shots per burst
+      // Max damage per burst: 15
       AddNewSein(new SeinUpgrade {
         rarity = 2,
         value = 3000,
         color = new Color(108, 92, 172),
-        damage = 17,
+        damage = 15,
         shotsPerBurst = 3,
         projectileSpeedStart = 7f,
         homingIncreaseRate = 0.045f,
@@ -190,14 +182,15 @@ namespace OriMod {
       });
 
       // Tier 3 (Hellstone)
+      // 2 targets
+      // Max damage per burst: 42
       AddNewSein(new SeinUpgrade {
         rarity = 3,
         value = 10000,
         color = new Color(240, 0, 0, 194),
-        damage = 28,
+        damage = 21,
         targets = 2,
         maxShotsPerVolley = 2,
-        shotsPerBurst = 3,
         randDegrees = 100,
         projectileSpeedStart = 10.5f,
         projectileSpeedIncreaseRate = 0.65f,
@@ -208,11 +201,13 @@ namespace OriMod {
       });
 
       // Tier 4 (Mythral/Orichalcum)
+      // 2 targets, 2 shots to primary, 3 shots max (rather than 4)
+      // Max damage per burst: 81
       AddNewSein(new SeinUpgrade {
         rarity = 4,
         value = 25000,
         color = new Color(185, 248, 248),
-        damage = 39,
+        damage = 27,
         shotsToPrimaryTarget = 2,
         maxShotsPerVolley = 3,
         randDegrees = 60,
@@ -224,15 +219,15 @@ namespace OriMod {
       });
 
       // Tier 5 (Hallow)
+      // 3 targets, 2 shots to primary, 4 shots max (rather than 5)
+      // Max damage per burst: 132
       AddNewSein(new SeinUpgrade {
         rarity = 5,
         value = 50000,
         color = new Color(255, 228, 160),
-        damage = 52,
+        damage = 33,
         targets = 3,
-        shotsPerTarget = 2,
-        maxShotsPerVolley = 5,
-        pierce = 2,
+        maxShotsPerVolley = 4,
         homingIncreaseDelay = 17,
         targetMaxDist = 440f,
         dustScale = 2.2f,
@@ -240,13 +235,15 @@ namespace OriMod {
       });
 
       // Tier 6 (Spectral)
+      // 3 targets, 3 shots to primary, 5 shots max
+      // Max damage per burst: 195
       AddNewSein(new SeinUpgrade {
         rarity = 8,
         value = 100000,
         color = new Color(0, 180, 174, 210),
-        damage = 68,
+        damage = 39,
         shotsToPrimaryTarget = 3,
-        maxShotsPerVolley = 6,
+        maxShotsPerVolley = 5,
         minCooldown = 10f,
         shortCooldown = 34f,
         longCooldown = 52f,
@@ -261,13 +258,16 @@ namespace OriMod {
       });
 
       // Tier 7 (Lunar)
+      // 4 targets, 3 shots to primary, 2 to others, 6 shots max (rather than 9)
+      // Max damage per burst: 282
       AddNewSein(new SeinUpgrade {
         rarity = 9,
         value = 250000,
         color = new Color(78, 38, 102),
-        damage = 84,
+        damage = 47,
         targets = 4,
-        shotsPerTarget = 3,
+        shotsToPrimaryTarget = 3,
+        shotsPerTarget = 2,
         maxShotsPerVolley = 9,
         homingIncreaseRate = 0.025f,
         projectileSpeedStart = 16f,
@@ -278,16 +278,16 @@ namespace OriMod {
       });
 
       // Tier 8 (Lunar Bars)
+      // 5 targets, 4 shots to primary, 2 shots to others, 10 shots max (rather than 12)
+      // Max damage per burst: 530 (too high?)
       AddNewSein(new SeinUpgrade {
         rarity = 10,
         value = 500000,
         color = new Color(220, 220, 220),
-        damage = 92,
-        pierce = 1, // TODO: Revert to 3
+        damage = 53,
         shotsPerBurst = 4,
         targets = 6,
         shotsToPrimaryTarget = 4,
-        shotsPerTarget = 2,
         maxShotsPerVolley = 10,
         longCooldown = 55f,
         homingStrengthStart = 0.05f,
