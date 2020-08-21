@@ -76,6 +76,7 @@ namespace OriMod {
     /// <see cref="PlayerLayer"/> that represents the <see cref="Abilities.SoulLink"/> a player can place within the world.
     /// <para>(Consider using <see cref="Dust"/>s instead of <see cref="PlayerLayer"/>s</para>
     /// </summary>
+    [System.Obsolete]
     internal readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
       var mod = OriMod.Instance;
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();

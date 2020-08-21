@@ -81,15 +81,15 @@ namespace OriMod {
 
     [Label("Cooldown"), Tooltip("Cooldown of Soul Link, in seconds.\nDefault: 30")]
     [DefaultValue(30), Range(0f, 150), Increment(1f)]
-    public float SoulLinkCooldown;
+    [System.Obsolete] internal float SoulLinkCooldown;
 
     [Label("Charge Time"), Tooltip("How long it takes to place a Soul Link, in seconds.\nDefault: 0.9")]
     [DefaultValue(0.9f), Range(0.1f, 10), Increment(0.1f)]
-    public float SoulLinkChargeRate;
+    [System.Obsolete] internal float SoulLinkChargeRate;
 
     [Label("Respawn Time"), Tooltip("How long after dying it takes to respawn at a Soul Link, in seconds.\nDefault: 2.4")]
     [DefaultValue(2.4f), Range(1f, 10), Increment(0.1f)]
-    public float SoulLinkRespawnTime;
+    [System.Obsolete] internal float SoulLinkRespawnTime;
 
     [Header("Air Jump")]
 

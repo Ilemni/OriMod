@@ -79,7 +79,7 @@ namespace OriMod.Abilities {
     internal AbilityManager(OriPlayer oPlayer) {
       this.oPlayer = oPlayer;
 
-      soulLink = new SoulLink(this);
+      //soulLink = new SoulLink(this);
       wallJump = new WallJump(this);
       stomp = new Stomp(this);
       airJump = new AirJump(this);
@@ -100,7 +100,8 @@ namespace OriMod.Abilities {
     /// </summary>
     public readonly OriPlayer oPlayer;
 
-    public readonly SoulLink soulLink;
+    [System.Obsolete] public readonly SoulLink soulLink;
+
     public readonly WallJump wallJump;
     public readonly AirJump airJump;
     public readonly Bash bash;
@@ -116,7 +117,7 @@ namespace OriMod.Abilities {
     public readonly Burrow burrow;
 
     public IEnumerator<Ability> GetEnumerator() {
-      yield return soulLink;
+      //yield return soulLink;
       yield return wallJump;
       yield return airJump;
       yield return bash;
@@ -141,7 +142,7 @@ namespace OriMod.Abilities {
     public Ability this[int idx] {
       get {
         switch (idx) {
-          case AbilityID.SoulLink: return soulLink;
+          //case AbilityID.SoulLink: return soulLink;
           case AbilityID.WallJump: return wallJump;
           case AbilityID.AirJump: return airJump;
           case AbilityID.Bash: return bash;
@@ -234,7 +235,7 @@ namespace OriMod.Abilities {
 
     internal static void Unload() {
       Burrow.Unload();
-      SoulLink.Unload();
+      //SoulLink.Unload();
     }
   }
 }

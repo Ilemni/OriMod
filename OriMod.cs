@@ -139,7 +139,7 @@ namespace OriMod {
     }
 
     public override void Load() {
-      SoulLinkKey = RegisterHotKey("SoulLink", "E");
+      //SoulLinkKey = RegisterHotKey("SoulLink", "E");
       BashKey = RegisterHotKey("Bash", "Mouse2");
       DashKey = RegisterHotKey("Dash", "LeftControl");
       ClimbKey = RegisterHotKey("Climbing", "LeftShift");
@@ -170,7 +170,7 @@ namespace OriMod {
       FeatherKey = null;
       ChargeKey = null;
       BurrowKey = null;
-      SoulLinkKey = null;
+      //SoulLinkKey = null;
       SeinUpgrades = null;
       ConfigClient = null;
       ConfigAbilities = null;

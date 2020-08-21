@@ -592,9 +592,9 @@ namespace OriMod {
       }
     }
 
-    public override void UpdateDead() {
+    /*public override void UpdateDead() {
       Abilities.soulLink.UpdateDead();
-    }
+    }*/
 
     public override TagCompound Save()
       => new TagCompound {
@@ -854,9 +854,9 @@ namespace OriMod {
         }
         #endregion
 
-        if (Abilities.soulLink.PlacedSoulLink) {
+        /*if (Abilities.soulLink.PlacedSoulLink) {
           layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
-        }
+        }*/
         int idx = Math.Min(layers.IndexOf(PlayerLayer.HeldItem), layers.IndexOf(PlayerLayer.HeldProjFront));
         if (idx >= 0) {
           idx -= 2;

@@ -9,7 +9,7 @@ namespace OriMod {
     internal readonly ReferencedTexture2D PlayerSecondary = new ReferencedTexture2D("PlayerEffects/OriPlayerSecondary");
     internal readonly ReferencedTexture2D Transform = new ReferencedTexture2D("PlayerEffects/Transform");
     internal readonly ReferencedTexture2D Trail = new ReferencedTexture2D("PlayerEffects/OriGlow");
-    internal readonly ReferencedTexture2D SoulLink = new ReferencedTexture2D("PlayerEffects/RevSoulLinkSpritesheet");
+    [System.Obsolete] internal readonly ReferencedTexture2D SoulLink = new ReferencedTexture2D("PlayerEffects/RevSoulLinkSpritesheet");
     internal readonly ReferencedTexture2D BurrowTimer = new ReferencedTexture2D("PlayerEffects/BurrowTimer");
     internal readonly ReferencedTexture2D Sein = new ReferencedTexture2D("Projectiles/Minions/Sein_Glow");
   }

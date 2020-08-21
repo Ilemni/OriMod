@@ -4,13 +4,15 @@ using Terraria.ModLoader;
 
 namespace OriMod.Dusts {
   /// <summary>
-  /// Used for <see cref="Abilities.SoulLink"/>.
+  /// Originally used for <see cref="Abilities.SoulLink"/>.
   /// </summary>
+  [System.Obsolete]
   public class SoulLinkChargeDust : ModDust {
     protected int alphaRate = 16;
     public override bool Autoload(ref string name, ref string texture) {
       texture = "OriMod/Dusts/AbilityRefreshedDust";
-      return base.Autoload(ref name, ref texture);
+      //return base.Autoload(ref name, ref texture);
+      return false;
     }
 
     public override void OnSpawn(Dust dust) {

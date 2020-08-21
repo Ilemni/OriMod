@@ -5,8 +5,9 @@ using Terraria;
 
 namespace OriMod.Abilities {
   /// <summary>
-  /// Ability to allow respawning wherever a player wants.
+  /// Ability to allow respawning wherever a player wants. No longer being developed.
   /// </summary>
+  [Obsolete]
   public sealed class SoulLink : Ability {
     internal SoulLink(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.SoulLink;
