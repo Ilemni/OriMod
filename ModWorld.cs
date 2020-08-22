@@ -97,7 +97,7 @@ namespace OriMod {
     public override TagCompound Save() {
       ValidateSeinUpgrade();
       return new TagCompound {
-        ["SeinUpgrade"] = GlobalUpgrade,
+        ["SeinUpgrade"] = (byte)GlobalUpgrade,
       };
     }
 
