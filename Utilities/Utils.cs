@@ -58,20 +58,14 @@ namespace OriMod.Utilities {
     /// Get closest entity. Returns true if any are in range.
     /// </summary>
     /// <param name="me">Y'know...</param>
-    /// <param name="arr">Array of entities, such as `Main.player`, `Main.npc`, `Main.projectile`</param>
-    /// <param name="dist">Maximum distance to be considered in-range. If 0 or less, range is infinite</param>
-    /// <param name="entity">whoAmI of the closest entity in-range, or 255 if no entities are in range</param>
-    /// <param name="distanceSquaredCheck">How the closest distance is checked. Defaults to `DistanceShortSquared()`, getting closest distance between two entities</param>
-    /// <param name="condition">Extra condition to filter out entities. If false, the entity is skipped.</param>
-    /// <typeparam name="T">Type of Entity (i.e. Player, NPC, Projectile)</typeparam>
-    /// <returns>`true` if there is an Entity closer than `dist`, false otherwise</returns>
-    internal static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float dist, out T entity, Func<Entity, T, float> distanceSquaredCheck = null, Func<T, bool> condition = null) where T : Entity {
+    internal static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float distance, out T entity, Func<Entity, T, float> distanceSquaredCheck = null, Func<T, bool> condition = null) where T : Entity {
       // Setup method
-      if (dist <= 0) {
-        dist = float.MaxValue; // Infinite range detect
+      float startDistance = distance;
+      if (distance <= 0) {
+        distance = float.MaxValue; // Infinite range detect
       }
       else {
-        dist *= dist; // Squared for DistanceSquared
+        distance *= distance; // Squared for DistanceSquared
       }
       if (distanceSquaredCheck is null) {
         distanceSquaredCheck = (e1, e2) => e1.DistanceShortSquared(e2);
@@ -81,24 +75,26 @@ namespace OriMod.Utilities {
       int id = -1;
       for (int i = 0, len = arr.Length; i < len; i++) {
         T e = arr[i];
-        if (e is null || !e.active || condition?.Invoke(e) == false) {
+        if (e is null || !e.active || ReferenceEquals(e, me) || condition?.Invoke(e) == false) {
           continue;
         }
 
         float newDist = distanceSquaredCheck(me, e);
-        if (newDist < dist) {
-          dist = newDist;
+        if (newDist < distance) {
+          distance = newDist;
           id = e.whoAmI;
         }
       }
 
-      dist = (float)Math.Sqrt(dist);
       if (id != -1) {
-        // In range
+        // Entity found
+        distance = (float)Math.Sqrt(distance);
         entity = arr[id];
         return true;
       }
 
+      // No entity found
+      distance = startDistance;
       entity = null;
       return false;
     }
