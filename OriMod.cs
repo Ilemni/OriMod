@@ -189,7 +189,16 @@ namespace OriMod {
       Utilities.RandomChar.Unload();
     }
 
-    public override void HandlePacket(BinaryReader reader, int fromWho) => ModNetHandler.Instance.HandlePacket(reader, fromWho);
+    public override void HandlePacket(BinaryReader reader, int fromWho) {
+      if (Main.netMode == NetmodeID.MultiplayerClient) {
+        // If packet is sent TO server, it is FROM player.
+        // If packet is sent TO player, it is FROM server (This block) and fromWho is 255.
+        // Server-written packet includes the fromWho, the player that created it.
+        // Now in either case of this being server or player, the fromWho is the player.
+        fromWho = reader.ReadUInt16();
+      }
+      ModNetHandler.Instance.HandlePacket(reader, (ushort)fromWho);
+    }
 
     public override object Call(params object[] args) {
       int len = args.Length;

@@ -8,22 +8,30 @@ namespace OriMod.Networking {
   /// Base class for sending and handling received <see cref="ModPacket"/>s.
   /// </summary>
   internal abstract class PacketHandler {
-    internal readonly byte HandlerType;
+    protected PacketHandler(byte handlerType) => this.handlerType = handlerType;
 
-    internal byte OriStatus => 1;
-    internal byte AbilityPacket => 2;
+    /// <summary>
+    /// Identifies which <see cref="PacketHandler"/> created the <see cref="ModPacket"/>.
+    /// </summary>
+    internal readonly byte handlerType;
 
-    internal abstract void HandlePacket(BinaryReader reader, int fromWho);
+    /// <summary>
+    /// Handle the received <see cref="ModPacket"/> using <paramref name="reader"/>. Packet is from <paramref name="fromWho"/>.
+    /// </summary>
+    /// <param name="reader"><see cref="BinaryReader"/> for the <see cref="ModPacket"/>.</param>
+    /// <param name="fromWho">Client this was from.</param>
+    internal abstract void HandlePacket(BinaryReader reader, ushort fromWho);
 
-    protected PacketHandler(byte handlerType) => HandlerType = handlerType;
-
-    protected ModPacket GetPacket(byte packetType, int fromWho) {
+    /// <summary>
+    /// Gets a <see cref="ModPacket"/> with <see cref="handlerType"/> and <paramref name="fromWho"/> written to it.
+    /// </summary>
+    /// <param name="fromWho"></param>
+    protected ModPacket GetPacket(int fromWho) {
       ModPacket p = OriMod.Instance.GetPacket();
-      p.Write(HandlerType);
-      p.Write(packetType);
       if (Main.netMode == NetmodeID.Server) {
         p.Write((ushort)fromWho);
       }
+      p.Write(handlerType);
       return p;
     }
   }

@@ -5,40 +5,60 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Networking {
+  /// <summary>
+  /// Sends and receives <see cref="ModPacket"/>s that handle the <see cref="OriPlayer"/> state.
+  /// </summary>
   internal class OriPlayerPacketHandler : PacketHandler {
     internal OriPlayerPacketHandler(byte handlerType) : base(handlerType) { }
 
-    internal const byte OriState = 1;
+    internal override void HandlePacket(BinaryReader reader, ushort fromWho) {
+      OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
+      BitsByte flags = reader.ReadByte();
+      bool oriSet = flags[0];
+      bool flashing = flags[1];
+      bool transforming = flags[2];
+      bool unrestrictedMovement = flags[3];
+      bool seinMinionActive = flags[4];
+      bool mpcPlayerLight = flags[5];
+      ushort transformTimer = flags[2] ? reader.ReadUInt16() : (ushort)0;
+      byte seinMinionType = flags[4] ? reader.ReadByte() : (byte)0;
+      Color spriteColor = reader.ReadRGB();
 
-    internal override void HandlePacket(BinaryReader reader, int fromWho) {
-      byte packetType = reader.ReadByte();
-      if (Main.netMode == NetmodeID.MultiplayerClient) {
-        fromWho = reader.ReadUInt16();
-      }
-      switch (packetType) {
-        case OriState:
-          ReceiveOriState(reader, fromWho);
-          break;
-        default:
-          OriMod.Error("UnknownOriStatePacket", args: packetType);
-          break;
+      fromPlayer.IsOri = oriSet;
+      fromPlayer.flashing = flashing;
+      fromPlayer.Transforming = transforming;
+      fromPlayer.UnrestrictedMovement = unrestrictedMovement;
+      fromPlayer.transformTimer = transformTimer;
+      fromPlayer.SeinMinionType = seinMinionType;
+      fromPlayer.SeinMinionActive = seinMinionActive;
+      fromPlayer.multiplayerPlayerLight = mpcPlayerLight;
+      fromPlayer.SpriteColorPrimary = spriteColor;
+
+      if (Main.netMode == NetmodeID.Server) {
+        SendOriState(-1, fromWho);
       }
     }
 
+    /// <summary>
+    /// <para>Sends a <see cref="ModPacket"/> with <see cref="OriPlayer"/> data.</para>
+    /// <inheritdoc cref="ModPacket.Send(int, int)"/>
+    /// </summary>
+    /// <param name="toWho">Who to send to. 255 for server, -1 for all players.</param>
+    /// <param name="fromWho">Sender, client to ignore.</param>
     internal void SendOriState(int toWho, int fromWho) {
-      ModPacket packet = GetPacket(OriState, fromWho);
+      ModPacket packet = GetPacket(fromWho);
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
 
       var flags = new BitsByte();
       flags[0] = fromPlayer.IsOri;
-      flags[1] = fromPlayer.Flashing;
+      flags[1] = fromPlayer.flashing;
       flags[2] = fromPlayer.Transforming;
       flags[3] = fromPlayer.UnrestrictedMovement;
       flags[4] = fromPlayer.SeinMinionActive;
-      flags[5] = fromPlayer.MpcPlayerLight;
+      flags[5] = fromPlayer.multiplayerPlayerLight;
       packet.Write(flags);
       if (flags[2]) {
-        packet.Write((ushort)fromPlayer.TransformTimer);
+        packet.Write((ushort)fromPlayer.transformTimer);
       }
 
       if (flags[4]) {
@@ -48,34 +68,6 @@ namespace OriMod.Networking {
       packet.WriteRGB(fromPlayer.SpriteColorPrimary);
 
       packet.Send(toWho, fromWho);
-    }
-
-    internal void ReceiveOriState(BinaryReader r, int fromWho) {
-      OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
-      BitsByte flags = r.ReadByte();
-      bool oriSet = flags[0];
-      bool flashing = flags[1];
-      bool transforming = flags[2];
-      bool unrestrictedMovement = flags[3];
-      bool seinMinionActive = flags[4];
-      bool mpcPlayerLight = flags[5];
-      ushort transformTimer = flags[2] ? r.ReadUInt16() : (ushort)0;
-      byte seinMinionType = flags[4] ? r.ReadByte() : (byte)0;
-      Color spriteColor = r.ReadRGB();
-
-      fromPlayer.IsOri = oriSet;
-      fromPlayer.Flashing = flashing;
-      fromPlayer.Transforming = transforming;
-      fromPlayer.UnrestrictedMovement = unrestrictedMovement;
-      fromPlayer.TransformTimer = transformTimer;
-      fromPlayer.SeinMinionType = seinMinionType;
-      fromPlayer.SeinMinionActive = seinMinionActive;
-      fromPlayer.MpcPlayerLight = mpcPlayerLight;
-      fromPlayer.SpriteColorPrimary = spriteColor;
-
-      if (Main.netMode == NetmodeID.Server) {
-        SendOriState(-1, fromWho);
-      }
     }
   }
 }
