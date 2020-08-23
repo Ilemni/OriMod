@@ -155,7 +155,7 @@ namespace OriMod.Abilities {
     /// </summary>
     protected virtual void OnRefreshed() {
       for (int i = 0; i < 10; i++) {
-        Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor: RefreshColor);
+        Dust.NewDust(player.Center, 12, 12, ModContent.DustType<Dusts.AbilityRefreshedDust>(), newColor: RefreshColor);
       }
     }
 

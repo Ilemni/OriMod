@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using OriMod.Abilities;
 using OriMod.Animations;
+using OriMod.Buffs;
 using OriMod.Networking;
 using OriMod.Upgrades;
 using OriMod.Utilities;
@@ -305,7 +306,7 @@ namespace OriMod {
 
     #region Internal Methods
     internal SoundEffectInstance PlayNewSound(string Path, float Volume = 1, float Pitch = 0) =>
-      Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, mod.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
+      Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
 
     /// <summary> Checks if the key is pressed and this is LocalPlayer. </summary>
     /// <param name="triggerKey">The key that was pressed</param>
@@ -723,14 +724,14 @@ namespace OriMod {
       #region Check Sein Buffs
       if (SeinMinionActive) {
         if (!(
-          player.HasBuff(mod.GetBuff("SeinBuff1").Type) ||
-          player.HasBuff(mod.GetBuff("SeinBuff2").Type) ||
-          player.HasBuff(mod.GetBuff("SeinBuff3").Type) ||
-          player.HasBuff(mod.GetBuff("SeinBuff4").Type) ||
-          player.HasBuff(mod.GetBuff("SeinBuff5").Type) ||
-          player.HasBuff(mod.GetBuff("SeinBuff6").Type) ||
-          player.HasBuff(mod.GetBuff("SeinBuff7").Type) ||
-          player.HasBuff(mod.GetBuff("SeinBuff8").Type)
+          player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
+          player.HasBuff(ModContent.BuffType<SeinBuff2>()) ||
+          player.HasBuff(ModContent.BuffType<SeinBuff3>()) ||
+          player.HasBuff(ModContent.BuffType<SeinBuff4>()) ||
+          player.HasBuff(ModContent.BuffType<SeinBuff5>()) ||
+          player.HasBuff(ModContent.BuffType<SeinBuff6>()) ||
+          player.HasBuff(ModContent.BuffType<SeinBuff7>()) ||
+          player.HasBuff(ModContent.BuffType<SeinBuff8>())
         )) {
           SeinMinionActive = false;
           SeinMinionType = 0;

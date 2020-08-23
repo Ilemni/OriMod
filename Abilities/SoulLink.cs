@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -128,7 +129,7 @@ namespace OriMod.Abilities {
         }
       }
       if (currentCharge > 0 && currentCharge < 1) {
-        Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("SoulLinkChargeDust"), newColor: Color.DeepSkyBlue)];
+        Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, ModContent.DustType<Dusts.SoulLinkChargeDust>(), newColor: Color.DeepSkyBlue)];
         dust.customData = player;
         dust.position += -Vector2.UnitY.RotatedBy(currentCharge * 2 * Math.PI) * 56;
       }

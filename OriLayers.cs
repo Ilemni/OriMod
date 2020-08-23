@@ -81,7 +81,6 @@ namespace OriMod {
     /// </summary>
     [System.Obsolete]
     internal readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
-      var mod = OriMod.Instance;
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
       Vector2 pos = oPlayer.Abilities.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
       int frame = (int)(Main.time % 48 / 8) * 64;

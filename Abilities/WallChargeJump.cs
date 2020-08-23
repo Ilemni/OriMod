@@ -62,7 +62,7 @@ namespace OriMod.Abilities {
 
     private void UpdateCharged() {
       if (Main.rand.NextFloat() < 0.7f) {
-        Dust.NewDust(player.Center, 12, 12, oPlayer.mod.DustType("AbilityRefreshedDust"), newColor: Color.Blue);
+        Dust.NewDust(player.Center, 12, 12, ModContent.DustType<Dusts.AbilityRefreshedDust>(), newColor: Color.Blue);
       }
     }
 

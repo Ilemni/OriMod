@@ -309,13 +309,13 @@ namespace OriMod {
     /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for footstep sounds.
     /// </summary>
     private SoundEffectInstance PlayFootstep(string path, int x, int y, float volume)
-      => Main.PlaySound((int)SoundType.Custom, x, y, OriMod.Instance.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/Ori/Footsteps/" + path), volume);
+      => Main.PlaySound((int)SoundType.Custom, x, y, SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/Ori/Footsteps/" + path), volume);
 
     /// <summary>
     /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for landing sounds.
     /// </summary>
     private SoundEffectInstance PlayLanding(string path, int x, int y, float volume)
-      => Main.PlaySound((int)SoundType.Custom, x, y, OriMod.Instance.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/Ori/Land/" + path), volume, 0.1f);
+      => Main.PlaySound((int)SoundType.Custom, x, y, SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/Ori/Land/" + path), volume, 0.1f);
     #endregion
 
     /// <summary>
