@@ -887,7 +887,7 @@ namespace OriMod {
         PlayerLayer.ShoeAcc.visible = false;
         PlayerLayer.HandOnAcc.visible = false;
         PlayerLayer.HandOffAcc.visible = false;
-        if (Abilities.stomp.InUse || Abilities.airJump.InUse || Abilities.burrow.InUse || Abilities.chargeJump.InUse || Abilities.wallChargeJump.InUse || OnWall || Transforming) {
+        if (OnWall || Transforming || Abilities.stomp.InUse || Abilities.airJump.InUse || Abilities.burrow.InUse || Abilities.chargeJump.InUse || Abilities.wallChargeJump.InUse) {
           PlayerLayer.Wings.visible = false;
         }
         #endregion
@@ -901,30 +901,19 @@ namespace OriMod {
           if (idx < 0) {
             idx = 0;
           }
-          if (IsOri) {
-            Animations.TrailAnim.InsertInLayers(layers, idx++);
-            Animations.GlideAnim.InsertInLayers(layers, idx++);
-            Animations.BashAnim.InsertInLayers(layers, idx++);
-          }
-          if (!player.dead && !player.invis) {
-            layers.Insert(idx++, Animations.PlayerAnim.playerLayer);
-            if (IsOri) {
-              // IsOri is checked here because transforming uses the primary layer
-              layers.Insert(idx++, Animations.SecondaryLayer.playerLayer);
-            }
-          }
         }
         else {
+          idx = layers.Count - 1;
+        }
+        if (IsOri) {
+          Animations.TrailAnim.InsertInLayers(layers, idx++);
+          Animations.GlideAnim.InsertInLayers(layers, idx++);
+          Animations.BashAnim.InsertInLayers(layers, idx++);
+        }
+        if (!player.dead && !player.invis) {
+          Animations.PlayerAnim.InsertInLayers(layers, idx++);
           if (IsOri) {
-            Animations.TrailAnim.AddToLayers(layers);
-            Animations.GlideAnim.AddToLayers(layers);
-            Animations.BashAnim.AddToLayers(layers);
-          }
-          if (!player.dead && !player.invis) {
-            layers.Add(Animations.PlayerAnim.playerLayer);
-            if (IsOri) {
-              layers.Add(Animations.SecondaryLayer.playerLayer);
-            }
+            Animations.SecondaryLayer.InsertInLayers(layers, idx++);
           }
         }
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
