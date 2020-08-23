@@ -2,6 +2,9 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Dusts {
+  /// <summary>
+  /// Dust used as a trail for <see cref="Projectiles.Minions.SpiritFlame"/>.
+  /// </summary>
   public class SpiritFlameDustTrail : ModDust {
     private int AlphaRate => 1;
 

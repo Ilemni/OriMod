@@ -31,7 +31,7 @@ namespace OriMod.Abilities {
     private readonly RandomChar randEnd = new RandomChar();
 
     protected override void UpdateStarting() {
-      if (CurrentTime == 0) {
+      if (currentTime == 0) {
         oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + randStart.NextNoRepeat(3), 0.8f);
       }
     }
@@ -43,7 +43,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateEnding() {
-      if (CurrentTime == 0) {
+      if (currentTime == 0) {
         oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + randEnd.NextNoRepeat(3), 0.8f);
       }
     }
@@ -59,25 +59,25 @@ namespace OriMod.Abilities {
     internal override void Tick() {
       if (!InUse && CanUse && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
         SetState(State.Starting);
-        CurrentTime = 0;
+        currentTime = 0;
         return;
       }
       if (Manager.dash.InUse || Manager.airJump.InUse) {
         SetState(State.Inactive);
-        CurrentTime = 0;
+        currentTime = 0;
         return;
       }
       if (InUse) {
         if (Starting) {
-          CurrentTime++;
-          if (CurrentTime > StartDuration) {
+          currentTime++;
+          if (currentTime > StartDuration) {
             SetState(State.Active);
-            CurrentTime = 0;
+            currentTime = 0;
           }
         }
         else if (Ending) {
-          CurrentTime++;
-          if (CurrentTime > EndDuration) {
+          currentTime++;
+          if (currentTime > EndDuration) {
             SetState(State.Inactive);
           }
         }
@@ -91,7 +91,7 @@ namespace OriMod.Abilities {
         }
         else if (OriMod.FeatherKey.JustReleased) {
           SetState(State.Ending);
-          CurrentTime = 0;
+          currentTime = 0;
         }
       }
     }

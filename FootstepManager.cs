@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   /// <summary>
-  /// This class is used to handle creation of footstep sounds
+  /// This class is used to handle creation of footstep sounds.
   /// </summary>
   public sealed class FootstepManager : SingleInstance<FootstepManager> {
     private FootstepManager() {
@@ -138,6 +138,9 @@ namespace OriMod {
       }
     }
 
+    /// <summary>
+    /// Array of footstep sounds for a given <see cref="Tile"/>, where the index corresponds to a <see cref="Tile.type"/>
+    /// </summary>
     public readonly FootstepSound[] TileFootstepSounds;
 
     private readonly RandomChar rand = new RandomChar();
@@ -285,20 +288,39 @@ namespace OriMod {
       return FootstepSound.None;
     }
 
+    /// <summary>
+    /// Get a <see cref="Tile"/> at <paramref name="point"/>.
+    /// </summary>
+    /// <param name="point">Position of the tile.</param>
+    /// <returns>A <see cref="Tile"/> at the provided position.</returns>
     private Tile GetTile(Point point) => Main.tile[point.X, point.Y];
     
+    /// <summary>
+    /// Get a <see cref="Tile"/> at <paramref name="vector"/>. <paramref name="vector"/> is coverted to tile coordinates.
+    /// </summary>
+    /// <param name="vector">World-space position of the tile.</param>
+    /// <returns>A <see cref="Tile"/> at the provided position.</returns>
     private Tile GetTile(Vector2 vector) => GetTile(vector.ToTileCoordinates());
 
+    /// <summary>
+    /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for footstep sounds.
+    /// </summary>
     private SoundEffectInstance PlayFootstep(string path, int x, int y, float volume)
       => Main.PlaySound((int)SoundType.Custom, x, y, OriMod.Instance.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/Ori/Footsteps/" + path), volume);
-    
+
+    /// <summary>
+    /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for landing sounds.
+    /// </summary>
     private SoundEffectInstance PlayLanding(string path, int x, int y, float volume)
       => Main.PlaySound((int)SoundType.Custom, x, y, OriMod.Instance.GetSoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/Ori/Land/" + path), volume, 0.1f);
     #endregion
 
+    /// <summary>
+    /// Enum to represent footstep sounds.
+    /// </summary>
     public enum FootstepSound : byte {
       /// <summary>
-      /// TileIDs pending assignment
+      /// TileIDs pending assignment.
       /// </summary>
       Unassigned = 0,
       /// <summary>
@@ -342,11 +364,11 @@ namespace OriMod {
       /// </summary>
       Water = 10,
       /// <summary>
-      /// Failed attempt to convert mod tile name to a footstep sound
+      /// Failed attempt to convert mod tile name to a footstep sound.
       /// </summary>
       NoModTranslation = 254,
       /// <summary>
-      /// For tiles that can never be stepped on (i.e. Banners, Torches)
+      /// For tiles that can never be stepped on (i.e. Banners, Torches).
       /// </summary>
       None = 255,
     }

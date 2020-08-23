@@ -21,9 +21,8 @@ namespace OriMod.Items {
       shortCooldown = 24f;
       longCooldown = 40f;
       randDegrees = 40;
-      targetMaxDist = 240f;
-      targetThroughWallDist = 80f;
-      pierce = 1;
+      targetMaxDistance = 240f;
+      targetThroughWallDistance = 80f;
       knockback = 0f;
       homingStrengthStart = 0.07f;
       homingIncreaseRate = 0.04f;
@@ -110,7 +109,7 @@ namespace OriMod.Items {
       projectileSpeedStart = 10.5f;
       projectileSpeedIncreaseRate = 0.65f;
       projectileSpeedIncreaseDelay = 19;
-      targetMaxDist = 370f;
+      targetMaxDistance = 370f;
       dustScale = 1.55f;
       lightStrength = 1.275f;
       return this;
@@ -179,9 +178,8 @@ namespace OriMod.Items {
       targets = 3;
       shotsPerTarget = 2;
       maxShotsPerVolley = 5;
-      pierce = 2;
       homingIncreaseDelay = 17;
-      targetMaxDist = 440f;
+      targetMaxDistance = 440f;
       dustScale = 2.2f;
       lightStrength = 1.4f;
       return this;
@@ -213,7 +211,7 @@ namespace OriMod.Items {
       minCooldown = 10f;
       shortCooldown = 34f;
       longCooldown = 52f;
-      targetThroughWallDist = 224f;
+      targetThroughWallDistance = 224f;
       homingIncreaseRate = 0.0625f;
       projectileSpeedStart = 14.5f;
       projectileSpeedIncreaseRate = 0.825f;
@@ -250,7 +248,7 @@ namespace OriMod.Items {
       maxShotsPerVolley = 9;
       homingIncreaseRate = 0.025f;
       projectileSpeedStart = 16f;
-      targetMaxDist = 510f;
+      targetMaxDistance = 510f;
       randDegrees = 120;
       dustScale = 3f;
       lightStrength = 4.5f;
@@ -281,7 +279,6 @@ namespace OriMod.Items {
       value = 500000;
       color = new Color(220, 220, 220);
       damage = 92;
-      pierce = 1; // TODO: Revert to 3
       shotsPerBurst = 4;
       targets = 6;
       shotsToPrimaryTarget = 4;
@@ -294,8 +291,8 @@ namespace OriMod.Items {
       projectileSpeedIncreaseRate = 1f;
       projectileSpeedIncreaseDelay = 35;
       randDegrees = 180;
-      targetMaxDist = 650f;
-      targetThroughWallDist = 370f;
+      targetMaxDistance = 650f;
+      targetThroughWallDistance = 370f;
       dustScale = 3.35f;
       lightStrength = 2.5f;
       return this;

@@ -298,7 +298,7 @@ namespace OriMod.Abilities {
           if (vel != Vector2.Zero) {
             // Enter Burrow
             SetState(State.Active);
-            CurrentCooldown = Cooldown;
+            currentCooldown = Cooldown;
 
             AutoBurrow = OriMod.ConfigClient.AutoBurrow && OriMod.BurrowKey.Current;
             if (AutoBurrow) {

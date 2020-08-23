@@ -6,7 +6,7 @@ using Terraria.ModLoader;
 
 namespace OriMod.Items {
   /// <summary>
-  /// Item that can transform the player to and from Ori state.
+  /// Consumable item that toggles <see cref="OriPlayer.IsOri"/>.
   /// </summary>
   public class OriPotion : ModItem {
     public override void SetDefaults() {

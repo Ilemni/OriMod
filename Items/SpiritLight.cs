@@ -1,15 +1,24 @@
-using OriMod.Upgrades;
+﻿using OriMod.Upgrades;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Items {
   /// <summary>
-  /// Currency for Upgrade System.
+  /// Item drop for an Upgrade System that would use <see cref="SpiritLight"/> as currency. <see cref="Currency"/> is added to <see cref="OriPlayer.SpiritLight"/>.
   /// </summary>
+  [System.Obsolete]
   public class SpiritLight : ModItem {
-    public override bool Autoload(ref string name) => false; 
+    public override bool Autoload(ref string name) => false;
+
+    /// <summary>
+    /// Currency that would be added to <see cref="OriPlayer.SpiritLight"/> upon pickup.
+    /// </summary>
     public int Currency { get; }
 
+    /// <summary>
+    /// Add the currency to <paramref name="player"/>.
+    /// </summary>
+    /// <param name="player"></param>
     public void AddCurrencyToPlayer(Player player) => player.GetModPlayer<OriPlayer>().SpiritLight += Currency;
 
     #region Handling inventory scenarios

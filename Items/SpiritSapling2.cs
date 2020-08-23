@@ -2,6 +2,10 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Items {
+  /// <summary>
+  /// <see cref="SpiritSapling"/> was intended to be multi-tiered for an Upgrade System.
+  /// </summary>
+  [System.Obsolete]
   public class SpiritSapling2 : ModItem {
     public override bool Autoload(ref string name) => false;
     

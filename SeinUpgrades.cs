@@ -5,97 +5,97 @@ using System.Collections.Generic;
 namespace OriMod {
   public class SeinUpgrade {
     /// <summary>
-    /// Damage of Spirit Flame
+    /// Damage of Spirit Flame.
     /// </summary>
     public int damage = 12;
 
     /// <summary>
-    /// Number of NPCs that can be targeted at once
+    /// Number of NPCs that can be targeted at once.
     /// </summary>
     public int targets = 1;
 
     /// <summary>
-    /// Maximum times the minion can fire with a delay of <see cref="minCooldown"/> before having a delay of <see cref="longCooldown"/>
+    /// Maximum times the minion can fire with a delay of <see cref="minCooldown"/> before having a delay of <see cref="longCooldown"/>.
     /// </summary>
     public int shotsPerBurst = 2;
 
     /// <summary>
-    /// Maximum number of shots that can be fired at each target
+    /// Maximum number of shots that can be fired at each target.
     /// </summary>
     public int shotsPerTarget = 1;
 
     /// <summary>
-    /// Maximum number of shots that can be fired at the primary target at once
+    /// Maximum number of shots that can be fired at the primary target at once.
     /// </summary>
     public int shotsToPrimaryTarget = 1;
 
     /// <summary>
-    /// Maximum number of shots that can be fired at once
+    /// Maximum number of shots that can be fired at once.
     /// </summary>
     public int maxShotsPerVolley = 1;
 
     /// <summary>
-    /// Delay between each shot in <see cref="shotsPerBurst"/>
+    /// Delay between each shot in <see cref="shotsPerBurst"/>.
     /// /summary>
     public float minCooldown = 12f;
 
     /// <summary>
-    /// Shortest time to wait during <see cref="shotsPerBurst"/> to reset burst count
+    /// Shortest time to wait during <see cref="shotsPerBurst"/> to reset burst count.
     /// </summary>
     public float shortCooldown = 24f;
 
     /// <summary>
-    /// Delay between each series of shots, incurred when shots reaches <see cref="shotsPerBurst"/>
+    /// Delay between each series of shots, incurred when shots reaches <see cref="shotsPerBurst"/>.
     /// </summary>
     public float longCooldown = 40f;
 
     /// <summary>
-    /// Maximum angle that fired Spirit Flames will be away from the target
+    /// Maximum angle that fired Spirit Flames will be away from the target.
     /// </summary>
     internal int randDegrees = 40;
 
     /// <summary>
-    /// NPCs within this distance from the player can be targeted by the minion, if there is line of sight between it and the player
+    /// NPCs within this distance from the player can be targeted by the minion, if there is line of sight between it and the player.
     /// </summary>
     public float targetMaxDist = 240f;
 
     /// <summary>
-    /// NPCs within this distance from the player can be targeted by the minion, regardless of line of sight
+    /// NPCs within this distance from the player can be targeted by the minion, regardless of line of sight.
     /// </summary>
     public float targetThroughWallDist = 80f;
 
     /// <summary>
-    /// The knockback of Spirit Flame
+    /// The knockback of Spirit Flame.
     /// </summary>
     public float knockback = 0f;
 
     /// <summary>
-    /// Starting homing strength of Spirit Flame 
+    /// Starting homing strength of Spirit Flame.
     /// </summary>
     internal float homingStrengthStart = 0.07f;
 
     /// <summary>
-    /// Rate to increase homing strength every frame after <see cref="homingIncreaseDelay"/>
+    /// Rate to increase homing strength every frame after <see cref="homingIncreaseDelay"/>.
     /// </summary>
     internal float homingIncreaseRate = 0.04f;
 
     /// <summary>
-    /// Ticks to wait before increasing homing strength by <see cref="homingIncreaseRate"/>
+    /// Ticks to wait before increasing homing strength by <see cref="homingIncreaseRate"/>.
     /// </summary>
     internal int homingIncreaseDelay = 16;
 
     /// <summary>
-    /// Speed of Spirit Flame when it is fired
+    /// Speed of Spirit Flame when it is fired.
     /// </summary>
     internal float projectileSpeedStart = 5f;
 
     /// <summary>
-    /// Acceleration of Spirit Flame after waiting for <see cref="projectileSpeedIncreaseDelay"/>
+    /// Acceleration of Spirit Flame after waiting for <see cref="projectileSpeedIncreaseDelay"/>.
     /// </summary>
     internal float projectileSpeedIncreaseRate = 0.5f;
 
     /// <summary>
-    /// Time to wait before increasing Spirit Flame speed by <see cref="projectileSpeedIncreaseRate"/>
+    /// Time to wait before increasing Spirit Flame speed by <see cref="projectileSpeedIncreaseRate"/>.
     /// </summary>
     internal int projectileSpeedIncreaseDelay = 10;
 
@@ -105,33 +105,36 @@ namespace OriMod {
     internal int flameHeight = 12;
 
     /// <summary>
-    /// The size of the dust trail emitted from Spirit Flame
+    /// The size of the dust trail emitted from Spirit Flame.
     /// </summary>
     public float dustScale = 0.8f;
 
     /// <summary>
-    /// Rarity of the Spirit Orb
+    /// Rarity of the Spirit Orb.
     /// </summary>
     internal int rarity = 1;
 
     /// <summary>
-    /// Buy value of the Spirit Orb 
+    /// Buy value of the Spirit Orb.
     /// </summary>
     internal int value = 1000;
 
     /// <summary>
-    /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights
+    /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights.
     /// /summary>
     internal Color color;
 
     /// <summary>
-    /// Strength of the light emitted from Sein and Spirit Flame
+    /// Strength of the light emitted from Sein and Spirit Flame.
     /// </summary>
     internal float lightStrength;
   }
 
   public partial class OriMod {
-    internal List<SeinUpgrade> SeinUpgrades;
+    /// <summary>
+    /// All <see cref="SeinUpgrade"/>s in the mod.
+    /// </summary>
+    internal readonly List<SeinUpgrade> SeinUpgrades = new List<SeinUpgrade>();
 
     /// <summary>
     /// Loads all Sein variants. Sein stats are hardcoded into this method.
@@ -160,7 +163,7 @@ namespace OriMod {
         SeinUpgrades.Add(newSein);
       }
 
-      SeinUpgrades = new List<SeinUpgrade>();
+      SeinUpgrades.Clear();
 
       // Tier 1 (Silver)
       AddNewSein(new SeinUpgrade());

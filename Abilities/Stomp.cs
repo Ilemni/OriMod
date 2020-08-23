@@ -39,7 +39,7 @@ namespace OriMod.Abilities {
     private readonly RandomChar randEnd = new RandomChar();
 
     protected override void UpdateStarting() {
-      if (CurrentTime == 0) {
+      if (currentTime == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + randStart.NextNoRepeat(3), 1f, 0.2f);
       }
       player.velocity.X = 0;
@@ -48,7 +48,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      if (CurrentTime == 0) {
+      if (currentTime == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3));
         PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
       }
@@ -60,7 +60,7 @@ namespace OriMod.Abilities {
       player.runSlowdown = 8;
       player.gravity = Gravity;
       player.maxFallSpeed = MaxFallSpeed;
-      oPlayer.ImmuneTimer = 12;
+      oPlayer.immuneTimer = 12;
     }
 
     internal void EndStomp() {
@@ -101,21 +101,21 @@ namespace OriMod.Abilities {
           currentHoldDown++;
           if (HoldDownDelay == 0 || currentHoldDown > HoldDownDelay) {
             SetState(State.Starting);
-            CurrentTime = 0;
+            currentTime = 0;
             currentHoldDown = 0;
           }
         }
       }
       else if (Starting) {
-        CurrentTime++;
-        if (CurrentTime > StartDuration) {
-          CurrentTime = 0;
+        currentTime++;
+        if (currentTime > StartDuration) {
+          currentTime = 0;
           SetState(State.Active);
         }
       }
       else if (Active) {
-        CurrentTime++;
-        if (CurrentTime > MinDuration && !PlayerInput.Triggers.Current.Down) {
+        currentTime++;
+        if (currentTime > MinDuration && !PlayerInput.Triggers.Current.Down) {
           SetState(State.Inactive);
         }
         if (oPlayer.IsGrounded) {

@@ -8,6 +8,10 @@ namespace OriMod {
   /// Primarily used for <see cref="Abilities.Burrow"/>, stores an array of points as a template, and retrieves tiles of that template when updated.
   /// </summary>
   public class TileHitbox {
+    /// <summary>
+    /// Instantiate a <see cref="TileHitbox"/> with local-space <paramref name="template"/>.
+    /// </summary>
+    /// <param name="template"><see cref="Template"/>. Must have at least 1 item.</param>
     public TileHitbox(params Point[] template) {
       if (template is null) {
         throw new ArgumentNullException(nameof(template));
@@ -34,13 +38,13 @@ namespace OriMod {
     /// <summary>
     /// Updates the position of the hitbox based on the given world position.
     /// </summary>
-    /// <param name="origin">Position to use</param>
+    /// <param name="origin">World-space position to use.</param>
     public void UpdateHitbox(Vector2 origin) => UpdateHitbox(origin.ToTileCoordinates());
 
     /// <summary>
     /// Updates the world position of the hitbox based on the given tile position.
     /// </summary>
-    /// <param name="origin">Position to use</param>
+    /// <param name="origin">Tile-space position to use.</param>
     public void UpdateHitbox(Point origin) {
       for (int i = 0; i < Points.Length; i++) {
         Points[i] = Template[i].Add(origin);

@@ -2,20 +2,20 @@
 
 namespace OriMod.Animations {
   /// <summary>
-  /// Animation Track created on startup
+  /// Animation Track created on startup, contains <see cref="Frame"/> data.
   /// </summary>
   public class Track {
     /// <summary>
     /// Creates a track with the given Header and Frames.
-    /// <para>If <see cref="Header.Init"/> is <see cref="InitType.Range"/>, <paramref name="frames"/> will be filled automatically.</para>
+    /// <para>If <paramref name="header"/> uses <see cref="InitType.Range"/>, <paramref name="frames"/> will be filled automatically.</para>
     /// </summary>
-    /// <param name="header"></param>
-    /// <param name="frames"></param>
+    /// <param name="header">Assigns to <see cref="header"/>.</param>
+    /// <param name="frames">Assigns to <see cref="frames"/>.</param>
     public Track(Header header, params Frame[] frames) {
-      Header = header;
+      this.header = header;
 
-      if (header.Init != InitType.Range || frames.Length < 2) {
-        Frames = frames;
+      if (header.init != InitType.Range || frames.Length < 2) {
+        this.frames = frames;
       }
       else {
         var newFrames = new List<Frame>();
@@ -27,31 +27,31 @@ namespace OriMod.Animations {
           }
         }
         newFrames.Add(frames[frames.Length - 1]);
-        Frames = newFrames.ToArray();
+        this.frames = newFrames.ToArray();
       }
 
       foreach (Frame f in frames) {
         if (f.Duration == -1) {
-          Duration = -1;
+          duration = -1;
           break;
         }
-        Duration += f.Duration;
+        duration += f.Duration;
       }
     }
 
     /// <summary>
     /// Header used for this track.
     /// </summary>
-    public readonly Header Header;
+    public readonly Header header;
 
     /// <summary>
     /// All frames used for this track.
     /// </summary>
-    public readonly Frame[] Frames;
+    public readonly Frame[] frames;
     
     /// <summary>
-    /// Total duration of the track, equal to total duration of <see cref="Frames"/>. May be -1, which is no duration.
+    /// Total duration of the track, equal to total duration of <see cref="frames"/>. May be -1, which is no duration.
     /// </summary>
-    public readonly short Duration;
+    public readonly short duration;
   }
 }

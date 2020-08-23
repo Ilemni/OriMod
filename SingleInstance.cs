@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 
 namespace OriMod {
   /// <summary>
   /// Class used to hold a single static reference to an instance of <see cref="T"/>.
   /// <para>Classes inheriting from this should use a private constructor.</para>
   /// </summary>
-  /// <typeparam name="T">The type to make Singleton</typeparam>
+  /// <typeparam name="T">The type to make Singleton.</typeparam>
   public abstract class SingleInstance<T> where T : SingleInstance<T> {
     private static readonly object _lock = new object();
     
     /// <summary>
-    /// The instance of this type
+    /// The instance of this type.
     /// </summary>
     public static T Instance {
       get {

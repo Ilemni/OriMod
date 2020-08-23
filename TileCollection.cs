@@ -4,7 +4,7 @@ using OriMod.Utilities;
 
 namespace OriMod {
   /// <summary>
-  /// Contains the Pickaxe power of each tile. Used for <see cref="Abilities.Burrow"/>
+  /// Contains the Pickaxe power of each tile. Used for <see cref="Abilities.Burrow"/>.
   /// </summary>
   internal class TileCollection : SingleInstance<TileCollection> {
     private TileCollection() {
@@ -39,6 +39,9 @@ namespace OriMod {
       }
     }
 
+    /// <summary>
+    /// Array of pickaxe power for a given <see cref="Terraria.Tile"/>, where the index corresponds to a <see cref="Terraria.Tile.type"/>
+    /// </summary>
     internal readonly ushort[] TilePickaxeMin;
   }
 }

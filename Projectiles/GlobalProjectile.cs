@@ -3,6 +3,9 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Projectiles {
+  /// <summary>
+  /// <see cref="GlobalProjectile"/> for handling <see cref="global::OriMod.Abilities.Bash"/>
+  /// </summary>
   public class OriProjectile : GlobalProjectile, IBashable {
     public override bool InstancePerEntity => true;
     public OriPlayer BashPlayer { get; set; }

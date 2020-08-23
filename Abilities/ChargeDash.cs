@@ -73,9 +73,9 @@ namespace OriMod.Abilities {
     }
 
     protected override void TickCooldown() {
-      if (!Refreshed || CurrentCooldown > 0) {
-        CurrentCooldown--;
-        if (CurrentCooldown < 0 && !OriMod.ChargeKey.Current) {
+      if (!Refreshed || currentCooldown > 0) {
+        currentCooldown--;
+        if (currentCooldown < 0 && !OriMod.ChargeKey.Current) {
           Refreshed = true;
         }
       }
@@ -94,9 +94,9 @@ namespace OriMod.Abilities {
         // Force player position to same as target's, and reduce speed.
         player.position = target.position;
         player.position.Y -= 32f;
-        player.velocity *= Speeds[CurrentTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
+        player.velocity *= Speeds[currentTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
       }
-      else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
+      else if ((target is null || currentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
         Vector2 newVel = target is null && !Manager.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
         newVel.Normalize();
@@ -135,7 +135,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateUsing() {
-      float speed = Speeds[CurrentTime] * SpeedMultiplier;
+      float speed = Speeds[currentTime] * SpeedMultiplier;
       player.gravity = 0;
       var target = Target;
 
@@ -145,24 +145,24 @@ namespace OriMod.Abilities {
         dir.Y -= 32f;
         dir.Normalize();
         player.velocity = dir * speed;
-        if (CurrentTime < Duration && (player.position - target.position).Length() < speed) {
+        if (currentTime < Duration && (player.position - target.position).Length() < speed) {
           End(byNpcContact: true);
         }
       }
       else {
         player.velocity.X = speed * Direction * 0.8f;
-        player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrentTime + 1)) * player.gravDir;
+        player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (currentTime + 1)) * player.gravDir;
       }
 
       player.runSlowdown = 26f;
-      oPlayer.ImmuneTimer = 12;
+      oPlayer.immuneTimer = 12;
     }
 
     internal override void Tick() {
       if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
         if (player.CheckMana(ManaCost, true, true)) {
           SetState(State.Active);
-          CurrentTime = 0;
+          currentTime = 0;
           UpdateStarting();
         }
         else if (!Manager.dash.InUse) {
@@ -174,8 +174,8 @@ namespace OriMod.Abilities {
       if (InUse) {
         SetState(State.Inactive);
         Manager.dash.Refreshed = false;
-        CurrentTime++;
-        if (CurrentTime > Duration || oPlayer.OnWall || Manager.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
+        currentTime++;
+        if (currentTime > Duration || oPlayer.OnWall || Manager.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           End();
         }
       }

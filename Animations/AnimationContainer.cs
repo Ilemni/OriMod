@@ -11,10 +11,21 @@
       GlideAnim = new Animation(oPlayer, AnimationHandler.Instance.GlideAnim, OriLayers.Instance.FeatherSprite);
     }
 
+    /// <summary>
+    /// Animation for the player sprite.
+    /// </summary>
     public readonly Animation PlayerAnim;
-    public readonly Animation SecondaryLayer;
-    public readonly Animation TrailAnim;
+    public readonly Animation SecondaryLayer; // TODO: remove
+    public readonly Animation TrailAnim; // TODO: remove
+    
+    /// <summary>
+    /// Animation for the Bash arrow sprite.
+    /// </summary>
     public readonly Animation BashAnim;
+
+    /// <summary>
+    /// Animation for the Glide feather sprite.
+    /// </summary>
     public readonly Animation GlideAnim;
   }
 }

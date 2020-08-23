@@ -31,7 +31,7 @@ namespace OriMod.Abilities {
     private readonly RandomChar rand = new RandomChar();
 
     internal void StartDash() {
-      CurrentTime = 0;
+      currentTime = 0;
       Direction = (sbyte)(PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
       oPlayer.PlayNewSound("Ori/Dash/seinDash" + rand.NextNoRepeat(3), 0.2f);
       player.pulley = false;
@@ -51,9 +51,9 @@ namespace OriMod.Abilities {
         PutOnCooldown();
         return;
       }
-      player.velocity.X = Speeds[CurrentTime] * SpeedMultiplier * Direction;
-      player.velocity.Y = 0.25f * (CurrentTime + 1) * player.gravDir;
-      if (CurrentTime > 20) {
+      player.velocity.X = Speeds[currentTime] * SpeedMultiplier * Direction;
+      player.velocity.Y = 0.25f * (currentTime + 1) * player.gravDir;
+      if (currentTime > 20) {
         player.runSlowdown = 26f;
       }
     }
@@ -64,9 +64,9 @@ namespace OriMod.Abilities {
     }
 
     protected override void TickCooldown() {
-      if (CurrentCooldown > 0 || !Refreshed) {
-        CurrentCooldown--;
-        if (CurrentCooldown < 0 && (Manager.bash.InUse || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
+      if (currentCooldown > 0 || !Refreshed) {
+        currentCooldown--;
+        if (currentCooldown < 0 && (Manager.bash.InUse || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
           Refreshed = true;
         }
       }
@@ -80,8 +80,8 @@ namespace OriMod.Abilities {
       }
       TickCooldown();
       if (InUse) {
-        CurrentTime++;
-        if (CurrentTime > Duration - 1 || oPlayer.OnWall || Manager.bash.InUse) {
+        currentTime++;
+        if (currentTime > Duration - 1 || oPlayer.OnWall || Manager.bash.InUse) {
           SetState(State.Inactive);
           PutOnCooldown();
         }

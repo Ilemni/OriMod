@@ -4,6 +4,9 @@ using Terraria.ModLoader;
 using OriMod.Utilities;
 
 namespace OriMod.NPCs {
+  /// <summary>
+  /// <see cref="GlobalNPC"/> for handling <see cref="Abilities.Bash"/> and <see cref="OriWorld.GlobalUpgrade"/>
+  /// </summary>
   public class OriNPC : GlobalNPC, IBashable {
     public override bool InstancePerEntity => true;
     public OriPlayer BashPlayer { get; set; }

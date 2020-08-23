@@ -5,67 +5,67 @@ using OriMod.Networking;
 
 namespace OriMod {
   /// <summary>
-  /// IDs for each <see cref="Abilities.Ability"/>
+  /// IDs for each <see cref="Abilities.Ability"/>.
   /// </summary>
   public static class AbilityID {
     /// <summary>
-    /// ID for <see cref="Abilities.SoulLink"/>
+    /// ID for <see cref="Abilities.SoulLink"/>.
     /// </summary>
     public const byte SoulLink = 0;
     /// <summary>
-    /// ID for <see cref="Abilities.WallJump"/>
+    /// ID for <see cref="Abilities.WallJump"/>.
     /// </summary>
     public const byte WallJump = 1;
     /// <summary>
-    /// ID for <see cref="Abilities.AirJump"/>
+    /// ID for <see cref="Abilities.AirJump"/>.
     /// </summary>
     public const byte AirJump = 2;
     /// <summary>
-    /// ID for <see cref="Abilities.Bash"/>
+    /// ID for <see cref="Abilities.Bash"/>.
     /// </summary>
     public const byte Bash = 3;
     /// <summary>
-    /// ID for <see cref="Abilities.Stomp"/>
+    /// ID for <see cref="Abilities.Stomp"/>.
     /// </summary>
     public const byte Stomp = 4;
     /// <summary>
-    /// ID for <see cref="Abilities.Glide"/>
+    /// ID for <see cref="Abilities.Glide"/>.
     /// </summary>
     public const byte Glide = 5;
     /// <summary>
-    /// ID for <see cref="Abilities.Climb"/>
+    /// ID for <see cref="Abilities.Climb"/>.
     /// </summary>
     public const byte Climb = 6;
     /// <summary>
-    /// ID for <see cref="Abilities.ChargeJump"/>
+    /// ID for <see cref="Abilities.ChargeJump"/>.
     /// </summary>
     public const byte ChargeJump = 7;
     /// <summary>
-    /// ID for <see cref="Abilities.WallChargeJump"/>
+    /// ID for <see cref="Abilities.WallChargeJump"/>.
     /// </summary>
     public const byte WallChargeJump = 8;
     /// <summary>
-    /// ID for <see cref="Abilities.Dash"/>
+    /// ID for <see cref="Abilities.Dash"/>.
     /// </summary>
     public const byte Dash = 9;
     /// <summary>
-    /// ID for <see cref="Abilities.ChargeDash"/>
+    /// ID for <see cref="Abilities.ChargeDash"/>.
     /// </summary>
     public const byte ChargeDash = 10;
     /// <summary>
-    /// ID for <see cref="Abilities.LookUp"/>
+    /// ID for <see cref="Abilities.LookUp"/>.
     /// </summary>
     public const byte LookUp = 11;
     /// <summary>
-    /// ID for <see cref="Abilities.Crouch"/>
+    /// ID for <see cref="Abilities.Crouch"/>.
     /// </summary>
     public const byte Crouch = 12;
     /// <summary>
-    /// ID for <see cref="Abilities.Burrow"/>
+    /// ID for <see cref="Abilities.Burrow"/>.
     /// </summary>
     public const byte Burrow = 13;
     /// <summary>
-    /// ID count for iteration
+    /// ID count for iterating through a loop.
     /// </summary>
     public const int Count = 14;
   }
@@ -76,6 +76,10 @@ namespace OriMod.Abilities {
   /// Class for containing and updating all <see cref="Ability"/>s on an <see cref="OriPlayer"/>.
   /// </summary>
   public sealed class AbilityManager {
+    static AbilityManager() {
+      SingleInstance.OnUnload += Unload;
+    }
+
     internal AbilityManager(OriPlayer oPlayer) {
       this.oPlayer = oPlayer;
 

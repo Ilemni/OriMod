@@ -5,113 +5,109 @@ using Terraria.ModLoader;
 
 namespace OriMod.Items {
   /// <summary>
-  /// Summoning item used to summon <see cref="Projectiles.Minions.Sein"/>
+  /// Summoning item used to summon <see cref="Projectiles.Minions.Sein"/>.
   /// </summary>
   public abstract class SpiritOrb : ModItem {
     public override string Texture => "OriMod/Items/SpiritOrb";
 
     #region Stats
     /// <summary>
-    /// Damage of Spirit Flame
+    /// Damage of Spirit Flame.
     /// </summary>
     public int damage = 12;
 
     /// <summary>
-    /// Multiplier of damage dealt to the primary target
+    /// Multiplier of damage dealt to the primary target.
     /// </summary>
     public float primaryDamageMultiplier = 1;
 
     /// <summary>
-    /// Number of NPCs that can be targeted at once
+    /// Number of <see cref="NPC"/>s that can be targeted at once.
     /// </summary>
     public int targets = 1;
 
     /// <summary>
-    /// Maximum times the minion can fire with a delay of `minCooldown` before having a delay of `longCooldown`
+    /// Maximum times the minion can fire with a delay of <see cref="minCooldown"/> before having a delay of <see cref="longCooldown"/>.
     /// </summary>
     public int shotsPerBurst = 2;
 
     /// <summary>
-    /// Maximum number of shots that can be fired at each target
+    /// Maximum number of shots that can be fired at each target.
     /// </summary>
     public int shotsPerTarget = 1;
 
     /// <summary>
-    /// Maximum number of shots that can be fired at the primary target at once
+    /// Maximum number of shots that can be fired at the primary target at once.
     /// </summary>
     public int shotsToPrimaryTarget = 1;
 
     /// <summary>
-    /// Maximum number of shots that can be fired at once
+    /// Maximum number of shots that can be fired at once.
     /// </summary>
     public int maxShotsPerVolley = 1;
 
     /// <summary>
-    /// Delay between each shot in `shotsPerBurst`
+    /// Delay between each shot in <see cref="shotsPerBurst"/>.
     /// </summary>
     public float minCooldown = 12f;
 
     /// <summary>
-    /// Shortest time to wait during <c>shotsPerBurst</c> to reset burst count
+    /// Shortest time to wait during <see cref="shotsPerBurst"/> to reset burst count.
     /// </summary>
     public float shortCooldown = 24f;
 
     /// <summary>
-    /// Delay between each series of shots, incurred when shots reaches `shotsPerBurst` </summary>
+    /// Delay between each series of shots, incurred when shots reaches <see cref="shotsPerBurst."/>.
+    /// </summary>
     public float longCooldown = 40f;
 
     /// <summary>
-    /// Maximum angle that fired Spirit Flames will be away from the target
+    /// Maximum angle that fired Spirit Flames will be away from the target.
     /// </summary>
     internal int randDegrees = 40;
 
     /// <summary>
-    /// NPCs this distance from the player can be targeted by the minion, if there is line of sight between it and the player
+    /// NPCs within this distance from the player can be targeted by the minion, if there is line of sight between it and the player.
     /// </summary>
-    public float targetMaxDist = 240f;
+    public float targetMaxDistance = 240f;
 
     /// <summary>
-    /// NPCs this distance from the player can be targeted by the minion, regardless of line of sight
+    /// NPCs within this distance from the player can be targeted by the minion, regardless of line of sight.
     /// </summary>
-    public float targetThroughWallDist = 80f;
+    public float targetThroughWallDistance = 80f;
 
     /// <summary>
-    /// The amount of times Spirit Flame can hit enemies before disappearing
-    /// </summary>
-    public int pierce = 1;
-
-    /// <summary>
-    /// The knockback of Spirit Flame
+    /// The knockback of Spirit Flame.
     /// </summary>
     public float knockback = 0f;
 
     /// <summary>
-    /// Starting homing strength of Spirit Flame
+    /// Starting homing strength of Spirit Flame.
     /// </summary>
     internal float homingStrengthStart = 0.07f;
 
     /// <summary>
-    /// Rate to increase homing strength every frame after `homingIncreaseDelay`
+    /// Rate to increase homing strength every frame after <see cref="homingIncreaseDelay"/>.
     /// </summary>
     internal float homingIncreaseRate = 0.04f;
 
     /// <summary>
-    /// Ticks to wait before increasing homing strength by `homingIncreaseRate`
+    /// Ticks to wait before increasing homing strength by <see cref="homingIncreaseRate"/>.
     /// </summary>
     internal int homingIncreaseDelay = 16;
 
     /// <summary>
-    /// Speed of Spirit Flame when it is fired
+    /// Speed of Spirit Flame when it is fired.
     /// </summary>
     internal float projectileSpeedStart = 5f;
 
     /// <summary>
-    /// Acceleration of Spirit Flame after waiting for `projectileSpeedIncreaseDelay`
+    /// Acceleration of Spirit Flame after waiting for <see cref="projectileSpeedIncreaseDelay"/>.
     /// </summary>
     internal float projectileSpeedIncreaseRate = 0.5f;
 
     /// <summary>
-    /// Time to wait before increasing Spirit Flame speed by `projectileSpeedIncreaseRate`
+    /// Time to wait before increasing Spirit Flame speed by <see cref="projectileSpeedIncreaseRate"/>.
     /// </summary>
     internal int projectileSpeedIncreaseDelay = 10;
 
@@ -121,36 +117,53 @@ namespace OriMod.Items {
     internal int flameHeight = 12;
 
     /// <summary>
-    /// The size of the dust trail emitted from Spirit Flame
+    /// The size of the dust trail emitted from Spirit Flame.
     /// </summary>
     public float dustScale = 0.8f;
 
     /// <summary>
-    /// Rarity of the Spirit Orb
+    /// <see cref="ItemRarityID"/> of the Spirit Orb.
     /// </summary>
     internal int rarity = 1;
 
     /// <summary>
-    /// Buy value of the Spirit Orb
+    /// Buy value of the Spirit Orb.
     /// </summary>
     internal int value = 1000;
 
     /// <summary>
-    /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights
+    /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights.
     /// </summary>
     internal Color color;
 
     /// <summary>
-    /// Strength of the light emitted from Sein and Spirit Flame
+    /// Strength of the light emitted from Sein and Spirit Flame.
     /// </summary>
     internal float lightStrength;
     #endregion
 
+    /// <summary>
+    /// Set stats for <see cref="SpiritOrb"/> fields.
+    /// </summary>
+    /// <returns></returns>
     internal abstract SpiritOrb SetOrbDefaults();
 
+    /// <summary>
+    /// Type for <see cref="Buffs.SeinBuff"/>. This value should be from <see cref="ModContent.BuffType{T}"/>.
+    /// </summary>
+    /// <returns></returns>
     protected abstract int GetBuffType();
+
+    /// <summary>
+    /// Type for <see cref="Projectiles.Minions.Sein"/>. This value should be from <see cref="ModContent.ProjectileType{T}"/>.
+    /// </summary>
+    /// <returns></returns>
     protected abstract int GetShootType();
 
+    /// <summary>
+    /// Copies stats from <paramref name="old"/> onto this.
+    /// </summary>
+    /// <param name="old"><see cref="SpiritOrb"/> to copy stats from.</param>
     internal void CopyFrom(SpiritOrb old) {
       damage = old.damage;
       primaryDamageMultiplier = old.primaryDamageMultiplier;
@@ -163,9 +176,8 @@ namespace OriMod.Items {
       shortCooldown = old.shortCooldown;
       longCooldown = old.longCooldown;
       randDegrees = old.randDegrees;
-      targetMaxDist = old.targetMaxDist;
-      targetThroughWallDist = old.targetThroughWallDist;
-      pierce = old.pierce;
+      targetMaxDistance = old.targetMaxDistance;
+      targetThroughWallDistance = old.targetThroughWallDistance;
       knockback = old.knockback;
       homingStrengthStart = old.homingStrengthStart;
       homingIncreaseRate = old.homingIncreaseRate;

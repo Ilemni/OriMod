@@ -152,58 +152,58 @@ namespace OriMod.Animations {
       }
 
       Track track = PlayerAnim[anim];
-      Frame[] frames = track.Frames;
+      Frame[] frames = track.frames;
       float radians = (float)(rotation / 180 * Math.PI);
       
       if (overrideHeader is null) {
-        overrideHeader = track.Header;
+        overrideHeader = track.header;
       }
 
       if (!PlayerAnim.tracks.ContainsKey(anim)) {
         // Bad animation, set defaults and return
         OriMod.Error("BadTrack", args: anim);
         anim = "Default";
-        oPlayer.AnimReversed = false;
+        oPlayer.animationReversed = false;
         oPlayer.SetFrame(anim, 1, overrideTime, frames[0], radians);
         return;
       }
 
       // During refactoring, noticed that use of OverrideHeader may cause unwanted visual behavior in multiplayer scenarios, as it is currently a singleton field.
-      Header header = track.Header.CopySome(overrideHeader);
-      if (anim != oPlayer.AnimName) {
+      Header header = track.header.CopySome(overrideHeader);
+      if (anim != oPlayer.AnimationName) {
         OverrideHeader = Header.Default;
       }
       if (overrideHeader != Header.None) {
         OverrideHeader = overrideHeader;
         header = overrideHeader;
       }
-      if (OverrideHeader != Header.None && anim == oPlayer.AnimName) {
+      if (OverrideHeader != Header.None && anim == oPlayer.AnimationName) {
         header = OverrideHeader;
       }
 
       if (overrideFrameIndex != -1 && overrideFrameIndex < frames.Length) {
         // If overrideFrame was specified, simply set frame
-        oPlayer.AnimReversed = header.Playback == PlaybackMode.Reverse;
+        oPlayer.animationReversed = header.playback == PlaybackMode.Reverse;
         oPlayer.SetFrame(anim, overrideFrameIndex, 0, frames[overrideFrameIndex], radians);
         return;
       }
       
       // Figure out the desired frame
-      int frameIndex = oPlayer.AnimIndex;
-      float time = overrideTime != 0 ? overrideTime : oPlayer.AnimTime;
-      Point currFrame = oPlayer.AnimTile;
+      int frameIndex = oPlayer.AnimationIndex;
+      float time = overrideTime != 0 ? overrideTime : oPlayer.AnimationTime;
+      Point currFrame = oPlayer.animationTile;
 
       // Logic for switching frames
-      if (anim == oPlayer.AnimName) {
+      if (anim == oPlayer.AnimationName) {
         // If keeping frame, ensure current frame already exists
         int testFrame = Array.FindIndex(frames, f => f.Tile == currFrame);
         if (testFrame == -1) {
           OriMod.Error("BadFrame", args: new object[] { anim, currFrame });
-          frameIndex = header.Playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
+          frameIndex = header.playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
         }
       }
       else {
-        frameIndex = header.Playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
+        frameIndex = header.playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
         time = 0;
       }
 
@@ -220,15 +220,15 @@ namespace OriMod.Animations {
       
       // Loop logic
       if (framesToAdvance != 0) {
-        if (header.Playback == PlaybackMode.None) {
-          oPlayer.AnimReversed = false;
+        if (header.playback == PlaybackMode.None) {
+          oPlayer.animationReversed = false;
           if (frameIndex == frames.Length - 1) {
-            if (header.Loop == LoopMode.Transfer) {
-              anim = header.TransferTo;
+            if (header.loop == LoopMode.Transfer) {
+              anim = header.transferTo;
               frameIndex = 0;
               time = 0;
             }
-            else if (header.Loop == LoopMode.Always) {
+            else if (header.loop == LoopMode.Always) {
               frameIndex = 0;
             }
           }
@@ -239,23 +239,23 @@ namespace OriMod.Animations {
             }
           }
         }
-        else if (header.Playback == PlaybackMode.PingPong) {
-          if (frameIndex == 0 && header.Loop == LoopMode.Always) {
-            oPlayer.AnimReversed = false;
+        else if (header.playback == PlaybackMode.PingPong) {
+          if (frameIndex == 0 && header.loop == LoopMode.Always) {
+            oPlayer.animationReversed = false;
             frameIndex += framesToAdvance;
             if (frameIndex > frames.Length - 1) {
               frameIndex = frames.Length - 1;
             }
           }
-          else if (frameIndex == frames.Length - 1 && header.Loop == LoopMode.Always) {
-            oPlayer.AnimReversed = true;
+          else if (frameIndex == frames.Length - 1 && header.loop == LoopMode.Always) {
+            oPlayer.animationReversed = true;
             frameIndex -= framesToAdvance;
             if (frameIndex < 0) {
               frameIndex = 0;
             }
           }
           else {
-            frameIndex += oPlayer.AnimReversed ? -framesToAdvance : framesToAdvance;
+            frameIndex += oPlayer.animationReversed ? -framesToAdvance : framesToAdvance;
             if (frameIndex > frames.Length - 1) {
               frameIndex = frames.Length - 1;
             }
@@ -264,10 +264,10 @@ namespace OriMod.Animations {
             }
           }
         }
-        else if (header.Playback == PlaybackMode.Reverse) {
-          oPlayer.AnimReversed = true;
+        else if (header.playback == PlaybackMode.Reverse) {
+          oPlayer.animationReversed = true;
           if (frameIndex == 0) {
-            if (header.Loop == LoopMode.Always) {
+            if (header.loop == LoopMode.Always) {
               frameIndex = frames.Length - 1;
             }
           }

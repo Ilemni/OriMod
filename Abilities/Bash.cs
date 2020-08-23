@@ -145,6 +145,7 @@ namespace OriMod.Abilities {
       
       BashTarget.IsBashed = true;
       BashTarget.BashPosition = BashEntity.Center;
+      BashTarget.BashPlayer = oPlayer;
 
       playerStartPos = player.Center;
       targetStartPos = BashEntity.Center;
@@ -178,10 +179,10 @@ namespace OriMod.Abilities {
       player.immuneTime = 5;
 
       BashTarget.IsBashed = false;
-      if (TargetIsNpc) {
-        int damage = BashDamage + OriWorld.GlobalSeinUpgrade * 9;
+      /*if (TargetIsNpc) {
+        int damage = BashDamage + (int)OriWorld.GlobalUpgrade * 9;
         player.ApplyDamageToNPC(Main.npc[TargetID], damage, 0, 1, false);
-      }
+      }*/
 
       PutOnCooldown();
     }

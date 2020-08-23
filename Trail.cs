@@ -5,7 +5,14 @@ using Terraria;
 using Terraria.DataStructures;
 
 namespace OriMod {
+  /// <summary>
+  /// For drawing a trail behind the player.
+  /// </summary>
   public class Trail {
+    /// <summary>
+    /// Creates a <see cref="Trail"/> that belongs to <paramref name="oPlayer"/>.
+    /// </summary>
+    /// <param name="oPlayer"><see cref="OriPlayer"/> this trail will belong to.</param>
     internal Trail(OriPlayer oPlayer) => this.oPlayer = oPlayer;
 
     private readonly OriPlayer oPlayer;
@@ -23,7 +30,7 @@ namespace OriMod {
     public void Reset() {
       var player = oPlayer.player;
       Position = player.Center;
-      Tile = oPlayer.AnimTile;
+      Tile = oPlayer.animationTile;
       
       StartAlpha = player.velocity.Length() * 0.002f;
       if (StartAlpha > 0.08f) {
@@ -51,7 +58,7 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Gets the Trail DrawData of this OriPlayer.
+    /// Gets the Trail <see cref="DrawData"/> for this <see cref="OriPlayer"/>.
     /// </summary>
     public DrawData GetDrawData() {
       var pos = Position - Main.screenPosition;

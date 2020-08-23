@@ -20,12 +20,12 @@ namespace OriMod.Abilities {
       if (!InUse) {
         if (CanUse && (PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current)) {
           SetState(State.Starting);
-          CurrentTime = 0;
+          currentTime = 0;
         }
       }
       else if (!CanUse) {
         SetState(State.Inactive);
-        CurrentTime = 0;
+        currentTime = 0;
       }
       else if (!(PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current) && !Ending) {
         if (Active) {
@@ -34,21 +34,21 @@ namespace OriMod.Abilities {
         else {
           SetState(State.Inactive);
         }
-        CurrentTime = 0;
+        currentTime = 0;
         return;
       }
       else if (Starting) {
-        CurrentTime++;
-        if (CurrentTime > StartDuration) {
+        currentTime++;
+        if (currentTime > StartDuration) {
           SetState(State.Active);
-          CurrentTime = 0;
+          currentTime = 0;
         }
       }
       else if (Ending) {
-        CurrentTime++;
-        if (CurrentTime > EndDuration) {
+        currentTime++;
+        if (currentTime > EndDuration) {
           SetState(State.Inactive);
-          CurrentTime = 0;
+          currentTime = 0;
         }
       }
     }

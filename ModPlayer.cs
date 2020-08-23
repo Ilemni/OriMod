@@ -16,30 +16,33 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 
 namespace OriMod {
+  /// <summary>
+  /// <see cref="ModPlayer"/> class for <see cref="OriMod"/>. Contains Ori data for a player, such as abilities and animations.
+  /// </summary>
   public sealed class OriPlayer : ModPlayer {
     #region Variables
     /// <summary>
-    /// Local instance of this OriPlayer
+    /// Local instance of this OriPlayer.
     /// </summary>
     public static OriPlayer Local => Main.LocalPlayer.GetModPlayer<OriPlayer>();
 
     /// <summary>
-    /// Manager for all Abilities on this OriPlayer instance.
+    /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
     /// </summary>
     internal AbilityManager Abilities { get; private set; }
 
     /// <summary>
-    /// Manager for all Upgrades on this OriPlayer instance.
+    /// Manager for all <see cref="Upgrade"/>s on this OriPlayer instance.
     /// </summary>
     internal UpgradeManager Upgrades { get; private set; }
 
     /// <summary>
-    /// Container for all Animations on this OriPlayer instance.
+    /// Container for all <see cref="OriMod.Animations.Animation"/>s on this OriPlayer instance.
     /// </summary>
     internal AnimationContainer Animations { get; private set; }
 
     /// <summary>
-    /// Trail created when the player is moving.
+    /// Manager for all <see cref="Trail"/>s on this OriPlayer instance.
     /// </summary>
     internal TrailManager Trails { get; private set; }
 
@@ -50,7 +53,8 @@ namespace OriMod {
     private bool useCustomHurtSound = false;
 
     /// <summary>
-    /// When set to true, uses custom movement and player sprites. External mods that attempt to be compatible with this one will need to use this property.
+    /// When set to true, uses custom movement and player sprites.
+    /// <para>External mods that attempt to be compatible with this one will need to use this property.</para>
     /// </summary>
     public bool IsOri {
       get => _isOri;
@@ -63,8 +67,9 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Represents if the player is currently transforming into Ori. While transforming, all player input is disabled.
+    /// Represents if the player is currently transforming into Ori.
     /// </summary>
+    /// <remarks>While transforming, all player input is disabled.</remarks>
     public bool Transforming {
       get => _transforming;
       internal set {
@@ -75,21 +80,30 @@ namespace OriMod {
       }
     }
 
-    internal float TransformTimer = 0;
+    /// <summary>
+    /// Frames since a transformation began.
+    /// </summary>
+    internal float transformTimer = 0;
 
     /// <summary>
-    /// Amount of Spirit Light the player has
+    /// Currency used for Upgrades.
     /// </summary>
     public long SpiritLight { get; internal set; }
 
     /// <summary>
-    /// Transform variables used to hasten repeat transforms.
+    /// Whether the player has been Ori before during this session. Used to hasten subsequent transformations.
     /// </summary>
     internal bool HasTransformedOnce { get; private set; }
 
+    /// <summary>
+    /// Speed multiplier to play subsequent transformations at.
+    /// </summary>
     private float RepeatedTransformRate => 2.5f;
 
-    private int TransformDirection = 0;
+    /// <summary>
+    /// Direction a transformation began at. Facing direction is locked until the transformation ends.
+    /// </summary>
+    private sbyte transformDirection = 0;
 
     /// <summary>
     /// Represents if the player is on the ground.
@@ -97,12 +111,12 @@ namespace OriMod {
     public bool IsGrounded { get; private set; }
 
     /// <summary>
-    /// Represents if the player is on a wall
+    /// Represents if the player is on a wall.
     /// </summary>
     public bool OnWall { get; private set; }
 
     /// <summary>
-    /// When true, sets player.runSlowDown to 0 every frame.
+    /// When true, sets <see cref="Player.runSlowdown"/> to 0 every frame.
     /// </summary>
     public bool UnrestrictedMovement {
       get => _unrestrictedMovement;
@@ -115,12 +129,12 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// A more persistent player.justJumped
+    /// A more persistent <see cref="Player.justJumped"/>.
     /// </summary>
     internal bool justJumped;
 
     /// <summary>
-    /// Info about if this player has an OriMod Sein minion summoned. Used to prevent having more than one Sein summoned per player.
+    /// Info about if this player has a <see cref="Projectiles.Minions.Sein"/> minion summoned. Used to prevent having more than one Sein summoned per player.
     /// </summary>
     public bool SeinMinionActive {
       get => _seinMinionActive;
@@ -133,7 +147,7 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// The ID of the Sein that is summoned. This is the <see cref="Entity.whoAmI"/> of the Sein projectile.
+    /// The ID of the <see cref="Projectiles.Minions.Sein"/> that is summoned. This is the <see cref="Entity.whoAmI"/> of the Sein projectile.
     /// </summary>
     public int SeinMinionID {
       get => _seinMinionID;
@@ -146,7 +160,7 @@ namespace OriMod {
     }
     
     /// <summary>
-    /// The current version of Sein that is summoned. Used to prevent re-summons of the same tier of Sein.
+    /// The current type of <see cref="Projectiles.Minions.Sein"/> that is summoned. Used to prevent re-summons of the same tier of Sein.
     /// </summary>
     public int SeinMinionType {
       get => _seinMinionType;
@@ -158,41 +172,48 @@ namespace OriMod {
       }
     }
 
-    private int PlayerDustTimer = 0;
+    /// <summary>
+    /// Used for <see cref="CreatePlayerDust"/>.
+    /// </summary>
+    private int playerDustTimer = 0;
 
-    internal int ImmuneTimer = 0;
+    /// <summary>
+    /// When greater than 0, sets <see cref="Player.immune"/> to true.
+    /// </summary>
+    internal int immuneTimer = 0;
 
     private readonly RandomChar randJump = new RandomChar();
     private readonly RandomChar randHurt = new RandomChar();
 
     #region Animation Properties
     /// <summary>
-    /// Shorthand for AnimationHandler.PlayerAnim.TileSize.X.
+    /// Shorthand for <c>AnimationHandler.PlayerAnim.TileSize.X.</c>
     /// </summary>
     internal static int SpriteWidth => AnimationHandler.Instance.PlayerAnim.spriteSize.X;
-    
+
     /// <summary>
-    /// Shorthand for `AnimationHandler.PlayerAnim.TileSize.Y.
+    /// Shorthand for <c>AnimationHandler.PlayerAnim.TileSize.Y.</c>
     /// </summary>
     internal static int SpriteHeight => AnimationHandler.Instance.PlayerAnim.spriteSize.Y;
 
     /// <summary>
     /// Current pixel placement of the current animation tile on the spritesheet.
     /// </summary>
-    public Point AnimFrame {
-      get => TileToPixel(AnimTile);
-      set => AnimTile = PixelToTile(value);
+    public Point AnimationFrame {
+      get => TileToPixel(animationTile);
+      set => animationTile = PixelToTile(value);
     }
 
     /// <summary>
-    /// Current tile placement of the animation on the spritesheet. X and Y values are based on the sprite tile coordinates, not pixel coordinates.
+    /// Current tile placement of the animation on the spritesheet.
+    /// <para>X and Y values are based on the sprite tile coordinates, not pixel coordinates.</para>
     /// </summary>
-    public PointByte AnimTile;
+    public PointByte animationTile;
 
     /// <summary>
     /// The name of the animation track currently playing.
     /// </summary>
-    public string AnimName {
+    public string AnimationName {
       get => _animName;
       private set {
         if (value != _animName) {
@@ -202,52 +223,70 @@ namespace OriMod {
       }
     }
 
-    internal int AnimIndex { get; private set; }
-    internal float AnimTime { get; private set; }
-    internal float AnimRads { get; private set; }
-    internal bool AnimReversed = false;
-    internal bool Flashing = false;
+    /// <summary>
+    /// Current index of the <see cref="Frame"/> being played.
+    /// </summary>
+    internal int AnimationIndex { get; private set; }
+
+    /// <summary>
+    /// Current time of the <see cref="Frame"/> being played.
+    /// </summary>
+    internal float AnimationTime { get; private set; }
+    
+    /// <summary>
+    /// Current rotation the sprite is set to.
+    /// </summary>
+    internal float AnimationRotation { get; private set; }
+    
+    /// <summary>
+    /// Whether or not the animation is being played in reverse.
+    /// </summary>
+    internal bool animationReversed = false;
+    
+    /// <summary>
+    /// For making the player sprite appear red during hurt animations.
+    /// </summary>
+    internal bool flashing = false;
 
     internal static PointByte PixelToTile(Point pixel) => new PointByte((byte)(pixel.X / SpriteWidth), (byte)(pixel.Y / SpriteHeight));
 
-    internal static Point TileToPixel(PointByte tile) {
-      var result = (Point)tile;
-      result.X *= SpriteWidth;
-      result.Y *= SpriteHeight;
-      return result;
-    }
+    internal static Point TileToPixel(PointByte tile) => new Point(tile.X * SpriteWidth, tile.Y * SpriteHeight);
     #endregion
 
     #region Aesthetics
+    /// <summary>
+    /// Primary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
+    /// </summary>
     internal Color SpriteColorPrimary {
-      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColor : _mpcSpriteColorPrimary;
+      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColor : _multiplayerSpriteColorPrimary;
       set {
         if (Main.myPlayer != player.whoAmI) {
-          _mpcSpriteColorPrimary = value;
+          _multiplayerSpriteColorPrimary = value;
         }
       }
     }
 
+    /// <summary>
+    /// Secondary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
+    /// </summary>
     internal Color SpriteColorSecondary {
-      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColorSecondary : _mpcSpriteColorSecondary;
+      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColorSecondary : _multiplayerSpriteColorSecondary;
       set {
         if (Main.myPlayer != player.whoAmI) {
-          _mpcSpriteColorSecondary = value;
+          _multiplayerSpriteColorSecondary = value;
         }
       }
     }
 
-    internal bool MpcPlayerLight {
-      get => _mpcPlayerLight;
-      set {
-        if (value != _mpcPlayerLight) {
-          doNetUpdate = true;
-          _mpcPlayerLight = value;
-        }
-      }
-    }
+    /// <summary>
+    /// Whether or not the multiplayer client instance of this <see cref="OriPlayer"/> uses light.
+    /// </summary>
+    internal bool multiplayerPlayerLight = false;
 
-    internal bool DoPlayerLight => (player.whoAmI == Main.myPlayer || OriMod.ConfigClient.GlobalPlayerLight) ? OriMod.ConfigClient.PlayerLight : MpcPlayerLight;
+    /// <summary>
+    /// Whether or not this <see cref="OriPlayer"/> instance uses light.
+    /// </summary>
+    internal bool DoPlayerLight => (player.whoAmI == Main.myPlayer || OriMod.ConfigClient.GlobalPlayerLight) ? OriMod.ConfigClient.PlayerLight : multiplayerPlayerLight;
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
     #endregion
 
@@ -259,9 +298,8 @@ namespace OriMod {
     private int _seinMinionType = 0;
     private bool _transforming = false;
     private string _animName = "Default";
-    private Color _mpcSpriteColorPrimary = Color.LightCyan;
-    private Color _mpcSpriteColorSecondary = Color.LightCyan;
-    private bool _mpcPlayerLight = false;
+    private Color _multiplayerSpriteColorPrimary = Color.LightCyan;
+    private Color _multiplayerSpriteColorSecondary = Color.LightCyan;
     #endregion
     #endregion
 
@@ -292,11 +330,11 @@ namespace OriMod {
     /// <param name="frame"></param>
     /// <param name="animRads"></param>
     internal void SetFrame(string name, int frameIndex, float time, Frame frame, float animRads) {
-      AnimName = name;
-      AnimIndex = frameIndex;
-      AnimTime = time;
-      AnimFrame = TileToPixel(frame.Tile);
-      AnimRads = animRads;
+      AnimationName = name;
+      AnimationIndex = frameIndex;
+      AnimationTime = time;
+      AnimationFrame = TileToPixel(frame.Tile);
+      AnimationRotation = animRads;
     }
 
     /// <summary>
@@ -304,8 +342,8 @@ namespace OriMod {
     /// </summary>
     internal void BeginTransformation() {
       Transforming = true;
-      TransformDirection = player.direction;
-      TransformTimer = Animations.PlayerAnim.source.tracks["TransformEnd"].Duration + Animations.PlayerAnim.source.tracks["TransformStart"].Duration;
+      transformDirection = (sbyte)player.direction;
+      transformTimer = Animations.PlayerAnim.source["TransformEnd"].duration + Animations.PlayerAnim.source["TransformStart"].duration;
     }
 
     /// <summary>
@@ -333,7 +371,7 @@ namespace OriMod {
     /// Emits a white dust speck from the player.
     /// </summary>
     internal void CreatePlayerDust() {
-      if (PlayerDustTimer > 0) {
+      if (playerDustTimer > 0) {
         return;
       }
 
@@ -341,18 +379,18 @@ namespace OriMod {
       dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
       dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
       dust.noGravity = false;
-      PlayerDustTimer = Transforming ? Main.rand.Next(3, 8)
+      playerDustTimer = Transforming ? Main.rand.Next(3, 8)
         : Abilities.dash.InUse || Abilities.chargeDash.InUse ? Main.rand.Next(2, 4)
         : Abilities.burrow.InUse ? Main.rand.Next(6, 10)
         : Main.rand.Next(10, 15);
     }
 
     /// <summary>
-    /// Updates the frame by one second, and changes it depending on various conditions.
+    /// Updates the player animation by one frame, and changes it depending on various conditions.
     /// </summary>
     /// <param name="drawPlayer"></param>
     private void UpdateFrame(Player drawPlayer) {
-      AnimTime++;
+      AnimationTime++;
       if (Transforming) {
         IncrementFrame(IsOri ? "TransformEnd" : "TransformStart");
         return;
@@ -393,7 +431,7 @@ namespace OriMod {
       }
       if (Abilities.airJump.InUse && !(Abilities.dash.InUse || Abilities.chargeDash.InUse)) {
         IncrementFrame("AirJump");
-        AnimRads = AnimTime * 0.8f;
+        AnimationRotation = AnimationTime * 0.8f;
         return;
       }
       if (Abilities.bash.InUse) {
@@ -404,7 +442,7 @@ namespace OriMod {
         switch (Abilities.stomp.AbilityState) {
           case Ability.State.Starting:
             IncrementFrame("AirJump");
-            AnimRads = AnimTime;
+            AnimationRotation = AnimationTime;
             return;
           case Ability.State.Active:
             IncrementFrame("ChargeJump", rotDegrees: 180f, overrideDur: 2, overrideHeader: new Header(playback: PlaybackMode.PingPong));
@@ -451,7 +489,7 @@ namespace OriMod {
           IncrementFrame("ClimbIdle");
         }
         else {
-          IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", overrideTime: AnimTime + Math.Abs(drawPlayer.velocity.Y) * 0.1f);
+          IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", overrideTime: AnimationTime + Math.Abs(drawPlayer.velocity.Y) * 0.1f);
         }
         return;
       }
@@ -505,7 +543,7 @@ namespace OriMod {
         return;
       }
       if (Math.Abs(drawPlayer.velocity.X) > 0.2f) {
-        IncrementFrame("Running", overrideTime: AnimTime + (int)Math.Abs(player.velocity.X) / 3);
+        IncrementFrame("Running", overrideTime: AnimationTime + (int)Math.Abs(player.velocity.X) / 3);
         return;
       }
       IncrementFrame(OnWall ? "IdleAgainst" : "Idle");
@@ -523,8 +561,8 @@ namespace OriMod {
     /// <param name="drawOffset">Override draw position of the frame</param>
     /// <param name="rotDegrees">Rotation of the sprite, in degrees</param>
     private void IncrementFrame(string anim = "Default", int overrideFrame = -1, float overrideTime = 0, int overrideDur = 0, Header overrideHeader = null, Vector2 drawOffset = new Vector2(), float rotDegrees = 0) {
-      if (AnimName != null && debugMode) {
-        Main.NewText($"Frame called: {AnimName}, Time: {AnimTime}, AnimIndex: {AnimIndex}/{Animations.PlayerAnim.ActiveTrack.Frames.Length}"); // Debug
+      if (AnimationName != null && debugMode) {
+        Main.NewText($"Frame called: {AnimationName}, Time: {AnimationTime}, AnimIndex: {AnimationIndex}/{Animations.PlayerAnim.ActiveTrack.frames.Length}"); // Debug
         var frame = Animations.PlayerAnim.ActiveFrame;
         var tile = Animations.PlayerAnim.ActiveTile;
         Main.NewText($"Frame info: {frame} => {tile}");
@@ -573,17 +611,17 @@ namespace OriMod {
     public override void ResetEffects() {
       if (Transforming) {
         float rate = HasTransformedOnce ? RepeatedTransformRate : 1;
-        AnimTime += rate - 1;
-        TransformTimer -= rate;
-        if (TransformTimer < 0 || HasTransformedOnce && TransformTimer < Animations.PlayerAnim.source.tracks["TransformEnd"].Duration - 62) {
-          TransformTimer = 0;
+        AnimationTime += rate - 1;
+        transformTimer -= rate;
+        if (transformTimer < 0 || HasTransformedOnce && transformTimer < Animations.PlayerAnim.source["TransformEnd"].duration - 62) {
+          transformTimer = 0;
           Transforming = false;
           IsOri = true;
         }
       }
       if (IsOri) {
-        if (PlayerDustTimer > 0) {
-          PlayerDustTimer--;
+        if (playerDustTimer > 0) {
+          playerDustTimer--;
         }
       }
       if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer && doNetUpdate) {
@@ -652,16 +690,16 @@ namespace OriMod {
       }
 
       if (Transforming) {
-        player.direction = TransformDirection;
+        player.direction = transformDirection;
         player.controlUseItem = false;
-        int dur = AnimationHandler.Instance.PlayerAnim.tracks["TransformEnd"].Duration;
-        if (TransformTimer > dur - 10) {
-          if (TransformTimer < dur) {
+        int dur = AnimationHandler.Instance.PlayerAnim["TransformEnd"].duration;
+        if (transformTimer > dur - 10) {
+          if (transformTimer < dur) {
             player.gravity = 9f;
             IsOri = true;
           }
           else {
-            player.velocity = new Vector2(0, -0.00055f * TransformTimer);
+            player.velocity = new Vector2(0, -0.00055f * transformTimer);
             player.gravity = 0;
             CreatePlayerDust();
           }
@@ -671,8 +709,8 @@ namespace OriMod {
         player.immune = true;
       }
 
-      if (ImmuneTimer > 0) {
-        ImmuneTimer--;
+      if (immuneTimer > 0) {
+        immuneTimer--;
         player.immune = true;
       }
     }
@@ -746,7 +784,7 @@ namespace OriMod {
           doDust = true;
           FootstepManager.Instance.PlayLandingFromPlayer(player);
         }
-        else if (AnimName == "Running" && AnimIndex == 4 || AnimIndex == 9) {
+        else if (AnimationName == "Running" && AnimationIndex == 4 || AnimationIndex == 9) {
           doDust = true;
           FootstepManager.Instance.PlayFootstepFromPlayer(player);
         }
@@ -773,7 +811,7 @@ namespace OriMod {
       if (player.velocity.LengthSquared() > 0.2f) {
         CreatePlayerDust();
       }
-      Flashing = !player.immuneNoBlink && player.immuneTime % 12 > 6;
+      flashing = !player.immuneNoBlink && player.immuneTime % 12 > 6;
     }
 
     public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // effects when character is hurt
@@ -871,6 +909,7 @@ namespace OriMod {
           if (!player.dead && !player.invis) {
             layers.Insert(idx++, Animations.PlayerAnim.playerLayer);
             if (IsOri) {
+              // IsOri is checked here because transforming uses the primary layer
               layers.Insert(idx++, Animations.SecondaryLayer.playerLayer);
             }
           }

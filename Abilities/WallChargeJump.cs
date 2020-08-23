@@ -65,7 +65,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      float speed = Speeds[CurrentTime - 1] * SpeedMultiplier;
+      float speed = Speeds[currentTime - 1] * SpeedMultiplier;
       player.velocity = Direction * speed;
       player.direction = Math.Sign(player.velocity.X);
       player.maxFallSpeed = Math.Abs(player.velocity.Y);
@@ -102,15 +102,15 @@ namespace OriMod.Abilities {
         }
       }
       if (Active) {
-        CurrentTime++;
-        if (CurrentTime > Duration) {
+        currentTime++;
+        if (currentTime > Duration) {
           if (oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
             SetState(State.Ending);
           }
           else {
             SetState(State.Inactive);
           }
-          CurrentTime = 0;
+          currentTime = 0;
         }
       }
       if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {

@@ -2,6 +2,9 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Items {
+  /// <summary>
+  /// Crafting station for <see cref="OriPotion"/> and <see cref="SpiritOrb"/>.
+  /// </summary>
   public class SpiritSapling : ModItem {
     public override void SetDefaults() {
       item.width = 12;

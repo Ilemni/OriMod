@@ -1,32 +1,50 @@
 ﻿namespace OriMod.Animations {
   /// <summary>
-  /// Contains info for a track
+  /// Contains info for a <see cref="Track"/>.
   /// </summary>
   public class Header {
     public Header(InitType init = InitType.None, LoopMode loop = LoopMode.None, PlaybackMode playback = PlaybackMode.None, string transferTo = null, ReferencedTexture2D rtx = null) {
-      Init = init;
-      Loop = loop;
-      Playback = playback;
-      TransferTo = transferTo;
-      Texture = rtx;
+      this.init = init;
+      this.loop = loop;
+      this.playback = playback;
+      this.transferTo = transferTo;
+      texture = rtx;
     }
 
-    public InitType Init;
-    public LoopMode Loop;
-    public PlaybackMode Playback;
-    public readonly string TransferTo;
-    public readonly ReferencedTexture2D Texture = null;
+    /// <summary>
+    /// <see cref="InitType"/>
+    /// </summary>
+    public InitType init;
 
     /// <summary>
-    /// Copies the <see cref="Init"/>, <see cref="Loop"/>, and <see cref="Playback"/> of <paramref name="other"/>.
+    /// <see cref=" LoopMode"/>
     /// </summary>
-    /// <param name="other"></param>
-    /// <returns></returns>
+    public LoopMode loop;
+
+    /// <summary>
+    /// <see cref=" PlaybackMode"/>
+    /// </summary>
+    public PlaybackMode playback;
+
+    /// <summary>
+    /// Animation track to transfer to, if <see cref="LoopMode.Transfer"/> is used.
+    /// </summary>
+    public readonly string transferTo;
+
+    /// <summary>
+    /// Spritesheet that may be used instead of <see cref="AnimationSource.texture"/>
+    /// </summary>
+    public readonly ReferencedTexture2D texture = null;
+
+    /// <summary>
+    /// Copies the <see cref="init"/>, <see cref="loop"/>, and <see cref="playback"/> of <paramref name="other"/>.
+    /// </summary>
+    /// <param name="other"><see cref="Header"/> to copy.</param>
     internal Header CopySome(Header other) {
       return new Header(
-        other.Init != 0 ? other.Init : Init,
-        other.Loop != 0 ? other.Loop : Loop,
-        other.Playback != 0 ? other.Playback : Playback
+        other.init != 0 ? other.init : init,
+        other.loop != 0 ? other.loop : loop,
+        other.playback != 0 ? other.playback : playback
       );
     }
 
@@ -34,9 +52,13 @@
     /// Initialize with <see cref="InitType.Range"/>, <see cref="LoopMode.Always"/>, <see cref="PlaybackMode.None"/>.
     /// </summary>
     public static Header Default => new Header(InitType.Range, LoopMode.Always, PlaybackMode.None);
+
+    /// <summary>
+    /// Initialize with <see cref="InitType.None"/>, <see cref="LoopMode.None"/>, <see cref="PlaybackMode.None"/>.
+    /// </summary>
     public static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
-    public override string ToString()
-      => $"Init: {Init} | Loop: {Loop} | Playback: {Playback}";
+    
+    public override string ToString() => $"init={init}, loop={loop}, playback={playback}";
   }
 
   /// <summary>
@@ -54,7 +76,7 @@
   }
   
   /// <summary>
-  /// Used to determine how a track behaves after its last frame.
+  /// Used to determine how a track behaves after its last frame is played.
   /// </summary>
   public enum LoopMode : byte {
     /// <summary>

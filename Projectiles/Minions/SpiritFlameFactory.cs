@@ -1,33 +1,33 @@
 namespace OriMod.Projectiles.Minions {
-  public sealed class SpiritFlame1 : SpiritFlameBase {
-    protected override int Init => 1;
+  public sealed class SpiritFlame1 : SpiritFlame {
+    protected override byte SpiritFlameType => 1;
   }
 
-  public sealed class SpiritFlame2 : SpiritFlameBase {
-    protected override int Init => 2;
+  public sealed class SpiritFlame2 : SpiritFlame {
+    protected override byte SpiritFlameType => 2;
   }
 
-  public sealed class SpiritFlame3 : SpiritFlameBase {
-    protected override int Init => 3;
+  public sealed class SpiritFlame3 : SpiritFlame {
+    protected override byte SpiritFlameType => 3;
   }
 
-  public sealed class SpiritFlame4 : SpiritFlameBase {
-    protected override int Init => 4;
+  public sealed class SpiritFlame4 : SpiritFlame {
+    protected override byte SpiritFlameType => 4;
   }
 
-  public sealed class SpiritFlame5 : SpiritFlameBase {
-    protected override int Init => 5;
+  public sealed class SpiritFlame5 : SpiritFlame {
+    protected override byte SpiritFlameType => 5;
   }
 
-  public sealed class SpiritFlame6 : SpiritFlameBase {
-    protected override int Init => 6;
+  public sealed class SpiritFlame6 : SpiritFlame {
+    protected override byte SpiritFlameType => 6;
   }
 
-  public sealed class SpiritFlame7 : SpiritFlameBase {
-    protected override int Init => 7;
+  public sealed class SpiritFlame7 : SpiritFlame {
+    protected override byte SpiritFlameType => 7;
   }
 
-  public sealed class SpiritFlame8 : SpiritFlameBase {
-    protected override int Init => 8;
+  public sealed class SpiritFlame8 : SpiritFlame {
+    protected override byte SpiritFlameType => 8;
   }
 }

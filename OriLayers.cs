@@ -5,6 +5,9 @@ using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OriMod {
+  /// <summary>
+  /// Contains all <see cref="PlayerLayer"/>s this mod creates.
+  /// </summary>
   internal class OriLayers : SingleInstance<OriLayers> {
     private OriLayers() { }
 
@@ -15,7 +18,7 @@ namespace OriMod {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
       DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.PlayerAnim);
-      data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TransformStart" ? Color.White : oPlayer.SpriteColorPrimary;
+      data.color = oPlayer.flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimationName == "TransformStart" ? Color.White : oPlayer.SpriteColorPrimary;
       Main.playerDrawData.Add(data);
 
       oPlayer.Abilities.burrow.DrawEffects();
@@ -28,7 +31,7 @@ namespace OriMod {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
       DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.SecondaryLayer);
-      data.color = oPlayer.Flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimName == "TrasformStart" ? Color.White : oPlayer.SpriteColorSecondary;
+      data.color = oPlayer.flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimationName == "TrasformStart" ? Color.White : oPlayer.SpriteColorSecondary;
       data.texture = OriTextures.Instance.PlayerSecondary;
       Main.playerDrawData.Add(data);
     });
@@ -74,7 +77,7 @@ namespace OriMod {
 
     /// <summary>
     /// <see cref="PlayerLayer"/> that represents the <see cref="Abilities.SoulLink"/> a player can place within the world.
-    /// <para>(Consider using <see cref="Dust"/>s instead of <see cref="PlayerLayer"/>s</para>
+    /// <para>(Consider using <see cref="Dust"/> or <see cref="Projectile"/> instead of <see cref="PlayerLayer"/>).</para>
     /// </summary>
     [System.Obsolete]
     internal readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
@@ -91,6 +94,13 @@ namespace OriMod {
       Main.playerDrawData.Add(data);
     });
 
+    /// <summary>
+    /// Gets a <see cref="DrawData"/> that's set up for animations.
+    /// </summary>
+    /// <param name="drawInfo">Parameter of <see cref="PlayerLayer(string, string, System.Action{PlayerDrawInfo})"/>.</param>
+    /// <param name="oPlayer"><see cref="OriPlayer"/> to draw.</param>
+    /// <param name="anim"><see cref="Animation"/> to get sprite data from.</param>
+    /// <returns></returns>
     private static DrawData DefaultDrawData(PlayerDrawInfo drawInfo, OriPlayer oPlayer, Animations.Animation anim) {
       Player player = oPlayer.player;
       Texture2D texture = anim.Texture;
@@ -106,7 +116,7 @@ namespace OriMod {
         effect |= SpriteEffects.FlipVertically;
       }
 
-      return new DrawData(texture, pos, rect, oPlayer.SpriteColorPrimary, player.direction * oPlayer.AnimRads, orig, 1, effect, 0);
+      return new DrawData(texture, pos, rect, oPlayer.SpriteColorPrimary, player.direction * oPlayer.AnimationRotation, orig, 1, effect, 0);
     }
   }
 }

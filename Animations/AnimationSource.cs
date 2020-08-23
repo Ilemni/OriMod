@@ -23,12 +23,12 @@ namespace OriMod.Animations {
     public readonly ReferencedTexture2D texture;
     
     /// <summary>
-    /// Size of the sprites in the animations
+    /// Size of individual sprites in the spritesheet.
     /// </summary>
     public readonly PointByte spriteSize;
-    
+
     /// <summary>
-    /// Shortcut for accessing <see cref="tracks">
+    /// Shortcut for accessing <see cref="tracks">.
     /// </summary>
     public Track this[string name] => tracks[name];
   }

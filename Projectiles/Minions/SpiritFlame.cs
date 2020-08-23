@@ -6,8 +6,11 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Projectiles.Minions {
-  public abstract class SpiritFlameBase : ModProjectile {
-    // Our ai fields are a bit unique...
+  /// <summary>
+  /// Projectile fired by the minion <see cref="Sein"/>.
+  /// </summary>
+  public abstract class SpiritFlame : ModProjectile {
+    // Our ai fields are a bit weird...
     // If we are **not** targeting something, projectile.ai values are filled with a vector2 for where to land
     // Otherwise, ai[0] is the npc id that we are targeting, and ai[1] is 0
     // Whichever this state is, is based on if ai[1] is 0
@@ -26,18 +29,40 @@ namespace OriMod.Projectiles.Minions {
     }
     private Vector2 _lastTargetPos;
 
-    // Projectile lerp with delay before increase
-    // 0 = no homing; 1 = full homing
+    /// <summary>
+    /// Homing strength of the projectile.
+    /// <para>0 = no homing; 1 = full homing</para>
+    /// </summary>
     private float lerp;
+    /// <summary>
+    /// Rate that <see cref="lerp"/> will increase at.
+    /// </summary>
     private float lerpRate;
+    /// <summary>
+    /// Total time before the projectile homing can increase.
+    /// </summary>
     private int lerpDelay;
-    private int currLerpDelay;
+    /// <summary>
+    /// Elapsed time for <see cref="lerpDelay"/>
+    /// </summary>
+    private int currentLerpDelay;
 
-    // Projectile speed with delay before increase
+    /// <summary>
+    /// Speed of the projectile.
+    /// </summary>
     private float speed;
+    /// <summary>
+    /// Rate that <see cref="speed"/> will increase.
+    /// </summary>
     private float acceleration;
-    private int accelDelay;
-    private int currAccelDelay;
+    /// <summary>
+    /// Total time before the projectile speed can increase.
+    /// </summary>
+    private int accelerationDelay;
+    /// <summary>
+    /// Elapsed time for <see cref="accelerationDelay"/>.
+    /// </summary>
+    private int currentAccelerationDelay;
 
     private int dustType;
     private int dustWidth;
@@ -60,15 +85,19 @@ namespace OriMod.Projectiles.Minions {
       projectile.minion = true;
       projectile.ignoreWater = true;
       projectile.tileCollide = false;
-      projectile.timeLeft = 150;
+      projectile.timeLeft = 45;
       dustWidth = 10;
       dustHeight = 10;
-      Initialize(Init);
+      Initialize();
     }
 
-    protected abstract int Init { get; }
+    /// <summary>
+    /// Type for <see cref="SpiritFlame"/>. Determines initialized values by using <see cref="OriMod.SeinUpgrades"/>.
+    /// </summary>
+    protected abstract byte SpiritFlameType { get; }
 
-    private void Initialize(int upgradeID) {
+    private void Initialize() {
+      var upgradeID = SpiritFlameType;
       SeinUpgrade u = OriMod.Instance.SeinUpgrades[upgradeID - 1];
 
       projectile.knockBack = u.knockback;
@@ -77,8 +106,7 @@ namespace OriMod.Projectiles.Minions {
       lerpDelay = u.homingIncreaseDelay;
       speed = u.projectileSpeedStart;
       acceleration = u.projectileSpeedIncreaseRate;
-      accelDelay = u.projectileSpeedIncreaseDelay;
-      projectile.penetrate = projectile.maxPenetrate = u.pierce;
+      accelerationDelay = u.projectileSpeedIncreaseDelay;
       projectile.width = u.flameWidth;
       projectile.height = u.flameHeight;
       dustScale = u.dustScale;
@@ -88,29 +116,36 @@ namespace OriMod.Projectiles.Minions {
     }
 
     private void CreateDust() {
-      int dust = Dust.NewDust(projectile.position, dustWidth, dustHeight, dustType);
-      Main.dust[dust].scale = dustScale;
+      Dust dust = Main.dust[Dust.NewDust(projectile.position, dustWidth, dustHeight, dustType)];
+      dust.scale = dustScale;
       if (projectile.velocity == Vector2.Zero) {
-        Main.dust[dust].velocity.Y -= 1f;
+        dust.velocity.Y -= 1f;
       }
       else {
-        Main.dust[dust].velocity = projectile.velocity * 0.05f;
+        dust.velocity = projectile.velocity * 0.05f;
       }
 
-      Main.dust[dust].rotation = (float)(Math.Atan2(projectile.velocity.Y, projectile.velocity.X) - Math.PI / 180 * 270);
-      Main.dust[dust].position = projectile.Center;
-      Main.dust[dust].noGravity = true;
+      dust.rotation = (float)(Math.Atan2(projectile.velocity.Y, projectile.velocity.X) - Math.PI / 180 * 270);
+      dust.position = projectile.Center;
+      dust.noGravity = true;
     }
 
-    // Increase time, or if time is => delay, increase currVal by rate
-    private void TickTimerOrValue(ref int time, int delay, ref float currVal, float rate, float maxVal) {
-      if (time < delay) {
-        time++;
+    /// <summary>
+    /// Increment <paramref name="currentTime"/> if less than <paramref name="maxTime"/>, else increase <paramref name="currentValue"/> by <paramref name="valueRate"/> until <paramref name="maxValue"/>.
+    /// </summary>
+    /// <param name="currentTime">Current time.</param>
+    /// <param name="maxTime">Time needed before increasing <paramref name="currentValue"/>.</param>
+    /// <param name="currentValue">Value to increase if enough time has passed.</param>
+    /// <param name="maxValue">Maximum value <paramref name="currentValue"/> can be.</param>
+    /// <param name="valueRate">Rate that <paramref name="currentValue"/> will increase by.</param>
+    private void TickTimerOrValue(ref int currentTime, int maxTime, ref float currentValue, float maxValue, float valueRate) {
+      if (currentTime < maxTime) {
+        currentTime++;
       }
-      else if (currVal < maxVal) {
-        currVal += rate;
-        if (currVal > maxVal) {
-          currVal = maxVal;
+      else if (currentValue < maxValue) {
+        currentValue += valueRate;
+        if (currentValue > maxValue) {
+          currentValue = maxValue;
         }
       }
     }
@@ -119,29 +154,32 @@ namespace OriMod.Projectiles.Minions {
       Lighting.AddLight(projectile.Center, color.ToVector3() * lightStrength);
       CreateDust();
 
+      // Update target position until it dies
       // If target dies before projectile hits, target last live position
       if (IsTargetingNPC && Target.active) {
         LastTargetPos = Target.Center;
       }
 
-      // If close enough to last live position, despawn projectile if target dead, or set lerp to max
-      float distance = Vector2.Distance(LastTargetPos, projectile.position);
-      if (distance < speed) {
-        if (IsTargetingNPC && !Target.active) {
-          projectile.active = false;
-          return;
+      // Despawn when projectile reaches destination
+      float distance = Vector2.DistanceSquared(LastTargetPos, projectile.position);
+      if (distance < speed * speed) {
+        if (projectile.timeLeft > 3) {
+          projectile.timeLeft = 3;
         }
-        lerp = 1;
-        currLerpDelay = lerpDelay;
+        return;
       }
 
       // Increase homing strength over time
-      TickTimerOrValue(ref currLerpDelay, lerpDelay, ref lerp, lerpRate, 1);
+      TickTimerOrValue(ref currentLerpDelay, lerpDelay, ref lerp, 1, lerpRate);
 
       // Increase speed over time
-      TickTimerOrValue(ref currAccelDelay, accelDelay, ref speed, acceleration, 30);
+      TickTimerOrValue(ref currentAccelerationDelay, accelerationDelay, ref speed, 30, acceleration);
 
       projectile.velocity = Vector2.Lerp(projectile.velocity.Normalized(), (LastTargetPos - projectile.Center).Normalized(), lerp) * speed;
+    }
+
+    public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
+      projectile.active = false;
     }
   }
 }

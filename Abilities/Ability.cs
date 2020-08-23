@@ -5,6 +5,9 @@ using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
+  /// <summary>
+  /// Base class for all player abilities.
+  /// </summary>
   public abstract class Ability : IUnlockable {
     /// <summary>
     /// Only construct this in AbilityManager.
@@ -14,7 +17,7 @@ namespace OriMod.Abilities {
     }
 
     /// <summary>
-    /// Abilities Config
+    /// Configuration for abilities.
     /// </summary>
     internal static OriConfigClient2 Config => OriMod.ConfigAbilities;
 
@@ -40,12 +43,12 @@ namespace OriMod.Abilities {
 
     #region General Properties
     /// <summary>
-    /// Unique ID of this ability. Corresponds with an <see cref="AbilityID"/>
+    /// Unique ID of this ability. Corresponds with an <see cref="AbilityID"/>.
     /// </summary>
     public abstract int Id { get; }
 
     /// <summary>
-    /// Condition required to call <see cref="Update"/>
+    /// Condition required to call <see cref="Update"/>.
     /// </summary>
     internal abstract bool UpdateCondition { get; }
 
@@ -68,7 +71,7 @@ namespace OriMod.Abilities {
 
     /// <summary>
     /// Color of dust spawned in <see cref="OnRefreshed"/>.
-    /// <para>This property is only used if <see cref="Cooldown"/> is not <c>0</c>.</para>
+    /// <para>This property is only ever used if <see cref="Cooldown"/> is not <c>0</c>.</para>
     /// </summary>
     protected virtual Color RefreshColor => Color.White;
     #endregion
@@ -91,34 +94,34 @@ namespace OriMod.Abilities {
     }
 
     /// <summary>
-    /// If <see cref="AbilityState"/> is <see cref="State.Inactive"/>
+    /// If <see cref="AbilityState"/> is <see cref="State.Inactive"/>.
     /// </summary>
     public bool Inactive => AbilityState == State.Inactive;
 
     /// <summary>
-    /// If <see cref="AbilityState"/> is <see cref="State.Starting"/>
+    /// If <see cref="AbilityState"/> is <see cref="State.Starting"/>.
     /// </summary>
     public bool Starting => AbilityState == State.Starting;
 
     /// <summary>
-    /// If <see cref="AbilityState"/> is <see cref="State.Active"/>
+    /// If <see cref="AbilityState"/> is <see cref="State.Active"/>.
     /// </summary>
     public bool Active => AbilityState == State.Active;
 
     /// <summary>
-    /// If <see cref="AbilityState"/> is <see cref="State.Ending"/>
+    /// If <see cref="AbilityState"/> is <see cref="State.Ending"/>.
     /// </summary>
     public bool Ending => AbilityState == State.Ending;
 
     /// <summary>
-    /// If <see cref="AbilityState"/> is <see cref="State.Failed"/>
+    /// If <see cref="AbilityState"/> is <see cref="State.Failed"/>.
     /// </summary>
     public bool Failed => AbilityState == State.Failed;
 
     /// <summary>
-    /// If <see cref="AbilityState"/> is either <see cref="State.Starting"/>, <see cref="State.Active"/>, <see cref="State.Ending"/>.
+    /// If <see cref="AbilityState"/> is either <see cref="State.Starting"/>, <see cref="State.Active"/>, or <see cref="State.Ending"/>.
     /// </summary>
-    /// <value>True if the state is either <see cref="State.Starting"/>, <see cref="State.Active"/>, <see cref="State.Ending"/>.</value>
+    /// <value>True if the state is either <see cref="State.Starting"/>, <see cref="State.Active"/>, or <see cref="State.Ending"/>.</value>
     public bool InUse => Starting || Active || Ending;
     #endregion
 
@@ -126,12 +129,12 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Time left until the ability is no longer on cooldown.
     /// </summary>
-    protected int CurrentCooldown;
+    protected int currentCooldown;
 
     /// <summary>
     /// Time the ability was in the current State.
     /// </summary>
-    protected int CurrentTime;
+    protected int currentTime;
 
     /// <summary>
     /// True if ready to use, false if on cooldown.
@@ -162,7 +165,7 @@ namespace OriMod.Abilities {
     /// <param name="force">If true, ignore config options that may otherwise prevent cooldown.</param>
     internal virtual void PutOnCooldown(bool force = false) {
       if (force || OriMod.ConfigClient.AbilityCooldowns && (!CooldownOnlyOnBoss || OriUtils.IsAnyBossAlive(check: true))) {
-        CurrentCooldown = Cooldown;
+        currentCooldown = Cooldown;
         Refreshed = false;
       }
     }
@@ -171,9 +174,9 @@ namespace OriMod.Abilities {
     /// Simple cooldown ticking. Can be overridden.
     /// </summary>
     protected virtual void TickCooldown() {
-      if (CurrentCooldown > 0 || !Refreshed) {
-        CurrentCooldown--;
-        if (CurrentCooldown < 0) {
+      if (currentCooldown > 0 || !Refreshed) {
+        currentCooldown--;
+        if (currentCooldown < 0) {
           Refreshed = true;
         }
       }
@@ -181,10 +184,13 @@ namespace OriMod.Abilities {
     #endregion
 
     #region Networking
+    /// <summary>
+    /// If true, the ability will be put into the next ability packet.
+    /// </summary>
     internal bool netUpdate = false;
 
     /// <summary>
-    /// For <see cref="Networking.AbilityPacketHandler"/>
+    /// For <see cref="Networking.AbilityPacketHandler"/>.
     /// </summary>
     internal void PreReadPacket(BinaryReader r) {
       AbilityState = (State)r.ReadByte();
@@ -192,7 +198,7 @@ namespace OriMod.Abilities {
     }
 
     /// <summary>
-    /// For <see cref="Networking.AbilityPacketHandler"/>
+    /// For <see cref="Networking.AbilityPacketHandler"/>.
     /// </summary>
     internal void PreWritePacket(ModPacket packet) {
       packet.Write((byte)AbilityState);
@@ -200,12 +206,12 @@ namespace OriMod.Abilities {
     }
 
     /// <summary>
-    /// Ability-specific data to read from packet. Use in conjunction with <see cref="WritePacket(ModPacket)"/>
+    /// Ability-specific data to read from packet. Use in conjunction with <see cref="WritePacket(ModPacket)"/>.
     /// </summary>
     protected virtual void ReadPacket(BinaryReader r) { }
 
     /// <summary>
-    /// Ability-specific data to write to packet. Use in conjunction with <see cref="ReadPacket(BinaryReader)"/>
+    /// Ability-specific data to write to packet. Use in conjunction with <see cref="ReadPacket(BinaryReader)"/>.
     /// </summary>
     protected virtual void WritePacket(ModPacket packet) { }
     #endregion
@@ -277,7 +283,7 @@ namespace OriMod.Abilities {
     internal virtual void DrawEffects() { }
     #endregion
 
-    public override string ToString() => $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} Unlocked:{Unlocked} Cooldown:{CurrentCooldown}/{Cooldown}";
+    public override string ToString() => $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} Unlocked:{Unlocked} Cooldown:{currentCooldown}/{Cooldown}";
 
     /// <summary>
     /// States that the <see cref="Ability"/> can be in. Determines update logic.

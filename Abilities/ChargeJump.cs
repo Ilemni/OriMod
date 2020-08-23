@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
-  /// Ability for a large jump that can deal damage to enemies.
+  /// Ability for a quick and high jump that can deal damage to enemies.
   /// </summary>
   public sealed class ChargeJump : Ability {
     internal ChargeJump(AbilityManager manager) : base(manager) { }
@@ -61,9 +61,9 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      float speed = Speeds[CurrentTime - 1] * SpeedMultiplier;
+      float speed = Speeds[currentTime - 1] * SpeedMultiplier;
       player.velocity.Y = speed * -player.gravDir;
-      oPlayer.ImmuneTimer = 12;
+      oPlayer.immuneTimer = 12;
     }
 
     protected override void UpdateUsing() {
@@ -77,8 +77,8 @@ namespace OriMod.Abilities {
         return;
       }
       if (!Refreshed && !InUse) {
-        CurrentCooldown--;
-        if (CurrentCooldown < 0) {
+        currentCooldown--;
+        if (currentCooldown < 0) {
           Refreshed = true;
         }
       }
@@ -109,15 +109,15 @@ namespace OriMod.Abilities {
         }
       }
       if (Active) {
-        CurrentTime++;
-        if (CurrentTime > Duration) {
+        currentTime++;
+        if (currentTime > Duration) {
           if (oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
             SetState(State.Ending);
           }
           else {
             SetState(State.Inactive);
           }
-          CurrentTime = 0;
+          currentTime = 0;
         }
       }
       if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {

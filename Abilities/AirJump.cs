@@ -14,7 +14,7 @@ namespace OriMod.Abilities {
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrentCount < MaxJumps && !Active && !Manager.bash.InUse && !player.mount.Active && !Manager.wallChargeJump.InUse;
 
     private float JumpVelocity => 8.8f;
-    private int EndDuration => AnimationHandler.Instance.PlayerAnim.tracks["AirJump"].Duration;
+    private int EndDuration => AnimationHandler.Instance.PlayerAnim["AirJump"].duration;
     private int MaxJumps => Config.AirJumpCount;
     
     internal int CurrentCount;
@@ -29,7 +29,7 @@ namespace OriMod.Abilities {
       else {
         oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + rand.NextNoRepeat(4), 0.75f);
       }
-      float newVel = -JumpVelocity * ((EndDuration - CurrentTime) / EndDuration);
+      float newVel = -JumpVelocity * ((EndDuration - currentTime) / EndDuration);
       if (player.velocity.Y > newVel) {
         player.velocity.Y = newVel;
       }
@@ -46,7 +46,7 @@ namespace OriMod.Abilities {
             Manager.dash.SetState(State.Inactive);
             Manager.dash.PutOnCooldown();
           }
-          CurrentTime = 0;
+          currentTime = 0;
           CurrentCount++;
           GravityDirection = (int)player.gravDir;
         }
@@ -60,10 +60,10 @@ namespace OriMod.Abilities {
         SetState(State.Ending);
       }
       else if (Ending) {
-        CurrentTime++;
-        if (CurrentTime > EndDuration || player.velocity.Y * player.gravDir > 0) {
+        currentTime++;
+        if (currentTime > EndDuration || player.velocity.Y * player.gravDir > 0) {
           SetState(State.Inactive);
-          CurrentTime = 0;
+          currentTime = 0;
         }
       }
     }

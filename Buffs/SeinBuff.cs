@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace OriMod.Buffs {
   /// <summary>
-  /// Buff that would keep <see cref="Projectiles.Minions.Sein"/> in existence.
+  /// Buff that would keep the <see cref="Projectiles.Minions.Sein"/> minion active.
   /// </summary>
   public abstract class SeinBuff : ModBuff {
     public override bool Autoload(ref string name, ref string texture) {

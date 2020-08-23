@@ -6,6 +6,9 @@ using Terraria.ModLoader.IO;
 using Terraria.ID;
 
 namespace OriMod {
+  /// <summary>
+  /// <see cref="ModWorld"/> used for progression of abilities in this mod.
+  /// </summary>
   public class OriWorld : ModWorld {
     /// <summary>
     /// Enum representing world progression for Ori-based upgrades.
