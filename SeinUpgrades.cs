@@ -9,7 +9,7 @@ namespace OriMod {
     /// <summary>
     /// List of all <see cref="SeinData"/>s in the mod.
     /// </summary>
-    internal static List<SeinData> All { get; private set; } = new List<SeinData>();
+    internal static List<SeinData> All { get; private set; }
     
     /// <summary>
     /// Loads all Sein variants. Sein stats are hardcoded into this method.
@@ -38,7 +38,7 @@ namespace OriMod {
         All.Add(newSein);
       }
 
-      All.Clear();
+      All = new List<SeinData>();
 
       // Tier 1 (Silver)
       AddNewSein(new SeinData());
