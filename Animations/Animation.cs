@@ -13,6 +13,7 @@ namespace OriMod.Animations {
       this.oPlayer = oPlayer;
       this.source = source;
       this.playerLayer = playerLayer;
+      CheckIfValid(oPlayer.AnimationName);
     }
 
     /// <summary>
