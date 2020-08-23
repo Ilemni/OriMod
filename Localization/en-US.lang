@@ -9,7 +9,7 @@ BuffDescription.SeinBuff1="The eyes of the Spirit Tree."
 
 ItemName.SpiritOrb2=Darkened {$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff2={$Mods.OriMod.Common.Sein} (Darkened)
-ItemTooltip.SpiritOrb2=Calls forth a trusty companion.
+ItemTooltip.SpiritOrb2=Calls forth a trustworthy companion.
 BuffDescription.SeinBuff2="The wrath of the Spirit Tree, sharpened by evil forces."
 
 ItemName.SpiritOrb3=Blazing {$Mods.OriMod.Common.SpiritOrb}
@@ -43,14 +43,14 @@ ItemTooltip.SpiritOrb8=Calls forth the full might of the Spirit Tree.
 BuffDescription.SeinBuff8="The ultimate power of the Spirit Tree."
 
 ItemName.OriPotion={$Mods.OriMod.Common.OriPotion}
-ItemTooltip.OriPotion=Remotely change yourself into a Spirit Guardian\nAfter use, the bottle can be refilled\n"Taste the spirit!"
+ItemTooltip.OriPotion=Remotely change yourself to and from a Spirit\nAfter use, the bottle can be refilled\n"Taste the spirit!"
 
 ItemName.OriPotionEmpty=Spirit Bottle
 ItemTooltip.OriPotionEmpty=Refill at a Spirit Sapling\n"The spirit energy has been all used up."
 
 ItemName.SpiritSapling=Spirit Sprout
 MapObject.SpiritSapling=Spirit Sprout
-ItemTooltip.SpiritSapling=A gift from the Spirit Tree
+ItemTooltip.SpiritSapling=A gift from the Spirit Tree.
 
 ItemName.SpiritSapling2=Spirit Sapling
 MapObject.SpiritSapling2=Spirit Sapling
@@ -67,7 +67,7 @@ Upgrade.Sein.Unlock.Flavor = Once a valuable companion to Ori, Sein is willing t
 
 Upgrade.WallJump.Unlock.Name = Wall Jump
 Upgrade.WallJump.Unlock.Description = Allows you to jump on walls to ascend.
-Upgrade.WallJump.Unlock.Flavor = Fil was the first of the fallen Spirit Guardians to grant Ori their gift, a legacy he had to leave behind so soon.
+Upgrade.WallJump.Unlock.Flavor = Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon.
 
 Upgrade.AirJump.Unlock.Name = Double Jump
 Upgrade.AirJump.Unlock.Description = Allows you to jump again in the air.
@@ -75,11 +75,11 @@ Upgrade.AirJump.Unlock.Flavor = A legacy left by Leru, this gift proved instumen
 
 Upgrade.Bash.Unlock.Name = Bash
 Upgrade.Bash.Unlock.Description = Allows you to Bash on enemies and projectiles, pushing you in one direction and the target in the opposite direction.
-Upgrade.Bash.Unlock.Flavor = When the Ginso Tree's waters turned poisonous, Reem tried to help, but he was not able to predict just how bad the plague would be when the forest went blind.
+Upgrade.Bash.Unlock.Flavor = When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the plague would be when the forest went blind.
 
 Upgrade.Stomp.Unlock.Name = Stomp
 Upgrade.Stomp.Unlock.Description = Allows you to slam towards the ground, creating a powerful shockwave to damage nearby enemies.
-Upgrade.Stomp.Unlock.Flavor = Despite being known as the strongest of the Spirit Guardians, Ilo was a gentle spirit. When Kuro attacked a group of spirits in Thornfelt, he sacrificed his life so that they could escape. In the end, it did not matter.
+Upgrade.Stomp.Unlock.Flavor = Despite being known as the strongest of the Spirits, Ilo was a gentle spirit.
 
 Upgrade.Glide.Unlock.Name = Glide
 Upgrade.Glide.Unlock.Description = Allows you to glide, staying in the air for longer and falling slower.
@@ -87,11 +87,11 @@ Upgrade.Glide.Unlock.Flavor = This feather resembles the same one that Ori took 
 
 Upgrade.Climb.Unlock.Name = Climb
 Upgrade.Climb.Unlock.Description = Allows you to hold on to and ascend walls.
-Upgrade.Climb.Unlock.Flavor = Tatsu and Atsu were hiding in Misty to avoid Kuro's onslaught, but without the Spirit Tree's aura, Atsu's light could not last. When Ori found Atsu, she was already an Ancestral Tree.
+Upgrade.Climb.Unlock.Flavor = Tatsu and Atsu often played in the Misty Woods, but without the Spirit Tree's Light, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
 
 Upgrade.ChargeJump.Unlock.Name = Charge Jump
 Upgrade.ChargeJump.Unlock.Description = Allows you to jump high into the air.
-Upgrade.ChargeJump.Unlock.Flavor = Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful spirit, the blinding of the forest and loss of all her friends caused a deep sadness. She remained in Sorrow Pass until her death.
+Upgrade.ChargeJump.Unlock.Flavor = Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful spirit, the blinding of the forest and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.
 
 Upgrade.WallChargeJump.Unlock.Name = Wall Charge Jump
 Upgrade.WallChargeJump.Unlock.Description = Allows you to Charge Jump from walls.
@@ -103,10 +103,6 @@ Error.SoulLinkObstructed=Your Soul Link has been blocked and despawned.
 Error.SoulLinkCannotPlace=Cannot place a Soul Link here.
 
 Error.UnknownPacket=Error with packet: Unknown Packet type {0}
-Error.UnknownOriStatePacket=Error with packet: Unknown OriStatePacket type {0}
-Error.UnknownAbilityPacket=Error with packet: Unknown AbilityPacket type {0}
 
 Error.BadTrack=Error with animation: The animation track {0} does not exist.
 Error.BadFrame=Error with animation: Invalid frame for {0}: {1}
-
-Error.CannotLoadSein=Error with Sein summon: Couldn't get number from {0}

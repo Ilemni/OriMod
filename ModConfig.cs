@@ -30,7 +30,7 @@ namespace OriMod {
     [DefaultValue(0)]
     public float StompHoldDownDelay = 0;
 
-    [Label("Soft Crouch"), Tooltip("Allows moving while crouched.\nDefault: false")]
+    [Label("Soft Crouch"), Tooltip("Allows moving while holding crouch.\nDefault: false")]
     [DefaultValue(false)]
     public bool SoftCrouch;
 
@@ -52,11 +52,11 @@ namespace OriMod {
 
     [Header("Aesthetics")]
 
-    [Label("Player Color"), Tooltip("The color of your Spirit Guardian.\nDefault: 210, 255, 255")]
+    [Label("Player Color"), Tooltip("The color of your Spirit.\nDefault: 210, 255, 255")]
     [DefaultValue(typeof(Color), "210, 255, 255, 255"), ColorNoAlpha]
     public Color PlayerColor;
 
-    [Label("Player Color (Secondary)"), Tooltip("The secondary color of your Spirit Guardian.\nDefault: 0, 0, 0, 0")]
+    [Label("Player Color (Secondary)"), Tooltip("The secondary color of your Spirit.\nDefault: 0, 0, 0, 0")]
     [DefaultValue(typeof(Color), "0, 0, 0, 0")]
     public Color PlayerColorSecondary;
 
