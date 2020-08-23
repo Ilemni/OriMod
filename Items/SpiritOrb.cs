@@ -40,7 +40,7 @@ namespace OriMod.Items {
       item.noMelee = true;
       item.UseSound = SoundID.Item44;
 
-      var data = SeinData.All[SeinType];
+      var data = SeinData.All[SeinType - 1];
       item.damage = data.damage;
       item.rare = data.rarity;
       item.value = data.value;
@@ -60,7 +60,6 @@ namespace OriMod.Items {
     public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.RemoveSeinBuffs();
-      Main.NewText($"Shoot: Item.buffType: {item.buffType}");
       player.AddBuff(item.buffType, 2, true);
       oPlayer.SeinMinionType = item.shoot;
       oPlayer.SeinMinionActive = true;
