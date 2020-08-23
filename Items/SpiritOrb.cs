@@ -10,144 +10,6 @@ namespace OriMod.Items {
   public abstract class SpiritOrb : ModItem {
     public override string Texture => "OriMod/Items/SpiritOrb";
 
-    #region Stats
-    /// <summary>
-    /// Damage of Spirit Flame.
-    /// </summary>
-    public int damage = 12;
-
-    /// <summary>
-    /// Multiplier of damage dealt to the primary target.
-    /// </summary>
-    public float primaryDamageMultiplier = 1;
-
-    /// <summary>
-    /// Number of <see cref="NPC"/>s that can be targeted at once.
-    /// </summary>
-    public int targets = 1;
-
-    /// <summary>
-    /// Maximum times the minion can fire with a delay of <see cref="minCooldown"/> before having a delay of <see cref="longCooldown"/>.
-    /// </summary>
-    public int shotsPerBurst = 2;
-
-    /// <summary>
-    /// Maximum number of shots that can be fired at each target.
-    /// </summary>
-    public int shotsPerTarget = 1;
-
-    /// <summary>
-    /// Maximum number of shots that can be fired at the primary target at once.
-    /// </summary>
-    public int shotsToPrimaryTarget = 1;
-
-    /// <summary>
-    /// Maximum number of shots that can be fired at once.
-    /// </summary>
-    public int maxShotsPerVolley = 1;
-
-    /// <summary>
-    /// Delay between each shot in <see cref="shotsPerBurst"/>.
-    /// </summary>
-    public float minCooldown = 12f;
-
-    /// <summary>
-    /// Shortest time to wait during <see cref="shotsPerBurst"/> to reset burst count.
-    /// </summary>
-    public float shortCooldown = 24f;
-
-    /// <summary>
-    /// Delay between each series of shots, incurred when shots reaches <see cref="shotsPerBurst."/>.
-    /// </summary>
-    public float longCooldown = 40f;
-
-    /// <summary>
-    /// Maximum angle that fired Spirit Flames will be away from the target.
-    /// </summary>
-    internal int randDegrees = 40;
-
-    /// <summary>
-    /// NPCs within this distance from the player can be targeted by the minion, if there is line of sight between it and the player.
-    /// </summary>
-    public float targetMaxDistance = 240f;
-
-    /// <summary>
-    /// NPCs within this distance from the player can be targeted by the minion, regardless of line of sight.
-    /// </summary>
-    public float targetThroughWallDistance = 80f;
-
-    /// <summary>
-    /// The knockback of Spirit Flame.
-    /// </summary>
-    public float knockback = 0f;
-
-    /// <summary>
-    /// Starting homing strength of Spirit Flame.
-    /// </summary>
-    internal float homingStrengthStart = 0.07f;
-
-    /// <summary>
-    /// Rate to increase homing strength every frame after <see cref="homingIncreaseDelay"/>.
-    /// </summary>
-    internal float homingIncreaseRate = 0.04f;
-
-    /// <summary>
-    /// Ticks to wait before increasing homing strength by <see cref="homingIncreaseRate"/>.
-    /// </summary>
-    internal int homingIncreaseDelay = 16;
-
-    /// <summary>
-    /// Speed of Spirit Flame when it is fired.
-    /// </summary>
-    internal float projectileSpeedStart = 5f;
-
-    /// <summary>
-    /// Acceleration of Spirit Flame after waiting for <see cref="projectileSpeedIncreaseDelay"/>.
-    /// </summary>
-    internal float projectileSpeedIncreaseRate = 0.5f;
-
-    /// <summary>
-    /// Time to wait before increasing Spirit Flame speed by <see cref="projectileSpeedIncreaseRate"/>.
-    /// </summary>
-    internal int projectileSpeedIncreaseDelay = 10;
-
-    internal int minionWidth = 10;
-    internal int minionHeight = 11;
-    internal int flameWidth = 12;
-    internal int flameHeight = 12;
-
-    /// <summary>
-    /// The size of the dust trail emitted from Spirit Flame.
-    /// </summary>
-    public float dustScale = 0.8f;
-
-    /// <summary>
-    /// <see cref="ItemRarityID"/> of the Spirit Orb.
-    /// </summary>
-    internal int rarity = 1;
-
-    /// <summary>
-    /// Buy value of the Spirit Orb.
-    /// </summary>
-    internal int value = 1000;
-
-    /// <summary>
-    /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights.
-    /// </summary>
-    internal Color color;
-
-    /// <summary>
-    /// Strength of the light emitted from Sein and Spirit Flame.
-    /// </summary>
-    internal float lightStrength;
-    #endregion
-
-    /// <summary>
-    /// Set stats for <see cref="SpiritOrb"/> fields.
-    /// </summary>
-    /// <returns></returns>
-    internal abstract SpiritOrb SetOrbDefaults();
-
     /// <summary>
     /// Type for <see cref="Buffs.SeinBuff"/>. This value should be from <see cref="ModContent.BuffType{T}"/>.
     /// </summary>
@@ -161,43 +23,11 @@ namespace OriMod.Items {
     protected abstract int GetShootType();
 
     /// <summary>
-    /// Copies stats from <paramref name="old"/> onto this.
+    /// Type used for <see cref="Projectiles.Minions.Sein"/>. Values are indices to <see cref="OriMod.SeinDatas"/>.
     /// </summary>
-    /// <param name="old"><see cref="SpiritOrb"/> to copy stats from.</param>
-    internal void CopyFrom(SpiritOrb old) {
-      damage = old.damage;
-      primaryDamageMultiplier = old.primaryDamageMultiplier;
-      targets = old.targets;
-      shotsPerBurst = old.shotsPerBurst;
-      shotsPerTarget = old.shotsPerTarget;
-      shotsToPrimaryTarget = old.shotsToPrimaryTarget;
-      maxShotsPerVolley = old.maxShotsPerVolley;
-      minCooldown = old.minCooldown;
-      shortCooldown = old.shortCooldown;
-      longCooldown = old.longCooldown;
-      randDegrees = old.randDegrees;
-      targetMaxDistance = old.targetMaxDistance;
-      targetThroughWallDistance = old.targetThroughWallDistance;
-      knockback = old.knockback;
-      homingStrengthStart = old.homingStrengthStart;
-      homingIncreaseRate = old.homingIncreaseRate;
-      homingIncreaseDelay = old.homingIncreaseDelay;
-      projectileSpeedStart = old.projectileSpeedStart;
-      projectileSpeedIncreaseRate = old.projectileSpeedIncreaseRate;
-      projectileSpeedIncreaseDelay = old.projectileSpeedIncreaseDelay;
-      minionWidth = old.minionWidth;
-      minionHeight = old.minionHeight;
-      flameWidth = old.flameWidth;
-      flameHeight = old.flameHeight;
-      dustScale = old.dustScale;
-      rarity = old.rarity;
-      value = old.value;
-      color = old.color;
-      lightStrength = old.lightStrength;
-    }
+    protected abstract int SeinType { get; }
 
     public override void SetDefaults() {
-      SetOrbDefaults();
       item.buffType = GetBuffType();
       item.shoot = GetShootType();
       item.summon = true;
@@ -209,10 +39,12 @@ namespace OriMod.Items {
       item.useStyle = ItemUseStyleID.SwingThrow;
       item.noMelee = true;
       item.UseSound = SoundID.Item44;
-      item.damage = damage;
-      item.rare = rarity;
-      item.value = value;
-      item.color = color;
+
+      var data = SeinData.All[SeinType];
+      item.damage = data.damage;
+      item.rare = data.rarity;
+      item.value = data.value;
+      item.color = data.color;
     }
 
     public override bool AltFunctionUse(Player player) => true;
