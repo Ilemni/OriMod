@@ -75,7 +75,7 @@ namespace OriMod {
 
   [Label("Ability Config")]
   public class OriConfigClient2 : ModConfig {
-    public override ConfigScope Mode => ConfigScope.ClientSide;
+    public override ConfigScope Mode => ConfigScope.ServerSide;
 
     [Header("Soul Link")]
 

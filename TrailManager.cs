@@ -21,7 +21,7 @@ namespace OriMod {
         trails[i++] = new Trail(oPlayer);
       }
     }
-    
+
     private int Next {
       get {
         index = (index + 1) % trails.Length;
@@ -56,7 +56,7 @@ namespace OriMod {
         Main.playerDrawData.Add(trail.GetDrawData());
       }
     }
-    
+
     /// <summary>
     /// Calls <see cref="Trail.Reset"/> on the next trail.
     /// </summary>

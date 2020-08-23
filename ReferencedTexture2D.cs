@@ -17,7 +17,7 @@ namespace OriMod {
       if (texturePath is null) {
         throw new System.ArgumentNullException(nameof(texturePath));
       }
-      
+
       if (OriMod.Instance.TextureExists(texturePath)) {
         texture = OriMod.Instance.GetTexture(texturePath);
       }

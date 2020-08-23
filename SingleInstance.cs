@@ -8,7 +8,7 @@ namespace OriMod {
   /// <typeparam name="T">The type to make Singleton.</typeparam>
   public abstract class SingleInstance<T> where T : SingleInstance<T> {
     private static readonly object _lock = new object();
-    
+
     /// <summary>
     /// The instance of this type.
     /// </summary>

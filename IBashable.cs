@@ -9,12 +9,12 @@ namespace OriMod {
     /// The player that is bashing this or last bashed this.
     /// </summary>
     OriPlayer BashPlayer { get; set; }
-    
+
     /// <summary>
     /// The position where the entity was bashed.
     /// </summary>
     Vector2 BashPosition { get; set; }
-    
+
     /// <summary>
     /// Whether or not the entity is being bashed.
     /// </summary>

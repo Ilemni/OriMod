@@ -105,7 +105,7 @@ namespace OriMod {
     }
 
     public override void Load(TagCompound tag) {
-      GlobalUpgrade = (Upgrade)tag.GetAsInt("SeinUpgrade");
+      GlobalUpgrade = (Upgrade)tag.Get<byte>("SeinUpgrade");
       ValidateSeinUpgrade();
     }
 

@@ -297,7 +297,7 @@ namespace OriMod {
     /// <param name="point">Position of the tile.</param>
     /// <returns>A <see cref="Tile"/> at the provided position.</returns>
     private Tile GetTile(Point point) => Main.tile[point.X, point.Y];
-    
+
     /// <summary>
     /// Get a <see cref="Tile"/> at <paramref name="vector"/>. <paramref name="vector"/> is coverted to tile coordinates.
     /// </summary>

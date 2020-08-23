@@ -75,18 +75,6 @@ namespace OriMod.Animations {
     }
 
     /// <summary>
-    /// Add the <see cref="playerLayer"/> of this animation to the given <paramref name="layers"/>.
-    /// <para>This will not run if Valid is false, unless force is true.</para>
-    /// </summary>
-    /// <param name="layers">The PlayerLayer list to add to.</param>
-    /// <param name="force">Add even if <see cref="Valid"/> is <c>false</c>.</param>
-    public void AddToLayers(List<PlayerLayer> layers, bool force = false) {
-      if (Valid || force) {
-        layers.Add(playerLayer);
-      }
-    }
-
-    /// <summary>
     /// Checks if <paramref name="name"/> is a valid track.
     /// </summary>
     /// <param name="name">Track name to check.</param>

@@ -21,7 +21,7 @@ namespace OriMod {
     private float Alpha = 1;
     private float StartAlpha = 1;
     private SpriteEffects effect;
-    
+
     private static Vector2 Origin => new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 6);
 
     /// <summary>
@@ -31,7 +31,7 @@ namespace OriMod {
       var player = oPlayer.player;
       Position = player.Center;
       Tile = oPlayer.animationTile;
-      
+
       StartAlpha = player.velocity.Length() * 0.002f;
       if (StartAlpha > 0.08f) {
         StartAlpha = 0.08f;

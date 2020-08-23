@@ -159,7 +159,7 @@ namespace OriMod {
         }
       }
     }
-    
+
     /// <summary>
     /// The current type of <see cref="Projectiles.Minions.Sein"/> that is summoned. Used to prevent re-summons of the same tier of Sein.
     /// </summary>
@@ -233,17 +233,17 @@ namespace OriMod {
     /// Current time of the <see cref="Frame"/> being played.
     /// </summary>
     internal float AnimationTime { get; private set; }
-    
+
     /// <summary>
     /// Current rotation the sprite is set to.
     /// </summary>
     internal float AnimationRotation { get; private set; }
-    
+
     /// <summary>
     /// Whether or not the animation is being played in reverse.
     /// </summary>
     internal bool animationReversed = false;
-    
+
     /// <summary>
     /// For making the player sprite appear red during hurt animations.
     /// </summary>
@@ -601,7 +601,7 @@ namespace OriMod {
 
     public override void Initialize() {
       Abilities = new AbilityManager(this);
-      Upgrades = new UpgradeManager(this);
+      //Upgrades = new UpgradeManager(this); // TODO: uncomment this if implementing Upgrade System
 
       if (!Main.dedServ) {
         Animations = new AnimationContainer(this);
@@ -668,8 +668,8 @@ namespace OriMod {
         #endregion
 
         if (OriMod.ConfigClient.SmoothCamera) {
-                    // Smooth camera effect reduced while bosses are alive
-                    Main.SetCameraLerp(OriUtils.IsAnyBossAlive() ? 0.15f : 0.05f, 1);
+          // Smooth camera effect reduced while bosses are alive
+          Main.SetCameraLerp(OriUtils.IsAnyBossAlive() ? 0.15f : 0.05f, 1);
         }
 
         // Reduce gravity when clinging on wall
@@ -832,7 +832,7 @@ namespace OriMod {
       }
       return true;
     }
-    
+
     public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit) {
       if (useCustomHurtSound) {
         useCustomHurtSound = false;
