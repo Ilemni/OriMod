@@ -11,6 +11,7 @@ namespace OriMod.Abilities {
   /// Ability for a quick and fast horizontal dash. May be used in the air.
   /// </summary>
   public sealed class ChargeDash : Ability {
+    static ChargeDash() => OriMod.OnUnload += Unload;
     internal ChargeDash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeDash;
 
@@ -21,9 +22,11 @@ namespace OriMod.Abilities {
 
     private int ManaCost => 20;
     private int Duration => Speeds.Length - 1;
-    private static readonly float[] Speeds = new float[15] {
+    private static float[] Speeds => _speeds ?? (_speeds = new float[15] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
-    };
+    });
+    private static float[] _speeds;
+
     private static float SpeedMultiplier => Config.CDashSpeedMultiplier * 0.8f;
 
     private ushort NpcID = ushort.MaxValue;
@@ -179,6 +182,10 @@ namespace OriMod.Abilities {
           End();
         }
       }
+    }
+
+    private static void Unload() {
+      _speeds = null;
     }
   }
 }

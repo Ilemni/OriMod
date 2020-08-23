@@ -11,6 +11,7 @@ namespace OriMod.Abilities {
   /// Ability for a charged jump off walls.
   /// </summary>
   public sealed class WallChargeJump : Ability {
+    static WallChargeJump() => OriMod.OnUnload += Unload;
     internal WallChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallChargeJump;
 
@@ -22,9 +23,10 @@ namespace OriMod.Abilities {
     internal bool CanCharge => base.CanUse && Manager.climb.IsCharging;
     private int MaxCharge => 35;
     private int Duration => 20;
-    private static readonly float[] Speeds = new float[20] {
+    private static float[] Speeds => _speeds ?? (_speeds = new float[20] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
-    };
+    });
+    private static float[] _speeds;
     private float SpeedMultiplier => Config.WCJumpSpeedMultipler * 0.5f;
     private float MaxAngle => Config.WCJumpMaxAngle;
 
@@ -116,6 +118,10 @@ namespace OriMod.Abilities {
       if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
         SetState(State.Inactive);
       }
+    }
+
+    private static void Unload() {
+      _speeds = null;
     }
   }
 }

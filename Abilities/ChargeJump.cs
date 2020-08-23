@@ -10,6 +10,7 @@ namespace OriMod.Abilities {
   /// Ability for a quick and high jump that can deal damage to enemies.
   /// </summary>
   public sealed class ChargeJump : Ability {
+    static ChargeJump() => OriMod.OnUnload += Unload;
     internal ChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeJump;
 
@@ -27,9 +28,10 @@ namespace OriMod.Abilities {
     /// </summary>
     private int ChargeGrace => 25;
 
-    private static readonly float[] Speeds = new float[20] {
+    private static float[] Speeds => _speeds ?? (_speeds = new float[20] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
-    };
+    });
+    private static float[] _speeds;
     private float SpeedMultiplier => Config.CJumpSpeedMultiplier * 0.35f;
     private int Duration => Speeds.Length;
 
@@ -123,6 +125,10 @@ namespace OriMod.Abilities {
       if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
         SetState(State.Inactive);
       }
+    }
+
+    private static void Unload() {
+      _speeds = null;
     }
   }
 }

@@ -1,3 +1,4 @@
+﻿using System;
 using Terraria;
 
 namespace OriMod.Utilities {
@@ -5,7 +6,17 @@ namespace OriMod.Utilities {
   /// Class to get randomized <see cref="char"/>s between A and Z. Chars are capitalized.
   /// </summary>
   internal class RandomChar {
-    
+    static RandomChar() {
+      OriMod.OnUnload += Unload;
+    }
+
+    private byte nextExclude = byte.MaxValue; // Start as max value to avoid excludes on first use
+
+    private const byte RandMaxValue = 25;
+
+    private static char[] alphabet => _alphabet ?? (_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray());
+    private static char[] _alphabet;
+
     /// <summary>
     /// Gets a random char between A and Z.
     /// </summary>
@@ -39,7 +50,7 @@ namespace OriMod.Utilities {
     /// <returns></returns>
     public char NextNoRepeat(int length) {
       if (length < 1 || length > RandMaxValue) {
-        throw new System.ArgumentOutOfRangeException(nameof(length), "Value must be between 1 and " + RandMaxValue);
+        throw new ArgumentOutOfRangeException(nameof(length), "Value must be between 1 and " + RandMaxValue);
       }
 
       byte rand;
@@ -56,13 +67,8 @@ namespace OriMod.Utilities {
       return alphabet[rand];
     }
 
-    private byte nextExclude = byte.MaxValue; // Start as max value to avoid excludes on first use
-
-    private const byte RandMaxValue = 25;
-    
-    private static char[] alphabet => _a ?? (_a = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray());
-    private static char[] _a;
-
-    public static void Unload() => _a = null;
+    private static void Unload() {
+      _alphabet = null;
+    }
   }
 }

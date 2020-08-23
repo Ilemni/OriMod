@@ -30,6 +30,7 @@ namespace OriMod {
         lock (_lock) {
           if (_instance is null) {
             _instance = (T)Activator.CreateInstance(typeof(T), true);
+            OriMod.OnUnload += Unload;
           }
         }
       }
@@ -38,7 +39,7 @@ namespace OriMod {
     /// <summary>
     /// Sets the static reference of <see cref="SingleInstance{T}"/> to <c>null</c>. Calls <see cref="IDisposable.Dispose"/> first, if applicable.
     /// </summary>
-    public static void Unload() {
+    private static void Unload() {
       if (_instance is IDisposable dispoable) {
         dispoable.Dispose();
       }

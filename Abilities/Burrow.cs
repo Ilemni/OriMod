@@ -15,6 +15,7 @@ namespace OriMod.Abilities {
   /// This ability was somewhat difficult to balance; the simplest solution was to restrict tiles to whatever pickaxe was in inventory.
   /// </remarks>
   public sealed class Burrow : Ability {
+    static Burrow() => OriMod.OnUnload += Unload;
     internal Burrow(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Burrow;
 
@@ -331,7 +332,7 @@ namespace OriMod.Abilities {
       }
     }
 
-    internal static void Unload() {
+    private static void Unload() {
       _eh = null;
       _oh = null;
       _ih = null;

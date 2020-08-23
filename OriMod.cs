@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
-using OriMod.Abilities;
 using OriMod.Networking;
 using OriMod.UI;
 using Terraria;
@@ -160,7 +160,12 @@ namespace OriMod {
       FootstepManager.Initialize();
       TileCollection.Initialize();
     }
-    
+
+    /// <summary>
+    /// Use this to set static reference types to null on unload.
+    /// </summary>
+    public static event Action OnUnload;
+
     public override void Unload() {
       Instance = null;
 
@@ -175,18 +180,8 @@ namespace OriMod {
       ConfigClient = null;
       ConfigAbilities = null;
 
-      SeinUpgrades = null;
-      Interface = null;
-      upgradeUI = null;
-
-      AbilityManager.Unload();
-      FootstepManager.Unload();
-      OriLayers.Unload();
-      OriTextures.Unload();
-      TileCollection.Unload();
-      Animations.AnimationHandler.Unload();
-      Upgrades.UpgradeManager.Unload();
-      Utilities.RandomChar.Unload();
+      OnUnload();
+      OnUnload = null;
     }
 
     public override void HandlePacket(BinaryReader reader, int fromWho) {

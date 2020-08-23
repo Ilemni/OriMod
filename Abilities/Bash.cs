@@ -12,6 +12,7 @@ namespace OriMod.Abilities {
   /// Ability for pushing the player and enemies in opposite directions. Iconic ability of the Ori franchise.
   /// </summary>
   public sealed class Bash : Ability {
+    static Bash() => OriMod.OnUnload += Unload;
     internal Bash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Bash;
 
@@ -20,10 +21,10 @@ namespace OriMod.Abilities {
     protected override int Cooldown => (int)(Config.BashCooldown * 30);
     protected override Color RefreshColor => Color.LightYellow;
 
-    public static List<int> CannotBash = new List<int> {
+    public static List<short> CannotBashNPC => _cannotBashNPC ?? (_cannotBashNPC = new List<short> {
       NPCID.BlazingWheel, NPCID.SpikeBall
-    };
-    public static List<int> CannotBashProj = new List<int> {
+    });
+    public static List<short> CannotBashProj => _cannotBashProj ?? (_cannotBashProj = new List<short> {
       ProjectileID.FlamethrowerTrap, ProjectileID.FlamesTrap, ProjectileID.GeyserTrap, ProjectileID.SpearTrap,
       ProjectileID.GemHookAmethyst, ProjectileID.GemHookDiamond, ProjectileID.GemHookEmerald,
       ProjectileID.GemHookRuby, ProjectileID.GemHookSapphire, ProjectileID.GemHookTopaz,
@@ -32,7 +33,10 @@ namespace OriMod.Abilities {
       ProjectileID.LunarHookNebula, ProjectileID.LunarHookSolar, ProjectileID.LunarHookStardust, ProjectileID.LunarHookVortex,
       ProjectileID.SlimeHook, ProjectileID.StaticHook, ProjectileID.TendonHook, ProjectileID.ThornHook, ProjectileID.TrackHook,
       ProjectileID.WoodHook, ProjectileID.WormHook,
-    };
+    });
+
+    private static List<short> _cannotBashNPC;
+    private static List<short> _cannotBashProj;
 
     private int BashDamage => 15;
     private float BashPlayerStrength => Config.BashStrength;
@@ -96,7 +100,7 @@ namespace OriMod.Abilities {
     /// <param name="npc"></param>
     /// <returns>True if the NPC should be bashed.</returns>
     private bool BashNpcFilter(NPC npc) =>
-      !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBash.Contains(npc.type);
+      !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBashNPC.Contains((short)npc.type);
 
     /// <summary>
     /// Filter to determine if this <see cref="Projectile"/> can be bashed. Returns true if the projectile should be bashed.
@@ -105,7 +109,7 @@ namespace OriMod.Abilities {
     /// <param name="proj"></param>
     /// <returns>True if the projectile should be bashed.</returns>
     private bool BashProjFilter(Projectile proj) =>
-      (!proj.friendly || Config.BashOnProjectilesFriendly) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains(proj.type);
+      (!proj.friendly || Config.BashOnProjectilesFriendly) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type);
 
     private bool BashStart() {
       float currDist = BashRange;
@@ -278,6 +282,11 @@ namespace OriMod.Abilities {
         }
         TickCooldown();
       }
+    }
+
+    private static void Unload() {
+      _cannotBashNPC = null;
+      _cannotBashProj = null;
     }
   }
 }

@@ -14,6 +14,7 @@ namespace OriMod.Projectiles.Minions {
   /// Minion for Sein
   /// </summary>
   public abstract class Sein : Minion {
+    static Sein() => OriMod.OnUnload += Unload;
     public override sealed string Texture => "OriMod/Projectiles/Minions/Sein";
 
     public override sealed bool? CanCutTiles() => false;
@@ -282,14 +283,15 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Positions that the minion idly moves towards. Positions are relative to <see cref="baseHoverPosition"/>
     /// </summary>
-    private static Vector2[] HoverPositions { get; } = new Vector2[] {
+    private static Vector2[] HoverPositions => _hoverPositions ?? (_hoverPositions = new Vector2[] {
       new Vector2(-32, 12),
       new Vector2(32, -12),
       new Vector2(-32, -12),
       new Vector2(32, 12),
       new Vector2(-32, -12),
       new Vector2(32, -12),
-    };
+    });
+    private static Vector2[] _hoverPositions;
 
     /// <summary>
     /// Checks if Sein is within bounds of targetSpawn.
@@ -717,6 +719,10 @@ namespace OriMod.Projectiles.Minions {
         var sourceRect = new Rectangle(0, i * tex.Height / 3, tex.Width, tex.Width);
         spriteBatch.Draw(tex, pos, sourceRect, color, projectile.rotation, orig, projectile.scale, SpriteEffects.None, 0f);
       }
+    }
+
+    private static void Unload() {
+      _hoverPositions = null;
     }
   }
 }

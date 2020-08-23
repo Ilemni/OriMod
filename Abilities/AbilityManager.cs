@@ -76,10 +76,6 @@ namespace OriMod.Abilities {
   /// Class for containing and updating all <see cref="Ability"/>s on an <see cref="OriPlayer"/>.
   /// </summary>
   public sealed class AbilityManager {
-    static AbilityManager() {
-      SingleInstance.OnUnload += Unload;
-    }
-
     internal AbilityManager(OriPlayer oPlayer) {
       this.oPlayer = oPlayer;
 
@@ -235,11 +231,6 @@ namespace OriMod.Abilities {
       foreach (var ability in this) {
         ability.SetState(Ability.State.Inactive);
       }
-    }
-
-    internal static void Unload() {
-      Burrow.Unload();
-      //SoulLink.Unload();
     }
   }
 }
