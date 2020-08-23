@@ -152,6 +152,9 @@ namespace OriMod {
     /// <returns></returns>
     private FootstepSound SoundFromName(string name) {
       name = name.ToLower();
+      if (name == "mysterytile" || name == "pendingmysterytile") {
+        return FootstepSound.None;
+      }
       if (name.Contains("brick")) {
         return FootstepSound.SpiritTreeRock;
       }
@@ -368,7 +371,7 @@ namespace OriMod {
       /// </summary>
       NoModTranslation = 254,
       /// <summary>
-      /// For tiles that can never be stepped on (i.e. Banners, Torches).
+      /// For tiles that can never be stepped on (i.e. Banners, Torches), or should not have a sound.
       /// </summary>
       None = 255,
     }
