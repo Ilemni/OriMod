@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using OriMod.Networking;
@@ -11,7 +10,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 
 namespace OriMod {
-  public partial class OriMod : Mod {
+  public sealed class OriMod : Mod {
     public OriMod() {
       Properties = new ModProperties() {
         Autoload = true,
@@ -153,7 +152,7 @@ namespace OriMod {
         upgradeUI.Activate();
       }
 
-      LoadSeinUpgrades();
+      SeinData.Load();
     }
 
     public override void PostSetupContent() {
@@ -176,7 +175,6 @@ namespace OriMod {
       ChargeKey = null;
       BurrowKey = null;
       //SoulLinkKey = null;
-      SeinUpgrades = null;
       ConfigClient = null;
       ConfigAbilities = null;
 

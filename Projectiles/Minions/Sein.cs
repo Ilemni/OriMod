@@ -28,7 +28,7 @@ namespace OriMod.Projectiles.Minions {
     }
 
     /// <summary>
-    /// Type used for <see cref="Sein"/>. Values are indices to <see cref="OriMod.SeinUpgrades"/>.
+    /// Type used for <see cref="Sein"/>. Values are indices to <see cref="OriMod.SeinDatas"/>.
     /// </summary>
     protected abstract byte SeinType { get; }
 
@@ -57,7 +57,7 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     private void Initialize() {
       var type = SeinType;
-      SeinUpgrade u = OriMod.Instance.SeinUpgrades[type - 1];
+      SeinData u = SeinData.All[type - 1];
       maxShotsPerBurst = u.shotsPerBurst;
       maxShotsPerVolley = u.maxShotsPerVolley;
       shotsToTarget = u.shotsPerTarget;

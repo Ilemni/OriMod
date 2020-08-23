@@ -92,27 +92,27 @@ namespace OriMod.Projectiles.Minions {
     }
 
     /// <summary>
-    /// Type for <see cref="SpiritFlame"/>. Determines initialized values by using <see cref="OriMod.SeinUpgrades"/>.
+    /// Type for <see cref="SpiritFlame"/>. Determines initialized values by using <see cref="OriMod.SeinDatas"/>.
     /// </summary>
     protected abstract byte SpiritFlameType { get; }
 
     private void Initialize() {
-      var upgradeID = SpiritFlameType;
-      SeinUpgrade u = OriMod.Instance.SeinUpgrades[upgradeID - 1];
+      var type = SpiritFlameType;
+      SeinData data = SeinData.All[type - 1];
 
-      projectile.knockBack = u.knockback;
-      lerp = u.homingStrengthStart;
-      lerpRate = u.homingIncreaseRate;
-      lerpDelay = u.homingIncreaseDelay;
-      speed = u.projectileSpeedStart;
-      acceleration = u.projectileSpeedIncreaseRate;
-      accelerationDelay = u.projectileSpeedIncreaseDelay;
-      projectile.width = u.flameWidth;
-      projectile.height = u.flameHeight;
-      dustScale = u.dustScale;
-      dustType = mod.DustType("SFDustTrail");
-      color = u.color;
-      lightStrength = u.lightStrength * 0.6f;
+      projectile.knockBack = data.knockback;
+      lerp = data.homingStrengthStart;
+      lerpRate = data.homingIncreaseRate;
+      lerpDelay = data.homingIncreaseDelay;
+      speed = data.projectileSpeedStart;
+      acceleration = data.projectileSpeedIncreaseRate;
+      accelerationDelay = data.projectileSpeedIncreaseDelay;
+      projectile.width = data.flameWidth;
+      projectile.height = data.flameHeight;
+      dustScale = data.dustScale;
+      dustType = ModContent.DustType<Dusts.SpiritFlameDustTrail>();
+      color = data.color;
+      lightStrength = data.lightStrength * 0.6f;
     }
 
     private void CreateDust() {

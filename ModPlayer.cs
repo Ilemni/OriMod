@@ -350,7 +350,7 @@ namespace OriMod {
     /// Removes all Sein-related buffs from the player.
     /// </summary>
     internal void RemoveSeinBuffs() {
-      for (int u = 1; u <= OriMod.Instance.SeinUpgrades.Count; u++) {
+      for (int u = 1; u <= SeinData.All.Count; u++) {
         player.ClearBuff(mod.GetBuff("SeinBuff" + u).Type);
       }
     }
