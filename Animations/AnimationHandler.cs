@@ -14,7 +14,7 @@ namespace OriMod.Animations {
       => new Header(init: i, loop: l, playback: p, rtx: texture);
 
     private AnimationSource _pa;
-    public AnimationSource PlayerAnim => _pa ?? (_pa = new AnimationSource("PlayerEffects/OriPlayer", 128, 128,
+    public AnimationSource PlayerAnim => _pa ?? (_pa = new AnimationSource("PlayerEffects/OriPlayer", 64, 68,
       new Dictionary<string, Track> {
         ["Default"] = new Track(Header.Default,
           F(0, 0)
@@ -41,10 +41,10 @@ namespace OriMod.Animations {
           F(2, 0, 4), F(2, 10, 4)
         ),
         ["Dash"] = new Track(Header.None,
-          F(2, 12, 36), F(2, 13, 12)
+          F(2, 11, 36), F(2, 12, 12)
         ),
         ["Bash"] = new Track(Header.None,
-          F(2, 14, 40), F(2, 13)
+          F(2, 13, 40), F(2, 12)
         ),
         ["AirJump"] = new Track(Header.Default,
           F(3, 0, 32)
@@ -83,7 +83,7 @@ namespace OriMod.Animations {
           F(5, 9, 5), F(5, 12, 5)
         ),
         ["WallJump"] = new Track(Header.Default,
-          F(5, 15, 12)
+          F(5, 13, 12)
         ),
         ["WallChargeJumpCharge"] = new Track(Header.Default,
           F(6, 0, 16), F(6, 1, 10), F(6, 2)
@@ -99,8 +99,8 @@ namespace OriMod.Animations {
           F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30)
         ),
         ["TransformEnd"] = new Track(H(i: InitType.None),
-          F(15, 8, 6), F(15, 9, 50), F(15, 10, 6), F(15, 11, 60),
-          F(15, 12, 10), F(15, 13, 40), F(15, 14, 3), F(15, 15, 60)
+          F(6, 7, 6), F(6, 8, 50), F(6, 9, 6), F(6, 10, 60),
+          F(6, 11, 10), F(6, 12, 40), F(6, 13, 3), F(6, 14, 60)
         ),
       })
     );

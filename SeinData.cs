@@ -10,7 +10,7 @@ namespace OriMod {
     /// List of all <see cref="SeinData"/>s in the mod.
     /// </summary>
     internal static List<SeinData> All { get; private set; }
-    
+
     /// <summary>
     /// Loads all Sein variants. Sein stats are hardcoded into this method.
     /// <para>The only benefit to doing it this way over overrides is that the previous Sein level is automatically used when values are not provided.</para>
@@ -179,7 +179,7 @@ namespace OriMod {
         lightStrength = 2.5f,
       });
     }
-    
+
     private static void Unload() {
       All = null;
     }
