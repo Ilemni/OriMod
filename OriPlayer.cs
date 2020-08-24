@@ -6,7 +6,6 @@ using OriMod.Abilities;
 using OriMod.Animations;
 using OriMod.Buffs;
 using OriMod.Networking;
-using OriMod.Upgrades;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.DataStructures;
@@ -31,11 +30,6 @@ namespace OriMod {
     /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
     /// </summary>
     internal AbilityManager Abilities { get; private set; }
-
-    /// <summary>
-    /// Manager for all <see cref="Upgrade"/>s on this OriPlayer instance.
-    /// </summary>
-    internal UpgradeManager Upgrades { get; private set; }
 
     /// <summary>
     /// Container for all <see cref="OriMod.Animations.Animation"/>s on this OriPlayer instance.
@@ -85,11 +79,6 @@ namespace OriMod {
     /// Frames since a transformation began.
     /// </summary>
     internal float transformTimer = 0;
-
-    /// <summary>
-    /// Currency used for Upgrades.
-    /// </summary>
-    public long SpiritLight { get; internal set; }
 
     /// <summary>
     /// Whether the player has been Ori before during this session. Used to hasten subsequent transformations.
@@ -601,7 +590,6 @@ namespace OriMod {
 
     public override void Initialize() {
       Abilities = new AbilityManager(this);
-      //Upgrades = new UpgradeManager(this); // TODO: uncomment this if implementing Upgrade System
 
       if (!Main.dedServ) {
         Animations = new AnimationContainer(this);
@@ -639,7 +627,6 @@ namespace OriMod {
       => new TagCompound {
         {"OriSet", IsOri},
         {"Debug", debugMode},
-        {"SpiritLight", SpiritLight}
       };
 
     public override void Load(TagCompound tag) {
