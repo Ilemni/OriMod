@@ -2,12 +2,10 @@ using System;
 using System.IO;
 using Microsoft.Xna.Framework;
 using OriMod.Networking;
-using OriMod.UI;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.UI;
 
 namespace OriMod {
   public sealed class OriMod : Mod {
@@ -26,9 +24,6 @@ namespace OriMod {
 
     public static string GithubUserName => "TwiliChaos";
     public static string GithubProjectName => "OriMod";
-
-    internal static UserInterface Interface;
-    internal static UpgradeUI upgradeUI;
 
     #region Logging Shortcuts
 
@@ -64,51 +59,13 @@ namespace OriMod {
     }
     #endregion
 
-    public static ModHotKey SoulLinkKey;
+    [System.Obsolete] public static ModHotKey SoulLinkKey; // Unused
     public static ModHotKey BashKey;
     public static ModHotKey DashKey;
     public static ModHotKey ClimbKey;
     public static ModHotKey FeatherKey;
     public static ModHotKey ChargeKey;
     public static ModHotKey BurrowKey;
-
-    private GameTime _lastUpdateUiGameTime;
-
-    private bool uiShown = false;
-
-    internal void ShowUpgradeUI() => Interface?.SetState(upgradeUI);
-
-    internal void HideUI() => Interface?.SetState(null);
-    
-    public override void UpdateUI(GameTime gameTime) {
-      // Temporary, for debug only
-      /*if (SoulLinkKey.JustPressed) {
-        uiShown ^= true;
-        if (uiShown) {
-          ShowUpgradeUI();
-        }
-        else {
-          HideUI();
-        }
-      }*/
-
-      _lastUpdateUiGameTime = gameTime;
-      if (Interface?.CurrentState != null) {
-        Interface.Update(gameTime);
-      }
-    }
-
-    public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers) {
-      int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
-      if (mouseTextIndex != -1) {
-        layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer("OriMod: UpgradeInterface", delegate {
-            if (_lastUpdateUiGameTime != null && Interface?.CurrentState != null) {
-              Interface.Draw(Main.spriteBatch, _lastUpdateUiGameTime);
-            }
-            return true;
-        }, InterfaceScaleType.UI));
-      }
-    }
 
     public override void AddRecipeGroups() {
       var group1 = new RecipeGroup(() => "Any Enchanted Items", new int[] {
@@ -147,9 +104,6 @@ namespace OriMod {
       BurrowKey = RegisterHotKey("Burrow", "LeftControl");
       if (!Main.dedServ) {
         AddEquipTexture(null, EquipType.Head, "OriHead", "OriMod/PlayerEffects/OriHead");
-        Interface = new UserInterface();
-        upgradeUI = new UpgradeUI();
-        upgradeUI.Activate();
       }
 
       SeinData.Load();
