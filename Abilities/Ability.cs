@@ -288,7 +288,7 @@ namespace OriMod.Abilities {
     internal virtual void DrawEffects() { }
     #endregion
 
-    public override string ToString() => $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} Unlocked:{Unlocked} Cooldown:{currentCooldown}/{Cooldown}";
+    public override string ToString() => $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} Level:{Level} Cooldown:{currentCooldown}/{Cooldown}";
 
     /// <summary>
     /// States that the <see cref="Ability"/> can be in. Determines update logic.

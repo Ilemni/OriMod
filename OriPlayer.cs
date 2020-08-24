@@ -623,15 +623,19 @@ namespace OriMod {
       Abilities.soulLink.UpdateDead();
     }*/
 
-    public override TagCompound Save()
-      => new TagCompound {
-        {"OriSet", IsOri},
-        {"Debug", debugMode},
+    public override TagCompound Save() {
+      var tag = new TagCompound {
+        ["OriSet"] = IsOri,
+        ["Debug"] = debugMode,
       };
+      Abilities.Save(tag);
+      return tag;
+    }
 
     public override void Load(TagCompound tag) {
       IsOri = tag.GetBool("OriSet");
       debugMode = tag.GetBool("Debug");
+      Abilities.Load(tag);
     }
 
     public override void PostUpdateMiscEffects() {

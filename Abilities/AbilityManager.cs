@@ -232,5 +232,33 @@ namespace OriMod.Abilities {
         ability.SetState(Ability.State.Inactive);
       }
     }
+
+    /// <summary>
+    /// Save all abilities to the given <see cref="TagCompound"/>.
+    /// </summary>
+    /// <param name="tag"><see cref="TagCompound"/> to save abilities to.</param>
+    public void Save(TagCompound tag) {
+      var arr = new byte[AbilityID.Count];
+      foreach (var ability in this) {
+        arr[ability.Id] = ability.Level;
+      }
+      tag.Add(AbilityTagKey, arr);
+    }
+
+    /// <summary>
+    /// Load all abilities from the given <see cref="TagCompound"/>.
+    /// </summary>
+    /// <param name="tag"><see cref="TagCompound"/> to load abilities from.</param>
+    public void Load(TagCompound tag) {
+      if (!tag.ContainsKey(AbilityTagKey)) {
+        return;
+      }
+      var arr = tag.GetByteArray(AbilityTagKey);
+      foreach (var ability in this) {
+        ability.Level = arr[ability.Id];
+      }
+    }
+
+    private const string AbilityTagKey = "AbilityLevels";
   }
 }
