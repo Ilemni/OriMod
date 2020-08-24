@@ -8,7 +8,7 @@ namespace OriMod.Abilities {
   /// <summary>
   /// Base class for all player abilities.
   /// </summary>
-  public abstract class Ability : IUnlockable {
+  public abstract class Ability {
     /// <summary>
     /// Only construct this in AbilityManager.
     /// </summary>
@@ -39,7 +39,12 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Determines if the ability has been unlocked by the player. Currently unimplemented.
     /// </summary>
-    public bool Unlocked { get; set; } = true;
+    public virtual bool Unlocked => Level > 0;
+
+    /// <summary>
+    /// Current level of the ability. Unless an ability is always unlocked, if this is 0, the ability is not unlocked.
+    /// </summary>
+    public byte Level { get; set; } = 1;
 
     #region General Properties
     /// <summary>

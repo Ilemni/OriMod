@@ -2,11 +2,12 @@ using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   /// <summary>
-  /// Ability for crouching. No functional use.
+  /// Ability for crouching. This ability is entirely visual, and is alwaays unlocked.
   /// </summary>
   public sealed class Crouch : Ability {
     internal Crouch(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Crouch;
+    public override bool Unlocked => true;
 
     internal override bool UpdateCondition => InUse || oPlayer.Input(PlayerInput.Triggers.Current.Down);
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Manager.lookUp.InUse && !Manager.dash.InUse && !Manager.chargeDash.InUse && !Restricted;
