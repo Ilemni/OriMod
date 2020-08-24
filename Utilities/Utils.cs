@@ -92,7 +92,7 @@ namespace OriMod.Utilities {
         distance *= distance; // Squared for DistanceSquared
       }
       if (distanceSquaredCheck is null) {
-        distanceSquaredCheck = (e1, e2) => e1.DistanceShortSquared(e2);
+        distanceSquaredCheck = (e1, e2) => DistanceBetweenTwoEntitiesSquared(e1, e2);
       }
 
       // Search for closest entity
@@ -124,37 +124,28 @@ namespace OriMod.Utilities {
     }
 
     /// <summary>
-    /// Gets the closest point on this entity towards <paramref name="other"/>.
+    /// Distance between the hitboxes of two entities. If the entity hitboxes overlap, this will return <c>0</c>.
     /// </summary>
-    /// <param name="me">Entity to get the point from.</param>
-    /// <param name="other">Entity that the point will be closest to.</param>
-    /// <returns></returns>
-    internal static Vector2 ClosestSideTo(this Entity me, Entity other) {
-      var x = (me.Left.X > other.Left.X ? me.Left.X : me.Right.X) < other.Right.X ? me.Right.X : me.Center.X;
-      var y = (me.Top.Y > other.Top.Y ? me.Top.Y : me.Bottom.Y) < other.Bottom.Y ? me.Bottom.Y : me.Center.Y;
-      return new Vector2(x, y);
+    /// <param name="entity1">First entity.</param>
+    /// <param name="entity2">Second entity.</param>
+    /// <returns>The squared value between two entities, or 0 if they overlap.</returns>
+    internal static float DistanceBetweenTwoEntitiesSquared(Entity entity1, Entity entity2) {
+      return DistanceBetweenTwoRectsSquared(
+        new Rectangle((int)entity1.Left.X, (int)entity1.Top.Y, entity1.width, entity1.height),
+        new Rectangle((int)entity2.Left.X, (int)entity2.Top.Y, entity2.width, entity2.height));
     }
 
     /// <summary>
-    /// Gets the closest point on this entity towards <paramref name="vect"/>.
+    /// Distance between two rectangles. If the rectangles overlap, this will return <c>0</c>.
     /// </summary>
-    /// <param name="me">Entity to get the point from.</param>
-    /// <param name="other">Point that the calculated point will be closest to.</param>
-    /// <returns></returns>
-    internal static Vector2 ClosestSideTo(this Entity me, Vector2 vect) =>
-      new Vector2(
-        (me.Left.X > vect.X ? me.Left.X : me.Right.X) < vect.X ? me.Right.X : me.Center.X,
-        (me.Top.Y > vect.Y ? me.Top.Y : me.Bottom.Y) < vect.Y ? me.Bottom.Y : me.Center.Y
-      );
-
-    internal static float DistanceShort(this Entity me, Entity other) =>
-      Vector2.Distance(me.ClosestSideTo(other), other.ClosestSideTo(me));
-    internal static float DistanceShortSquared(this Entity me, Entity other) =>
-      Vector2.DistanceSquared(me.ClosestSideTo(other), other.ClosestSideTo(me));
-    internal static float DistanceShort(this Entity me, Vector2 otherVect) =>
-      Vector2.Distance(me.ClosestSideTo(otherVect), otherVect);
-    internal static float DistanceShortSquared(this Entity me, Vector2 otherVect) =>
-      Vector2.DistanceSquared(me.ClosestSideTo(otherVect), otherVect);
+    /// <param name="rect1">First rectangle.</param>
+    /// <param name="rect2">Second rectangle.</param>
+    /// <returns>The squared value between two rectangles, or 0 if they overlap.</returns>
+    internal static float DistanceBetweenTwoRectsSquared(Rectangle rect1, Rectangle rect2) {
+      float xAxis = rect1.Right < rect2.Left ? rect2.Left - rect1.Right : rect2.Right < rect1.Left ? rect1.Left - rect2.Right : 0;
+      float yAxis = rect1.Bottom < rect2.Top ? rect2.Top - rect1.Bottom : rect2.Bottom < rect1.Top ? rect1.Top - rect2.Bottom : 0;
+      return (float)(Math.Pow(xAxis, 2) + Math.Pow(yAxis, 2));
+    }
     #endregion
 
     /// <summary>
