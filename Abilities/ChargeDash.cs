@@ -134,7 +134,6 @@ namespace OriMod.Abilities {
       }
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + rand.NextNoRepeat(3), 0.5f);
       PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeDashProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
-      PlayerHitboxProjectile.damage = 12 + (int)OriWorld.GlobalUpgrade * 9;
     }
 
     protected override void UpdateUsing() {
