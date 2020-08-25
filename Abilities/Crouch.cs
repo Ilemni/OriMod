@@ -44,35 +44,23 @@ namespace OriMod.Abilities {
       if (!InUse) {
         if (CanUse && PlayerInput.Triggers.Current.Down) {
           SetState(State.Starting);
-          currentTime = 0;
         }
       }
       else if (!CanUse) {
         SetState(State.Inactive);
-        currentTime = 0;
       }
       else if (!PlayerInput.Triggers.Current.Down && !Ending) {
-        if (Active) {
-          SetState(State.Ending);
-        }
-        else {
-          SetState(State.Inactive);
-        }
-        currentTime = 0;
+        SetState(Active ? State.Ending : State.Inactive);
         return;
       }
       else if (Starting) {
-        currentTime++;
-        if (currentTime > StartDuration) {
+        if (CurrentTime > StartDuration) {
           SetState(State.Active);
-          currentTime = 0;
         }
       }
       else if (Ending) {
-        currentTime++;
-        if (currentTime > EndDuration) {
+        if (CurrentTime > EndDuration) {
           SetState(State.Inactive);
-          currentTime = 0;
         }
       }
     }

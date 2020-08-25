@@ -176,6 +176,7 @@ namespace OriMod.Abilities {
       if (oPlayer.player.whoAmI != Main.myPlayer) {
         foreach (var ability in this) {
           if (ability.InUse) {
+            ability.CurrentTime++;
             ability.Tick();
           }
         }

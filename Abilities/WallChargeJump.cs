@@ -22,7 +22,7 @@ namespace OriMod.Abilities {
 
     internal bool CanCharge => base.CanUse && Manager.climb.IsCharging;
     private int MaxCharge => 35;
-    private int Duration => 20;
+    private int Duration => Speeds.Length - 1;
     private static float[] Speeds => _speeds ?? (_speeds = new float[20] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
     });
@@ -67,7 +67,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      float speed = Speeds[currentTime - 1] * SpeedMultiplier;
+      float speed = Speeds[CurrentTime] * SpeedMultiplier;
       player.velocity = Direction * speed;
       player.direction = Math.Sign(player.velocity.X);
       player.maxFallSpeed = Math.Abs(player.velocity.Y);
@@ -104,19 +104,9 @@ namespace OriMod.Abilities {
         }
       }
       if (Active) {
-        currentTime++;
-        if (currentTime > Duration) {
-          if (oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
-            SetState(State.Ending);
-          }
-          else {
-            SetState(State.Inactive);
-          }
-          currentTime = 0;
+        if (CurrentTime > Duration) {
+          SetState(State.Inactive);
         }
-      }
-      if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
-        SetState(State.Inactive);
       }
     }
 

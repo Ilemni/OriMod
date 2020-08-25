@@ -97,9 +97,9 @@ namespace OriMod.Abilities {
         // Force player position to same as target's, and reduce speed.
         player.position = target.position;
         player.position.Y -= 32f;
-        player.velocity *= Speeds[currentTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
+        player.velocity *= Speeds[CurrentTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
       }
-      else if ((target is null || currentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
+      else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
         Vector2 newVel = target is null && !Manager.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
         newVel.Normalize();
@@ -137,7 +137,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateUsing() {
-      float speed = Speeds[currentTime] * SpeedMultiplier;
+      float speed = Speeds[CurrentTime] * SpeedMultiplier;
       player.gravity = 0;
       var target = Target;
 
@@ -147,13 +147,13 @@ namespace OriMod.Abilities {
         dir.Y -= 32f;
         dir.Normalize();
         player.velocity = dir * speed;
-        if (currentTime < Duration && (player.position - target.position).Length() < speed) {
+        if (CurrentTime < Duration && (player.position - target.position).Length() < speed) {
           End(byNpcContact: true);
         }
       }
       else {
         player.velocity.X = speed * Direction * 0.8f;
-        player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (currentTime + 1)) * player.gravDir;
+        player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrentTime + 1)) * player.gravDir;
       }
 
       player.runSlowdown = 26f;
@@ -164,7 +164,6 @@ namespace OriMod.Abilities {
       if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
         if (player.CheckMana(ManaCost, true, true)) {
           SetState(State.Active);
-          currentTime = 0;
           UpdateStarting();
         }
         else if (!Manager.dash.InUse) {
@@ -176,8 +175,7 @@ namespace OriMod.Abilities {
       if (InUse) {
         SetState(State.Inactive);
         Manager.dash.Refreshed = false;
-        currentTime++;
-        if (currentTime > Duration || oPlayer.OnWall || Manager.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
+        if (CurrentTime > Duration || oPlayer.OnWall || Manager.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           End();
         }
       }

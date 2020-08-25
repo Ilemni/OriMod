@@ -39,7 +39,7 @@ namespace OriMod.Abilities {
     private readonly RandomChar randEnd = new RandomChar();
 
     protected override void UpdateStarting() {
-      if (currentTime == 0) {
+      if (CurrentTime == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + randStart.NextNoRepeat(3), 1f, 0.2f);
       }
       player.velocity.X = 0;
@@ -48,7 +48,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      if (currentTime == 0) {
+      if (CurrentTime == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3));
         PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
       }
@@ -101,21 +101,17 @@ namespace OriMod.Abilities {
           currentHoldDown++;
           if (HoldDownDelay == 0 || currentHoldDown > HoldDownDelay) {
             SetState(State.Starting);
-            currentTime = 0;
             currentHoldDown = 0;
           }
         }
       }
       else if (Starting) {
-        currentTime++;
-        if (currentTime > StartDuration) {
-          currentTime = 0;
+        if (CurrentTime > StartDuration) {
           SetState(State.Active);
         }
       }
       else if (Active) {
-        currentTime++;
-        if (currentTime > MinDuration && !PlayerInput.Triggers.Current.Down) {
+        if (CurrentTime > MinDuration && !PlayerInput.Triggers.Current.Down) {
           SetState(State.Inactive);
         }
         if (oPlayer.IsGrounded) {

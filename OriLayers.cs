@@ -58,7 +58,7 @@ namespace OriMod {
 
       var pos = bash.BashEntity.Center - Main.screenPosition;
       var orig = anim.ActiveTile.Size() / 2;
-      int frame = bash.CurrDuration < 40 ? 0 : bash.CurrDuration < 50 ? 1 : 2;
+      int frame = bash.CurrentTime < 40 ? 0 : bash.CurrentTime < 50 ? 1 : 2;
       var rect = new Rectangle(0, frame * anim.source.spriteSize.Y, anim.source.spriteSize.X, anim.source.spriteSize.Y);
       var rotation = oPlayer.Abilities.bash.BashEntity.AngleTo(Main.MouseWorld);
       var effect = SpriteEffects.None;

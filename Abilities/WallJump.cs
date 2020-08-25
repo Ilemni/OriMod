@@ -50,11 +50,9 @@ namespace OriMod.Abilities {
       }
       else if (Active) {
         SetState(State.Ending);
-        currentTime = 0;
       }
       else if (Ending) {
-        currentTime++;
-        if (currentTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
+        if (CurrentTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
           SetState(State.Inactive);
         }
       }

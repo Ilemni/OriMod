@@ -91,10 +91,14 @@ namespace OriMod.Abilities {
     /// Sets the <see cref="State"/> of the ability to <paramref name="state"/>.
     /// </summary>
     /// <param name="state">State to set <see cref="AbilityState"/> to.</param>
-    public void SetState(State state) {
+    /// <param name="preserveCurrentTime">Whether to preserve or reset <see cref="CurrentTime"/>. Resets by default.</param>
+    public void SetState(State state, bool preserveCurrentTime = false) {
       if (state != AbilityState) {
         netUpdate = true;
         AbilityState = state;
+        if (!preserveCurrentTime) {
+          CurrentTime = 0;
+        }
       }
     }
 
@@ -138,8 +142,9 @@ namespace OriMod.Abilities {
 
     /// <summary>
     /// Time the ability was in the current State.
+    /// <para>This is automatically incremented every frame, and is reset to 0 from <see cref="SetState(State, bool)"/></para>
     /// </summary>
-    protected int currentTime;
+    public int CurrentTime { get; internal set; }
 
     /// <summary>
     /// True if ready to use, false if on cooldown.

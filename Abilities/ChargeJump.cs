@@ -63,7 +63,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      float speed = Speeds[currentTime - 1] * SpeedMultiplier;
+      float speed = Speeds[CurrentTime] * SpeedMultiplier;
       player.velocity.Y = speed * -player.gravDir;
       oPlayer.immuneTimer = 12;
     }
@@ -111,19 +111,9 @@ namespace OriMod.Abilities {
         }
       }
       if (Active) {
-        currentTime++;
-        if (currentTime > Duration) {
-          if (oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
-            SetState(State.Ending);
-          }
-          else {
-            SetState(State.Inactive);
-          }
-          currentTime = 0;
+        if (CurrentTime >= Duration) {
+          SetState(State.Inactive);
         }
-      }
-      if (Ending && !oPlayer.Input(PlayerInput.Triggers.Current.Jump)) {
-        SetState(State.Inactive);
       }
     }
 

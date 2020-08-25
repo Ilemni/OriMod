@@ -29,7 +29,7 @@ namespace OriMod.Abilities {
       else {
         oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + rand.NextNoRepeat(4), 0.75f);
       }
-      float newVel = -JumpVelocity * ((EndDuration - currentTime) / EndDuration);
+      float newVel = -JumpVelocity * ((EndDuration - CurrentTime) / EndDuration);
       if (player.velocity.Y > newVel) {
         player.velocity.Y = newVel;
       }
@@ -46,7 +46,6 @@ namespace OriMod.Abilities {
             Manager.dash.SetState(State.Inactive);
             Manager.dash.PutOnCooldown();
           }
-          currentTime = 0;
           CurrentCount++;
           GravityDirection = (int)player.gravDir;
         }
@@ -56,14 +55,12 @@ namespace OriMod.Abilities {
         CurrentCount = 0;
         SetState(State.Inactive);
       }
-      if (Active) {
+      else if (Active) {
         SetState(State.Ending);
       }
       else if (Ending) {
-        currentTime++;
-        if (currentTime > EndDuration || player.velocity.Y * player.gravDir > 0) {
+        if (CurrentTime > EndDuration || player.velocity.Y * player.gravDir > 0) {
           SetState(State.Inactive);
-          currentTime = 0;
         }
       }
     }

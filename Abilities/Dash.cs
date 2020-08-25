@@ -26,14 +26,13 @@ namespace OriMod.Abilities {
     });
     private static float[] _speeds;
     private static float SpeedMultiplier => Config.DashSpeedMultiplier * 0.65f;
-    private int Duration => Speeds.Length;
+    private int Duration => Speeds.Length - 1;
 
     private sbyte Direction;
 
     private readonly RandomChar rand = new RandomChar();
 
     internal void StartDash() {
-      currentTime = 0;
       Direction = (sbyte)(PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
       oPlayer.PlayNewSound("Ori/Dash/seinDash" + rand.NextNoRepeat(3), 0.2f);
       player.pulley = false;
@@ -53,9 +52,9 @@ namespace OriMod.Abilities {
         PutOnCooldown();
         return;
       }
-      player.velocity.X = Speeds[currentTime] * SpeedMultiplier * Direction;
-      player.velocity.Y = 0.25f * (currentTime + 1) * player.gravDir;
-      if (currentTime > 20) {
+      player.velocity.X = Speeds[CurrentTime] * SpeedMultiplier * Direction;
+      player.velocity.Y = 0.25f * (CurrentTime + 1) * player.gravDir;
+      if (CurrentTime > 20) {
         player.runSlowdown = 26f;
       }
     }
@@ -82,8 +81,7 @@ namespace OriMod.Abilities {
       }
       TickCooldown();
       if (InUse) {
-        currentTime++;
-        if (currentTime > Duration - 1 || oPlayer.OnWall || Manager.bash.InUse) {
+        if (CurrentTime > Duration || oPlayer.OnWall || Manager.bash.InUse) {
           SetState(State.Inactive);
           PutOnCooldown();
         }

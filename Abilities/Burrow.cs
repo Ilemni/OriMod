@@ -47,7 +47,6 @@ namespace OriMod.Abilities {
     internal Vector2 Velocity;
     internal Vector2 LastPosition;
     internal bool AutoBurrow;
-    private int TimeLeft;
 
     private static Point P(int x, int y) => new Point(x, y);
     internal static TileHitbox EnterHitbox => _eh ?? (_eh = new TileHitbox(
@@ -262,12 +261,10 @@ namespace OriMod.Abilities {
           }
           if (!canBurrow || player.dead) {
             SetState(State.Ending);
-            TimeLeft = 2;
           }
         }
         else if (Ending) {
-          TimeLeft--;
-          if (TimeLeft < 1) {
+          if (CurrentTime > 2) {
             SetState(State.Inactive);
             PutOnCooldown();
           }

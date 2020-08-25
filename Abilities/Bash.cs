@@ -45,7 +45,6 @@ namespace OriMod.Abilities {
     private int MinBashDuration => 30;
     private int MaxBashDuration => 85;
 
-    internal int CurrDuration { get; private set; }
     private Vector2 playerStartPos;
     private Vector2 targetStartPos;
     
@@ -158,7 +157,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      if (CurrDuration == MinBashDuration + 2) {
+      if (CurrentTime == MinBashDuration + 2) {
         oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
       }
     }
@@ -247,7 +246,6 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (CanUse && OriMod.BashKey.JustPressed) {
-        CurrDuration = 0;
         bool didBash = BashStart();
         if (!didBash) {
           SetState(State.Failed);
@@ -258,15 +256,15 @@ namespace OriMod.Abilities {
         return;
       }
       else if (InUse) {
-        CurrDuration++;
         if (Starting) {
-          if (CurrDuration > MinBashDuration) {
-            SetState(State.Active);
+          if (CurrentTime > MinBashDuration) {
+            SetState(State.Active, preserveCurrentTime:true);
           }
           return;
         }
         if (Active) {
-          if (CurrDuration > MaxBashDuration || !OriMod.BashKey.Current || BashEntity is null || !BashEntity.active) {
+          // TODO: this ain't right for multiplayer chief
+          if (CurrentTime > MaxBashDuration || !OriMod.BashKey.Current || BashEntity is null || !BashEntity.active) {
             SetState(State.Ending);
           }
           return;
