@@ -68,13 +68,12 @@ namespace OriMod {
     public static ModHotKey BurrowKey;
 
     public override void AddRecipeGroups() {
-      var group1 = new RecipeGroup(() => "Any Enchanted Items", new int[] {
+      RecipeGroup.RegisterGroup("OriMod:EnchantedItems", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Enchanted Items", new int[] {
         ItemID.EnchantedSword,
         ItemID.EnchantedBoomerang,
         ItemID.Arkhalis
-      });
-
-      var group2 = new RecipeGroup(() => "Any Basic Movement Accessories", new int[] {
+      }));
+      RecipeGroup.RegisterGroup("OriMod:MovementAccessories", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Basic Movement Accessories", new int[] {
         ItemID.Aglet,
         ItemID.AnkletoftheWind,
         ItemID.RocketBoots,
@@ -87,11 +86,18 @@ namespace OriMod {
         ItemID.ShinyRedBalloon,
         ItemID.ShoeSpikes,
         ItemID.ClimbingClaws
-      });
+      }));
 
-      // Registers the new recipe group with the specified name
-      RecipeGroup.RegisterGroup("OriMod:EnchantedItems", group1);
-      RecipeGroup.RegisterGroup("OriMod:MovementAccessories", group2);
+      RecipeGroup.RegisterGroup("OriMod:GoldBars", new RecipeGroup(() => "Gold/Platinum Bars", new int[] { ItemID.GoldBar, ItemID.PlatinumBar }));
+      RecipeGroup.RegisterGroup("OriMod:DarkBars", new RecipeGroup(() => "Demonite/Crimtane Bars", new int[] { ItemID.DemoniteBar, ItemID.CrimtaneBar }));
+      RecipeGroup.RegisterGroup("OriMod:HardmodeBars1", new RecipeGroup(() => "Cobalt/Palladium Bars", new int[] { ItemID.CobaltBar, ItemID.PalladiumBar }));
+      RecipeGroup.RegisterGroup("OriMod:HardmodeBars2", new RecipeGroup(() => "Mythril/Orichalcum Bars", new int[] { ItemID.MythrilBar, ItemID.OrichalcumBar }));
+      RecipeGroup.RegisterGroup("OriMod:HardmodeBars2", new RecipeGroup(() => "Adamantite/Titanium Bars", new int[] { ItemID.AdamantiteBar, ItemID.TitaniumBar }));
+      RecipeGroup.RegisterGroup("OriMod:LunarFragments", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Lunar Fragments", new int[] { ItemID.FragmentNebula, ItemID.FragmentSolar, ItemID.FragmentStardust, ItemID.FragmentVortex }));
+
+      RecipeGroup.RegisterGroup("OriMod:WallJumpGear", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Wall Jump Gear", new int[] { ItemID.ClimbingClaws, ItemID.ShoeSpikes }));
+      RecipeGroup.RegisterGroup("OriMod:JumpBottles", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Bottles", new int[] { ItemID.CloudinaBottle, ItemID.BlizzardinaBottle, ItemID.SandstorminaBottle, ItemID.TsunamiInABottle, ItemID.FartinaJar }));
+      RecipeGroup.RegisterGroup("OriMod:JumpBalloons", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Balloons", new int[] { ItemID.CloudinaBalloon, ItemID.BlizzardinaBalloon, ItemID.SandstorminaBalloon, ItemID.SharkronBalloon, ItemID.FartInABalloon }));
     }
 
     public override void Load() {
