@@ -92,7 +92,7 @@ namespace OriMod {
       RecipeGroup.RegisterGroup("OriMod:DarkBars", new RecipeGroup(() => "Demonite/Crimtane Bars", new int[] { ItemID.DemoniteBar, ItemID.CrimtaneBar }));
       RecipeGroup.RegisterGroup("OriMod:HardmodeBars1", new RecipeGroup(() => "Cobalt/Palladium Bars", new int[] { ItemID.CobaltBar, ItemID.PalladiumBar }));
       RecipeGroup.RegisterGroup("OriMod:HardmodeBars2", new RecipeGroup(() => "Mythril/Orichalcum Bars", new int[] { ItemID.MythrilBar, ItemID.OrichalcumBar }));
-      RecipeGroup.RegisterGroup("OriMod:HardmodeBars2", new RecipeGroup(() => "Adamantite/Titanium Bars", new int[] { ItemID.AdamantiteBar, ItemID.TitaniumBar }));
+      RecipeGroup.RegisterGroup("OriMod:HardmodeBars3", new RecipeGroup(() => "Adamantite/Titanium Bars", new int[] { ItemID.AdamantiteBar, ItemID.TitaniumBar }));
       RecipeGroup.RegisterGroup("OriMod:LunarFragments", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Lunar Fragments", new int[] { ItemID.FragmentNebula, ItemID.FragmentSolar, ItemID.FragmentStardust, ItemID.FragmentVortex }));
 
       RecipeGroup.RegisterGroup("OriMod:WallJumpGear", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Wall Jump Gear", new int[] { ItemID.ClimbingClaws, ItemID.ShoeSpikes }));
