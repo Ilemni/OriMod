@@ -16,10 +16,10 @@ namespace OriMod {
     internal Trail(OriPlayer oPlayer) => this.oPlayer = oPlayer;
 
     private readonly OriPlayer oPlayer;
-    private Vector2 Position;
-    private PointByte Tile;
-    private float Alpha = 1;
-    private float StartAlpha = 1;
+    private Vector2 position;
+    private PointByte tile;
+    private byte time;
+    private float startAlpha = 1;
     private SpriteEffects effect;
 
     private static Vector2 Origin => new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 6);
@@ -29,14 +29,14 @@ namespace OriMod {
     /// </summary>
     public void Reset() {
       var player = oPlayer.player;
-      Position = player.Center;
-      Tile = oPlayer.animationTile;
+      position = player.Center;
+      tile = oPlayer.animationTile;
 
-      StartAlpha = player.velocity.Length() * 0.002f;
-      if (StartAlpha > 0.08f) {
-        StartAlpha = 0.08f;
+      startAlpha = player.velocity.LengthSquared() * 0.0008f; // 0.002f
+      if (startAlpha > 0.16f) {
+        startAlpha = 0.16f;
       }
-      Alpha = StartAlpha;
+      time = 26;
 
       effect = SpriteEffects.None;
       if (player.direction == -1) {
@@ -51,9 +51,8 @@ namespace OriMod {
     /// Decreases Alpha by a fixed amount.
     /// </summary>
     public void Tick() {
-      Alpha -= StartAlpha / 26;
-      if (Alpha < 0) {
-        Alpha = 0;
+      if (time > 0) {
+        time--;
       }
     }
 
@@ -61,10 +60,11 @@ namespace OriMod {
     /// Gets the Trail <see cref="DrawData"/> for this <see cref="OriPlayer"/>.
     /// </summary>
     public DrawData GetDrawData() {
-      var pos = Position - Main.screenPosition;
-      var frame = OriPlayer.TileToPixel(Tile);
+      var pos = position - Main.screenPosition;
+      var frame = OriPlayer.TileToPixel(tile);
       var rect = new Rectangle(frame.X, frame.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight);
-      var color = oPlayer.SpriteColorPrimary * (Alpha * 10);
+      var alpha = startAlpha * (time / 26f) - 0.1f * (26 - time);
+      var color = oPlayer.SpriteColorPrimary * alpha;
 
       return new DrawData(OriTextures.Instance.Trail, pos, rect, color, 0, Origin, 1, effect, 0);
     }
