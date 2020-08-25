@@ -11,7 +11,7 @@ namespace OriMod.Abilities {
     public override int Id => AbilityID.LookUp;
     public override bool Unlocked => true;
 
-    internal override bool UpdateCondition => InUse || oPlayer.Input(PlayerInput.Triggers.Current.Up);
+    internal override bool UpdateCondition => PlayerInput.Triggers.Current.Up;
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !Manager.crouch.InUse && !Manager.dash.InUse && !Manager.chargeDash.InUse;
 
     private int StartDuration => 12;

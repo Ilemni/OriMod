@@ -15,7 +15,7 @@ namespace OriMod.Abilities {
     internal WallChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallChargeJump;
 
-    internal override bool UpdateCondition => InUse || oPlayer.Input(OriMod.ChargeKey.Current);
+    internal override bool UpdateCondition => OriMod.ChargeKey.Current;
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
     protected override int Cooldown => (int)(Config.WCJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
@@ -92,7 +92,7 @@ namespace OriMod.Abilities {
           oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
         }
       }
-      if (CanUse && oPlayer.Input(PlayerInput.Triggers.JustPressed.Jump)) {
+      if (CanUse && IsLocal && PlayerInput.Triggers.JustPressed.Jump) {
         StartWallChargeJump();
         SetState(State.Active);
       }

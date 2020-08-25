@@ -13,7 +13,7 @@ namespace OriMod.Abilities {
     internal Glide(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Glide;
 
-    internal override bool UpdateCondition => oPlayer.Input(OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased);
+    internal override bool UpdateCondition => OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased;
     internal override bool CanUse =>
       base.CanUse && !Ending &&
       !Manager.airJump.InUse && !Manager.stomp.InUse && !Manager.dash.InUse && !Manager.chargeDash.InUse &&

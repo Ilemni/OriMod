@@ -13,7 +13,7 @@ namespace OriMod.Abilities {
     internal WallJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallJump;
 
-    internal override bool UpdateCondition => oPlayer.Input(PlayerInput.Triggers.JustPressed.Jump) && oPlayer.OnWall && !oPlayer.IsGrounded;
+    internal override bool UpdateCondition => PlayerInput.Triggers.JustPressed.Jump && oPlayer.OnWall && !oPlayer.IsGrounded;
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !Manager.wallChargeJump.Charged;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);

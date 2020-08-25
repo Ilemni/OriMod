@@ -62,6 +62,11 @@ namespace OriMod {
     }
 
     /// <summary>
+    /// True if this <see cref="OriPlayer"/> belongs to the local client.
+    /// </summary>
+    public bool IsLocal { get; private set; }
+
+    /// <summary>
     /// Represents if the player is currently transforming into Ori.
     /// </summary>
     /// <remarks>While transforming, all player input is disabled.</remarks>
@@ -248,9 +253,9 @@ namespace OriMod {
     /// Primary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
     /// </summary>
     internal Color SpriteColorPrimary {
-      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColor : _multiplayerSpriteColorPrimary;
+      get => IsLocal ? OriMod.ConfigClient.PlayerColor : _multiplayerSpriteColorPrimary;
       set {
-        if (Main.myPlayer != player.whoAmI) {
+        if (IsLocal) {
           _multiplayerSpriteColorPrimary = value;
         }
       }
@@ -260,9 +265,9 @@ namespace OriMod {
     /// Secondary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
     /// </summary>
     internal Color SpriteColorSecondary {
-      get => Main.myPlayer == player.whoAmI ? OriMod.ConfigClient.PlayerColorSecondary : _multiplayerSpriteColorSecondary;
+      get => IsLocal ? OriMod.ConfigClient.PlayerColorSecondary : _multiplayerSpriteColorSecondary;
       set {
-        if (Main.myPlayer != player.whoAmI) {
+        if (IsLocal) {
           _multiplayerSpriteColorSecondary = value;
         }
       }
@@ -276,7 +281,7 @@ namespace OriMod {
     /// <summary>
     /// Whether or not this <see cref="OriPlayer"/> instance uses light.
     /// </summary>
-    internal bool DoPlayerLight => (player.whoAmI == Main.myPlayer || OriMod.ConfigClient.GlobalPlayerLight) ? OriMod.ConfigClient.PlayerLight : multiplayerPlayerLight;
+    internal bool DoPlayerLight => (IsLocal || OriMod.ConfigClient.GlobalPlayerLight) ? OriMod.ConfigClient.PlayerLight : multiplayerPlayerLight;
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
     #endregion
 
@@ -306,7 +311,7 @@ namespace OriMod {
     /// </summary>
     /// <param name="msg">Message to print</param>
     internal void Debug(string msg) {
-      if (debugMode && player.whoAmI == Main.myPlayer) {
+      if (debugMode && IsLocal) {
         Main.NewText(msg);
       }
     }
@@ -595,6 +600,8 @@ namespace OriMod {
         Animations = new AnimationContainer(this);
         Trails = new TrailManager(this, 26);
       }
+
+      IsLocal = player.whoAmI == Main.myPlayer;
     }
 
     public override void ResetEffects() {
@@ -613,7 +620,7 @@ namespace OriMod {
           playerDustTimer--;
         }
       }
-      if (Main.netMode == NetmodeID.MultiplayerClient && player.whoAmI == Main.myPlayer && doNetUpdate) {
+      if (Main.netMode == NetmodeID.MultiplayerClient && IsLocal && doNetUpdate) {
         ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, player.whoAmI);
         doNetUpdate = false;
       }
@@ -652,7 +659,7 @@ namespace OriMod {
         player.noFallDmg = true;
         player.gravity = 0.35f;
         player.jumpSpeedBoost += 2f;
-        if (IsGrounded || player.whoAmI == Main.myPlayer && (PlayerInput.Triggers.Current.Left || Input(PlayerInput.Triggers.Current.Right))) {
+        if (IsGrounded || IsLocal && (PlayerInput.Triggers.Current.Left || PlayerInput.Triggers.Current.Right)) {
           UnrestrictedMovement = false;
         }
         player.runSlowdown = UnrestrictedMovement ? 0 : 1;

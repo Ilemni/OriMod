@@ -36,6 +36,9 @@ namespace OriMod.Abilities {
     /// </summary>
     public AbilityManager Manager => oPlayer.Abilities;
 
+
+    public bool IsLocal => oPlayer.IsLocal;
+
     /// <summary>
     /// Determines if the ability has been unlocked by the player. Currently unimplemented.
     /// </summary>
@@ -54,6 +57,7 @@ namespace OriMod.Abilities {
 
     /// <summary>
     /// Condition required to call <see cref="Update"/>.
+    /// <para>This is only checked on the local client and if the ability is already in use.</para>
     /// </summary>
     internal abstract bool UpdateCondition { get; }
 

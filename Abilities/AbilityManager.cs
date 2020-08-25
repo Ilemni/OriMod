@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using OriMod.Networking;
+using Terraria.ModLoader.IO;
 
 namespace OriMod {
   /// <summary>
@@ -173,28 +174,22 @@ namespace OriMod.Abilities {
       }
 
       // Tick
-      if (oPlayer.player.whoAmI != Main.myPlayer) {
-        foreach (var ability in this) {
-          if (ability.InUse) {
-            ability.CurrentTime++;
-            ability.Tick();
-          }
-        }
-        return;
-      }
       foreach (var ability in this) {
-        ability.Tick();
+        if (ability.InUse || oPlayer.IsLocal) {
+          ability.CurrentTime++;
+          ability.Tick();
+        }
       }
 
       // Update
       foreach (var ability in this) {
-        if (ability.UpdateCondition) {
+        if (ability.InUse && !ability.IsLocal || ability.UpdateCondition) {
           ability.Update();
         }
       }
 
       // Net sync
-      if (oPlayer.player.whoAmI == Main.myPlayer && Main.netMode == NetmodeID.MultiplayerClient) {
+      if (oPlayer.IsLocal && Main.netMode == NetmodeID.MultiplayerClient) {
         var changes = new List<byte>();
         foreach (var ability in this) {
           if (ability.netUpdate) {

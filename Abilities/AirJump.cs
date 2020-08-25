@@ -10,7 +10,7 @@ namespace OriMod.Abilities {
     internal AirJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.AirJump;
 
-    internal override bool UpdateCondition => InUse || oPlayer.Input(PlayerInput.Triggers.JustPressed.Jump);
+    internal override bool UpdateCondition => PlayerInput.Triggers.JustPressed.Jump;
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrentCount < MaxJumps && !Active && !Manager.bash.InUse && !player.mount.Active && !Manager.wallChargeJump.InUse;
 
     private float JumpVelocity => 8.8f;

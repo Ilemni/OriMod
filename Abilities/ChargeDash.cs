@@ -15,7 +15,7 @@ namespace OriMod.Abilities {
     internal ChargeDash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeDash;
 
-    internal override bool UpdateCondition => !Manager.dash.UpdateCondition && (InUse || oPlayer.Input(OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) && Manager.chargeDash.Refreshed);
+    internal override bool UpdateCondition => OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current && Refreshed && !Manager.dash.UpdateCondition;
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Manager.stomp.InUse && !Manager.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);
     protected override Color RefreshColor => Color.LightBlue;
@@ -147,7 +147,7 @@ namespace OriMod.Abilities {
         dir.Y -= 32f;
         dir.Normalize();
         player.velocity = dir * speed;
-        if (CurrentTime < Duration && (player.position - target.position).Length() < speed) {
+        if (CurrentTime < Duration && (player.position - target.position).LengthSquared() < speed * speed) {
           End(byNpcContact: true);
         }
       }

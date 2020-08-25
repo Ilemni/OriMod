@@ -15,7 +15,7 @@ namespace OriMod.Abilities {
     internal Stomp(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Stomp;
 
-    internal override bool UpdateCondition => InUse || oPlayer.Input(PlayerInput.Triggers.JustPressed.Down);
+    internal override bool UpdateCondition => true;
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !Manager.dash.InUse && !Manager.chargeDash.InUse && !Manager.glide.Active && !Manager.climb.InUse && !Manager.stomp.Active && !player.mount.Active && player.grapCount == 0;
     protected override int Cooldown => (int)(Config.StompCooldown * 30);
     protected override Color RefreshColor => Color.Orange;

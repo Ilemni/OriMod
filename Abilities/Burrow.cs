@@ -19,7 +19,7 @@ namespace OriMod.Abilities {
     internal Burrow(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Burrow;
 
-    internal override bool UpdateCondition => InUse || oPlayer.Input(OriMod.BurrowKey.Current);
+    internal override bool UpdateCondition => OriMod.BurrowKey.Current;
     internal override bool CanUse => base.CanUse && !Manager.dash.InUse && !Manager.chargeDash.InUse && !InMenu;
     protected override int Cooldown => 12;
     protected override Color RefreshColor => Color.SandyBrown;
