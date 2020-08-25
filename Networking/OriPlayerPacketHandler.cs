@@ -22,7 +22,8 @@ namespace OriMod.Networking {
       bool mpcPlayerLight = flags[5];
       ushort transformTimer = flags[2] ? reader.ReadUInt16() : (ushort)0;
       byte seinMinionType = flags[4] ? reader.ReadByte() : (byte)0;
-      Color spriteColor = reader.ReadRGB();
+      Color spriteColorPrimary = reader.ReadRGB();
+      Color spriteColorSecondary = reader.ReadRGB();
 
       fromPlayer.IsOri = oriSet;
       fromPlayer.flashing = flashing;
@@ -32,7 +33,8 @@ namespace OriMod.Networking {
       fromPlayer.SeinMinionType = seinMinionType;
       fromPlayer.SeinMinionActive = seinMinionActive;
       fromPlayer.multiplayerPlayerLight = mpcPlayerLight;
-      fromPlayer.SpriteColorPrimary = spriteColor;
+      fromPlayer.SpriteColorPrimary = spriteColorPrimary;
+      fromPlayer.SpriteColorSecondary = spriteColorSecondary;
 
       if (Main.netMode == NetmodeID.Server) {
         SendOriState(-1, fromWho);
@@ -66,6 +68,7 @@ namespace OriMod.Networking {
       }
 
       packet.WriteRGB(fromPlayer.SpriteColorPrimary);
+      packet.WriteRGB(fromPlayer.SpriteColorSecondary);
 
       packet.Send(toWho, fromWho);
     }
