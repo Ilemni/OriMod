@@ -38,31 +38,21 @@ namespace OriMod.Abilities {
     private static List<short> _cannotBashNPC;
     private static List<short> _cannotBashProj;
 
-    private int BashDamage => 15;
-    private float BashPlayerStrength => Config.BashStrength;
-    private float BashNpcStrength => BashPlayerStrength * 0.8f;
-    private float BashRange => 48f;
-    private int MinBashDuration => 30;
-    private int MaxBashDuration => 85;
+    private static int BashDamage => 15;
+    private static float BashPlayerStrength => Config.BashStrength;
+    private static float BashNpcStrength => BashPlayerStrength * 0.8f;
+    private static float BashRange => 48f;
+    private static int MinBashDuration => 30;
+    private static int MaxBashDuration => 85;
 
     private Vector2 playerStartPos;
     private Vector2 targetStartPos;
-    
-    /// <summary>
-    /// True if the target is an <see cref="NPC"/>, false if it's a <see cref="Projectile"/>.
-    /// </summary>
-    public bool TargetIsNpc { get; private set; }
-    
-    /// <summary>
-    /// ID of either an <see cref="NPC"/> or <see cref="Projectile"/>.
-    /// </summary>
-    private ushort TargetID;
 
     /// <summary>
     /// <see cref="OriNPC"/> or <see cref="OriProjectile"/> that is being targeted.
     /// </summary>
     public IBashable BashTarget { get; private set; }
-    
+
     /// <summary>
     /// Entity that this player is Bashing.
     /// </summary>
@@ -76,8 +66,9 @@ namespace OriMod.Abilities {
           targetStartPos = r.ReadVector2();
           playerStartPos = r.ReadVector2();
         }
-        TargetIsNpc = r.ReadBoolean();
-        TargetID = r.ReadUInt16();
+        var isNPC = r.ReadBoolean();
+        var id = r.ReadUInt16();
+        SetTarget(isNPC, id);
       }
     }
 
@@ -87,46 +78,69 @@ namespace OriMod.Abilities {
           packet.WriteVector2(targetStartPos);
           packet.WriteVector2(playerStartPos);
         }
-        packet.Write(TargetIsNpc);
-        packet.Write(TargetID);
+        packet.Write(BashEntity is NPC);
+        packet.Write(BashEntity?.whoAmI ?? ushort.MaxValue);
       }
     }
 
     /// <summary>
     /// Filter to determine if this <see cref="NPC"/> can be bashed. Returns true if the NPC should be bashed.
-    /// <para>Excludes friendly NPCs, bosses, worms, and specific NPCs.</para>
+    /// <para>Excludes friendly NPCs, bosses, specific NPCs, and NPCs that are already being Bashed.</para>
     /// </summary>
     /// <param name="npc"></param>
     /// <returns>True if the NPC should be bashed.</returns>
     private bool BashNpcFilter(NPC npc) =>
-      !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBashNPC.Contains((short)npc.type);
+      !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBashNPC.Contains((short)npc.type) && !npc.GetGlobalNPC<OriNPC>().IsBashed;
 
     /// <summary>
     /// Filter to determine if this <see cref="Projectile"/> can be bashed. Returns true if the projectile should be bashed.
-    /// <para>Excludes friendly if disallowed, 0 damage projectiles, minions, sentries, traps, and grapples.</para>
+    /// <para>Excludes friendly if disallowed, 0 damage projectiles, minions, sentries, traps, grapples, and projectiles that are already being Bashed.</para>
     /// </summary>
     /// <param name="proj"></param>
     /// <returns>True if the projectile should be bashed.</returns>
     private bool BashProjFilter(Projectile proj) =>
-      (!proj.friendly || Config.BashOnProjectilesFriendly) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type);
+      (Config.BashOnProjectilesFriendly || !proj.friendly) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type) && !proj.GetGlobalProjectile<OriProjectile>().IsBashed;
 
-    private bool BashStart() {
+    private void SetTarget(bool isNPC, ushort id) {
+      if (id == ushort.MaxValue) {
+        SetTarget(null);
+      }
+      else if (isNPC) {
+        SetTarget(Main.npc[id]);
+      }
+      else {
+        SetTarget(Main.projectile[id]);
+      }
+    }
+
+    /// <summary>
+    /// Sets the target to be bashed to <paramref name="entity"/>. Set to null to not bash anything.
+    /// </summary>
+    /// <param name="entity"><see cref="Entity"/> to target for bashing.</param>
+    private void SetTarget(Entity entity) {
+      BashEntity = entity;
+      BashTarget =
+        entity is NPC npc ? npc.GetGlobalNPC<OriNPC>() as IBashable :
+        entity is Projectile projectile ? projectile.GetGlobalProjectile<OriProjectile>() : null;
+    }
+
+    /// <summary>
+    /// Attempt to start Bash. This will search for an <see cref="NPC"/> or <see cref="Projectile"/> to bash,
+    /// </summary>
+    /// <returns></returns>
+    private bool Start() {
+      SetTarget(null);
       float currDist = BashRange;
-
-      BashTarget = null;
-      BashEntity = null;
 
       // Check for Bashing NPCs
       bool isBashingNpc = player.GetClosestEntity(Main.npc, ref currDist, out NPC npc, condition: BashNpcFilter);
       if (isBashingNpc) {
         if (npc.aiStyle == 6) {
-          // Bash head of worm-like rather than body
+          // Worm: Must bash head of worm-like rather than body
+          // Otherwise only part of the npc will be suspended
           npc = Main.npc[(int)npc.ai[3]];
         }
-        TargetIsNpc = true;
-        TargetID = (ushort)npc.whoAmI;
-        BashEntity = npc;
-        BashTarget = npc.GetGlobalNPC<OriNPC>();
+        SetTarget(npc);
       }
       else {
         // If no NPCs to Bash, check for Projectiles
@@ -134,18 +148,14 @@ namespace OriMod.Abilities {
           return false;
         }
 
-        currDist = BashRange;
         bool isBashingProj = player.GetClosestEntity(Main.projectile, ref currDist, out Projectile proj, condition: BashProjFilter);
         if (!isBashingProj) {
           return false;
         }
-        
-        TargetIsNpc = false;
-        TargetID = (ushort)proj.whoAmI;
-        BashEntity = proj;
-        BashTarget = proj.GetGlobalProjectile<OriProjectile>();
+
+        SetTarget(proj);
       }
-      
+
       BashTarget.IsBashed = true;
       BashTarget.BashPosition = BashEntity.Center;
       BashTarget.BashPlayer = oPlayer;
@@ -156,18 +166,12 @@ namespace OriMod.Abilities {
       return true;
     }
 
-    protected override void UpdateActive() {
-      if (CurrentTime == MinBashDuration + 2) {
-        oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
-      }
-    }
-
-    protected override void UpdateEnding() {
+    private void End() {
       player.pulley = false;
       float bashAngle = player.AngleFrom(Main.MouseWorld);
       oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.7f);
       oPlayer.UnrestrictedMovement = true;
-      
+
       var bashVector = new Vector2((float)(0 - Math.Cos(bashAngle)), (float)(0 - Math.Sin(bashAngle)));
       Vector2 playerBashVector = bashVector * BashPlayerStrength;
       Vector2 npcBashVector = -bashVector * BashNpcStrength;
@@ -199,11 +203,11 @@ namespace OriMod.Abilities {
         player.velocity = Vector2.Zero;
         player.gravity = 0;
       }
-      if (TargetIsNpc) {
-        ((NPC)BashEntity).netUpdate2 = true;
+      if (BashEntity is NPC npc) {
+        npc.netUpdate2 = true;
       }
-      else {
-        ((Projectile)BashEntity).netUpdate2 = true;
+      else if (BashEntity is Projectile projectile) {
+        projectile.netUpdate2 = true;
       }
       // Allow only quick heal and quick mana
       player.controlJump = false;
@@ -240,44 +244,36 @@ namespace OriMod.Abilities {
       player.buffImmune[BuffID.WindPushed] = true;
     }
 
-    protected override void UpdateFailed() {
-      oPlayer.PlayNewSound("Ori/Bash/bashNoTargetB", Main.soundVolume);
-    }
-
     internal override void Tick() {
       if (CanUse && OriMod.BashKey.JustPressed) {
-        bool didBash = BashStart();
-        if (!didBash) {
-          SetState(State.Failed);
+        bool didBash = Start();
+        if (didBash) {
+          SetState(State.Starting);
         }
         else {
-          SetState(State.Starting);
+          oPlayer.PlayNewSound("Ori/Bash/bashNoTargetB", 0.4f);
         }
         return;
       }
       else if (InUse) {
         if (Starting) {
           if (CurrentTime > MinBashDuration) {
-            SetState(State.Active, preserveCurrentTime:true);
+            SetState(State.Active, preserveCurrentTime: true);
           }
           return;
         }
         if (Active) {
-          // TODO: this ain't right for multiplayer chief
-          if (CurrentTime > MaxBashDuration || !OriMod.BashKey.Current || BashEntity is null || !BashEntity.active) {
-            SetState(State.Ending);
+          if (CurrentTime == MinBashDuration + 2) {
+            oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
           }
-          return;
-        }
-        if (Ending) {
-          SetState(State.Inactive);
+          if (CurrentTime > MaxBashDuration || IsLocal && !OriMod.BashKey.Current || BashEntity is null || !BashEntity.active) {
+            End();
+            SetState(State.Inactive);
+          }
           return;
         }
       }
       else {
-        if (Failed) {
-          SetState(State.Inactive);
-        }
         TickCooldown();
       }
     }
