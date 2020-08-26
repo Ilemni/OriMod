@@ -91,7 +91,7 @@ namespace OriMod.Abilities {
       }
       if (CanUse && OriMod.SoulLinkKey.Current) {
         if (OriMod.SoulLinkKey.JustPressed) {
-          anyBossAlive = OriUtils.IsAnyBossAlive(check: true);
+          anyBossAlive = OriUtils.AnyBossAlive();
           if (anyBossAlive) {
             OriMod.Error("SoulLinkBossActive", log: false);
             return;

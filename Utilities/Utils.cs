@@ -33,38 +33,17 @@ namespace OriMod.Utilities {
       return vect;
     }
 
-    private static double lastBossCheck = 0;
-
-    /// <summary>
-    /// Whether or not any boss is alive.
-    /// </summary>
-    internal static bool isAnyBossAlive = false;
-
     /// <summary>
     /// Checks if any active <see cref="NPC"/>s are bosses.
     /// </summary>
-    private static bool CheckAnyBossAlive() {
+    public static bool AnyBossAlive() {
       for (int i = 0, len = Main.npc.Length; i < len; i++) {
         var npc = Main.npc[i];
-        if (npc.active && npc.boss) {
-          isAnyBossAlive = true;
+        if (npc.active && (npc.boss || Terraria.ID.NPCID.Sets.TechnicallyABoss[npc.type])) {
           return true;
         }
       }
       return false;
-    }
-
-    /// <summary>
-    /// Checks if there are any bosses alive.
-    /// </summary>
-    /// <param name="check">Force a search through all NPCs for a boss.</param>
-    /// <returns>True if any bosses are active in the world.</returns>
-    internal static bool IsAnyBossAlive(bool check = false) {
-      if (check || Main.time > lastBossCheck + 20) {
-        lastBossCheck = Main.time;
-        isAnyBossAlive = CheckAnyBossAlive();
-      }
-      return isAnyBossAlive;
     }
 
     #region Distance Checking

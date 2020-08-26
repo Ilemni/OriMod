@@ -175,7 +175,7 @@ namespace OriMod.Abilities {
     /// </summary>
     /// <param name="force">If true, ignore config options that may otherwise prevent cooldown.</param>
     internal virtual void PutOnCooldown(bool force = false) {
-      if (force || OriMod.ConfigClient.AbilityCooldowns && (!CooldownOnlyOnBoss || OriUtils.IsAnyBossAlive(check: true))) {
+      if (force || OriMod.ConfigClient.AbilityCooldowns && (!CooldownOnlyOnBoss || OriUtils.AnyBossAlive())) {
         currentCooldown = Cooldown;
         Refreshed = false;
       }

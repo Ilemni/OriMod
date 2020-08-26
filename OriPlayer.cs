@@ -671,7 +671,7 @@ namespace OriMod {
 
         if (OriMod.ConfigClient.SmoothCamera) {
           // Smooth camera effect reduced while bosses are alive
-          Main.SetCameraLerp(OriUtils.IsAnyBossAlive() ? 0.15f : 0.05f, 1);
+          Main.SetCameraLerp(OriUtils.AnyBossAlive() ? 0.15f : 0.05f, 1);
         }
 
         // Reduce gravity when clinging on wall

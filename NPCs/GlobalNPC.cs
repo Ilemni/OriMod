@@ -14,12 +14,6 @@ namespace OriMod.NPCs {
     public int FramesSinceLastBash { get; private set; }
     public bool IsBashed { get; set; }
 
-    public override void SetDefaults(NPC npc) {
-      if (npc.boss) {
-        OriUtils.isAnyBossAlive = true;
-      }
-    }
-
     public override bool PreAI(NPC npc) {
       if (IsBashed) {
         FramesSinceLastBash = 0;
@@ -35,7 +29,6 @@ namespace OriMod.NPCs {
         return false;
       }
       npc.NPCLoot();
-      OriUtils.IsAnyBossAlive(check: true);
       OriWorld.ValidateSeinUpgrade();
       return true;
     }
