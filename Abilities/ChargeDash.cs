@@ -111,27 +111,22 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateStarting() {
-      float tempDist = 720f;
-      int tempNPC = -1;
+      float tempDist = 720f * 720f;
       for (int n = 0; n < Main.maxNPCs; n++) {
         NPC localNpc = Main.npc[n];
         if (!localNpc.active || localNpc.friendly) {
           continue;
         }
 
-        float dist = (player.position - localNpc.position).Length();
+        float dist = (player.position - localNpc.position).LengthSquared();
         if (dist < tempDist) {
           tempDist = dist;
-          tempNPC = localNpc.whoAmI;
+          Target = localNpc;
         }
       }
-      if (tempNPC != -1) {
-        Target = null;
-        Direction = (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
-      }
-      else {
-        Direction = (sbyte)(PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
-      }
+      Direction = Target is null
+        ? (sbyte)(PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction)
+        : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + rand.NextNoRepeat(3), 0.5f);
       PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeDashProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
     }
