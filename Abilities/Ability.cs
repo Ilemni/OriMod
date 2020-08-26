@@ -88,11 +88,13 @@ namespace OriMod.Abilities {
     #region States
     /// <summary>
     /// Current <see cref="State"/> of the ability.
+    /// <para>Setting this value is done with <see cref="SetState(State, bool)"/>. This should only be done within <see cref="Tick"/>.</para>
     /// </summary>
     public State AbilityState { get; private set; }
 
     /// <summary>
     /// Sets the <see cref="State"/> of the ability to <paramref name="state"/>.
+    /// <para>This should only be used within the <see cref="Tick"/> method.</para>
     /// </summary>
     /// <param name="state">State to set <see cref="AbilityState"/> to.</param>
     /// <param name="preserveCurrentTime">Whether to preserve or reset <see cref="CurrentTime"/>. Resets by default.</param>
@@ -125,11 +127,6 @@ namespace OriMod.Abilities {
     /// If <see cref="AbilityState"/> is <see cref="State.Ending"/>.
     /// </summary>
     public bool Ending => AbilityState == State.Ending;
-
-    /// <summary>
-    /// If <see cref="AbilityState"/> is <see cref="State.Failed"/>.
-    /// </summary>
-    public bool Failed => AbilityState == State.Failed;
 
     /// <summary>
     /// If <see cref="AbilityState"/> is either <see cref="State.Starting"/>, <see cref="State.Active"/>, or <see cref="State.Ending"/>.
@@ -250,20 +247,15 @@ namespace OriMod.Abilities {
       switch (AbilityState) {
         case State.Active:
           UpdateActive();
-          UpdateUsing();
           return;
         case State.Starting:
           UpdateStarting();
-          UpdateUsing();
           return;
         case State.Ending:
           UpdateEnding();
-          UpdateUsing();
-          return;
-        case State.Failed:
-          UpdateFailed();
           return;
       }
+      UpdateUsing();
     }
 
     /// <summary>
@@ -280,11 +272,6 @@ namespace OriMod.Abilities {
     /// Called before <see cref="Update"/> when this <see cref="AbilityState"/> is <see cref="State.Ending"/>.
     /// </summary>
     protected virtual void UpdateEnding() { }
-
-    /// <summary>
-    /// Called when this <see cref="AbilityState"/> is <see cref="State.Starting"/>. <see cref="Update"/> will not be called.
-    /// </summary>
-    protected virtual void UpdateFailed() { }
 
     /// <summary>
     /// Called directly after <see cref="UpdateStarting"/>, <see cref="UpdateActive"/>, and <see cref="UpdateEnding"/>.
@@ -319,10 +306,6 @@ namespace OriMod.Abilities {
       /// The ability will use <see cref="UpdateEnding"/> and <see cref="UpdateUsing"/>.
       /// </summary>
       Ending = 3,
-      /// <summary>
-      /// The ability will use <see cref="UpdateFailed"/> only.
-      /// </summary>
-      Failed = 4
     }
   }
 }
