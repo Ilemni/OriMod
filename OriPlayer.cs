@@ -299,8 +299,12 @@ namespace OriMod {
     #endregion
 
     #region Internal Methods
-    internal SoundEffectInstance PlayNewSound(string Path, float Volume = 1, float Pitch = 0) =>
-      Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
+    internal SoundEffectInstance PlayNewSound(string Path, float Volume = 1, float Pitch = 0, bool localOnly = false) {
+      if (localOnly && !IsLocal) {
+        return null;
+      }
+      return Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
+    }
 
     /// <summary> Checks if the key is pressed and this is LocalPlayer. </summary>
     /// <param name="triggerKey">The key that was pressed</param>

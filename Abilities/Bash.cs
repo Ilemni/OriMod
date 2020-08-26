@@ -162,14 +162,14 @@ namespace OriMod.Abilities {
 
       playerStartPos = player.Center;
       targetStartPos = BashEntity.Center;
-      oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.7f);
+      oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.5f, localOnly:true);
       return true;
     }
 
     private void End() {
       player.pulley = false;
       float bashAngle = player.AngleFrom(Main.MouseWorld);
-      oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.7f);
+      oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.5f);
       oPlayer.UnrestrictedMovement = true;
 
       var bashVector = new Vector2((float)(0 - Math.Cos(bashAngle)), (float)(0 - Math.Sin(bashAngle)));
@@ -251,7 +251,7 @@ namespace OriMod.Abilities {
           SetState(State.Starting);
         }
         else {
-          oPlayer.PlayNewSound("Ori/Bash/bashNoTargetB", 0.4f);
+          oPlayer.PlayNewSound("Ori/Bash/bashNoTargetB", 0.35f, localOnly: true);
         }
         return;
       }
@@ -263,8 +263,8 @@ namespace OriMod.Abilities {
           return;
         }
         if (Active) {
-          if (CurrentTime == MinBashDuration + 2) {
-            oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.7f);
+          if (CurrentTime == MinBashDuration + 4) {
+            oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.5f, localOnly: true);
           }
           if (CurrentTime > MaxBashDuration || IsLocal && !OriMod.BashKey.Current || BashEntity is null || !BashEntity.active) {
             End();
