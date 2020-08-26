@@ -25,7 +25,7 @@ namespace OriMod.Items {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe();
-      recipe.AddRecipeGroup("OriMod:LunarFragments", 16);
+      recipe.AddRecipeGroup("OriMod:LunarFragments", 30);
       recipe.AddIngredient(ItemID.SoulofFlight, 20);
       recipe.AddRecipe();
     }
@@ -39,7 +39,7 @@ namespace OriMod.Items {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe();
-      recipe.AddIngredient(ItemID.LunarBar, 30);
+      recipe.AddIngredient(ItemID.LunarBar, 24);
       recipe.AddIngredient(ItemID.SoulofFlight, 40);
       recipe.AddIngredient(ItemID.SoulofLight, 25);
       recipe.AddRecipe();

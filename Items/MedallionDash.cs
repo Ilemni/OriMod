@@ -43,7 +43,7 @@ namespace OriMod.Items {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe();
-      recipe.AddIngredient(ItemID.ChlorophyteBar, 6);
+      recipe.AddRecipeGroup("OriMod:LunarFragments", 15);
       recipe.AddIngredient(ItemID.SoulofLight, 25);
       recipe.AddIngredient(ItemID.Tabi);
       recipe.AddRecipe();

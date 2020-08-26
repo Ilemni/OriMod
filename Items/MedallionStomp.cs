@@ -25,7 +25,7 @@ namespace OriMod.Items {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe();
-      recipe.AddRecipeGroup("OriMod:LunarFragments", 14);
+      recipe.AddRecipeGroup("OriMod:LunarFragments", 24);
       recipe.AddIngredient(ItemID.SoulofMight, 18);
       recipe.AddRecipe();
     }
