@@ -186,10 +186,10 @@ namespace OriMod.Abilities {
       player.immuneTime = 5;
 
       BashTarget.IsBashed = false;
-      /*if (TargetIsNpc) {
+      if (Level >= 2 && BashEntity is NPC npc) {
         int damage = BashDamage + (int)OriWorld.GlobalUpgrade * 9;
-        player.ApplyDamageToNPC(Main.npc[TargetID], damage, 0, 1, false);
-      }*/
+        player.ApplyDamageToNPC(npc, damage, 0, 1, false);
+      }
 
       PutOnCooldown();
     }
