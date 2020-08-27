@@ -43,7 +43,7 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
-        SetState(State.Inactive);
+        SetState(State.Active);
         wallDirection = (sbyte)player.direction;
         gravDirection = (sbyte)player.gravDir;
         Manager.climb.SetState(State.Inactive);
