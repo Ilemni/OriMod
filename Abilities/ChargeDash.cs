@@ -15,7 +15,7 @@ namespace OriMod.Abilities {
     internal ChargeDash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeDash;
 
-    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Manager.stomp.InUse && !Manager.bash.InUse && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !abilities.stomp.InUse && !abilities.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);
     protected override Color RefreshColor => Color.LightBlue;
 
@@ -100,7 +100,7 @@ namespace OriMod.Abilities {
       }
       else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
-        Vector2 newVel = target is null && !Manager.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
+        Vector2 newVel = target is null && !abilities.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
         newVel.Normalize();
         newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
         player.velocity = newVel;
@@ -160,16 +160,16 @@ namespace OriMod.Abilities {
           SetState(State.Active);
           UpdateStarting();
         }
-        else if (!Manager.dash.InUse) {
-          Manager.dash.StartDash();
+        else if (!abilities.dash.InUse) {
+          abilities.dash.StartDash();
         }
         return;
       }
       TickCooldown();
       if (InUse) {
         SetState(State.Inactive);
-        Manager.dash.Refreshed = false;
-        if (CurrentTime > Duration || oPlayer.OnWall || Manager.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
+        abilities.dash.Refreshed = false;
+        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
           End();
         }
       }

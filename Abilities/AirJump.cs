@@ -10,7 +10,7 @@ namespace OriMod.Abilities {
     internal AirJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.AirJump;
 
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrentCount < MaxJumps && !Active && !Manager.bash.InUse && !player.mount.Active && !Manager.wallChargeJump.InUse;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrentCount < MaxJumps && !Active && !abilities.bash.InUse && !player.mount.Active && !abilities.wallChargeJump.InUse;
 
     private float JumpVelocity => 8.8f;
     private int EndDuration => AnimationHandler.Instance.PlayerAnim["AirJump"].duration;
@@ -34,27 +34,27 @@ namespace OriMod.Abilities {
       }
 
       player.velocity.Y *= GravityDirection;
-      Manager.stomp.SetState(State.Inactive);
     }
 
     internal override void Tick() {
       if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
         if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
           SetState(State.Active);
-          if (Manager.dash.Active) {
-            Manager.dash.SetState(State.Inactive);
-            Manager.dash.PutOnCooldown();
+          if (abilities.dash.Active) {
+            abilities.dash.SetState(State.Inactive);
+            abilities.dash.PutOnCooldown();
           }
           CurrentCount++;
           GravityDirection = (int)player.gravDir;
         }
         return;
       }
-      if (oPlayer.IsGrounded || Manager.bash.InUse || oPlayer.OnWall) {
+      if (oPlayer.IsGrounded || abilities.bash.InUse || oPlayer.OnWall) {
         CurrentCount = 0;
         SetState(State.Inactive);
       }
       else if (Active) {
+        abilities.stomp.SetState(State.Inactive);
         SetState(State.Ending);
       }
       else if (Ending) {

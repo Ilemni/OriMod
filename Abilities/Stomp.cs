@@ -15,7 +15,7 @@ namespace OriMod.Abilities {
     internal Stomp(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Stomp;
 
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !Manager.dash.InUse && !Manager.chargeDash.InUse && !Manager.glide.Active && !Manager.climb.InUse && !Manager.stomp.Active && !player.mount.Active && player.grapCount == 0;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !abilities.dash.InUse && !abilities.chargeDash.InUse && !abilities.glide.Active && !abilities.climb.InUse && !abilities.stomp.Active && !player.mount.Active && player.grapCount == 0;
     protected override int Cooldown => (int)(Config.StompCooldown * 30);
     protected override Color RefreshColor => Color.Orange;
 
@@ -51,7 +51,7 @@ namespace OriMod.Abilities {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3));
         PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
       }
-      if (Manager.airJump.Active) {
+      if (abilities.airJump.Active) {
         return;
       }
 
@@ -64,7 +64,7 @@ namespace OriMod.Abilities {
 
     internal void EndStomp() {
       oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + randEnd.NextNoRepeat(3));
-      Manager.airJump.CurrentCount = 0;
+      abilities.airJump.CurrentCount = 0;
       player.velocity = Vector2.Zero;
       var position = new Vector2(player.position.X, player.position.Y + 32);
       for (int i = 0; i < 25; i++) {

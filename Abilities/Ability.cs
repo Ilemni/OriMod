@@ -12,8 +12,8 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Only construct this in AbilityManager.
     /// </summary>
-    internal Ability(AbilityManager manager) {
-      oPlayer = manager.oPlayer;
+    internal Ability(AbilityManager abilities) {
+      oPlayer = abilities.oPlayer;
     }
 
     /// <summary>
@@ -22,19 +22,19 @@ namespace OriMod.Abilities {
     internal static OriConfigClient2 Config => OriMod.ConfigAbilities;
 
     /// <summary>
-    /// The <see cref="OriPlayer"/> this ability is attached to.
+    /// The <see cref="OriPlayer"/> this ability belongs to.
     /// </summary>
     public readonly OriPlayer oPlayer;
 
     /// <summary>
-    /// The <see cref="Player"/> this ability is attached to.
+    /// The <see cref="Player"/> this ability belongs to.
     /// </summary>
     public Player player => oPlayer.player;
 
     /// <summary>
-    /// The <see cref="AbilityManager"/> this ability is attached to.
+    /// The <see cref="AbilityManager"/> this ability belongs to.
     /// </summary>
-    public AbilityManager Manager => oPlayer.Abilities;
+    public AbilityManager abilities => oPlayer.Abilities;
 
 
     public bool IsLocal => oPlayer.IsLocal;

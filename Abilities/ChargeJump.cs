@@ -14,7 +14,7 @@ namespace OriMod.Abilities {
     internal ChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeJump;
 
-    internal override bool CanUse => base.CanUse && !InUse && Charged && !Manager.burrow.InUse && !Manager.climb.InUse;
+    internal override bool CanUse => base.CanUse && !InUse && Charged && !abilities.burrow.InUse && !abilities.climb.InUse;
     protected override int Cooldown => (int)(Config.CJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
 
@@ -52,7 +52,7 @@ namespace OriMod.Abilities {
       currentCharge = 0;
       PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
       PutOnCooldown();
-      Manager.climb.SetState(State.Inactive);
+      abilities.climb.SetState(State.Inactive);
     }
 
     private void UpdateCharged() {
@@ -72,7 +72,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (Manager.burrow.InUse) {
+      if (abilities.burrow.InUse) {
         currentCharge = 0;
         currentGrace = 0;
         return;

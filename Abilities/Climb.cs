@@ -9,7 +9,7 @@ namespace OriMod.Abilities {
     internal Climb(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Climb;
 
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !Manager.wallJump.InUse && !Manager.wallChargeJump.InUse;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !abilities.wallJump.InUse && !abilities.wallChargeJump.InUse;
 
     internal bool IsCharging => Active && (wallDirection == 1 && PlayerInput.Triggers.Current.Left || wallDirection == -1 && PlayerInput.Triggers.Current.Right);
 

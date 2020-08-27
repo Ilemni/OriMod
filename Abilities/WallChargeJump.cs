@@ -19,7 +19,7 @@ namespace OriMod.Abilities {
     protected override int Cooldown => (int)(Config.WCJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
 
-    internal bool CanCharge => base.CanUse && Manager.climb.IsCharging;
+    internal bool CanCharge => base.CanUse && abilities.climb.IsCharging;
     private int MaxCharge => 35;
     private int Duration => Speeds.Length - 1;
     private static float[] Speeds => _speeds ?? (_speeds = new float[20] {
@@ -40,12 +40,12 @@ namespace OriMod.Abilities {
     internal Vector2 GetMouseDirection() => GetMouseDirection(out float _);
     internal Vector2 GetMouseDirection(out float angle) {
       Vector2 mouse = Main.MouseWorld - player.Center;
-      mouse.X *= -Manager.climb.wallDirection;
+      mouse.X *= -abilities.climb.wallDirection;
       mouse.Y *= player.gravDir;
       mouse += player.Center;
       angle = Utils.Clamp(player.AngleTo(mouse), -MaxAngle, MaxAngle);
       Vector2 dir = Vector2.UnitX.RotatedBy(angle);
-      dir.X *= -Manager.climb.wallDirection;
+      dir.X *= -abilities.climb.wallDirection;
       dir.Y *= player.gravDir;
       return dir;
     }
@@ -77,7 +77,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (Manager.burrow.InUse) {
+      if (abilities.burrow.InUse) {
         currentCharge = 0;
         return;
       }

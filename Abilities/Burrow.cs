@@ -19,7 +19,7 @@ namespace OriMod.Abilities {
     internal Burrow(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Burrow;
 
-    internal override bool CanUse => base.CanUse && !Manager.dash.InUse && !Manager.chargeDash.InUse && !InMenu;
+    internal override bool CanUse => base.CanUse && !abilities.dash.InUse && !abilities.chargeDash.InUse && !InMenu;
     protected override int Cooldown => 12;
     protected override Color RefreshColor => Color.SandyBrown;
 
@@ -247,7 +247,7 @@ namespace OriMod.Abilities {
     internal override void Tick() {
       if (InUse) {
         UpdateBurrowStrength();
-        Manager.glide.SetState(State.Inactive);
+        abilities.glide.SetState(State.Inactive);
 
         if (Active) {
           bool canBurrow = false;
@@ -277,7 +277,7 @@ namespace OriMod.Abilities {
         // Not in use
         TickCooldown();
 
-        if (CanUse && (OriMod.BurrowKey.JustPressed && Manager.crouch.InUse || AutoBurrow)) {
+        if (CanUse && (OriMod.BurrowKey.JustPressed && abilities.crouch.InUse || AutoBurrow)) {
           UpdateBurrowStrength(force: true);
           EnterHitbox.UpdateHitbox(player.position);
 

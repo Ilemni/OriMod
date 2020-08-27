@@ -13,7 +13,7 @@ namespace OriMod.Abilities {
     internal WallJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallJump;
 
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !Manager.wallChargeJump.Charged;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !abilities.wallChargeJump.Charged;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private int EndTime => 12;
@@ -45,7 +45,7 @@ namespace OriMod.Abilities {
         SetState(State.Active);
         wallDirection = (sbyte)player.direction;
         gravDirection = (sbyte)player.gravDir;
-        Manager.climb.SetState(State.Inactive);
+        abilities.climb.SetState(State.Inactive);
       }
       else if (Active) {
         SetState(State.Ending);

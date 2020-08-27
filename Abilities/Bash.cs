@@ -16,7 +16,7 @@ namespace OriMod.Abilities {
     internal Bash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Bash;
 
-    internal override bool CanUse => base.CanUse && Inactive && !Manager.stomp.InUse && !Manager.chargeJump.InUse;
+    internal override bool CanUse => base.CanUse && Inactive && !abilities.stomp.InUse && !abilities.chargeJump.InUse;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);
     protected override Color RefreshColor => Color.LightYellow;
 
