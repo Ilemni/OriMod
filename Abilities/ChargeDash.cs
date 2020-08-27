@@ -15,7 +15,6 @@ namespace OriMod.Abilities {
     internal ChargeDash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeDash;
 
-    internal override bool UpdateCondition => OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current && Refreshed && !Manager.dash.UpdateCondition;
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !Manager.stomp.InUse && !Manager.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);
     protected override Color RefreshColor => Color.LightBlue;
@@ -38,7 +37,7 @@ namespace OriMod.Abilities {
     /// <param name="npc"><see cref="NPC"/> to check.</param>
     /// <returns>True if <paramref name="npc"/> is <see cref="Target"/>.</returns>
     public bool NpcIsTarget(NPC npc) => npc.whoAmI == NpcID;
-    
+
     /// <summary>
     /// Target of this Charge Dash. May be null.
     /// </summary>
@@ -51,7 +50,7 @@ namespace OriMod.Abilities {
       }
       set => NpcID = (ushort)(value?.whoAmI ?? ushort.MaxValue);
     }
-    
+
     /// <summary>
     /// Projectile created while Charge Dashing to damage enemies.
     /// </summary>

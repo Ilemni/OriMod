@@ -56,12 +56,6 @@ namespace OriMod.Abilities {
     public abstract int Id { get; }
 
     /// <summary>
-    /// Condition required to call <see cref="Update"/>.
-    /// <para>This is only checked on the local client and if the ability is already in use.</para>
-    /// </summary>
-    internal abstract bool UpdateCondition { get; }
-
-    /// <summary>
     /// Condition required for the player to activate this ability.
     /// </summary>
     internal virtual bool CanUse => Unlocked && Refreshed;
@@ -100,6 +94,7 @@ namespace OriMod.Abilities {
     /// <param name="preserveCurrentTime">Whether to preserve or reset <see cref="CurrentTime"/>. Resets by default.</param>
     public void SetState(State state, bool preserveCurrentTime = false) {
       if (state != AbilityState) {
+        //Main.NewText($"{GetType().Name}: {state}");
         netUpdate = true;
         AbilityState = state;
         if (!preserveCurrentTime) {
@@ -240,10 +235,6 @@ namespace OriMod.Abilities {
     /// <para>Only called if <see cref="AbilityState"/> is <see cref="State.Starting"/>, <see cref="State.Active"/>, or <see cref="State.Ending"/>.</para>
     /// </summary>
     internal void Update() {
-      if (!InUse) {
-        return;
-      }
-
       switch (AbilityState) {
         case State.Active:
           UpdateActive();
@@ -254,6 +245,8 @@ namespace OriMod.Abilities {
         case State.Ending:
           UpdateEnding();
           break;
+        case State.Inactive:
+          return;
       }
       UpdateUsing();
     }

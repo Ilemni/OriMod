@@ -183,9 +183,7 @@ namespace OriMod.Abilities {
 
       // Update
       foreach (var ability in this) {
-        if (ability.InUse && !ability.IsLocal || ability.UpdateCondition) {
-          ability.Update();
-        }
+        ability.Update();
       }
 
       // Net sync
@@ -216,7 +214,7 @@ namespace OriMod.Abilities {
       if (player.mount?.Active ?? false) {
         return false;
       }
-      
+
       return true;
     }
 

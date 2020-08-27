@@ -14,7 +14,6 @@ namespace OriMod.Abilities {
     internal Dash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Dash;
 
-    internal override bool UpdateCondition => !Manager.chargeDash.InUse;
     internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !Manager.stomp.InUse && !Manager.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.DashCooldown * 30);
     protected override bool CooldownOnlyOnBoss => true;
@@ -74,6 +73,10 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
+      if (Manager.chargeDash.InUse) {
+        SetState(State.Inactive);
+        return;
+      }
       if (CanUse && OriMod.DashKey.JustPressed) {
         SetState(State.Active);
         StartDash();

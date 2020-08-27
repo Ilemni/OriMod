@@ -13,7 +13,6 @@ namespace OriMod.Abilities {
     internal SoulLink(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.SoulLink;
 
-    internal override bool UpdateCondition => OriMod.SoulLinkKey.Current;
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && player.CheckMana(ManaCost, blockQuickMana: true);
     protected override int Cooldown => (int)(Config.SoulLinkCooldown * 30);
 

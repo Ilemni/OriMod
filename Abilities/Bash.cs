@@ -16,7 +16,6 @@ namespace OriMod.Abilities {
     internal Bash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Bash;
 
-    internal override bool UpdateCondition => true;
     internal override bool CanUse => base.CanUse && Inactive && !Manager.stomp.InUse && !Manager.chargeJump.InUse;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);
     protected override Color RefreshColor => Color.LightYellow;
@@ -162,7 +161,7 @@ namespace OriMod.Abilities {
 
       playerStartPos = player.Center;
       targetStartPos = BashEntity.Center;
-      oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.5f, localOnly:true);
+      oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.5f, localOnly: true);
       return true;
     }
 

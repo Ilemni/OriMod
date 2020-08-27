@@ -14,7 +14,6 @@ namespace OriMod.Abilities {
     internal ChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeJump;
 
-    internal override bool UpdateCondition => true;
     internal override bool CanUse => base.CanUse && !InUse && Charged && !Manager.burrow.InUse && !Manager.climb.InUse;
     protected override int Cooldown => (int)(Config.CJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;

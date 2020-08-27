@@ -13,18 +13,17 @@ namespace OriMod.Abilities {
     internal Glide(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Glide;
 
-    internal override bool UpdateCondition => OriMod.FeatherKey.Current || OriMod.FeatherKey.JustReleased;
     internal override bool CanUse =>
       base.CanUse && !Ending &&
       !Manager.airJump.InUse && !Manager.stomp.InUse && !Manager.dash.InUse && !Manager.chargeDash.InUse &&
       !Manager.wallChargeJump.InUse && !Manager.burrow.InUse &&
       player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active;
 
-    private float MaxFallSpeed => 2f;
-    private float RunSlowdown => 0.125f;
-    private float RunAcceleration => 0.2f;
-    private int StartDuration => 8;
-    private int EndDuration => 10;
+    private const float MaxFallSpeed = 2f;
+    private const float RunSlowdown = 0.125f;
+    private const float RunAcceleration = 0.2f;
+    private const int StartDuration = 8;
+    private const int EndDuration = 10;
 
     private readonly RandomChar randStart = new RandomChar();
     private readonly RandomChar randActive = new RandomChar();
@@ -79,7 +78,7 @@ namespace OriMod.Abilities {
         if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded) {
           SetState(InUse ? State.Ending : State.Inactive);
         }
-        else if (OriMod.FeatherKey.JustReleased) {
+        else if (IsLocal && OriMod.FeatherKey.JustReleased) {
           SetState(State.Ending);
         }
       }
