@@ -9,96 +9,95 @@ namespace OriMod.Animations {
   internal sealed class AnimationHandler : SingleInstance<AnimationHandler> {
     private AnimationHandler() { }
 
-    private static Frame F(int frameX, int frameY, int duration = -1) => new Frame(frameX, frameY, duration);
-    private static Header H(InitType i = InitType.Range, LoopMode l = LoopMode.Always, PlaybackMode p = PlaybackMode.None, ReferencedTexture2D texture = null)
-      => new Header(init: i, loop: l, playback: p, rtx: texture);
+    private static Frame F(int x, int y, int duration = -1) => new Frame(x, y, duration);
+    private static Header H(LoopMode l = LoopMode.Always, Direction d = Direction.Forward, ReferencedTexture2D texture = null) => new Header(loop: l, direction: d, rtx: texture);
 
     private AnimationSource _pa;
     public AnimationSource PlayerAnim => _pa ?? (_pa = new AnimationSource("PlayerEffects/OriPlayer", 64, 68,
       new Dictionary<string, Track> {
-        ["Default"] = new Track(Header.Default,
+        ["Default"] = new Track(
           F(0, 0)
         ),
-        ["Idle"] = new Track(Header.Default,
+        ["Idle"] = new Track(asRange: true,
           F(0, 1, 9), F(0, 8, 9)
         ),
-        ["IdleAgainst"] = new Track(Header.Default,
+        ["IdleAgainst"] = new Track(asRange: true,
           F(0, 9, 7), F(0, 14, 7)
         ),
-        ["LookUpStart"] = new Track(Header.Default,
+        ["LookUpStart"] = new Track(
           F(1, 0)
         ),
-        ["LookUp"] = new Track(Header.Default,
+        ["LookUp"] = new Track(asRange: true,
           F(1, 1, 8), F(1, 7, 8)
         ),
-        ["CrouchStart"] = new Track(Header.Default,
+        ["CrouchStart"] = new Track(
           F(1, 8)
         ),
-        ["Crouch"] = new Track(Header.Default,
+        ["Crouch"] = new Track(
           F(1, 9)
         ),
-        ["Running"] = new Track(Header.Default,
+        ["Running"] = new Track(asRange: true,
           F(2, 0, 4), F(2, 10, 4)
         ),
-        ["Dash"] = new Track(Header.None,
+        ["Dash"] = new Track(asRange: false,
           F(2, 11, 36), F(2, 12, 12)
         ),
-        ["Bash"] = new Track(Header.None,
+        ["Bash"] = new Track(asRange: false,
           F(2, 13, 40), F(2, 12)
         ),
-        ["AirJump"] = new Track(Header.Default,
+        ["AirJump"] = new Track(
           F(3, 0, 32)
         ),
-        ["Jump"] = new Track(H(i: InitType.None, p: PlaybackMode.Reverse),
+        ["Jump"] = new Track(H(d: Direction.Reverse), asRange: false,
           F(3, 1), F(3, 2, 14)
         ),
-        ["IntoJumpBall"] = new Track(Header.None,
+        ["IntoJumpBall"] = new Track(Header.None, asRange: false,
           F(3, 3, 6), F(3, 4, 4)
         ),
-        ["ChargeJump"] = new Track(H(l: LoopMode.None, p: PlaybackMode.PingPong),
+        ["ChargeJump"] = new Track(H(l: LoopMode.None, d: Direction.PingPong), asRange: true,
           F(3, 5, 4), F(3, 8, 4)
         ),
-        ["Falling"] = new Track(Header.Default,
+        ["Falling"] = new Track(asRange: true,
           F(3, 9, 4), F(3, 12, 4)
         ),
-        ["FallNoAnim"] = new Track(Header.Default,
+        ["FallNoAnim"] = new Track(
           F(3, 13)
         ),
-        ["GlideStart"] = new Track(H(l: LoopMode.None),
+        ["GlideStart"] = new Track(Header.None, asRange: true,
           F(4, 0, 5), F(4, 2, 5)
         ),
-        ["GlideIdle"] = new Track(Header.Default,
+        ["GlideIdle"] = new Track(
           F(4, 3)
         ),
-        ["Glide"] = new Track(Header.Default,
+        ["Glide"] = new Track(asRange: true,
           F(4, 4, 5), F(4, 9, 5)
         ),
-        ["ClimbIdle"] = new Track(Header.Default,
+        ["ClimbIdle"] = new Track(
           F(5, 0)
         ),
-        ["Climb"] = new Track(Header.Default,
+        ["Climb"] = new Track(asRange: true,
           F(5, 1, 4), F(5, 8, 4)
         ),
-        ["WallSlide"] = new Track(Header.Default,
+        ["WallSlide"] = new Track(asRange: true,
           F(5, 9, 5), F(5, 12, 5)
         ),
-        ["WallJump"] = new Track(Header.Default,
+        ["WallJump"] = new Track(
           F(5, 13, 12)
         ),
-        ["WallChargeJumpCharge"] = new Track(Header.Default,
+        ["WallChargeJumpCharge"] = new Track(asRange: false,
           F(6, 0, 16), F(6, 1, 10), F(6, 2)
         ),
-        ["WallChargeJumpAim"] = new Track(Header.Default,
-          F(6, 2), F(6, 6)
+        ["WallChargeJumpAim"] = new Track(asRange: true,
+          F(6, 2), F(6, 6) // No duration, frames are selected by code, i.e. player mouse position
         ),
-        ["Burrow"] = new Track(H(i: InitType.Range),
+        ["Burrow"] = new Track(asRange: true,
           F(7, 0, 3), F(7, 7, 3)
         ),
-        ["TransformStart"] = new Track(H(i: InitType.None, l: LoopMode.Transfer, texture: OriTextures.Instance.Transform), // TODO: Migrate TransformStart textures to OriPlayer
+        ["TransformStart"] = new Track(H(l: LoopMode.Transfer, texture: OriTextures.Instance.Transform), asRange: false, // TODO: Migrate TransformStart textures to OriPlayer
           F(0, 0, 2), F(0, 1, 60), F(0, 2, 60), F(0, 3, 120),
           F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30)
         ),
-        ["TransformEnd"] = new Track(H(i: InitType.None),
+        ["TransformEnd"] = new Track(asRange: true,
           F(6, 7, 6), F(6, 8, 50), F(6, 9, 6), F(6, 10, 60),
           F(6, 11, 10), F(6, 12, 40), F(6, 13, 3), F(6, 14, 60)
         ),
@@ -108,42 +107,38 @@ namespace OriMod.Animations {
     private AnimationSource _ba;
     public AnimationSource BashAnim => _ba ?? (_ba = new AnimationSource("PlayerEffects/BashArrow", 152, 20,
       new Dictionary<string, Track> {
-        {"Bash", new Track(H(i:InitType.None),
+        ["Bash"] = new Track(
           F(0, 0)
-        )}
+        )
       }
     ));
 
     private AnimationSource _ga;
     public AnimationSource GlideAnim => _ga ?? (_ga = new AnimationSource("PlayerEffects/Feather", 128, 128,
       new Dictionary<string, Track> {
-        {"GlideStart", new Track(H(l:LoopMode.None),
+        ["GlideStart"] = new Track(Header.None, asRange: true,
           F(0, 0, 5), F(0, 2, 5)
-        )},
-        {"GlideIdle", new Track(H(),
+        ),
+        ["GlideIdle"] = new Track(
           F(0, 3)
-        )},
-        {"Glide", new Track(H(),
+        ),
+        ["Glide"] = new Track(asRange: true,
           F(0, 4, 5), F(0, 9, 5)
-        )},
+        ),
       }
     ));
 
-    // TODO: move to OriPlayer
-    private Header OverrideHeader = Header.Default;
-    
     /// <summary>
     /// Logic for managing which frame should play.
     /// </summary>
-    /// <param name="oPlayer">Player to animate</param>
-    /// <param name="anim">Name of the animation track to play/continue</param>
-    /// <param name="overrideFrameIndex">Optional override for the frame to play</param>
-    /// <param name="overrideTime">Optional override for the current time of the frame</param>
-    /// <param name="overrideDur">Optional override for the duration of the frame</param>
-    /// <param name="overrideHeader">Optional override for the header of the track</param>
-    /// <param name="drawOffset">Optional offset position for the sprite</param>
-    /// <param name="rotation">Rotation of the sprite, in degrees</param>
-    internal void IncrementFrame(OriPlayer oPlayer, string anim = "Default", int overrideFrameIndex = 0, float overrideTime = 0, int overrideDur = 0, Header overrideHeader = null, Vector2 drawOffset = new Vector2(), float rotation = 0) {
+    /// <param name="oPlayer">Player to animate.</param>
+    /// <param name="anim">Name of the animation track to play/continue.</param>
+    /// <param name="overrideFrameIndex">Optional override for the frame to play.</param>
+    /// <param name="timeOffset">Optional offset to time.</param>
+    /// <param name="overrideDuration">Optional override for the duration of the frame.</param>
+    /// <param name="overrideHeader">Optional override for the header of the track.</param>
+    /// <param name="rotation">Rotation of the sprite, in degrees.</param>
+    internal void IncrementFrame(OriPlayer oPlayer, string anim, int overrideFrameIndex = -1, int overrideDuration = -1, LoopMode? overrideLoopmode = null, Direction? overrideDirection = null, float rotation = 0) {
       if (oPlayer is null) {
         throw new ArgumentNullException(nameof(oPlayer));
       }
@@ -153,132 +148,123 @@ namespace OriMod.Animations {
 
       Track track = PlayerAnim[anim];
       Frame[] frames = track.frames;
+      int lastFrame = frames.Length - 1;
       float radians = (float)(rotation / 180 * Math.PI);
-      
-      if (overrideHeader is null) {
-        overrideHeader = track.header;
-      }
+      var loop = overrideLoopmode ?? track.header.loop;
+      var direction = overrideDirection ?? track.header.direction;
 
       if (!PlayerAnim.tracks.ContainsKey(anim)) {
         // Bad animation, set defaults and return
         OriMod.Error("BadTrack", args: anim);
         anim = "Default";
         oPlayer.animationReversed = false;
-        oPlayer.SetFrame(anim, 1, overrideTime, frames[0], radians);
+        oPlayer.SetFrame(anim, 0, 0, frames[0], radians);
         return;
       }
 
-      // During refactoring, noticed that use of OverrideHeader may cause unwanted visual behavior in multiplayer scenarios, as it is currently a singleton field.
-      Header header = track.header.CopySome(overrideHeader);
-      if (anim != oPlayer.AnimationName) {
-        OverrideHeader = Header.Default;
-      }
-      if (overrideHeader != Header.None) {
-        OverrideHeader = overrideHeader;
-        header = overrideHeader;
-      }
-      if (OverrideHeader != Header.None && anim == oPlayer.AnimationName) {
-        header = OverrideHeader;
-      }
-
-      if (overrideFrameIndex != -1 && overrideFrameIndex < frames.Length) {
+      if (overrideFrameIndex >= 0 && overrideFrameIndex < frames.Length) {
         // If overrideFrame was specified, simply set frame
-        oPlayer.animationReversed = header.playback == PlaybackMode.Reverse;
+        oPlayer.animationReversed = direction == Direction.Reverse;
         oPlayer.SetFrame(anim, overrideFrameIndex, 0, frames[overrideFrameIndex], radians);
         return;
       }
-      
+
       // Figure out the desired frame
       int frameIndex = oPlayer.AnimationIndex;
-      float time = overrideTime != 0 ? overrideTime : oPlayer.AnimationTime;
-      Point currFrame = oPlayer.animationTile;
+      float time = oPlayer.AnimationTime;
+      var currFrame = oPlayer.animationTile;
 
-      // Logic for switching frames
-      if (anim == oPlayer.AnimationName) {
-        // If keeping frame, ensure current frame already exists
+      // Logic for switching tracks
+      if (anim != oPlayer.AnimationName) {
+        // Track changed: switch to next track
+        frameIndex = direction == Direction.Reverse ? frames.Length - 1 : 0;
+        time = 0;
+      }
+      else {
+        // Keeping track: ensure current frame already exists
         int testFrame = Array.FindIndex(frames, f => f.Tile == currFrame);
         if (testFrame == -1) {
           OriMod.Error("BadFrame", args: new object[] { anim, currFrame });
-          frameIndex = header.playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
+          frameIndex = direction == Direction.Reverse ? frames.Length - 1 : 0;
         }
-      }
-      else {
-        frameIndex = header.playback == PlaybackMode.Reverse ? frames.Length - 1 : 0;
-        time = 0;
       }
 
-      // Increment frames based on time
-      int framesToAdvance = 0;
-      int dur = overrideDur != 0 ? overrideDur : frames[frameIndex].Duration;
-      while (time > dur && dur != -1) {
-        time -= dur;
-        framesToAdvance++;
-        if (framesToAdvance + frameIndex > frames.Length - 1) {
-          time %= dur;
+      if (time > 0) {
+        // Increment frames based on time (this should rarely be above 1)
+        int framesToAdvance = 0;
+        int duration = overrideDuration != -1 ? overrideDuration : frames[frameIndex].Duration;
+        while (time > duration && duration != -1) {
+          time -= duration;
+          framesToAdvance++;
+          if (framesToAdvance + frameIndex > lastFrame) {
+            time %= duration;
+          }
+        }
+
+        // Loop logic
+        if (framesToAdvance != 0) {
+          switch (direction) {
+            case Direction.Forward: {
+                oPlayer.animationReversed = false;
+                if (frameIndex == lastFrame) {
+                  // Forward, end of track w/ transfer: transfer to next track
+                  if (loop == LoopMode.Transfer) {
+                    anim = track.header.transferTo;
+                    frameIndex = 0;
+                    time = 0;
+                  }
+                  // Forward, end of track, always loop: replay track forward
+                  else if (loop == LoopMode.Always) {
+                    frameIndex = 0;
+                  }
+                }
+                // Forward, middle of track: continue playing track forward
+                else {
+                  frameIndex += framesToAdvance;
+                }
+                break;
+              }
+            case Direction.PingPong: {
+                // Ping-pong, always loop, reached start of track: play track forward
+                if (frameIndex == 0 && loop == LoopMode.Always) {
+                  oPlayer.animationReversed = false;
+                  frameIndex += framesToAdvance;
+                }
+                // Ping-pong, always loop, reached end of track: play track backwards
+                else if (frameIndex == lastFrame && loop == LoopMode.Always) {
+                  oPlayer.animationReversed = true;
+                  frameIndex -= framesToAdvance;
+                }
+                // Ping-pong, in middle of track: continue playing track either forward or backwards
+                else {
+                  frameIndex += oPlayer.animationReversed ? -framesToAdvance : framesToAdvance;
+                }
+                break;
+              }
+            case Direction.Reverse: {
+                oPlayer.animationReversed = true;
+                // Reverse, if loop: replay track backwards
+                if (frameIndex == 0) {
+                  if (loop == LoopMode.Transfer) {
+                    anim = track.header.transferTo;
+                    frameIndex = 0;
+                    time = 0;
+                  }
+                  if (loop == LoopMode.Always) {
+                    frameIndex = lastFrame;
+                  }
+                }
+                // Reverse, middle of track: continue track backwards
+                else {
+                  frameIndex -= framesToAdvance;
+                }
+                break;
+              }
+          }
         }
       }
-      
-      // Loop logic
-      if (framesToAdvance != 0) {
-        if (header.playback == PlaybackMode.None) {
-          oPlayer.animationReversed = false;
-          if (frameIndex == frames.Length - 1) {
-            if (header.loop == LoopMode.Transfer) {
-              anim = header.transferTo;
-              frameIndex = 0;
-              time = 0;
-            }
-            else if (header.loop == LoopMode.Always) {
-              frameIndex = 0;
-            }
-          }
-          else {
-            frameIndex += framesToAdvance;
-            if (frameIndex > frames.Length - 1) {
-              frameIndex = frames.Length - 1;
-            }
-          }
-        }
-        else if (header.playback == PlaybackMode.PingPong) {
-          if (frameIndex == 0 && header.loop == LoopMode.Always) {
-            oPlayer.animationReversed = false;
-            frameIndex += framesToAdvance;
-            if (frameIndex > frames.Length - 1) {
-              frameIndex = frames.Length - 1;
-            }
-          }
-          else if (frameIndex == frames.Length - 1 && header.loop == LoopMode.Always) {
-            oPlayer.animationReversed = true;
-            frameIndex -= framesToAdvance;
-            if (frameIndex < 0) {
-              frameIndex = 0;
-            }
-          }
-          else {
-            frameIndex += oPlayer.animationReversed ? -framesToAdvance : framesToAdvance;
-            if (frameIndex > frames.Length - 1) {
-              frameIndex = frames.Length - 1;
-            }
-            else if (frameIndex < 0) {
-              frameIndex = 0;
-            }
-          }
-        }
-        else if (header.playback == PlaybackMode.Reverse) {
-          oPlayer.animationReversed = true;
-          if (frameIndex == 0) {
-            if (header.loop == LoopMode.Always) {
-              frameIndex = frames.Length - 1;
-            }
-          }
-          else {
-            frameIndex -= framesToAdvance;
-            if (frameIndex < 0) {
-              frameIndex = 0;
-            }
-          }
-        }
-      }
+
+      frameIndex = (int)MathHelper.Clamp(frameIndex, 0, lastFrame);
 
       oPlayer.SetFrame(anim, frameIndex, time, frames[frameIndex], radians);
     }

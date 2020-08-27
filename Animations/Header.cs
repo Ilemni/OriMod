@@ -3,28 +3,22 @@
   /// Contains info for a <see cref="Track"/>.
   /// </summary>
   public class Header {
-    public Header(InitType init = InitType.None, LoopMode loop = LoopMode.None, PlaybackMode playback = PlaybackMode.None, string transferTo = null, ReferencedTexture2D rtx = null) {
-      this.init = init;
+    public Header(LoopMode loop = LoopMode.None, Direction direction = Direction.Forward, string transferTo = null, ReferencedTexture2D rtx = null) {
       this.loop = loop;
-      this.playback = playback;
+      this.direction = direction;
       this.transferTo = transferTo;
       texture = rtx;
     }
 
     /// <summary>
-    /// <see cref="InitType"/>
-    /// </summary>
-    public InitType init;
-
-    /// <summary>
-    /// <see cref=" LoopMode"/>
+    /// <inheritdoc cref="LoopMode"/>
     /// </summary>
     public LoopMode loop;
 
     /// <summary>
-    /// <see cref=" PlaybackMode"/>
+    /// <inheritdoc cref="Direction"/>
     /// </summary>
-    public PlaybackMode playback;
+    public Direction direction;
 
     /// <summary>
     /// Animation track to transfer to, if <see cref="LoopMode.Transfer"/> is used.
@@ -37,42 +31,16 @@
     public readonly ReferencedTexture2D texture = null;
 
     /// <summary>
-    /// Copies the <see cref="init"/>, <see cref="loop"/>, and <see cref="playback"/> of <paramref name="other"/>.
+    /// Initialize with <see cref="LoopMode.Always"/> and <see cref="Direction.Forward"/>.
     /// </summary>
-    /// <param name="other"><see cref="Header"/> to copy.</param>
-    internal Header CopySome(Header other) {
-      return new Header(
-        other.init != 0 ? other.init : init,
-        other.loop != 0 ? other.loop : loop,
-        other.playback != 0 ? other.playback : playback
-      );
-    }
+    public static Header Default => new Header(LoopMode.Always, Direction.Forward);
 
     /// <summary>
-    /// Initialize with <see cref="InitType.Range"/>, <see cref="LoopMode.Always"/>, <see cref="PlaybackMode.None"/>.
+    /// Initialize with <see cref="LoopMode.None"/> and <see cref="Direction.Forward"/>.
     /// </summary>
-    public static Header Default => new Header(InitType.Range, LoopMode.Always, PlaybackMode.None);
-
-    /// <summary>
-    /// Initialize with <see cref="InitType.None"/>, <see cref="LoopMode.None"/>, <see cref="PlaybackMode.None"/>.
-    /// </summary>
-    public static Header None => new Header(InitType.None, LoopMode.None, PlaybackMode.None);
+    public static Header None => new Header(LoopMode.None, Direction.Forward);
     
-    public override string ToString() => $"init={init}, loop={loop}, playback={playback}";
-  }
-
-  /// <summary>
-  /// Used to determine how to construct <see cref="Frame"/> array on <see cref="Track"/> creation.
-  /// </summary>
-  public enum InitType : byte {
-    /// <summary>
-    /// The <see cref="Frame"/> array will be used as-is.
-    /// </summary>
-    None = 0,
-    /// <summary>
-    /// Any missing sprites between two specified frames will be automatically inserted.
-    /// </summary>
-    Range = 1,
+    public override string ToString() => $"loop:{loop}, direction:{direction}";
   }
   
   /// <summary>
@@ -94,19 +62,19 @@
   }
   
   /// <summary>
-  /// Used to determine overall playback behavior.
+  /// Used to determine the direction that frames in a track are played.
   /// </summary>
-  public enum PlaybackMode : byte {
+  public enum Direction : byte {
     /// <summary>
-    /// Playback is normal.
+    /// Frames are played forward.
     /// </summary>
-    None = 0,
+    Forward = 0,
     /// <summary>
-    /// This track plays in reverse after ending the last frame.
+    /// Frames alternate between playing forward and backwards when reaching their last frames.
     /// </summary>
     PingPong = 1,
     /// <summary>
-    /// This track is played in reverse.
+    /// Frames are played backwards.
     /// </summary>
     Reverse = 2,
   }

@@ -321,22 +321,6 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Sets current animation frame data
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="frameIndex"></param>
-    /// <param name="time"></param>
-    /// <param name="frame"></param>
-    /// <param name="animRads"></param>
-    internal void SetFrame(string name, int frameIndex, float time, Frame frame, float animRads) {
-      AnimationName = name;
-      AnimationIndex = frameIndex;
-      AnimationTime = time;
-      AnimationFrame = TileToPixel(frame.Tile);
-      AnimationRotation = animRads;
-    }
-
-    /// <summary>
     /// Begins the transformation process from normal state to Spirit state
     /// </summary>
     internal void BeginTransformation() {
@@ -389,7 +373,6 @@ namespace OriMod {
     /// </summary>
     /// <param name="drawPlayer"></param>
     private void UpdateFrame(Player drawPlayer) {
-      AnimationTime++;
       if (Transforming) {
         IncrementFrame(IsOri ? "TransformEnd" : "TransformStart");
         return;
@@ -444,7 +427,7 @@ namespace OriMod {
             AnimationRotation = AnimationTime;
             return;
           case Ability.State.Active:
-            IncrementFrame("ChargeJump", rotDegrees: 180f, overrideDur: 2, overrideHeader: new Header(playback: PlaybackMode.PingPong));
+            IncrementFrame("ChargeJump", rotDegrees: 180f, overrideDur: 2, overrideLoopmode:LoopMode.Always, overrideDirection: Direction.PingPong);
             return;
         }
       }
@@ -457,7 +440,7 @@ namespace OriMod {
             IncrementFrame("Glide");
             return;
           case Ability.State.Ending:
-            IncrementFrame("GlideStart", overrideHeader: new Header(playback: PlaybackMode.Reverse));
+            IncrementFrame("GlideStart", overrideDirection: Direction.Reverse);
             return;
         }
       }
@@ -467,6 +450,7 @@ namespace OriMod {
             IncrementFrame("WallChargeJumpCharge", overrideFrame: Abilities.wallChargeJump.Refreshed ? -1 : 0);
             return;
           }
+          // TODO: Multiplayer sync of aim position
           int frame = 0;
           Abilities.wallChargeJump.GetMouseDirection(out float angle);
           if (angle < -0.46f) {
@@ -488,7 +472,7 @@ namespace OriMod {
           IncrementFrame("ClimbIdle");
         }
         else {
-          IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", overrideTime: AnimationTime + Math.Abs(drawPlayer.velocity.Y) * 0.1f);
+          IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", timeOffset: Math.Abs(drawPlayer.velocity.Y) * 0.1f);
         }
         return;
       }
@@ -514,7 +498,7 @@ namespace OriMod {
             IncrementFrame("LookUp");
             return;
           case Ability.State.Ending:
-            IncrementFrame("LookUpStart", overrideHeader: new Header(playback: PlaybackMode.Reverse));
+            IncrementFrame("LookUpStart", overrideDirection: Direction.Reverse);
             return;
         }
       }
@@ -527,7 +511,7 @@ namespace OriMod {
             IncrementFrame("Crouch");
             return;
           case Ability.State.Ending:
-            IncrementFrame("CrouchStart", overrideHeader: new Header(playback: PlaybackMode.Reverse));
+            IncrementFrame("CrouchStart", overrideDirection: Direction.Reverse);
             return;
         }
       }
@@ -542,7 +526,7 @@ namespace OriMod {
         return;
       }
       if (Math.Abs(drawPlayer.velocity.X) > 0.2f) {
-        IncrementFrame("Running", overrideTime: AnimationTime + (int)Math.Abs(player.velocity.X) / 3);
+        IncrementFrame("Running", timeOffset: (int)Math.Abs(player.velocity.X) / 3);
         return;
       }
       IncrementFrame(OnWall ? "IdleAgainst" : "Idle");
@@ -550,23 +534,41 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Calls AnimationHandler.IncrememtFrame() with supplied arguments.
+    /// Calls <see cref="AnimationHandler.IncrementFrame(OriPlayer, string, int, int, LoopMode?, Direction?, float)"/> with supplied arguments.
+    /// <para>This also increments <see cref="AnimationTime"/>.</para>
     /// </summary>
-    /// <param name="anim">Name of animation track</param>
-    /// <param name="overrideFrame">Index of frame to override</param>
-    /// <param name="overrideTime">Override current time of the frame</param>
-    /// <param name="overrideDur">Override duration of the frame</param>
-    /// <param name="overrideHeader">Override header data of the frame</param>
-    /// <param name="drawOffset">Override draw position of the frame</param>
-    /// <param name="rotDegrees">Rotation of the sprite, in degrees</param>
-    private void IncrementFrame(string anim = "Default", int overrideFrame = -1, float overrideTime = 0, int overrideDur = 0, Header overrideHeader = null, Vector2 drawOffset = new Vector2(), float rotDegrees = 0) {
+    /// <param name="anim">Name of animation track.</param>
+    /// <param name="overrideFrame">Index of frame to override, if desired.</param>
+    /// <param name="timeOffset">Additional time, used to speed up or slow down an animation.</param>
+    /// <param name="overrideDur">Override duration of the frame, used to increase or reduce how long all frames are active.</param>
+    /// <param name="overrideLoopmode">Override <see cref="LoopMode"/> of the track, if the one on the track's header is undesired.</param>
+    /// <param name="overrideDirection">Override <see cref="Direction"/> of the track, if the one on the track's header is undesired.</param>
+    /// <param name="rotDegrees">Rotation of the sprite, in degrees.</param>
+    private void IncrementFrame(string anim = "Default", int overrideFrame = -1, float timeOffset = 0, int overrideDur = -1, LoopMode? overrideLoopmode = null, Direction? overrideDirection = null, float rotDegrees = 0) {
       if (AnimationName != null && debugMode) {
         Main.NewText($"Frame called: {AnimationName}, Time: {AnimationTime}, AnimIndex: {AnimationIndex}/{Animations.PlayerAnim.ActiveTrack.frames.Length}"); // Debug
         var frame = Animations.PlayerAnim.ActiveFrame;
         var tile = Animations.PlayerAnim.ActiveTile;
         Main.NewText($"Frame info: {frame} => {tile}");
       }
-      AnimationHandler.Instance.IncrementFrame(this, anim, overrideFrame, overrideTime, overrideDur, overrideHeader, drawOffset, rotDegrees);
+      AnimationTime += 1 + timeOffset;
+      AnimationHandler.Instance.IncrementFrame(this, anim, overrideFrame, overrideDur, overrideLoopmode, overrideDirection, rotDegrees);
+    }
+
+    /// <summary>
+    /// Sets current animation frame data
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="frameIndex"></param>
+    /// <param name="time"></param>
+    /// <param name="frame"></param>
+    /// <param name="animRads"></param>
+    internal void SetFrame(string name, int frameIndex, float time, Frame frame, float animRads) {
+      AnimationName = name;
+      AnimationIndex = frameIndex;
+      AnimationTime = time;
+      AnimationFrame = TileToPixel(frame.Tile);
+      AnimationRotation = animRads;
     }
 
     /// <summary>
