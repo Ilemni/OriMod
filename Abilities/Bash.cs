@@ -125,9 +125,9 @@ namespace OriMod.Abilities {
     }
 
     /// <summary>
-    /// Attempt to start Bash. This will search for an <see cref="NPC"/> or <see cref="Projectile"/> to bash,
+    /// Attempt to start Bash. This will search for an <see cref="NPC"/> or <see cref="Projectile"/> to bash, and set it as target.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if an <see cref="Entity"/> to bash was found and set as target, otherwise false.</returns>
     private bool Start() {
       SetTarget(null);
       float currDist = BashRange;
@@ -136,7 +136,7 @@ namespace OriMod.Abilities {
       bool isBashingNpc = player.GetClosestEntity(Main.npc, ref currDist, out NPC npc, condition: BashNpcFilter);
       if (isBashingNpc) {
         if (npc.aiStyle == 6) {
-          // Worm: Must bash head of worm-like rather than body
+          // Worm: Must bash head of worm-like rather than body (head is stored as ai[3])
           // Otherwise only part of the npc will be suspended
           npc = Main.npc[(int)npc.ai[3]];
         }

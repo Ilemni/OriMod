@@ -247,13 +247,13 @@ namespace OriMod.Abilities {
       switch (AbilityState) {
         case State.Active:
           UpdateActive();
-          return;
+          break;
         case State.Starting:
           UpdateStarting();
-          return;
+          break;
         case State.Ending:
           UpdateEnding();
-          return;
+          break;
       }
       UpdateUsing();
     }
