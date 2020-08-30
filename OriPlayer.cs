@@ -39,7 +39,7 @@ namespace OriMod {
     /// <summary>
     /// Manager for all <see cref="Trail"/>s on this OriPlayer instance.
     /// </summary>
-    internal TrailManager Trails { get; private set; }
+    internal Trail trail { get; private set; }
 
     internal bool doNetUpdate = false;
 
@@ -604,7 +604,7 @@ namespace OriMod {
 
       if (!Main.dedServ) {
         Animations = new AnimationContainer(this);
-        Trails = new TrailManager(this, 26);
+        trail = new Trail(this, 26);
       }
 
       IsLocal = player.whoAmI == Main.myPlayer;

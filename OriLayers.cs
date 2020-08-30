@@ -43,9 +43,9 @@ namespace OriMod {
       Player player = drawInfo.drawPlayer;
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       if (!player.dead && !player.invis) {
-        oPlayer.Trails.ResetNextTrail();
+        oPlayer.trail.ResetNextTrail();
       }
-      oPlayer.Trails.AddTrailDrawDataToMain();
+      oPlayer.trail.AddTrailDrawDataToMain();
     });
 
     /// <summary>

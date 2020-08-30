@@ -1,72 +1,66 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using OriMod.Utilities;
-using Terraria;
-using Terraria.DataStructures;
+﻿using Terraria;
 
 namespace OriMod {
   /// <summary>
-  /// For drawing a trail behind the player.
+  /// Class for containing and updating all <see cref="TrailSegment"/>s on an <see cref="OriPlayer"/>.
   /// </summary>
   public class Trail {
     /// <summary>
-    /// Creates a <see cref="Trail"/> that belongs to <paramref name="oPlayer"/>.
+    /// Create an instance of <see cref="Trail"/> that will belong to <paramref name="oPlayer"/>.
     /// </summary>
-    /// <param name="oPlayer"><see cref="OriPlayer"/> this trail will belong to.</param>
-    internal Trail(OriPlayer oPlayer) => this.oPlayer = oPlayer;
-
-    private readonly OriPlayer oPlayer;
-    private Vector2 position;
-    private PointByte tile;
-    private byte time;
-    private float startAlpha = 1;
-    private SpriteEffects effect;
-
-    private static Vector2 Origin => new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 6);
-
-    /// <summary>
-    /// Resets various attributes to be based on the player's current attributes.
-    /// </summary>
-    public void Reset() {
-      var player = oPlayer.player;
-      position = player.Center;
-      tile = oPlayer.animationTile;
-
-      startAlpha = player.velocity.LengthSquared() * 0.0008f; // 0.002f
-      if (startAlpha > 0.16f) {
-        startAlpha = 0.16f;
+    /// <param name="oPlayer">The <see cref="OriPlayer"/> this <see cref="Trail"/> will belong to.</param>
+    /// <param name="trailCount">Number of sprites to use for the trail.</param>
+    /// <exception cref="System.ArgumentOutOfRangeException">Expected value of 1 or greater.</exception>
+    internal Trail(OriPlayer oPlayer, int trailCount) {
+      if (trailCount < 1) {
+        throw new System.ArgumentOutOfRangeException(nameof(trailCount), "Expected value of 1 or greater.");
       }
-      time = 26;
-
-      effect = SpriteEffects.None;
-      if (player.direction == -1) {
-        effect |= SpriteEffects.FlipHorizontally;
+      trails = new TrailSegment[trailCount];
+      int i = 0;
+      while (i < trailCount) {
+        trails[i++] = new TrailSegment(oPlayer);
       }
-      if (player.gravDir == -1) {
-        effect |= SpriteEffects.FlipVertically;
+    }
+
+    private int Next {
+      get {
+        index = (index + 1) % trails.Length;
+        return index;
       }
     }
 
     /// <summary>
-    /// Decreases Alpha by a fixed amount.
+    /// All <see cref="TrailSegment"/>s in this <see cref="Trail"/>.
     /// </summary>
-    public void Tick() {
-      if (time > 0) {
-        time--;
+    internal readonly TrailSegment[] trails;
+
+    /// <summary>
+    /// Current <see cref="trails"/> index. Used for <see cref="TrailSegment.Reset"/>.
+    /// </summary>
+    private int index = 0;
+
+    /// <summary>
+    /// Call <see cref="TrailSegment.Tick"/> on each <see cref="TrailSegment"/>.
+    /// <para>This keeps the opacity of the trail appearing consistent.</para>
+    /// </summary>
+    public void UpdateTrails() {
+      foreach (var trail in trails) {
+        trail.Tick();
       }
     }
 
     /// <summary>
-    /// Gets the Trail <see cref="DrawData"/> for this <see cref="OriPlayer"/>.
+    /// Adds all <see cref="Terraria.DataStructures.DrawData"/> from this trail to <see cref="Main.playerDrawData"/>.
     /// </summary>
-    public DrawData GetDrawData() {
-      var pos = position - Main.screenPosition;
-      var frame = OriPlayer.TileToPixel(tile);
-      var rect = new Rectangle(frame.X, frame.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight);
-      var alpha = startAlpha * (time / 26f) - 0.1f * (26 - time);
-      var color = oPlayer.SpriteColorPrimary * alpha;
-
-      return new DrawData(OriTextures.Instance.Trail, pos, rect, color, 0, Origin, 1, effect, 0);
+    public void AddTrailDrawDataToMain() {
+      foreach (var trail in trails) {
+        Main.playerDrawData.Add(trail.GetDrawData());
+      }
     }
+
+    /// <summary>
+    /// Calls <see cref="TrailSegment.Reset"/> on the next trail.
+    /// </summary>
+    internal void ResetNextTrail() => trails[Next].Reset();
   }
 }
