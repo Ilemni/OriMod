@@ -14,6 +14,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal Ability(AbilityManager abilities) {
       oPlayer = abilities.oPlayer;
+      player = oPlayer.player;
     }
 
     /// <summary>
@@ -29,7 +30,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// The <see cref="Player"/> this ability belongs to.
     /// </summary>
-    public Player player => oPlayer.player;
+    public readonly Player player;
 
     /// <summary>
     /// The <see cref="AbilityManager"/> this ability belongs to.
