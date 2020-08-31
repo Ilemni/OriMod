@@ -40,15 +40,16 @@ namespace OriMod.Abilities {
     private static List<short> _cannotBashNPC;
     private static List<short> _cannotBashProj;
 
-    private static int BashDamage => 15;
     private static float BashPlayerStrength => Config.BashStrength;
     private static float BashNpcStrength => BashPlayerStrength * 0.8f;
     private static float BashRange => 48f;
     private static int MinBashDuration => 30;
     private static int MaxBashDuration => 85;
+    private static int BashDamage => 15 + (int)OriWorld.GlobalUpgrade * 9;
 
     private Vector2 playerStartPos;
     private Vector2 targetStartPos;
+    public float bashAngle { get; private set; }
 
     /// <summary>
     /// <see cref="OriNPC"/> or <see cref="OriProjectile"/> that this player is Bashing.
@@ -71,6 +72,7 @@ namespace OriMod.Abilities {
         var isNPC = r.ReadBoolean();
         var id = r.ReadUInt16();
         SetTarget(isNPC, id);
+        bashAngle = r.ReadSingle();
       }
     }
 
@@ -82,6 +84,7 @@ namespace OriMod.Abilities {
         }
         packet.Write(BashEntity is NPC);
         packet.Write((ushort)(BashEntity?.whoAmI ?? ushort.MaxValue));
+        packet.Write(bashAngle);
       }
     }
 
@@ -170,13 +173,12 @@ namespace OriMod.Abilities {
 
     private void End() {
       player.pulley = false;
-      float bashAngle = player.AngleFrom(Main.MouseWorld);
       oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.5f);
       oPlayer.UnrestrictedMovement = true;
 
       var bashVector = new Vector2((float)(0 - Math.Cos(bashAngle)), (float)(0 - Math.Sin(bashAngle)));
-      Vector2 playerBashVector = bashVector * BashPlayerStrength;
-      Vector2 npcBashVector = -bashVector * BashNpcStrength;
+      Vector2 playerBashVector = -bashVector * BashPlayerStrength;
+      Vector2 npcBashVector = bashVector * BashNpcStrength;
       player.velocity = playerBashVector;
       player.position += playerBashVector * 3;
       BashEntity.velocity = npcBashVector;
@@ -189,8 +191,7 @@ namespace OriMod.Abilities {
 
       BashTarget.IsBashed = false;
       if (Level >= 2 && BashEntity is NPC npc) {
-        int damage = BashDamage + (int)OriWorld.GlobalUpgrade * 9;
-        player.ApplyDamageToNPC(npc, damage, 0, 1, false);
+        player.ApplyDamageToNPC(npc, BashDamage, 0, 1, false);
       }
 
       PutOnCooldown();
@@ -205,11 +206,15 @@ namespace OriMod.Abilities {
         player.velocity = Vector2.Zero;
         player.gravity = 0;
       }
-      if (BashEntity is NPC npc) {
-        npc.netUpdate2 = true;
-      }
-      else if (BashEntity is Projectile projectile) {
-        projectile.netUpdate2 = true;
+      if (IsLocal) {
+        netUpdate = true;
+        if (BashEntity is NPC npc) {
+          npc.netUpdate2 = true;
+        }
+        else if (BashEntity is Projectile projectile) {
+          projectile.netUpdate2 = true;
+        }
+        bashAngle = BashEntity.AngleTo(Main.MouseWorld);
       }
       // Allow only quick heal and quick mana
       player.controlJump = false;
