@@ -19,7 +19,6 @@ namespace OriMod.Networking {
         byte id = reader.ReadByte();
         changes.Add(id);
         fromPlayer.abilities[id].PreReadPacket(reader);
-        fromPlayer.abilities[id].Update();
       }
       if (Main.netMode == NetmodeID.Server) {
         SendAbilityState(-1, fromWho, changes);

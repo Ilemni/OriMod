@@ -95,7 +95,6 @@ namespace OriMod.Abilities {
     /// <param name="preserveCurrentTime">Whether to preserve or reset <see cref="CurrentTime"/>. Resets by default.</param>
     public void SetState(State state, bool preserveCurrentTime = false) {
       if (state != AbilityState) {
-        //Main.NewText($"{GetType().Name}: {state}");
         netUpdate = true;
         AbilityState = state;
         if (!preserveCurrentTime) {

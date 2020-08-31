@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Terraria;
-using Terraria.ID;
 using OriMod.Networking;
 using Terraria.ModLoader.IO;
 

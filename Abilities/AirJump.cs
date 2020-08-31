@@ -1,5 +1,7 @@
-using OriMod.Animations;
+using System.IO;
 using OriMod.Utilities;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -12,7 +14,7 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 3;
 
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !Active && !abilities.bash.InUse && !player.mount.Active && !abilities.wallChargeJump.InUse;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !player.mount.Active && !abilities.bash.InUse && !abilities.wallChargeJump.InUse;
 
     private static float JumpVelocity => 8.8f;
     private static int EndDuration => AnimationHandler.Instance.PlayerAnim["AirJump"].duration;
@@ -20,6 +22,20 @@ namespace OriMod.Abilities {
 
     internal ushort currentCount;
     private sbyte gravityDirection;
+
+    protected override void ReadPacket(BinaryReader r) {
+      currentCooldown = r.ReadUInt16();
+      gravityDirection = r.ReadSByte();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
+    }
+
+    protected override void WritePacket(ModPacket packet) {
+      packet.Write(currentCount);
+      packet.Write(gravityDirection);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
+    }
 
     private readonly RandomChar rand = new RandomChar();
 
@@ -39,6 +55,9 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
+      if (!IsLocal) {
+        return;
+      }
       if (CanUse && oPlayer.justPressedJumped) {
         if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
           SetState(State.Active);
