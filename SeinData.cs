@@ -1,44 +1,53 @@
 using Microsoft.Xna.Framework;
 using System.Reflection;
 using System.Collections.Generic;
+using Terraria.ID;
 
 namespace OriMod {
-  public class SeinData {
+  public sealed class SeinData {
     static SeinData() => OriMod.OnUnload += Unload;
+
+    private SeinData() { }
 
     /// <summary>
     /// List of all <see cref="SeinData"/>s in the mod.
     /// </summary>
-    internal static List<SeinData> All { get; private set; }
+    public static SeinData[] All { get; private set; }
 
     /// <summary>
     /// Loads all Sein variants. Sein stats are hardcoded into this method.
-    /// <para>The only benefit to doing it this way over overrides is that the previous Sein level is automatically used when values are not provided.</para>
     /// </summary>
+    /// <remarks>
+    /// Okay, no matter how many times I try to refactor this, I don't think it can be organized any better.
+    /// <para>1. Memory is always only ever using 8 <see cref="SeinData"/>s, or however many is in <see cref="All"/>. Not too big a deal though.</para>
+    /// <para>2. Readability. I feel that this is the best setup for a few reasons.</para>
+    /// <para>2a. It's all in one file rather than multiple derived classes for easy comparison.</para>
+    /// <para>2b. Only the changes/upgrades are shown, rather than having redundant data. The same could be accomplished with inheritence, but I'd rather not have 8 levels of it.</para>
+    /// </remarks>
     internal static void Load() {
       var defaultSein = new SeinData();
       var fields = typeof(SeinData).GetFields();
 
+      var list = new List<SeinData>();
       void AddNewSein(SeinData newSein) {
-        var lastSein = All.Count == 0 ?
+        var lastSein = list.Count == 0 ?
           new SeinData() :
-          All[All.Count - 1];
+          list[list.Count - 1];
 
         foreach (FieldInfo field in fields) {
           var defVal = field.GetValue(defaultSein);
           var oldVal = field.GetValue(lastSein);
           var newVal = field.GetValue(newSein);
 
-          // If value is unspecified, use the one from the previous Sein upgrade
+          // If value is specified in constructor, use it
+          // If value is unspecified, use value of previous upgrade
           if (newVal.ToString() == defVal.ToString()) {
             newVal = oldVal;
           }
           field.SetValue(newSein, newVal);
         }
-        All.Add(newSein);
+        list.Add(newSein);
       }
-
-      All = new List<SeinData>();
 
       // Tier 1 (Silver)
       AddNewSein(new SeinData());
@@ -47,11 +56,13 @@ namespace OriMod {
       // Increased shots per burst
       // Max damage per burst: 15
       AddNewSein(new SeinData {
-        rarity = 2,
+        rarity = ItemRarityID.Green,
         value = 3000,
         color = new Color(108, 92, 172),
+
         damage = 15,
-        shotsPerBurst = 3,
+        targets = 1,
+        bursts = 3,
         projectileSpeedStart = 7f,
         homingIncreaseRate = 0.045f,
         dustScale = 1.3f,
@@ -62,12 +73,13 @@ namespace OriMod {
       // 2 targets
       // Max damage per burst: 42
       AddNewSein(new SeinData {
-        rarity = 3,
+        rarity = ItemRarityID.Orange,
         value = 10000,
         color = new Color(240, 0, 0, 194),
+
         damage = 21,
         targets = 2,
-        maxShotsPerVolley = 2,
+        maxShotsAtOnce = 2,
         randDegrees = 100,
         projectileSpeedStart = 10.5f,
         projectileSpeedIncreaseRate = 0.65f,
@@ -81,12 +93,13 @@ namespace OriMod {
       // 2 targets, 2 shots to primary, 3 shots max (rather than 4)
       // Max damage per burst: 81
       AddNewSein(new SeinData {
-        rarity = 4,
+        rarity = ItemRarityID.LightRed,
         value = 25000,
         color = new Color(185, 248, 248),
+
         damage = 27,
         shotsToPrimaryTarget = 2,
-        maxShotsPerVolley = 3,
+        maxShotsAtOnce = 3,
         randDegrees = 60,
         projectileSpeedStart = 12.5f,
         homingIncreaseRate = 0.05f,
@@ -99,12 +112,13 @@ namespace OriMod {
       // 3 targets, 2 shots to primary, 4 shots max (rather than 5)
       // Max damage per burst: 132
       AddNewSein(new SeinData {
-        rarity = 5,
+        rarity = ItemRarityID.Pink,
         value = 50000,
         color = new Color(255, 228, 160),
+
         damage = 33,
         targets = 3,
-        maxShotsPerVolley = 4,
+        maxShotsAtOnce = 4,
         homingIncreaseDelay = 17,
         targetMaxDist = 440f,
         dustScale = 2.2f,
@@ -115,15 +129,16 @@ namespace OriMod {
       // 3 targets, 3 shots to primary, 5 shots max
       // Max damage per burst: 195
       AddNewSein(new SeinData {
-        rarity = 8,
+        rarity = ItemRarityID.Yellow,
         value = 100000,
         color = new Color(0, 180, 174, 210),
+
         damage = 39,
         shotsToPrimaryTarget = 3,
-        maxShotsPerVolley = 5,
-        minCooldown = 10f,
-        shortCooldown = 34f,
-        longCooldown = 52f,
+        maxShotsAtOnce = 5,
+        cooldownMin = 10f,
+        cooldownShort = 34f,
+        cooldownLong = 52f,
         targetThroughWallDist = 224f,
         homingIncreaseRate = 0.0625f,
         projectileSpeedStart = 14.5f,
@@ -138,14 +153,15 @@ namespace OriMod {
       // 4 targets, 3 shots to primary, 2 to others, 6 shots max (rather than 9)
       // Max damage per burst: 282
       AddNewSein(new SeinData {
-        rarity = 9,
+        rarity = ItemRarityID.Cyan,
         value = 250000,
         color = new Color(78, 38, 102),
+
         damage = 47,
         targets = 4,
         shotsToPrimaryTarget = 3,
         shotsPerTarget = 2,
-        maxShotsPerVolley = 9,
+        maxShotsAtOnce = 9,
         homingIncreaseRate = 0.025f,
         projectileSpeedStart = 16f,
         targetMaxDist = 510f,
@@ -158,15 +174,16 @@ namespace OriMod {
       // 5 targets, 4 shots to primary, 2 shots to others, 10 shots max (rather than 12)
       // Max damage per burst: 530 (too high?)
       AddNewSein(new SeinData {
-        rarity = 10,
+        rarity = ItemRarityID.Red,
         value = 500000,
         color = new Color(220, 220, 220),
+
         damage = 53,
-        shotsPerBurst = 4,
+        bursts = 4,
         targets = 6,
         shotsToPrimaryTarget = 4,
-        maxShotsPerVolley = 10,
-        longCooldown = 55f,
+        maxShotsAtOnce = 10,
+        cooldownLong = 55f,
         homingStrengthStart = 0.05f,
         homingIncreaseDelay = 15,
         projectileSpeedStart = 20f,
@@ -178,6 +195,8 @@ namespace OriMod {
         dustScale = 3.35f,
         lightStrength = 2.5f,
       });
+
+      All = list.ToArray();
     }
 
     private static void Unload() {
@@ -185,6 +204,7 @@ namespace OriMod {
     }
 
     #region Stats
+    #region Stats responsible for DPS
     /// <summary>
     /// Damage of Spirit Flame.
     /// </summary>
@@ -196,9 +216,9 @@ namespace OriMod {
     public int targets = 1;
 
     /// <summary>
-    /// Maximum times the minion can fire with a delay of <see cref="minCooldown"/> before having a delay of <see cref="longCooldown"/>.
+    /// Maximum times the minion can fire with a delay of <see cref="cooldownMin"/> before having a delay of <see cref="cooldownLong"/>.
     /// </summary>
-    public int shotsPerBurst = 2;
+    public int bursts = 2;
 
     /// <summary>
     /// Maximum number of shots that can be fired at each target.
@@ -213,22 +233,23 @@ namespace OriMod {
     /// <summary>
     /// Maximum number of shots that can be fired at once.
     /// </summary>
-    public int maxShotsPerVolley = 1;
+    public int maxShotsAtOnce = 1;
 
     /// <summary>
-    /// Delay between each shot in <see cref="shotsPerBurst"/>.
-    /// /summary>
-    public float minCooldown = 12f;
-
-    /// <summary>
-    /// Shortest time to wait during <see cref="shotsPerBurst"/> to reset burst count.
+    /// Delay between each shot in <see cref="bursts"/>.
     /// </summary>
-    public float shortCooldown = 24f;
+    public float cooldownMin = 12f;
 
     /// <summary>
-    /// Delay between each series of shots, incurred when shots reaches <see cref="shotsPerBurst"/>.
+    /// Shortest time to wait during <see cref="bursts"/> to reset burst count.
     /// </summary>
-    public float longCooldown = 40f;
+    public float cooldownShort = 24f;
+
+    /// <summary>
+    /// Delay between each series of shots, incurred when shots reaches <see cref="bursts"/>.
+    /// </summary>
+    public float cooldownLong = 40f;
+    #endregion
 
     /// <summary>
     /// Maximum angle that fired Spirit Flames will be away from the target.
@@ -280,10 +301,10 @@ namespace OriMod {
     /// </summary>
     internal int projectileSpeedIncreaseDelay = 10;
 
-    internal int minionWidth = 10;
-    internal int minionHeight = 11;
-    internal int flameWidth = 12;
-    internal int flameHeight = 12;
+    internal int seinWidth = 10;
+    internal int seinHeight = 11;
+    internal int spiritFlameWidth = 12;
+    internal int spiritFlameHeight = 12;
 
     /// <summary>
     /// The size of the dust trail emitted from Spirit Flame.
@@ -302,7 +323,7 @@ namespace OriMod {
 
     /// <summary>
     /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights.
-    /// /summary>
+    /// </summary>
     internal Color color;
 
     /// <summary>

@@ -29,19 +29,13 @@ namespace OriMod.Projectiles.Minions {
     }
     private Vector2 _lastTargetPos;
 
+    private SeinData data;
+
     /// <summary>
     /// Homing strength of the projectile.
     /// <para>0 = no homing; 1 = full homing</para>
     /// </summary>
     private float lerp;
-    /// <summary>
-    /// Rate that <see cref="lerp"/> will increase at.
-    /// </summary>
-    private float lerpRate;
-    /// <summary>
-    /// Total time before the projectile homing can increase.
-    /// </summary>
-    private int lerpDelay;
     /// <summary>
     /// Elapsed time for <see cref="lerpDelay"/>
     /// </summary>
@@ -52,24 +46,11 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     private float speed;
     /// <summary>
-    /// Rate that <see cref="speed"/> will increase.
-    /// </summary>
-    private float acceleration;
-    /// <summary>
-    /// Total time before the projectile speed can increase.
-    /// </summary>
-    private int accelerationDelay;
-    /// <summary>
     /// Elapsed time for <see cref="accelerationDelay"/>.
     /// </summary>
     private int currentAccelerationDelay;
 
     private int dustType;
-    private int dustWidth;
-    private int dustHeight;
-    private float dustScale;
-    private Color color;
-    private float lightStrength;
 
     public override string Texture => "OriMod/Projectiles/Minions/SpiritFlame";
 
@@ -86,38 +67,29 @@ namespace OriMod.Projectiles.Minions {
       projectile.ignoreWater = true;
       projectile.tileCollide = false;
       projectile.timeLeft = 45;
-      dustWidth = 10;
-      dustHeight = 10;
       Initialize();
     }
 
     /// <summary>
-    /// Type for <see cref="SpiritFlame"/>. Determines initialized values by using <see cref="OriMod.SeinDatas"/>.
+    /// Type for <see cref="SpiritFlame"/>. Determines initialized values by using <see cref="SeinData.All"/>.
     /// </summary>
     protected abstract byte SpiritFlameType { get; }
 
     private void Initialize() {
       var type = SpiritFlameType;
-      SeinData data = SeinData.All[type - 1];
+      data = SeinData.All[type - 1];
 
       projectile.knockBack = data.knockback;
       lerp = data.homingStrengthStart;
-      lerpRate = data.homingIncreaseRate;
-      lerpDelay = data.homingIncreaseDelay;
       speed = data.projectileSpeedStart;
-      acceleration = data.projectileSpeedIncreaseRate;
-      accelerationDelay = data.projectileSpeedIncreaseDelay;
-      projectile.width = data.flameWidth;
-      projectile.height = data.flameHeight;
-      dustScale = data.dustScale;
+      projectile.width = data.spiritFlameWidth;
+      projectile.height = data.spiritFlameHeight;
       dustType = ModContent.DustType<Dusts.SpiritFlameDustTrail>();
-      color = data.color;
-      lightStrength = data.lightStrength * 0.6f;
     }
 
     private void CreateDust() {
-      Dust dust = Main.dust[Dust.NewDust(projectile.position, dustWidth, dustHeight, dustType)];
-      dust.scale = dustScale;
+      Dust dust = Main.dust[Dust.NewDust(projectile.position, 10, 10, dustType)];
+      dust.scale = data.dustScale;
       if (projectile.velocity == Vector2.Zero) {
         dust.velocity.Y -= 1f;
       }
@@ -138,7 +110,7 @@ namespace OriMod.Projectiles.Minions {
     /// <param name="currentValue">Value to increase if enough time has passed.</param>
     /// <param name="maxValue">Maximum value <paramref name="currentValue"/> can be.</param>
     /// <param name="valueRate">Rate that <paramref name="currentValue"/> will increase by.</param>
-    private void TickTimerOrValue(ref int currentTime, int maxTime, ref float currentValue, float maxValue, float valueRate) {
+    private static void TickTimerOrValue(ref int currentTime, int maxTime, ref float currentValue, float maxValue, float valueRate) {
       if (currentTime < maxTime) {
         currentTime++;
       }
@@ -151,7 +123,7 @@ namespace OriMod.Projectiles.Minions {
     }
 
     public override void AI() {
-      Lighting.AddLight(projectile.Center, color.ToVector3() * lightStrength);
+      Lighting.AddLight(projectile.Center, data.color.ToVector3() * data.lightStrength);
       CreateDust();
 
       // Update target position until it dies
@@ -170,10 +142,10 @@ namespace OriMod.Projectiles.Minions {
       }
 
       // Increase homing strength over time
-      TickTimerOrValue(ref currentLerpDelay, lerpDelay, ref lerp, 1, lerpRate);
+      TickTimerOrValue(ref currentLerpDelay, data.homingIncreaseDelay, ref lerp, 1, data.homingIncreaseRate);
 
       // Increase speed over time
-      TickTimerOrValue(ref currentAccelerationDelay, accelerationDelay, ref speed, 30, acceleration);
+      TickTimerOrValue(ref currentAccelerationDelay, data.projectileSpeedIncreaseDelay, ref speed, 30, data.projectileSpeedIncreaseRate);
 
       projectile.velocity = Vector2.Lerp(projectile.velocity.Normalized(), (LastTargetPos - projectile.Center).Normalized(), lerp) * speed;
     }

@@ -23,7 +23,7 @@ namespace OriMod.Items {
     protected abstract int GetShootType();
 
     /// <summary>
-    /// Type used for <see cref="Projectiles.Minions.Sein"/>. Values are indices to <see cref="OriMod.SeinDatas"/>.
+    /// Type used for <see cref="Projectiles.Minions.Sein"/>. Values are indices to <see cref="SeinData.All"/>.
     /// </summary>
     protected abstract int SeinType { get; }
 

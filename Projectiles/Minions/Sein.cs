@@ -28,7 +28,7 @@ namespace OriMod.Projectiles.Minions {
     }
 
     /// <summary>
-    /// Type used for <see cref="Sein"/>. Values are indices to <see cref="OriMod.SeinDatas"/>.
+    /// Type used for <see cref="Sein"/>. Values are indices to <see cref="SeinData.All"/>.
     /// </summary>
     protected abstract byte SeinType { get; }
 
@@ -57,27 +57,16 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     private void Initialize() {
       var type = SeinType;
-      SeinData u = SeinData.All[type - 1];
-      maxShotsPerBurst = u.shotsPerBurst;
-      maxShotsPerVolley = u.maxShotsPerVolley;
-      shotsToTarget = u.shotsPerTarget;
-      shotsToPrimaryTarget = u.shotsToPrimaryTarget;
-      maxTargets = u.targets;
-      minCooldown = u.minCooldown;
-      shortCooldown = u.shortCooldown;
-      longCooldown = u.longCooldown;
-      randDegrees = u.randDegrees;
-      maxTargetDist = u.targetMaxDist;
-      if (maxDistFromPlayer < maxTargetDist * 0.8f) {
-        maxDistFromPlayer = maxTargetDist * 0.8f;
+      data = SeinData.All[type - 1];
+      
+      if (maxDistFromPlayer < data.targetMaxDist * 0.8f) {
+        maxDistFromPlayer = data.targetMaxDist * 0.8f;
       }
-      maxTargetThroughWallDist = u.targetThroughWallDist;
-      projectile.width = u.minionWidth;
-      projectile.height = u.minionHeight;
+
+      projectile.width = data.seinWidth;
+      projectile.height = data.seinHeight;
 
       spiritFlameType = mod.ProjectileType("SpiritFlame" + type);
-      color = u.color;
-      lightStrength = u.lightStrength;
 
       spiritFlameSound =
         type <= 2 ? "" :
@@ -85,6 +74,8 @@ namespace OriMod.Projectiles.Minions {
         type <= 6 ? "LevelC" :
         type <= 8 ? "LevelD" : "";
     }
+
+    private SeinData data;
 
     /// <summary>
     /// Whether the AI should automatically fire projectiles or not.
@@ -116,46 +107,6 @@ namespace OriMod.Projectiles.Minions {
     private int spiritFlameType;
 
     /// <summary>
-    /// Number of shots that can be used before triggering <see cref="longCooldown"/>. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private int maxShotsPerBurst;
-
-    /// <summary>
-    /// Max number of shots that can be fired at once. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private int maxShotsPerVolley;
-
-    /// <summary>
-    /// Max number of shots that can be fired at a single target. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private int shotsToTarget;
-
-    /// <summary>
-    /// Max number of shots that can be fired at the first target. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private int shotsToPrimaryTarget;
-
-    /// <summary>
-    /// Maximum number of targets that can be fired upon at once. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private int maxTargets;
-
-    /// <summary> 
-    /// Shortest cooldown between individual shots. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private float minCooldown;
-
-    /// <summary>
-    /// Duration a player can optionally wait to avoid incurring <see cref="longCooldown"/>. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private float shortCooldown;
-
-    /// <summary>
-    /// Cooldown between bursts of shots dictated by <see cref="maxShotsPerBurst"/>. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private float longCooldown;
-
-    /// <summary>
     /// Speed of the created <see cref="SpiritFlame"/>
     /// </summary>
     private static float ShootSpeed => 50f;
@@ -164,31 +115,6 @@ namespace OriMod.Projectiles.Minions {
     /// Damage multiplier for when the player manually fires Spirit Flame.
     /// </summary>
     private static float ManualShootDamageMultiplier => 1.4f;
-
-    /// <summary>
-    /// Degrees from direction to target NPC that a Spirit Flame can be shot at. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private int randDegrees;
-
-    /// <summary>
-    /// Range from player that NPCs can be targeted. Walls may obstruct targeting. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private float maxTargetDist;
-
-    /// <summary>
-    /// Range from player that NPCs can be targeted, ignoring walls. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private float maxTargetThroughWallDist;
-
-    /// <summary>
-    /// Color used for lighting and sprite drawing. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private Color color;
-
-    /// <summary>
-    /// Brightness of light created by this minion. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private float lightStrength;
 
     /// <summary>
     /// General position that Sein hovers around. This is a general location, and not precisely where the minion moves.
@@ -450,24 +376,26 @@ namespace OriMod.Projectiles.Minions {
       Vector2 target = Main.npc[targetIDs[0]].position;
       Vector2 offset = player.Center - target;
 
-      // Cannot reach targeted NPC
-      float dist = offset.LengthSquared();
-      if (dist > maxTargetDist * maxTargetDist) {
+      float distanceSquared = offset.LengthSquared();
+      var maxDistanceSquared = data.targetMaxDist * data.targetMaxDist;
+      
+      //Cannot reach target NPC
+      if (distanceSquared > maxDistanceSquared) {
         if (targetIDs.Count == 1 || player.HasMinionAttackTargetNPC) {
           SetHoverPositionToIdle();
           return;
         }
         target = Main.npc[targetIDs[1]].position;
         offset = player.Center - target;
-        dist = offset.LengthSquared();
+        distanceSquared = offset.LengthSquared();
         // Cannot reach closest NPC
-        if (dist > maxTargetDist * maxTargetDist) {
+        if (distanceSquared > maxDistanceSquared) {
           SetHoverPositionToIdle();
           return;
         }
       }
-      baseHoverPosition =
-        dist + MinDistFromNPC > maxDistFromPlayer
+      bool inRange = distanceSquared + MinDistFromNPC * MinDistFromNPC > maxDistFromPlayer * maxDistFromPlayer;
+      baseHoverPosition = inRange
           ? player.Center - offset.Normalized() * maxDistFromPlayer
           : target + offset.Normalized() * MinDistFromNPC;
       UpdateHoverPosition();
@@ -499,7 +427,7 @@ namespace OriMod.Projectiles.Minions {
       if (npc != null) {
         // Fire at enemy NPC
         shootVel = npc.position - projectile.Center;
-        rotation = Main.rand.Next(-randDegrees, randDegrees) / 180f * (float)Math.PI;
+        rotation = Main.rand.Next(-data.randDegrees, data.randDegrees) / 180f * (float)Math.PI;
       }
       else {
         // Fire at air
@@ -547,7 +475,7 @@ namespace OriMod.Projectiles.Minions {
       var player = Main.player[projectile.owner];
       SeinMovement();
       UpdateTargetsPos();
-      Lighting.AddLight(projectile.Center, color.ToVector3() * lightStrength);
+      Lighting.AddLight(projectile.Center, data.color.ToVector3() * data.lightStrength);
 
       if (player.whoAmI != Main.myPlayer) {
         return;
@@ -565,7 +493,7 @@ namespace OriMod.Projectiles.Minions {
         NPC npc = Main.npc[player.MinionAttackTargetNPC];
         if (npc.CanBeChasedBy()) {
           float dist = Vector2.Distance(player.Center, npc.Center);
-          if (dist < maxTargetThroughWallDist || dist < maxTargetDist && inSight(npc)) {
+          if (dist < data.targetThroughWallDist || dist < data.targetMaxDist && inSight(npc)) {
             // Worms...
             if (npc.aiStyle == 6 || npc.aiStyle == 37) { // TODO: Sort targeted worm piece by closest rather than whoAmI
               wormIDs.Add((byte)npc.ai[3]);
@@ -577,12 +505,12 @@ namespace OriMod.Projectiles.Minions {
       }
 
       // Set target based on different enemies, if they can be hit
-      if (!hasTarget || maxTargets < 1) {
+      if (!hasTarget) {
         for (int i = 0; i < Main.maxNPCs; i++) {
           NPC npc = Main.npc[i];
           if (npc.CanBeChasedBy()) {
             float dist = Vector2.Distance(player.Center, npc.Center);
-            if (dist < maxTargetThroughWallDist || dist < maxTargetDist && inSight(npc)) {
+            if (dist < data.targetThroughWallDist || dist < data.targetMaxDist && inSight(npc)) {
               // Worms...
               if (npc.aiStyle == 6 || npc.aiStyle == 37) { // TODO: Sort targeted worm piece by closest rather than whoAmI
                 if (wormIDs.Contains((byte)npc.ai[3])) {
@@ -627,18 +555,18 @@ namespace OriMod.Projectiles.Minions {
         targetIDs.Clear();
         if (mainTargetNPC?.active ?? false) {
           targetIDs.Add((byte)mainTargetNPC.whoAmI);
-          targetIDs.AddRange(newTargetIDs.GetRange(0, Math.Min(newTargetIDs.Count, maxTargets - 1)));
+          targetIDs.AddRange(newTargetIDs.GetRange(0, Math.Min(newTargetIDs.Count, data.targets - 1)));
         }
         else {
-          targetIDs.AddRange(newTargetIDs.GetRange(0, Math.Min(newTargetIDs.Count, maxTargets)));
+          targetIDs.AddRange(newTargetIDs.GetRange(0, Math.Min(newTargetIDs.Count, data.targets)));
         }
       }
       #endregion
 
       #region Cooldown
-      float minCooldown = this.minCooldown * (AutoFire ? 1.5f : 1);
-      float shortCooldown = this.shortCooldown * (AutoFire ? 1.5f : 1);
-      float longCooldown = this.longCooldown * (AutoFire ? 2f : 1);
+      float minCooldown = data.cooldownMin * (AutoFire ? 1.5f : 1);
+      float shortCooldown = data.cooldownShort * (AutoFire ? 1.5f : 1);
+      float longCooldown = data.cooldownLong * (AutoFire ? 2f : 1);
       if (Cooldown > 0) {
         Cooldown++;
         if (Cooldown > longCooldown) {
@@ -650,15 +578,10 @@ namespace OriMod.Projectiles.Minions {
 
       #region Firing
       // Spirit Flame
-      bool attemptFire;
-      if (AutoFire) {
-        attemptFire = hasTarget;
-      }
-      else {
-        attemptFire = PlayerInput.Triggers.JustPressed.MouseLeft && !Main.LocalPlayer.mouseInterface;
-      }
-
-      if (attemptFire && (Cooldown == 0 || Cooldown > minCooldown && currentShotsFired < maxShotsPerBurst)) {
+      // Local checks are fine; this code only runs on the local player
+      bool attemptFire = AutoFire ? hasTarget : player.controlUseItem && !Main.LocalPlayer.mouseInterface;
+      
+      if (attemptFire && (Cooldown == 0 || Cooldown > minCooldown && currentShotsFired < data.bursts)) {
         if (Cooldown > shortCooldown) {
           currentShotsFired = 1;
         }
@@ -671,7 +594,7 @@ namespace OriMod.Projectiles.Minions {
 
         if (!hasTarget) {
           // Fire at air - nothing to target
-          for (int i = 0; i < shotsToPrimaryTarget; i++) {
+          for (int i = 0; i < data.shotsToPrimaryTarget; i++) {
             Fire(null);
           }
           return;
@@ -679,13 +602,13 @@ namespace OriMod.Projectiles.Minions {
 
         int usedShots = 0;
         int loopCount = 0;
-        while (loopCount < shotsToPrimaryTarget) {
+        while (loopCount < data.shotsToPrimaryTarget) {
           for (int t = 0; t < targetIDs.Count; t++) {
             bool isPrimary = t == 0;
-            int shots = isPrimary ? shotsToPrimaryTarget : shotsToTarget;
+            int shots = isPrimary ? data.shotsToPrimaryTarget : data.shotsPerTarget;
             if (loopCount < shots) {
               Fire(Main.npc[targetIDs[t]]);
-              if (++usedShots >= maxShotsPerVolley) {
+              if (++usedShots >= data.maxShotsAtOnce) {
                 break;
               }
             }
@@ -709,7 +632,7 @@ namespace OriMod.Projectiles.Minions {
       var tex = OriTextures.Instance.Sein.texture;
       var orig = new Vector2(tex.Width, tex.Width) * 0.5f;
       for (int i = 0; i < 3; i++) {
-        var color = this.color;
+        var color = data.color;
         color.A = 255;
         if (color == Color.Black) {
           color = Color.White;
