@@ -39,7 +39,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (CanUse && player.controlJump) {
+      if (CanUse && oPlayer.justJumped) {
         if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
           SetState(State.Active);
           if (abilities.dash.Active) {

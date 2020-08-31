@@ -13,7 +13,7 @@ namespace OriMod.Abilities {
 
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !abilities.wallJump.InUse && !abilities.wallChargeJump.InUse;
 
-    internal bool IsCharging => Active && (wallDirection == 1 && player.controlLeft || wallDirection == -1 && player.controlRight);
+    internal bool IsCharging { get; private set; }
 
     internal sbyte wallDirection;
 
@@ -48,6 +48,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
+      IsCharging = Active && (wallDirection == 1 && player.controlLeft || wallDirection == -1 && player.controlRight);
       if (!InUse) {
         if (CanUse && IsLocal && OriMod.ClimbKey.Current) {
           SetState(State.Active);

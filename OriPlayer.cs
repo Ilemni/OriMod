@@ -651,6 +651,10 @@ namespace OriMod {
       abilities.Load(tag);
     }
 
+    public override void ProcessTriggers(TriggersSet triggersSet) {
+      justJumped = PlayerInput.Triggers.JustPressed.Jump;
+    }
+
     public override void PostUpdateMiscEffects() {
       if (player.HasBuff(BuffID.TheTongue)) {
         abilities.DisableAllAbilities();
