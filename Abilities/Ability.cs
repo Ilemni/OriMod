@@ -41,14 +41,14 @@ namespace OriMod.Abilities {
     public bool IsLocal => oPlayer.IsLocal;
 
     /// <summary>
-    /// Determines if the ability has been unlocked by the player. Currently unimplemented.
+    /// Determines if the ability has been unlocked by the player. This is <c>true</c> if <see cref="Level"/> is at least <c>1</c>.
     /// </summary>
-    public virtual bool Unlocked => Level > 0;
+    public bool Unlocked => Level > 0;
 
     /// <summary>
     /// Current level of the ability. Unless an ability is always unlocked, if this is 0, the ability is not unlocked.
     /// </summary>
-    public virtual byte Level { get; set; } = 1;
+    public abstract byte Level { get; }
 
     #region General Properties
     /// <summary>

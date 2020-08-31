@@ -227,6 +227,14 @@ namespace OriMod.Abilities {
       }
     }
 
+    public void UnlockAllAbilities() {
+      foreach (var ability in this) {
+        if (ability is ILevelable levelable) {
+          levelable.Level = levelable.MaxLevel;
+        }
+      }
+    }
+
     /// <summary>
     /// Save all abilities to the given <see cref="TagCompound"/>.
     /// </summary>
