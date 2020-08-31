@@ -19,19 +19,19 @@ namespace OriMod.Abilities {
     protected override int Cooldown => (int)(Config.WCJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
 
-    internal bool CanCharge => base.CanUse && abilities.climb.IsCharging;
-    private int MaxCharge => 35;
-    private int Duration => Speeds.Length - 1;
+    private static int MaxCharge => 35;
+    private static int Duration => Speeds.Length - 1;
     private static float[] Speeds => _speeds ?? (_speeds = new float[20] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
     });
     private static float[] _speeds;
-    private float SpeedMultiplier => Config.WCJumpSpeedMultipler * 0.5f;
-    private float MaxAngle => Config.WCJumpMaxAngle;
+    private static float SpeedMultiplier => Config.WCJumpSpeedMultipler * 0.5f;
+    private static float MaxAngle => Config.WCJumpMaxAngle;
 
+    internal bool CanCharge => base.CanUse && abilities.climb.IsCharging;
     internal bool Charged => currentCharge >= MaxCharge;
     private int currentCharge;
-    private Vector2 Direction;
+    private Vector2 direction;
 
     public Projectile PlayerHitboxProjectile { get; private set; }
 
@@ -50,13 +50,15 @@ namespace OriMod.Abilities {
       return dir;
     }
 
-    private void StartWallChargeJump() {
+    private void Start() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + randChar.NextNoRepeat(3));
       currentCharge = 0;
       PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
       PutOnCooldown();
-      Direction = GetMouseDirection();
-      player.velocity = Direction * Speeds[0] * SpeedMultiplier;
+      // TODO: multiplayer sync of direction
+      // Currently it is very, very incorrect to use mouse position for multiplayer clients
+      direction = GetMouseDirection();
+      player.velocity = direction * Speeds[0] * SpeedMultiplier;
     }
 
     private void UpdateCharged() {
@@ -67,12 +69,9 @@ namespace OriMod.Abilities {
 
     protected override void UpdateActive() {
       float speed = Speeds[CurrentTime] * SpeedMultiplier;
-      player.velocity = Direction * speed;
+      player.velocity = direction * speed;
       player.direction = Math.Sign(player.velocity.X);
       player.maxFallSpeed = Math.Abs(player.velocity.Y);
-    }
-
-    protected override void UpdateUsing() {
       player.controlJump = false;
     }
 
@@ -84,22 +83,22 @@ namespace OriMod.Abilities {
       TickCooldown();
       if (!Charged && CanCharge) {
         if (currentCharge == 0) {
-          oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+          oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f, localOnly: true);
         }
         currentCharge++;
         if (currentCharge > MaxCharge) {
-          oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+          oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f, localOnly: true);
         }
       }
-      if (CanUse && IsLocal && PlayerInput.Triggers.JustPressed.Jump) {
-        StartWallChargeJump();
+      if (CanUse && player.controlJump) {
+        Start();
         SetState(State.Active);
       }
       else if (Charged) {
         UpdateCharged();
         if (!CanCharge) {
           currentCharge = 0;
-          oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
+          oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f, localOnly: true);
         }
       }
       if (Active) {

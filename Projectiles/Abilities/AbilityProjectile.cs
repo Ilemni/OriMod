@@ -21,7 +21,7 @@ namespace OriMod.Projectiles.Abilities {
     /// <summary>
     /// The <see cref="Ability"/> that this <see cref="AbilityProjectile"/> belongs to.
     /// </summary>
-    public Ability ability => oPlayer.Abilities[abilityID];
+    public Ability ability => oPlayer.abilities[abilityID];
 
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
 

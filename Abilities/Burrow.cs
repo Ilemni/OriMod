@@ -25,27 +25,21 @@ namespace OriMod.Abilities {
 
     private static int MaxDuration => (int)(Config.BurrowDuration * 60);
     private static int UiIncrement => 60;
-    private float Breath = MaxDuration;
+    private static float Speed => 8f;
+    private static float SpeedExitMultiplier => 1.5f;
 
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
-    private float Speed => 8f;
-    private float SpeedExitMultiplier => 1.5f;
-    private int Strength;
-
-    internal bool CanBurrow(Tile t) {
-      if (CanBurrowAny && IsSolid(t)) {
-        return true;
-      }
-
-      return TileCollection.Instance.TilePickaxeMin[t.type] <= Strength;
-    }
+    
+    private float breath = MaxDuration;
+    private int strength;
 
     internal static bool CanBurrowAny => OriMod.ConfigAbilities.BurrowStrength < 0;
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
 
-    internal Vector2 Velocity;
-    internal Vector2 LastPosition;
-    internal bool AutoBurrow;
+    internal bool CanBurrow(Tile t) => CanBurrowAny && IsSolid(t) || TileCollection.Instance.TilePickaxeMin[t.type] <= strength;
+
+    internal Vector2 velocity;
+    internal bool autoBurrow;
 
     private static Point P(int x, int y) => new Point(x, y);
     internal static TileHitbox EnterHitbox => _eh ?? (_eh = new TileHitbox(
@@ -73,6 +67,12 @@ namespace OriMod.Abilities {
     private static TileHitbox _oh;
     private static TileHitbox _ih;
 
+    /// <summary>
+    /// Modify player velocity when they collide with a tile they cannot burrow through.
+    /// </summary>
+    /// <param name="hitboxIdx">Index of <see cref="InnerHitbox"/> point.</param>
+    /// <param name="didX">Whether or not a collision has occured on the X axis.</param>
+    /// <param name="didY">Whether or not a collision has occured on the Y axis.</param>
     private void OnCollision(int hitboxIdx, ref bool didX, ref bool didY) {
       oPlayer.Debug("Bounce! " + hitboxIdx);
       switch (hitboxIdx) {
@@ -80,24 +80,24 @@ namespace OriMod.Abilities {
         case 1: // Bottom
           if (!didY) {
             didY = true;
-            Velocity.Y = -Velocity.Y;
+            velocity.Y = -velocity.Y;
           }
           break;
         case 2: // Left
         case 3: // Right
           if (!didX) {
             didX = true;
-            Velocity.X = -Velocity.X;
+            velocity.X = -velocity.X;
           }
           break;
         default: // Corners
           if (!didX) {
             didX = true;
-            Velocity.X = -Velocity.X;
+            velocity.X = -velocity.X;
           }
           if (!didY) {
             didY = true;
-            Velocity.Y = -Velocity.Y;
+            velocity.Y = -velocity.Y;
           }
           break;
       }
@@ -118,7 +118,7 @@ namespace OriMod.Abilities {
     protected override void UpdateActive() {
       EnterHitbox.UpdateHitbox(player.Center);
       OuterHitbox.UpdateHitbox(player.Center);
-      InnerHitbox.UpdateHitbox(player.Center + Velocity.Normalized() * 16);
+      InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * 16);
 
       // Get intended velocity based on input
       var newVel = Vector2.Zero;
@@ -141,7 +141,7 @@ namespace OriMod.Abilities {
       }
 
       if (newVel != Vector2.Zero) {
-        Velocity = Vector2.Lerp(Velocity.Normalized(), newVel.Normalized(), 0.1f) * Speed;
+        velocity = Vector2.Lerp(velocity.Normalized(), newVel.Normalized(), 0.1f) * Speed;
       }
 
       // Detect bouncing
@@ -159,27 +159,26 @@ namespace OriMod.Abilities {
       }
 
       // Apply changes
-      player.position += Velocity;
+      player.position += velocity;
       player.velocity = Vector2.Zero;
-      LastPosition = player.position;
       oPlayer.CreatePlayerDust();
 
       // Breath
-      if (Breath > 0) {
-        Breath--;
+      if (breath > 0) {
+        breath--;
       }
     }
 
     protected override void UpdateEnding() {
       // Runs when leaving solid tiles
-      player.velocity = Velocity * SpeedExitMultiplier;
-      player.direction = Math.Sign(Velocity.X);
+      player.velocity = velocity * SpeedExitMultiplier;
+      player.direction = Math.Sign(velocity.X);
       oPlayer.UnrestrictedMovement = true;
     }
 
     protected override void UpdateUsing() {
       // Manage suffocation debuff
-      if (Breath > 0) {
+      if (breath > 0) {
         player.buffImmune[BuffID.Suffocation] = true;
       }
       else {
@@ -199,7 +198,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void DrawEffects() {
-      if (Breath != MaxDuration) {
+      if (breath != MaxDuration) {
 
         // UI indication for breath
         Vector2 drawAnchor = player.BottomRight - Main.screenPosition;
@@ -212,7 +211,7 @@ namespace OriMod.Abilities {
         }
 
         Vector2 drawPos = drawAnchor;
-        int uiCount = (int)Math.Ceiling((double)Breath / UiIncrement);
+        int uiCount = (int)Math.Ceiling((double)breath / UiIncrement);
         for (int i = 0; i < uiCount; i++) {
           if (i % 10 == 0) {
             drawPos.X = drawAnchor.X;
@@ -222,8 +221,8 @@ namespace OriMod.Abilities {
           int frameY = 0;
 
           // Different frameY if this represents a partially filled bar
-          if (i * UiIncrement + UiIncrement > Breath) {
-            frameY = 4 - (int)Breath % UiIncrement / (UiIncrement / 5);
+          if (i * UiIncrement + UiIncrement > breath) {
+            frameY = 4 - (int)breath % UiIncrement / (UiIncrement / 5);
           }
 
           var tex = OriTextures.Instance.BurrowTimer.texture;
@@ -240,7 +239,7 @@ namespace OriMod.Abilities {
             pick = item.pick;
           }
         }
-        Strength = pick;
+        strength = pick;
       }
     }
 
@@ -277,7 +276,7 @@ namespace OriMod.Abilities {
         // Not in use
         TickCooldown();
 
-        if (CanUse && (OriMod.BurrowKey.JustPressed && abilities.crouch.InUse || AutoBurrow)) {
+        if (CanUse && (IsLocal && OriMod.BurrowKey.JustPressed && abilities.crouch.InUse || autoBurrow)) {
           UpdateBurrowStrength(force: true);
           EnterHitbox.UpdateHitbox(player.position);
 
@@ -297,8 +296,8 @@ namespace OriMod.Abilities {
             SetState(State.Active);
             currentCooldown = Cooldown;
 
-            AutoBurrow = OriMod.ConfigClient.AutoBurrow && OriMod.BurrowKey.Current;
-            if (AutoBurrow) {
+            autoBurrow = OriMod.ConfigClient.AutoBurrow && OriMod.BurrowKey.Current;
+            if (autoBurrow) {
               vel = player.velocity.Normalized();
             }
             else {
@@ -313,16 +312,16 @@ namespace OriMod.Abilities {
               }
               vel.Normalize();
             }
-            Velocity = vel * Speed;
-            player.position += Velocity;
-            LastPosition = player.position;
+            // TODO: consider moving this write to an Update method
+            velocity = vel * Speed;
+            player.position += velocity;
           }
         }
 
-        if (Breath < MaxDuration) {
-          Breath += Config.BurrowRecoveryRate;
-          if (Breath > MaxDuration) {
-            Breath = MaxDuration;
+        if (breath < MaxDuration) {
+          breath += Config.BurrowRecoveryRate;
+          if (breath > MaxDuration) {
+            breath = MaxDuration;
           }
         }
       }

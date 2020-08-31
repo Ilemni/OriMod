@@ -18,8 +18,8 @@ namespace OriMod.Networking {
       for (int m = 0; m < len; m++) {
         byte id = reader.ReadByte();
         changes.Add(id);
-        fromPlayer.Abilities[id].PreReadPacket(reader);
-        fromPlayer.Abilities[id].Update();
+        fromPlayer.abilities[id].PreReadPacket(reader);
+        fromPlayer.abilities[id].Update();
       }
       if (Main.netMode == NetmodeID.Server) {
         SendAbilityState(-1, fromWho, changes);
@@ -39,7 +39,7 @@ namespace OriMod.Networking {
       packet.Write((byte)changes.Count);
       foreach (byte id in changes) {
         packet.Write(id);
-        fromPlayer.Abilities[id].PreWritePacket(packet);
+        fromPlayer.abilities[id].PreWritePacket(packet);
       }
       packet.Send(toWho, fromWho);
     }

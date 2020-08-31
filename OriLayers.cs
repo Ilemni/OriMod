@@ -21,7 +21,7 @@ namespace OriMod {
       data.color = oPlayer.flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimationName == "TransformStart" ? Color.White : oPlayer.SpriteColorPrimary;
       Main.playerDrawData.Add(data);
 
-      oPlayer.Abilities.burrow.DrawEffects();
+      oPlayer.abilities.burrow.DrawEffects();
     });
 
     /// <summary>
@@ -54,13 +54,13 @@ namespace OriMod {
     internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
       Animations.Animation anim = oPlayer.Animations.BashAnim;
-      var bash = oPlayer.Abilities.bash;
+      var bash = oPlayer.abilities.bash;
 
       var pos = bash.BashEntity.Center - Main.screenPosition;
       var orig = anim.ActiveTile.Size() / 2;
       int frame = bash.CurrentTime < 40 ? 0 : bash.CurrentTime < 50 ? 1 : 2;
       var rect = new Rectangle(0, frame * anim.source.spriteSize.Y, anim.source.spriteSize.X, anim.source.spriteSize.Y);
-      var rotation = oPlayer.Abilities.bash.BashEntity.AngleTo(Main.MouseWorld);
+      var rotation = oPlayer.abilities.bash.BashEntity.AngleTo(Main.MouseWorld);
       var effect = SpriteEffects.None;
       var data = new DrawData(anim.Texture, pos, rect, Color.White, rotation, orig, 1, effect, 0);
       Main.playerDrawData.Add(data);
@@ -82,7 +82,7 @@ namespace OriMod {
     [System.Obsolete]
     internal readonly PlayerLayer SoulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      Vector2 pos = oPlayer.Abilities.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
+      Vector2 pos = oPlayer.abilities.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
       int frame = (int)(Main.time % 48 / 8) * 64;
       var rect = new Rectangle(0, frame, 48, 64);
       Vector2 orig = rect.Size() / 2;

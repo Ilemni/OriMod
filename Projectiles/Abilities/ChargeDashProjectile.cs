@@ -27,7 +27,7 @@ namespace OriMod.Projectiles.Abilities {
     /// Ends <see cref="global::OriMod.Abilities.ChargeDash"/> if this hits the target NPC
     /// </summary>
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-      var cDash = oPlayer.Abilities.chargeDash;
+      var cDash = oPlayer.abilities.chargeDash;
       if (cDash.NpcIsTarget(target)) {
         cDash.End();
       }

@@ -27,12 +27,12 @@ namespace OriMod.Items {
     public override bool CanUseItem(Player player) {
       // Can only use the item if the ability to be unlocked has not been unlocked
       var oPlayer = player.GetModPlayer<OriPlayer>();
-      return oPlayer.Abilities[ID].Level < Level;
+      return oPlayer.abilities[ID].Level < Level;
     }
 
     public override bool UseItem(Player player) {
       var oPlayer = player.GetModPlayer<OriPlayer>();
-      oPlayer.Abilities[ID].Level = Level;
+      oPlayer.abilities[ID].Level = Level;
       return true;
     }
 

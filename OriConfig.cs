@@ -187,7 +187,7 @@ namespace OriMod {
     [DefaultValue(1), Range(0.1f, 3), Increment(0.1f)]
     public float BurrowRecoveryRate;
 
-    [Label("Strength"), Tooltip("Determines which tiles Burrow can dig through. Based on Pickaxe power.\nDefault: 0")]
+    [Label("Strength"), Tooltip("Determines which tiles Burrow can dig through. Based on Pickaxe power.\nValue of -1 allows burrowing through all blocks.\nDefault: 0")]
     [DefaultValue(0), Range(-1, 210), Slider()]
     public int BurrowStrength;
 

@@ -19,20 +19,20 @@ namespace OriMod.Abilities {
     protected override Color RefreshColor => Color.Blue;
 
     internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && IsLocal && OriMod.ChargeKey.Current;
-    private int MaxCharge => 35;
     private bool Charged => currentCharge >= MaxCharge;
 
     /// <summary>
-    /// Coyote jump
+    /// Coyote jump, how long to allow CJumping when no longer valid to do so.
     /// </summary>
-    private int ChargeGrace => 25;
+    private static int MaxGrace => 25;
+    private static int MaxCharge => 35;
 
     private static float[] Speeds => _speeds ?? (_speeds = new float[20] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
     });
     private static float[] _speeds;
-    private float SpeedMultiplier => Config.CJumpSpeedMultiplier * 0.35f;
-    private int Duration => Speeds.Length;
+    private static float SpeedMultiplier => Config.CJumpSpeedMultiplier * 0.35f;
+    private static int Duration => Speeds.Length;
 
     private int currentCharge;
     private int currentGrace;
@@ -99,7 +99,7 @@ namespace OriMod.Abilities {
       else if (Charged) {
         UpdateCharged();
         if (CanCharge) {
-          currentGrace = ChargeGrace;
+          currentGrace = MaxGrace;
         }
         else {
           currentGrace--;

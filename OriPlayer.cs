@@ -29,7 +29,7 @@ namespace OriMod {
     /// <summary>
     /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
     /// </summary>
-    internal AbilityManager Abilities { get; private set; }
+    internal AbilityManager abilities { get; private set; }
 
     /// <summary>
     /// Container for all <see cref="OriMod.Animations.Animation"/>s on this OriPlayer instance.
@@ -37,7 +37,7 @@ namespace OriMod {
     internal AnimationContainer Animations { get; private set; }
 
     /// <summary>
-    /// Manager for all <see cref="Trail"/>s on this OriPlayer instance.
+    /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
     /// </summary>
     internal Trail trail { get; private set; }
 
@@ -363,8 +363,8 @@ namespace OriMod {
       dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
       dust.noGravity = false;
       playerDustTimer = Transforming ? Main.rand.Next(3, 8)
-        : Abilities.dash.InUse || Abilities.chargeDash.InUse ? Main.rand.Next(2, 4)
-        : Abilities.burrow.InUse ? Main.rand.Next(6, 10)
+        : abilities.dash.InUse || abilities.chargeDash.InUse ? Main.rand.Next(2, 4)
+        : abilities.burrow.InUse ? Main.rand.Next(6, 10)
         : Main.rand.Next(10, 15);
     }
 
@@ -388,8 +388,8 @@ namespace OriMod {
         IncrementFrame("Idle");
         return;
       }
-      if (Abilities.burrow.InUse) {
-        double rad = Math.Atan2(Abilities.burrow.Velocity.X, -Abilities.burrow.Velocity.Y);
+      if (abilities.burrow.InUse) {
+        double rad = Math.Atan2(abilities.burrow.velocity.X, -abilities.burrow.velocity.Y);
         int deg = (int)(rad * (180 / Math.PI));
         deg *= drawPlayer.direction;
         if (player.gravDir < 0) {
@@ -398,7 +398,7 @@ namespace OriMod {
         IncrementFrame("Burrow", rotDegrees: deg);
         return;
       }
-      if (Abilities.wallChargeJump.Active) {
+      if (abilities.wallChargeJump.Active) {
         float rad = (float)Math.Atan2(player.velocity.Y, player.velocity.X);
         float deg = rad * (float)(180 / Math.PI) * player.direction;
         if (player.direction == -1) {
@@ -407,21 +407,21 @@ namespace OriMod {
         IncrementFrame("Dash", overrideFrame: 0, rotDegrees: deg);
         return;
       }
-      if (Abilities.wallJump.InUse) {
+      if (abilities.wallJump.InUse) {
         IncrementFrame("WallJump");
         return;
       }
-      if (Abilities.airJump.InUse && !(Abilities.dash.InUse || Abilities.chargeDash.InUse)) {
+      if (abilities.airJump.InUse && !(abilities.dash.InUse || abilities.chargeDash.InUse)) {
         IncrementFrame("AirJump");
         AnimationRotation = AnimationTime * 0.8f;
         return;
       }
-      if (Abilities.bash.InUse) {
+      if (abilities.bash.InUse) {
         IncrementFrame("Bash");
         return;
       }
-      if (Abilities.stomp.InUse) {
-        switch (Abilities.stomp.AbilityState) {
+      if (abilities.stomp.InUse) {
+        switch (abilities.stomp.AbilityState) {
           case Ability.State.Starting:
             IncrementFrame("AirJump");
             AnimationRotation = AnimationTime;
@@ -431,8 +431,8 @@ namespace OriMod {
             return;
         }
       }
-      if (Abilities.glide.InUse) {
-        switch (Abilities.glide.AbilityState) {
+      if (abilities.glide.InUse) {
+        switch (abilities.glide.AbilityState) {
           case Ability.State.Starting:
             IncrementFrame("GlideStart");
             return;
@@ -444,15 +444,15 @@ namespace OriMod {
             return;
         }
       }
-      if (Abilities.climb.InUse) {
-        if (Abilities.climb.IsCharging) {
-          if (!Abilities.wallChargeJump.Charged) {
-            IncrementFrame("WallChargeJumpCharge", overrideFrame: Abilities.wallChargeJump.Refreshed ? -1 : 0);
+      if (abilities.climb.InUse) {
+        if (abilities.climb.IsCharging) {
+          if (!abilities.wallChargeJump.Charged) {
+            IncrementFrame("WallChargeJumpCharge", overrideFrame: abilities.wallChargeJump.Refreshed ? -1 : 0);
             return;
           }
           // TODO: Multiplayer sync of aim position
           int frame = 0;
-          Abilities.wallChargeJump.GetMouseDirection(out float angle);
+          abilities.wallChargeJump.GetMouseDirection(out float angle);
           if (angle < -0.46f) {
             frame = 2;
           }
@@ -480,7 +480,7 @@ namespace OriMod {
         IncrementFrame("WallSlide");
         return;
       }
-      if (Abilities.dash.InUse || Abilities.chargeDash.InUse) {
+      if (abilities.dash.InUse || abilities.chargeDash.InUse) {
         if (Math.Abs(player.velocity.X) > 18f) {
           IncrementFrame("Dash");
         }
@@ -489,8 +489,8 @@ namespace OriMod {
         }
         return;
       }
-      if (Abilities.lookUp.InUse) {
-        switch (Abilities.lookUp.AbilityState) {
+      if (abilities.lookUp.InUse) {
+        switch (abilities.lookUp.AbilityState) {
           case Ability.State.Starting:
             IncrementFrame("LookUpStart");
             return;
@@ -502,8 +502,8 @@ namespace OriMod {
             return;
         }
       }
-      if (Abilities.crouch.InUse) {
-        switch (Abilities.crouch.AbilityState) {
+      if (abilities.crouch.InUse) {
+        switch (abilities.crouch.AbilityState) {
           case Ability.State.Starting:
             IncrementFrame("CrouchStart");
             return;
@@ -516,7 +516,7 @@ namespace OriMod {
         }
       }
 
-      if (Abilities.chargeJump.Active) {
+      if (abilities.chargeJump.Active) {
         IncrementFrame("ChargeJump");
         return;
       }
@@ -600,7 +600,7 @@ namespace OriMod {
     #endregion
 
     public override void Initialize() {
-      Abilities = new AbilityManager(this);
+      abilities = new AbilityManager(this);
 
       if (!Main.dedServ) {
         Animations = new AnimationContainer(this);
@@ -641,19 +641,19 @@ namespace OriMod {
         ["OriSet"] = IsOri,
         ["Debug"] = debugMode,
       };
-      Abilities.Save(tag);
+      abilities.Save(tag);
       return tag;
     }
 
     public override void Load(TagCompound tag) {
       IsOri = tag.GetBool("OriSet");
       debugMode = tag.GetBool("Debug");
-      Abilities.Load(tag);
+      abilities.Load(tag);
     }
 
     public override void PostUpdateMiscEffects() {
       if (player.HasBuff(BuffID.TheTongue)) {
-        Abilities.DisableAllAbilities();
+        abilities.DisableAllAbilities();
       }
     }
 
@@ -665,7 +665,7 @@ namespace OriMod {
         player.noFallDmg = true;
         player.gravity = 0.35f;
         player.jumpSpeedBoost += 2f;
-        if (IsGrounded || IsLocal && (PlayerInput.Triggers.Current.Left || PlayerInput.Triggers.Current.Right)) {
+        if (IsGrounded || player.controlLeft || player.controlRight) {
           UnrestrictedMovement = false;
         }
         player.runSlowdown = UnrestrictedMovement ? 0 : 1;
@@ -747,7 +747,7 @@ namespace OriMod {
         return;
       }
 
-      if (DoPlayerLight && !Abilities.burrow.Active) {
+      if (DoPlayerLight && !abilities.burrow.Active) {
         Lighting.AddLight(player.Center, LightColor.ToVector3());
       }
 
@@ -826,7 +826,7 @@ namespace OriMod {
       }
 
       genGore = false;
-      if (Abilities.stomp.InUse || Abilities.chargeDash.InUse || Abilities.chargeJump.InUse) {
+      if (abilities.stomp.InUse || abilities.chargeDash.InUse || abilities.chargeJump.InUse) {
         return false;
       }
       if (playSound) {
@@ -892,7 +892,7 @@ namespace OriMod {
         PlayerLayer.ShoeAcc.visible = false;
         PlayerLayer.HandOnAcc.visible = false;
         PlayerLayer.HandOffAcc.visible = false;
-        if (OnWall || Transforming || Abilities.stomp.InUse || Abilities.airJump.InUse || Abilities.burrow.InUse || Abilities.chargeJump.InUse || Abilities.wallChargeJump.InUse) {
+        if (OnWall || Transforming || abilities.stomp.InUse || abilities.airJump.InUse || abilities.burrow.InUse || abilities.chargeJump.InUse || abilities.wallChargeJump.InUse) {
           PlayerLayer.Wings.visible = false;
         }
         #endregion
@@ -922,7 +922,7 @@ namespace OriMod {
           }
         }
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
-        OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !Abilities.burrow.InUse && !player.mount.Active;
+        OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow.InUse && !player.mount.Active;
       }
     }
 
@@ -933,7 +933,7 @@ namespace OriMod {
     }
 
     public override void OnRespawn(Player player) {
-      Abilities.DisableAllAbilities();
+      abilities.DisableAllAbilities();
     }
   }
 }

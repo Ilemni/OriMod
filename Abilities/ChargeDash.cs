@@ -19,8 +19,8 @@ namespace OriMod.Abilities {
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);
     protected override Color RefreshColor => Color.LightBlue;
 
-    private int ManaCost => 20;
-    private int Duration => Speeds.Length - 1;
+    private static int ManaCost => 20;
+    private static int Duration => Speeds.Length - 1;
     private static float[] Speeds => _speeds ?? (_speeds = new float[15] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     });
@@ -28,27 +28,22 @@ namespace OriMod.Abilities {
 
     private static float SpeedMultiplier => Config.CDashSpeedMultiplier * 0.8f;
 
-    private ushort NpcID = ushort.MaxValue;
-    private sbyte Direction;
+    private ushort npcID = ushort.MaxValue;
+    private sbyte direction;
 
     /// <summary>
     /// Check if <paramref name="npc"/> is <see cref="Target"/>.
     /// </summary>
     /// <param name="npc"><see cref="NPC"/> to check.</param>
     /// <returns>True if <paramref name="npc"/> is <see cref="Target"/>.</returns>
-    public bool NpcIsTarget(NPC npc) => npc.whoAmI == NpcID;
+    public bool NpcIsTarget(NPC npc) => npc.whoAmI == npcID;
 
     /// <summary>
     /// Target of this Charge Dash. May be null.
     /// </summary>
     public NPC Target {
-      get {
-        if (NpcID >= Main.npc.Length) {
-          return null;
-        }
-        return Main.npc[NpcID];
-      }
-      set => NpcID = (ushort)(value?.whoAmI ?? ushort.MaxValue);
+      get => npcID < Main.npc.Length ? Main.npc[npcID] : null;
+      set => npcID = (ushort)(value?.whoAmI ?? ushort.MaxValue);
     }
 
     /// <summary>
@@ -62,11 +57,11 @@ namespace OriMod.Abilities {
     private readonly RandomChar rand = new RandomChar();
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
-      NpcID = r.ReadUInt16();
+      npcID = r.ReadUInt16();
     }
 
     protected override void WritePacket(ModPacket packet) {
-      packet.Write(NpcID);
+      packet.Write(npcID);
     }
 
     internal override void PutOnCooldown(bool force = false) {
@@ -100,7 +95,7 @@ namespace OriMod.Abilities {
       }
       else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
-        Vector2 newVel = target is null && !abilities.airJump.InUse ? new Vector2(Direction, 0) : player.velocity;
+        Vector2 newVel = target is null && !abilities.airJump.InUse ? new Vector2(direction, 0) : player.velocity;
         newVel.Normalize();
         newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
         player.velocity = newVel;
@@ -123,8 +118,8 @@ namespace OriMod.Abilities {
           Target = localNpc;
         }
       }
-      Direction = Target is null
-        ? (sbyte)(PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction)
+      direction = Target is null
+        ? (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction)
         : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + rand.NextNoRepeat(3), 0.5f);
       PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeDashProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
@@ -146,7 +141,7 @@ namespace OriMod.Abilities {
         }
       }
       else {
-        player.velocity.X = speed * Direction * 0.8f;
+        player.velocity.X = speed * direction * 0.8f;
         player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrentTime + 1)) * player.gravDir;
       }
 
@@ -169,7 +164,7 @@ namespace OriMod.Abilities {
       if (InUse) {
         SetState(State.Inactive);
         abilities.dash.Refreshed = false;
-        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash.InUse || PlayerInput.Triggers.JustPressed.Jump) {
+        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash.InUse || player.controlJump) {
           End();
         }
       }

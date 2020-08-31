@@ -19,15 +19,15 @@ namespace OriMod.Abilities {
     protected override int Cooldown => (int)(Config.StompCooldown * 30);
     protected override Color RefreshColor => Color.Orange;
 
-    private float Gravity => 8f;
-    private float MaxFallSpeed => Config.StompFallSpeed;
-    private int StartDuration => 24;
-    private int MinDuration => 30;
+    private static float Gravity => 8f;
+    private static int StartDuration => 24;
+    private static int MinDuration => 30;
+    private static float MaxFallSpeed => Config.StompFallSpeed;
 
     /// <summary>
-    /// Minimum frames required to hold <see cref="TriggersSet.Down"/> before Stomp can start.
+    /// Minimum frames required to hold <see cref="Player.controlDown"/> before Stomp can start.
     /// </summary>
-    private int HoldDownDelay => (int)(OriMod.ConfigClient.StompHoldDownDelay * 30);
+    private static int HoldDownDelay => (int)(OriMod.ConfigClient.StompHoldDownDelay * 30);
 
     private int currentHoldDown;
 
@@ -64,7 +64,7 @@ namespace OriMod.Abilities {
 
     internal void EndStomp() {
       oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + randEnd.NextNoRepeat(3));
-      abilities.airJump.CurrentCount = 0;
+      abilities.airJump.currentCount = 0;
       player.velocity = Vector2.Zero;
       var position = new Vector2(player.position.X, player.position.Y + 32);
       for (int i = 0; i < 25; i++) {
@@ -95,13 +95,11 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (PlayerInput.Triggers.Current.Down && CanUse) {
-        if (PlayerInput.Triggers.JustPressed.Down || currentHoldDown > 0) {
-          currentHoldDown++;
-          if (HoldDownDelay == 0 || currentHoldDown > HoldDownDelay) {
-            SetState(State.Starting);
-            currentHoldDown = 0;
-          }
+      if (player.controlDown && CanUse) {
+        currentHoldDown++;
+        if (HoldDownDelay == 0 || currentHoldDown > HoldDownDelay) {
+          SetState(State.Starting);
+          currentHoldDown = 0;
         }
       }
       else if (Starting) {
@@ -110,7 +108,7 @@ namespace OriMod.Abilities {
         }
       }
       else if (Active) {
-        if (CurrentTime > MinDuration && !PlayerInput.Triggers.Current.Down) {
+        if (CurrentTime > MinDuration && !player.controlDown) {
           SetState(State.Inactive);
         }
         if (oPlayer.IsGrounded) {

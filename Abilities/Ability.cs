@@ -35,7 +35,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// The <see cref="AbilityManager"/> this ability belongs to.
     /// </summary>
-    public AbilityManager abilities => oPlayer.Abilities;
+    public AbilityManager abilities => oPlayer.abilities;
 
 
     public bool IsLocal => oPlayer.IsLocal;
@@ -48,7 +48,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Current level of the ability. Unless an ability is always unlocked, if this is 0, the ability is not unlocked.
     /// </summary>
-    public byte Level { get; set; } = 1;
+    public virtual byte Level { get; set; } = 1;
 
     #region General Properties
     /// <summary>
@@ -226,8 +226,12 @@ namespace OriMod.Abilities {
     #region Ticking and Updating
     /// <summary>
     /// Called in <see cref="OriPlayer.PostUpdateRunSpeeds"/>, directly after <see cref="Update"/>.
-    /// <para>Always called, used for managing <see cref="AbilityState"/></para>
+    /// Always called, this should <strong>only</strong> be used for managing <see cref="AbilityState"/>.
     /// </summary>
+    /// <remarks>
+    /// As some changes are only possible to make on the local client (i.e. Glide due to dependence on <see cref="OriMod.FeatherKey"/>), the only changes should be to state.
+    /// <para>If some other changes must be made here and not in any Update methods (i.e. Bash targeting), they must be synced in <see cref="ReadPacket(BinaryReader)"/> and <see cref="WritePacket(ModPacket)"/>.</para>
+    /// </remarks>
     internal abstract void Tick();
 
     /// <summary>
@@ -259,6 +263,7 @@ namespace OriMod.Abilities {
 
     /// <summary>
     /// Called before <see cref="Update"/> when this <see cref="AbilityState"/> is <see cref="State.Active"/>.
+    /// <para>It is recommended to make any changes to <c>player.control*</c> in <see cref="UpdateUsing"/>, if it is overridden.</para>
     /// </summary>
     protected virtual void UpdateActive() { }
 
@@ -269,6 +274,7 @@ namespace OriMod.Abilities {
 
     /// <summary>
     /// Called directly after <see cref="UpdateStarting"/>, <see cref="UpdateActive"/>, and <see cref="UpdateEnding"/>.
+    /// <para>Any modifications to <c>player.control*</c> should be at the end of this method.</para>
     /// </summary>
     protected virtual void UpdateUsing() { }
 

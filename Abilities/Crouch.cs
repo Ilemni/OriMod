@@ -11,19 +11,19 @@ namespace OriMod.Abilities {
 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !abilities.lookUp.InUse && !abilities.dash.InUse && !abilities.chargeDash.InUse && !Restricted;
     private bool Restricted => OriMod.ConfigClient.SoftCrouch && (player.controlLeft || player.controlRight);
-    private int StartDuration => 10;
-    private int EndDuration => 4;
+    private static int StartDuration => 10;
+    private static int EndDuration => 4;
 
     protected override void UpdateUsing() {
       if (!OriMod.ConfigClient.SoftCrouch) {
         player.runAcceleration = 0;
         player.maxRunSpeed = 0;
         player.velocity.X = 0;
-        if (PlayerInput.Triggers.JustPressed.Left) {
+        if (player.controlLeft) {
           player.controlLeft = false;
           player.direction = -1;
         }
-        else if (PlayerInput.Triggers.JustPressed.Right) {
+        else if (player.controlRight) {
           player.controlRight = false;
           player.direction = 1;
         }
@@ -41,14 +41,14 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (!InUse) {
-        if (CanUse && PlayerInput.Triggers.Current.Down) {
+        if (CanUse && player.controlDown) {
           SetState(State.Starting);
         }
       }
       else if (!CanUse) {
         SetState(State.Inactive);
       }
-      else if (!PlayerInput.Triggers.Current.Down && !Ending) {
+      else if (!player.controlDown && !Ending) {
         SetState(Active ? State.Ending : State.Inactive);
         return;
       }

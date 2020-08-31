@@ -1,5 +1,6 @@
 using System;
-using Terraria.GameInput;
+using System.IO;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -11,15 +12,30 @@ namespace OriMod.Abilities {
 
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !abilities.wallJump.InUse && !abilities.wallChargeJump.InUse;
 
-    internal bool IsCharging => Active && (wallDirection == 1 && PlayerInput.Triggers.Current.Left || wallDirection == -1 && PlayerInput.Triggers.Current.Right);
+    internal bool IsCharging => Active && (wallDirection == 1 && player.controlLeft || wallDirection == -1 && player.controlRight);
 
     internal sbyte wallDirection;
 
-    private void StartClimb() {
-      wallDirection = (sbyte)player.direction;
-    }
-
     protected override void UpdateActive() {
+      if (CurrentTime == 0) {
+        wallDirection = (sbyte)player.direction;
+      }
+
+      if (IsCharging) {
+        player.velocity.Y = 0;
+      }
+      else {
+        if (player.controlUp) {
+          player.velocity.Y += player.velocity.Y < (player.gravDir > 0 ? -2 : 4) ? 1 : -1;
+        }
+        else if (player.controlDown) {
+          player.velocity.Y += player.velocity.Y < (player.gravDir > 0 ? 4 : -2) ? 1 : -1;
+        }
+        if (!player.controlDown && !player.controlUp) {
+          player.velocity.Y *= Math.Abs(player.velocity.Y) > 1 ? 0.35f : 0;
+        }
+      }
+
       player.gravity = 0;
       player.runAcceleration = 0;
       player.maxRunSpeed = 0;
@@ -28,31 +44,15 @@ namespace OriMod.Abilities {
       player.controlLeft = false;
       player.controlRight = false;
       player.controlUp = false;
-
-      if (IsCharging) {
-        player.velocity.Y = 0;
-      }
-      else {
-        if (PlayerInput.Triggers.Current.Up) {
-          player.velocity.Y += player.velocity.Y < (player.gravDir > 0 ? -2 : 4) ? 1 : -1;
-        }
-        else if (PlayerInput.Triggers.Current.Down) {
-          player.velocity.Y += player.velocity.Y < (player.gravDir > 0 ? 4 : -2) ? 1 : -1;
-        }
-        if (!PlayerInput.Triggers.Current.Down && !PlayerInput.Triggers.Current.Up) {
-          player.velocity.Y *= Math.Abs(player.velocity.Y) > 1 ? 0.35f : 0;
-        }
-      }
     }
 
     internal override void Tick() {
       if (!InUse) {
-        if (CanUse && OriMod.ClimbKey.Current) {
+        if (CanUse && IsLocal && OriMod.ClimbKey.Current) {
           SetState(State.Active);
-          StartClimb();
         }
       }
-      else if (!CanUse || !OriMod.ClimbKey.Current) {
+      else if (!CanUse || IsLocal && !OriMod.ClimbKey.Current) {
         SetState(State.Inactive);
       }
     }

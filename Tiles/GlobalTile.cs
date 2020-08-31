@@ -18,7 +18,7 @@ namespace OriMod.Tiles {
       Vector2 playerPos = Main.LocalPlayer.Center / 16;
       float dist = Vector2.Distance(playerPos, new Vector2(i, j)) - InnerRange;
       dist = Utils.Clamp((OuterRange - dist) / OuterRange, 0, 1);
-      if (Burrow.CanBurrowAny || oPlayer.Abilities.burrow.CanBurrow(Main.tile[i, j])) {
+      if (Burrow.CanBurrowAny || oPlayer.abilities.burrow.CanBurrow(Main.tile[i, j])) {
         drawColor = Color.Lerp(orig, Color.White, 0.8f * dist);
       }
       else {
@@ -29,7 +29,7 @@ namespace OriMod.Tiles {
 
     public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex) {
       var oPlayer = OriPlayer.Local;
-      var burrow = oPlayer.Abilities.burrow;
+      var burrow = oPlayer.abilities.burrow;
       if (burrow.InUse) {
         BurrowEffects(i, j, ref drawColor, oPlayer);
       }

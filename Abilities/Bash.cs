@@ -48,7 +48,7 @@ namespace OriMod.Abilities {
     private Vector2 targetStartPos;
 
     /// <summary>
-    /// <see cref="OriNPC"/> or <see cref="OriProjectile"/> that is being targeted.
+    /// <see cref="OriNPC"/> or <see cref="OriProjectile"/> that this player is Bashing.
     /// </summary>
     public IBashable BashTarget { get; private set; }
 
@@ -244,7 +244,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (CanUse && OriMod.BashKey.JustPressed) {
+      if (CanUse && IsLocal && OriMod.BashKey.JustPressed) {
         bool didBash = Start();
         if (didBash) {
           SetState(State.Starting);

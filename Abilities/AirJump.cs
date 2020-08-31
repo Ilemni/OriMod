@@ -10,19 +10,19 @@ namespace OriMod.Abilities {
     internal AirJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.AirJump;
 
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && CurrentCount < MaxJumps && !Active && !abilities.bash.InUse && !player.mount.Active && !abilities.wallChargeJump.InUse;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !Active && !abilities.bash.InUse && !player.mount.Active && !abilities.wallChargeJump.InUse;
 
-    private float JumpVelocity => 8.8f;
-    private int EndDuration => AnimationHandler.Instance.PlayerAnim["AirJump"].duration;
-    private int MaxJumps => Config.AirJumpCount;
+    private static float JumpVelocity => 8.8f;
+    private static int EndDuration => AnimationHandler.Instance.PlayerAnim["AirJump"].duration;
+    private static int MaxJumps => Config.AirJumpCount;
 
-    internal int CurrentCount;
-    private int GravityDirection;
+    internal ushort currentCount;
+    private sbyte gravityDirection;
 
     private readonly RandomChar rand = new RandomChar();
 
     protected override void UpdateActive() {
-      if (CurrentCount == MaxJumps) {
+      if (currentCount == MaxJumps) {
         oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + rand.NextNoRepeat(5), 0.7f);
       }
       else {
@@ -33,24 +33,24 @@ namespace OriMod.Abilities {
         player.velocity.Y = newVel;
       }
 
-      player.velocity.Y *= GravityDirection;
+      player.velocity.Y *= gravityDirection;
     }
 
     internal override void Tick() {
-      if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
+      if (CanUse && player.controlJump) {
         if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
           SetState(State.Active);
           if (abilities.dash.Active) {
             abilities.dash.SetState(State.Inactive);
             abilities.dash.PutOnCooldown();
           }
-          CurrentCount++;
-          GravityDirection = (int)player.gravDir;
+          currentCount++;
+          gravityDirection = (sbyte)player.gravDir;
         }
         return;
       }
       if (oPlayer.IsGrounded || abilities.bash.InUse || oPlayer.OnWall) {
-        CurrentCount = 0;
+        currentCount = 0;
         SetState(State.Inactive);
       }
       else if (Active) {

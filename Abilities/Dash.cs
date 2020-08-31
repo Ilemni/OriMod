@@ -25,33 +25,33 @@ namespace OriMod.Abilities {
     });
     private static float[] _speeds;
     private static float SpeedMultiplier => Config.DashSpeedMultiplier * 0.65f;
-    private int Duration => Speeds.Length - 1;
+    private static int Duration => Speeds.Length - 1;
 
-    private sbyte Direction;
+    private sbyte direction;
 
     private readonly RandomChar rand = new RandomChar();
 
     internal void StartDash() {
-      Direction = (sbyte)(PlayerInput.Triggers.Current.Left ? -1 : PlayerInput.Triggers.Current.Right ? 1 : player.direction);
+      direction = (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction);
       oPlayer.PlayNewSound("Ori/Dash/seinDash" + rand.NextNoRepeat(3), 0.2f);
       player.pulley = false;
     }
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
-      Direction = r.ReadSByte();
+      direction = r.ReadSByte();
     }
 
     protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
-      packet.Write(Direction);
+      packet.Write(direction);
     }
 
     protected override void UpdateActive() {
-      if (PlayerInput.Triggers.JustPressed.Jump && (player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm)) {
+      if (player.controlJump && (player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm)) {
         SetState(State.Inactive);
         PutOnCooldown();
         return;
       }
-      player.velocity.X = Speeds[CurrentTime] * SpeedMultiplier * Direction;
+      player.velocity.X = Speeds[CurrentTime] * SpeedMultiplier * direction;
       player.velocity.Y = 0.25f * (CurrentTime + 1) * player.gravDir;
       if (CurrentTime > 20) {
         player.runSlowdown = 26f;

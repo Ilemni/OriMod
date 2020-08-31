@@ -16,7 +16,7 @@ namespace OriMod.Abilities {
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !abilities.wallChargeJump.Charged;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
-    private int EndTime => 12;
+    private static int EndTime => 12;
 
     private sbyte wallDirection;
     private sbyte gravDirection;
@@ -41,7 +41,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (CanUse && PlayerInput.Triggers.JustPressed.Jump) {
+      if (CanUse && player.controlJump) {
         SetState(State.Active);
         wallDirection = (sbyte)player.direction;
         gravDirection = (sbyte)player.gravDir;
@@ -51,7 +51,7 @@ namespace OriMod.Abilities {
         SetState(State.Ending);
       }
       else if (Ending) {
-        if (CurrentTime > EndTime || PlayerInput.Triggers.JustPressed.Right || PlayerInput.Triggers.JustPressed.Left || oPlayer.IsGrounded) {
+        if (CurrentTime > EndTime || player.controlRight || player.controlLeft || oPlayer.IsGrounded) {
           SetState(State.Inactive);
         }
       }

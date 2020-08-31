@@ -13,19 +13,19 @@ namespace OriMod.Abilities {
 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !abilities.crouch.InUse && !abilities.dash.InUse && !abilities.chargeDash.InUse;
 
-    private int StartDuration => 12;
-    private int EndDuration => 8;
+    private static int StartDuration => 12;
+    private static int EndDuration => 8;
 
     internal override void Tick() {
       if (!InUse) {
-        if (CanUse && (PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current)) {
+        if (CanUse && (player.controlUp || IsLocal && OriMod.ChargeKey.Current)) {
           SetState(State.Starting);
         }
       }
       else if (!CanUse) {
         SetState(State.Inactive);
       }
-      else if (!(PlayerInput.Triggers.Current.Up || OriMod.ChargeKey.Current) && !Ending) {
+      else if (!(player.controlUp || IsLocal && OriMod.ChargeKey.Current) && !Ending) {
         SetState(Active ? State.Ending : State.Inactive);
         return;
       }

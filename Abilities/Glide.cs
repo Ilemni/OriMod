@@ -19,11 +19,11 @@ namespace OriMod.Abilities {
       !abilities.wallChargeJump.InUse && !abilities.burrow.InUse &&
       player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active;
 
-    private const float MaxFallSpeed = 2f;
-    private const float RunSlowdown = 0.125f;
-    private const float RunAcceleration = 0.2f;
-    private const int StartDuration = 8;
-    private const int EndDuration = 10;
+    private static float MaxFallSpeed => 2f;
+    private static float RunSlowdown => 0.125f;
+    private static float RunAcceleration => 0.2f;
+    private static int StartDuration => 8;
+    private static int EndDuration => 10;
 
     private readonly RandomChar randStart = new RandomChar();
     private readonly RandomChar randActive = new RandomChar();
@@ -36,7 +36,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      if (PlayerInput.Triggers.JustPressed.Left || PlayerInput.Triggers.JustPressed.Right) {
+      if (player.controlLeft || player.controlRight) {
         oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + randActive.NextNoRepeat(5), 0.45f);
       }
     }
@@ -56,7 +56,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (!InUse && CanUse && !oPlayer.OnWall && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
+      if (!InUse && CanUse && !oPlayer.OnWall && IsLocal && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
         SetState(State.Starting);
         return;
       }
