@@ -11,7 +11,7 @@ namespace OriMod.Networking {
   internal class AbilityPacketHandler : PacketHandler {
     internal AbilityPacketHandler(byte handlerType) : base(handlerType) { }
 
-    internal override void HandlePacket(BinaryReader reader, ushort fromWho) {
+    internal override void HandlePacket(BinaryReader reader, int fromWho) {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       int len = reader.ReadByte();
       var changes = new List<byte>();

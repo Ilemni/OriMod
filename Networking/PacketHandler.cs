@@ -20,7 +20,7 @@ namespace OriMod.Networking {
     /// </summary>
     /// <param name="reader"><see cref="BinaryReader"/> for the <see cref="ModPacket"/>.</param>
     /// <param name="fromWho">Client this was from.</param>
-    internal abstract void HandlePacket(BinaryReader reader, ushort fromWho);
+    internal abstract void HandlePacket(BinaryReader reader, int fromWho);
 
     /// <summary>
     /// Gets a <see cref="ModPacket"/> with <see cref="handlerType"/> and <paramref name="fromWho"/> written to it.

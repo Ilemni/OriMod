@@ -24,7 +24,7 @@ namespace OriMod.Networking {
     /// Sends <paramref name="reader"/> to the desired <see cref="PacketHandler"/> based on data read from <paramref name="reader"/>.
     /// </summary>
     /// <param name="reader"></param>
-    internal void HandlePacket(BinaryReader reader, ushort fromWho) {
+    internal void HandlePacket(BinaryReader reader, int fromWho) {
       byte packetClass = reader.ReadByte();
       switch (packetClass) {
         case OriState:

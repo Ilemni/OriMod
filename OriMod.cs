@@ -150,7 +150,7 @@ namespace OriMod {
         // Now in either case of this being server or player, the fromWho is the player.
         fromWho = reader.ReadUInt16();
       }
-      ModNetHandler.Instance.HandlePacket(reader, (ushort)fromWho);
+      ModNetHandler.Instance.HandlePacket(reader, fromWho);
     }
 
     public override object Call(params object[] args) {

@@ -185,20 +185,6 @@ namespace OriMod.Abilities {
       foreach (var ability in this) {
         ability.Update();
       }
-
-      // Net sync
-      if (oPlayer.IsLocal && Main.netMode == NetmodeID.MultiplayerClient) {
-        var changes = new List<byte>();
-        foreach (var ability in this) {
-          if (ability.netUpdate) {
-            ability.netUpdate = false;
-            changes.Add((byte)ability.Id);
-          }
-        }
-        if (changes.Count > 0) {
-          ModNetHandler.Instance.abilityPacketHandler.SendAbilityState(255, oPlayer.player.whoAmI, changes);
-        }
-      }
     }
 
     /// <summary>
@@ -261,6 +247,19 @@ namespace OriMod.Abilities {
         if (ability is ILevelable levelable) {
           levelable.Level = arr[ability.Id];
         }
+      }
+    }
+
+    internal void SendClientChanges() {
+      var changes = new List<byte>();
+      foreach (var ability in this) {
+        if (ability.netUpdate) {
+          ability.netUpdate = false;
+          changes.Add((byte)ability.Id);
+        }
+      }
+      if (changes.Count > 0) {
+        ModNetHandler.Instance.abilityPacketHandler.SendAbilityState(255, oPlayer.player.whoAmI, changes);
       }
     }
 

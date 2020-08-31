@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using System.IO;
 using Terraria;
@@ -12,7 +12,7 @@ namespace OriMod.Networking {
   internal class OriPlayerPacketHandler : PacketHandler {
     internal OriPlayerPacketHandler(byte handlerType) : base(handlerType) { }
 
-    internal override void HandlePacket(BinaryReader reader, ushort fromWho) {
+    internal override void HandlePacket(BinaryReader reader, int fromWho) {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       BitsByte flags = reader.ReadByte();
       bool oriSet = flags[0];

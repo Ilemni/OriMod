@@ -41,7 +41,10 @@ namespace OriMod {
     /// </summary>
     internal Trail trail { get; private set; }
 
-    internal bool doNetUpdate = false;
+    /// <summary>
+    /// Whether or not this <see cref="OriPlayer"/> instance should sync with multiplayer this frame.
+    /// </summary>
+    internal bool netUpdate = false;
 
     internal bool debugMode = false;
 
@@ -55,7 +58,7 @@ namespace OriMod {
       get => _isOri;
       set {
         if (value != _isOri) {
-          doNetUpdate = true;
+          netUpdate = true;
           _isOri = value;
         }
       }
@@ -74,7 +77,7 @@ namespace OriMod {
       get => _transforming;
       internal set {
         if (value != _transforming) {
-          doNetUpdate = true;
+          netUpdate = true;
           _transforming = value;
         }
       }
@@ -117,7 +120,7 @@ namespace OriMod {
       get => _unrestrictedMovement;
       set {
         if (value != _unrestrictedMovement) {
-          doNetUpdate = true;
+          netUpdate = true;
           _unrestrictedMovement = value;
         }
       }
@@ -135,7 +138,7 @@ namespace OriMod {
       get => _seinMinionActive;
       internal set {
         if (value != _seinMinionActive) {
-          doNetUpdate = true;
+          netUpdate = true;
           _seinMinionActive = value;
         }
       }
@@ -148,7 +151,7 @@ namespace OriMod {
       get => _seinMinionID;
       internal set {
         if (value != _seinMinionID) {
-          doNetUpdate = true;
+          netUpdate = true;
           _seinMinionID = value;
         }
       }
@@ -161,7 +164,7 @@ namespace OriMod {
       get => _seinMinionType;
       internal set {
         if (value != _seinMinionType) {
-          doNetUpdate = true;
+          netUpdate = true;
           _seinMinionType = value;
         }
       }
@@ -429,7 +432,7 @@ namespace OriMod {
             AnimationRotation = AnimationTime;
             return;
           case Ability.State.Active:
-            IncrementFrame("ChargeJump", rotDegrees: 180f, overrideDur: 2, overrideLoopmode:LoopMode.Always, overrideDirection: Direction.PingPong);
+            IncrementFrame("ChargeJump", rotDegrees: 180f, overrideDur: 2, overrideLoopmode: LoopMode.Always, overrideDirection: Direction.PingPong);
             return;
         }
       }
@@ -633,15 +636,19 @@ namespace OriMod {
           playerDustTimer--;
         }
       }
-      if (Main.netMode == NetmodeID.MultiplayerClient && IsLocal && doNetUpdate) {
-        ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, player.whoAmI);
-        doNetUpdate = false;
-      }
     }
 
     /*public override void UpdateDead() {
       Abilities.soulLink.UpdateDead();
     }*/
+
+    public override void SendClientChanges(ModPlayer clientPlayer) {
+      if (netUpdate) {
+        ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, player.whoAmI);
+        netUpdate = false;
+      }
+      abilities.SendClientChanges();
+    }
 
     public override TagCompound Save() {
       var tag = new TagCompound {
