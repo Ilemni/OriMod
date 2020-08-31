@@ -53,7 +53,7 @@ namespace OriMod.Abilities {
         SetState(State.Ending);
       }
       else if (Ending) {
-        if (CurrentTime > EndTime || player.controlRight || player.controlLeft || oPlayer.IsGrounded) {
+        if (oPlayer.IsGrounded || CurrentTime > EndTime || CurrentTime > EndTime * 0.5f && (player.controlRight || player.controlLeft)) {
           SetState(State.Inactive);
         }
       }
