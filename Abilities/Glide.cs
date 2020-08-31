@@ -58,7 +58,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (!InUse && CanUse && !oPlayer.OnWall && IsLocal && (OriMod.FeatherKey.JustPressed || OriMod.FeatherKey.Current)) {
+      if (!InUse && CanUse && !oPlayer.OnWall && oPlayer.featherKeyDown) {
         SetState(State.Starting);
         return;
       }
@@ -77,10 +77,7 @@ namespace OriMod.Abilities {
             SetState(State.Inactive);
           }
         }
-        if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded) {
-          SetState(InUse ? State.Ending : State.Inactive);
-        }
-        else if (IsLocal && OriMod.FeatherKey.JustReleased) {
+        else if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded || !oPlayer.featherKeyDown) {
           SetState(State.Ending);
         }
       }

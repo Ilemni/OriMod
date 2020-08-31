@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using System.IO;
 using Terraria;
@@ -15,6 +15,7 @@ namespace OriMod.Networking {
     internal override void HandlePacket(BinaryReader reader, int fromWho) {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       BitsByte flags = reader.ReadByte();
+      BitsByte ctrl = reader.ReadByte();
       bool oriSet = flags[0];
       bool flashing = flags[1];
       bool transforming = flags[2];
@@ -26,6 +27,8 @@ namespace OriMod.Networking {
       Color spriteColorPrimary = reader.ReadRGB();
       Color spriteColorSecondary = reader.ReadRGBA();
 
+      bool feather = ctrl[1];
+
       fromPlayer.IsOri = oriSet;
       fromPlayer.flashing = flashing;
       fromPlayer.Transforming = transforming;
@@ -36,6 +39,8 @@ namespace OriMod.Networking {
       fromPlayer.multiplayerPlayerLight = mpcPlayerLight;
       fromPlayer.SpriteColorPrimary = spriteColorPrimary;
       fromPlayer.SpriteColorSecondary = spriteColorSecondary;
+
+      fromPlayer.featherKeyDown = feather;
 
       if (Main.netMode == NetmodeID.Server) {
         SendOriState(-1, fromWho);
@@ -53,13 +58,18 @@ namespace OriMod.Networking {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
 
       var flags = new BitsByte();
+      var ctrl = new BitsByte();
       flags[0] = fromPlayer.IsOri;
       flags[1] = fromPlayer.flashing;
       flags[2] = fromPlayer.Transforming;
       flags[3] = fromPlayer.UnrestrictedMovement;
       flags[4] = fromPlayer.SeinMinionActive;
       flags[5] = fromPlayer.multiplayerPlayerLight;
+      
+      ctrl[1] = fromPlayer.featherKeyDown;
+
       packet.Write(flags);
+      packet.Write(ctrl);
       if (flags[2]) {
         packet.Write((ushort)fromPlayer.transformTimer);
       }

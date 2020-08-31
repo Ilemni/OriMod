@@ -129,7 +129,17 @@ namespace OriMod {
     /// <summary>
     /// A more persistent <see cref="Player.justJumped"/>.
     /// </summary>
-    internal bool justJumped;
+    public bool justJumped;
+
+    public bool featherKeyDown {
+      get => _featherKeyDown;
+      set {
+        if (value != _featherKeyDown) {
+          _featherKeyDown = value;
+          netUpdate = true;
+        }
+      }
+    }
 
     /// <summary>
     /// Info about if this player has a <see cref="Projectiles.Minions.Sein"/> minion summoned. Used to prevent having more than one Sein summoned per player.
@@ -300,6 +310,7 @@ namespace OriMod {
     private string _animName = "Default";
     private Color _spriteColorPrimary = Color.LightCyan;
     private Color _spriteColorSecondary = Color.LightCyan;
+    private bool _featherKeyDown;
     #endregion
     #endregion
 
@@ -676,7 +687,7 @@ namespace OriMod {
     }
 
     public override void ProcessTriggers(TriggersSet triggersSet) {
-      justJumped = PlayerInput.Triggers.JustPressed.Jump;
+      featherKeyDown = OriMod.FeatherKey.Current;
     }
 
     public override void PostUpdateMiscEffects() {
