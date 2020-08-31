@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -13,9 +15,26 @@ namespace OriMod.Abilities {
 
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !abilities.wallJump.InUse && !abilities.wallChargeJump.InUse;
 
-    internal bool IsCharging { get; private set; }
+    internal bool IsCharging {
+      get => _isCharging;
+      private set {
+        if (value != _isCharging) {
+          _isCharging = value;
+          netUpdate = true;
+        }
+      }
+    }
+    private bool _isCharging;
 
     internal sbyte wallDirection;
+
+    protected override void ReadPacket(BinaryReader r) {
+      IsCharging = r.ReadBoolean();
+    }
+
+    protected override void WritePacket(ModPacket packet) {
+      packet.Write(IsCharging);
+    }
 
     protected override void UpdateActive() {
       if (CurrentTime == 0) {
@@ -48,7 +67,9 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      IsCharging = Active && (wallDirection == 1 && player.controlLeft || wallDirection == -1 && player.controlRight);
+      if (IsLocal) {
+        IsCharging = Active && abilities.wallChargeJump.Unlocked && (wallDirection == 1 && player.controlLeft || wallDirection == -1 && player.controlRight);
+      }
       if (!InUse) {
         if (CanUse && IsLocal && OriMod.ClimbKey.Current) {
           SetState(State.Active);

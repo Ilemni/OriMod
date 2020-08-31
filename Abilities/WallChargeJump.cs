@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
@@ -31,13 +32,22 @@ namespace OriMod.Abilities {
     internal bool CanCharge => base.CanUse && abilities.climb.IsCharging;
     internal bool Charged => currentCharge >= MaxCharge;
     private int currentCharge;
+    public float Angle {
+      get => _angle;
+      set {
+        if (value != _angle) {
+          _angle = value;
+          netUpdate = true;
+        }
+      }
+    }
+    private float _angle;
     private Vector2 direction;
 
     public Projectile PlayerHitboxProjectile { get; private set; }
 
     private readonly RandomChar randChar = new RandomChar();
 
-    internal Vector2 GetMouseDirection() => GetMouseDirection(out float _);
     internal Vector2 GetMouseDirection(out float angle) {
       Vector2 mouse = Main.MouseWorld - player.Center;
       mouse.X *= -abilities.climb.wallDirection;
@@ -57,7 +67,6 @@ namespace OriMod.Abilities {
       PutOnCooldown();
       // TODO: multiplayer sync of direction
       // Currently it is very, very incorrect to use mouse position for multiplayer clients
-      direction = GetMouseDirection();
       player.velocity = direction * Speeds[0] * SpeedMultiplier;
     }
 
@@ -65,6 +74,18 @@ namespace OriMod.Abilities {
       if (Main.rand.NextFloat() < 0.7f) {
         Dust.NewDust(player.Center, 12, 12, ModContent.DustType<Dusts.AbilityRefreshedDust>(), newColor: Color.Blue);
       }
+    }
+
+    protected override void ReadPacket(BinaryReader r) {
+      currentCharge = r.ReadInt32();
+      direction = r.ReadVector2();
+      Angle = r.ReadSingle();
+    }
+
+    protected override void WritePacket(ModPacket packet) {
+      packet.Write(currentCharge);
+      packet.WriteVector2(direction);
+      packet.Write(Angle);
     }
 
     protected override void UpdateActive() {
@@ -96,6 +117,10 @@ namespace OriMod.Abilities {
       }
       else if (Charged) {
         UpdateCharged();
+        if (IsLocal) {
+          direction = GetMouseDirection(out float angle);
+          Angle = angle;
+        }
         if (!CanCharge) {
           currentCharge = 0;
           oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f, localOnly: true);

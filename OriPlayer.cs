@@ -477,7 +477,7 @@ namespace OriMod {
           }
           // TODO: Multiplayer sync of aim position
           int frame = 0;
-          abilities.wallChargeJump.GetMouseDirection(out float angle);
+          float angle = abilities.wallChargeJump.Angle;
           if (angle < -0.46f) {
             frame = 2;
           }
