@@ -21,7 +21,9 @@ namespace OriMod {
       data.color = oPlayer.flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimationName == "TransformStart" ? Color.White : oPlayer.SpriteColorPrimary;
       Main.playerDrawData.Add(data);
 
-      oPlayer.abilities.burrow.DrawEffects();
+      if (oPlayer.IsLocal) {
+        oPlayer.abilities.burrow.DrawEffects();
+      }
     });
 
     /// <summary>

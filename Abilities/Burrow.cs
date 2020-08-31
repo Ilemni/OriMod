@@ -32,7 +32,7 @@ namespace OriMod.Abilities {
     private static float SpeedExitMultiplier => 1.5f;
 
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
-    
+
     private float breath = MaxDuration;
     private int strength;
 
@@ -107,44 +107,46 @@ namespace OriMod.Abilities {
     }
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
-      if (InUse) {
-        player.position = r.ReadVector2();
-      }
+      player.position = r.ReadVector2();
+      velocity = r.ReadVector2();
+      breath = r.ReadSingle();
+      strength = r.ReadInt32();
+      autoBurrow = r.ReadBoolean();
     }
 
     protected override void WritePacket(ModPacket packet) {
-      if (InUse) {
-        packet.WriteVector2(player.position);
-      }
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(velocity);
+      packet.Write(breath);
+      packet.Write(strength);
+      packet.Write(autoBurrow);
     }
 
     protected override void UpdateActive() {
-      EnterHitbox.UpdateHitbox(player.Center);
-      OuterHitbox.UpdateHitbox(player.Center);
-      InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * 16);
+      if (IsLocal) {
+        // Get intended velocity based on input
+        var newVel = Vector2.Zero;
+        if (OriMod.ConfigClient.BurrowToMouse) {
+          newVel = player.AngleTo(Main.MouseWorld).ToRotationVector2();
+        }
+        else {
+          if (player.controlLeft) {
+            newVel.X -= 1;
+          }
+          if (player.controlRight) {
+            newVel.X += 1;
+          }
+          if (player.controlUp) {
+            newVel.Y -= player.gravDir;
+          }
+          if (player.controlDown) {
+            newVel.Y += player.gravDir;
+          }
+        }
 
-      // Get intended velocity based on input
-      var newVel = Vector2.Zero;
-      if (OriMod.ConfigClient.BurrowToMouse) {
-        newVel = player.AngleTo(Main.MouseWorld).ToRotationVector2();
-      }
-      else {
-        if (player.controlLeft) {
-          newVel.X -= 1;
+        if (newVel != Vector2.Zero) {
+          velocity = Vector2.Lerp(velocity.Normalized(), newVel.Normalized(), 0.1f) * Speed;
         }
-        if (player.controlRight) {
-          newVel.X += 1;
-        }
-        if (player.controlUp) {
-          newVel.Y -= player.gravDir;
-        }
-        if (player.controlDown) {
-          newVel.Y += player.gravDir;
-        }
-      }
-
-      if (newVel != Vector2.Zero) {
-        velocity = Vector2.Lerp(velocity.Normalized(), newVel.Normalized(), 0.1f) * Speed;
       }
 
       // Detect bouncing
@@ -248,7 +250,12 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (InUse) {
-        UpdateBurrowStrength();
+        EnterHitbox.UpdateHitbox(player.Center);
+        OuterHitbox.UpdateHitbox(player.Center);
+        InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * 16);
+        if (IsLocal) {
+          UpdateBurrowStrength();
+        }
         abilities.glide.SetState(State.Inactive);
 
         if (Active) {
@@ -271,15 +278,13 @@ namespace OriMod.Abilities {
           }
         }
 
-        if ((int)Main.time % 20 == 0) {
-          netUpdate = true;
-        }
+        netUpdate = true;
       }
       else {
         // Not in use
         TickCooldown();
 
-        if (CanUse && (IsLocal && OriMod.BurrowKey.JustPressed && abilities.crouch.InUse || autoBurrow)) {
+        if (CanUse && IsLocal && (OriMod.BurrowKey.JustPressed && abilities.crouch.InUse || autoBurrow)) {
           UpdateBurrowStrength(force: true);
           EnterHitbox.UpdateHitbox(player.position);
 
