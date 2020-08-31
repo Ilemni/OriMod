@@ -81,7 +81,7 @@ namespace OriMod.Abilities {
           packet.WriteVector2(playerStartPos);
         }
         packet.Write(BashEntity is NPC);
-        packet.Write(BashEntity?.whoAmI ?? ushort.MaxValue);
+        packet.Write((ushort)(BashEntity?.whoAmI ?? ushort.MaxValue));
       }
     }
 
