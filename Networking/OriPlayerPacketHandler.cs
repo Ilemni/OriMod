@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
+using OriMod.Utilities;
 using System.IO;
 using Terraria;
 using Terraria.ID;
@@ -23,7 +24,7 @@ namespace OriMod.Networking {
       ushort transformTimer = flags[2] ? reader.ReadUInt16() : (ushort)0;
       byte seinMinionType = flags[4] ? reader.ReadByte() : (byte)0;
       Color spriteColorPrimary = reader.ReadRGB();
-      Color spriteColorSecondary = reader.ReadRGB();
+      Color spriteColorSecondary = reader.ReadRGBA();
 
       fromPlayer.IsOri = oriSet;
       fromPlayer.flashing = flashing;
@@ -68,7 +69,7 @@ namespace OriMod.Networking {
       }
 
       packet.WriteRGB(fromPlayer.SpriteColorPrimary);
-      packet.WriteRGB(fromPlayer.SpriteColorSecondary);
+      packet.WriteRGBA(fromPlayer.SpriteColorSecondary);
 
       packet.Send(toWho, fromWho);
     }
