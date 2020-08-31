@@ -54,7 +54,7 @@ namespace OriMod.Abilities {
           SetState(State.Active);
         }
       }
-      else if (!CanUse || IsLocal && !OriMod.ClimbKey.Current) {
+      else if (IsLocal && (!OriMod.ClimbKey.Current || !CanUse)) {
         SetState(State.Inactive);
       }
     }
