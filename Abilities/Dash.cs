@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
-using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -9,10 +8,13 @@ namespace OriMod.Abilities {
   /// <remarks>
   /// This ability is derived from the Ori games, despite Terraira already allowing dashing with the Shield of Cthuhlu.
   /// </remarks>
-  public sealed class Dash : Ability {
+  public sealed class Dash : Ability, ILevelable {
     static Dash() => OriMod.OnUnload += Unload;
     internal Dash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Dash;
+    public override byte Level => (this as ILevelable).Level;
+    byte ILevelable.Level { get; set; }
+    byte ILevelable.MaxLevel => 3;
 
     internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !abilities.stomp.InUse && !abilities.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.DashCooldown * 30);

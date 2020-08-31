@@ -3,7 +3,6 @@ using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using System;
 using Terraria;
-using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
@@ -14,6 +13,7 @@ namespace OriMod.Abilities {
     static ChargeDash() => OriMod.OnUnload += Unload;
     internal ChargeDash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeDash;
+    public override byte Level => (byte)(abilities.dash.Level >= 3 ? 1 : 0);
 
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !abilities.stomp.InUse && !abilities.bash.InUse && !player.mount.Active;
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);

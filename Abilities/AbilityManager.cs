@@ -234,6 +234,7 @@ namespace OriMod.Abilities {
     public void Save(TagCompound tag) {
       var arr = new byte[AbilityID.Count];
       foreach (var ability in this) {
+        // Non-ILevelable abilities saved anyways
         arr[ability.Id] = ability.Level;
       }
       tag.Add(AbilityTagKey, arr);
@@ -249,7 +250,9 @@ namespace OriMod.Abilities {
       }
       var arr = tag.GetByteArray(AbilityTagKey);
       foreach (var ability in this) {
-        ability.Level = arr[ability.Id];
+        if (ability is ILevelable levelable) {
+          levelable.Level = arr[ability.Id];
+        }
       }
     }
 

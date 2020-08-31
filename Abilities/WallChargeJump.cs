@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
-using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
@@ -14,6 +13,7 @@ namespace OriMod.Abilities {
     static WallChargeJump() => OriMod.OnUnload += Unload;
     internal WallChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallChargeJump;
+    public override byte Level => abilities.climb.Unlocked ? abilities.chargeJump.Level : (byte)0;
 
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
     protected override int Cooldown => (int)(Config.WCJumpCooldown * 30);

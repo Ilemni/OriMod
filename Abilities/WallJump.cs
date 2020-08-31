@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
-using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -9,9 +8,12 @@ namespace OriMod.Abilities {
   /// <remarks>
   /// This ability is derived from the Ori games, despite Terraria already allowing wall jumps with some accessories.
   /// </remarks>
-  public sealed class WallJump : Ability {
+  public sealed class WallJump : Ability, ILevelable {
     internal WallJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallJump;
+    public override byte Level => (this as ILevelable).Level;
+    byte ILevelable.Level { get; set; }
+    byte ILevelable.MaxLevel => 1;
 
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !abilities.wallChargeJump.Charged;
 

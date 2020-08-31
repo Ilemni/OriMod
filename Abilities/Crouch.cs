@@ -1,5 +1,3 @@
-using Terraria.GameInput;
-
 namespace OriMod.Abilities {
   /// <summary>
   /// Ability for crouching. This ability is entirely visual, and is alwaays unlocked.
@@ -7,7 +5,7 @@ namespace OriMod.Abilities {
   public sealed class Crouch : Ability {
     internal Crouch(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Crouch;
-    public override bool Unlocked => true;
+    public override byte Level => 1;
 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !abilities.lookUp.InUse && !abilities.dash.InUse && !abilities.chargeDash.InUse && !Restricted;
     private bool Restricted => OriMod.ConfigClient.SoftCrouch && (player.controlLeft || player.controlRight);

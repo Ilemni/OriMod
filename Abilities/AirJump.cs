@@ -1,14 +1,16 @@
 using OriMod.Animations;
 using OriMod.Utilities;
-using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   /// <summary>
   /// Ability for jumping in the air.
   /// </summary>
-  public sealed class AirJump : Ability {
+  public sealed class AirJump : Ability, ILevelable {
     internal AirJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.AirJump;
+    public override byte Level => (this as ILevelable).Level;
+    byte ILevelable.Level { get; set; }
+    byte ILevelable.MaxLevel => 3;
 
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !Active && !abilities.bash.InUse && !player.mount.Active && !abilities.wallChargeJump.InUse;
 

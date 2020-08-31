@@ -32,8 +32,15 @@ namespace OriMod.Items {
 
     public override bool UseItem(Player player) {
       var oPlayer = player.GetModPlayer<OriPlayer>();
-      oPlayer.abilities[ID].Level = Level;
-      return true;
+      var ability = oPlayer.abilities[ID];
+      if (ability is ILevelable levelable) {
+        levelable.Level = Level;
+        return true;
+      }
+      else {
+        Main.NewText($"OriMod dev bug: Ability {ability.GetType().Name} cannot be leveled.");
+        return false;
+      }
     }
 
     public abstract override void AddRecipes();

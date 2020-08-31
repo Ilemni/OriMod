@@ -2,7 +2,6 @@ using System;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;
-using Terraria.GameInput;
 using OriMod.Utilities;
 using Terraria.ModLoader;
 using OriMod.Projectiles.Abilities;
@@ -11,9 +10,12 @@ namespace OriMod.Abilities {
   /// <summary>
   /// Ability for an air-to-ground Area of Effect attack.
   /// </summary>
-  public sealed class Stomp : Ability {
+  public sealed class Stomp : Ability, ILevelable {
     internal Stomp(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Stomp;
+    public override byte Level => (this as ILevelable).Level;
+    byte ILevelable.Level { get; set; }
+    byte ILevelable.MaxLevel => 2;
 
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !abilities.dash.InUse && !abilities.chargeDash.InUse && !abilities.glide.Active && !abilities.climb.InUse && !abilities.stomp.Active && !player.mount.Active && player.grapCount == 0;
     protected override int Cooldown => (int)(Config.StompCooldown * 30);

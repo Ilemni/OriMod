@@ -14,10 +14,13 @@ namespace OriMod.Abilities {
   /// <remarks>
   /// This ability was somewhat difficult to balance; the simplest solution was to restrict tiles to whatever pickaxe was in inventory.
   /// </remarks>
-  public sealed class Burrow : Ability {
+  public sealed class Burrow : Ability, ILevelable {
     static Burrow() => OriMod.OnUnload += Unload;
     internal Burrow(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Burrow;
+    public override byte Level => (this as ILevelable).Level;
+    byte ILevelable.Level { get; set; }
+    byte ILevelable.MaxLevel => 1;
 
     internal override bool CanUse => base.CanUse && !abilities.dash.InUse && !abilities.chargeDash.InUse && !InMenu;
     protected override int Cooldown => 12;

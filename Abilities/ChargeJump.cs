@@ -2,17 +2,19 @@ using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
-using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
   /// Ability for a quick and high jump that can deal damage to enemies.
   /// </summary>
-  public sealed class ChargeJump : Ability {
+  public sealed class ChargeJump : Ability, ILevelable {
     static ChargeJump() => OriMod.OnUnload += Unload;
     internal ChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeJump;
+    public override byte Level => (this as ILevelable).Level;
+    byte ILevelable.Level { get; set; }
+    byte ILevelable.MaxLevel => 3;
 
     internal override bool CanUse => base.CanUse && !InUse && Charged && !abilities.burrow.InUse && !abilities.climb.InUse;
     protected override int Cooldown => (int)(Config.CJumpCooldown * 30);

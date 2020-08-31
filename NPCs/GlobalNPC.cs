@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
-using OriMod.Utilities;
 
 namespace OriMod.NPCs {
   /// <summary>

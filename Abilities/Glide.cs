@@ -1,6 +1,5 @@
 using OriMod.Utilities;
 using System;
-using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -9,9 +8,12 @@ namespace OriMod.Abilities {
   /// <remarks>
   /// This ability is derived from the Ori games, despite Terraria already allowing gliding with wings.
   /// </remarks>
-  public sealed class Glide : Ability {
+  public sealed class Glide : Ability, ILevelable {
     internal Glide(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Glide;
+    public override byte Level => (this as ILevelable).Level;
+    byte ILevelable.Level { get; set; }
+    byte ILevelable.MaxLevel => 1;
 
     internal override bool CanUse =>
       base.CanUse && !Ending &&

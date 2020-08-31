@@ -11,10 +11,13 @@ namespace OriMod.Abilities {
   /// <summary>
   /// Ability for pushing the player and enemies in opposite directions. Iconic ability of the Ori franchise.
   /// </summary>
-  public sealed class Bash : Ability {
+  public sealed class Bash : Ability, ILevelable {
     static Bash() => OriMod.OnUnload += Unload;
     internal Bash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Bash;
+    public override byte Level => (this as ILevelable).Level;
+    byte ILevelable.Level { get; set; }
+    byte ILevelable.MaxLevel => 2;
 
     internal override bool CanUse => base.CanUse && Inactive && !abilities.stomp.InUse && !abilities.chargeJump.InUse;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);

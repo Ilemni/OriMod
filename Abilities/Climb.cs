@@ -1,14 +1,15 @@
 using System;
-using System.IO;
-using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
   /// Ability for climbing on walls.
   /// </summary>
-  public sealed class Climb : Ability {
+  public sealed class Climb : Ability, ILevelable {
     internal Climb(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Climb;
+    public override byte Level => (this as ILevelable).Level;
+    byte ILevelable.Level { get; set; }
+    byte ILevelable.MaxLevel => 1;
 
     internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !abilities.wallJump.InUse && !abilities.wallChargeJump.InUse;
 

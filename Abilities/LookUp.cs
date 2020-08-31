@@ -1,5 +1,4 @@
 using System;
-using Terraria.GameInput;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -9,7 +8,7 @@ namespace OriMod.Abilities {
   public sealed class LookUp : Ability {
     internal LookUp(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.LookUp;
-    public override bool Unlocked => true;
+    public override byte Level => 1;
 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !abilities.crouch.InUse && !abilities.dash.InUse && !abilities.chargeDash.InUse;
 
