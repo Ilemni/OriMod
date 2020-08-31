@@ -1,5 +1,7 @@
+using System.IO;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -25,6 +27,16 @@ namespace OriMod.Abilities {
 
     private readonly RandomChar rand = new RandomChar();
 
+    protected override void ReadPacket(BinaryReader r) {
+      wallDirection = r.ReadSByte();
+      gravDirection = r.ReadSByte();
+    }
+
+    protected override void WritePacket(ModPacket packet) {
+      packet.Write(wallDirection);
+      packet.Write(gravDirection);
+    }
+
     protected override void UpdateActive() {
       player.velocity.Y = WallJumpVelocity.Y * gravDirection;
       oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + rand.NextNoRepeat(5));
@@ -45,8 +57,10 @@ namespace OriMod.Abilities {
     internal override void Tick() {
       if (CanUse && oPlayer.justPressedJumped) {
         SetState(State.Active);
-        wallDirection = (sbyte)player.direction;
-        gravDirection = (sbyte)player.gravDir;
+        if (IsLocal) {
+          wallDirection = (sbyte)player.direction;
+          gravDirection = (sbyte)player.gravDir;
+        }
         abilities.climb.SetState(State.Inactive);
       }
       else if (Active) {
