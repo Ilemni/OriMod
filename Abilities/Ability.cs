@@ -201,6 +201,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreReadPacket(BinaryReader r) {
       AbilityState = (State)r.ReadByte();
+      CurrentTime = r.ReadInt32();
       ReadPacket(r);
     }
 
@@ -209,6 +210,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreWritePacket(ModPacket packet) {
       packet.Write((byte)AbilityState);
+      packet.Write(CurrentTime);
       WritePacket(packet);
     }
 
