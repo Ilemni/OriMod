@@ -43,7 +43,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (CanUse && oPlayer.justJumped) {
+      if (CanUse && oPlayer.justPressedJumped) {
         SetState(State.Active);
         wallDirection = (sbyte)player.direction;
         gravDirection = (sbyte)player.gravDir;

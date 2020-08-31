@@ -90,7 +90,7 @@ namespace OriMod.Abilities {
           oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f, localOnly: true);
         }
       }
-      if (CanUse && oPlayer.justJumped) {
+      if (CanUse && oPlayer.justPressedJumped) {
         Start();
         SetState(State.Active);
       }

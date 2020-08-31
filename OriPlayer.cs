@@ -127,9 +127,17 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// A more persistent <see cref="Player.justJumped"/>.
+    /// Synced input for pressing Jump.
     /// </summary>
-    public bool justJumped;
+    public bool justPressedJumped {
+      get => _justJumped;
+      set {
+        if (value != _justJumped) {
+          _justJumped = value;
+          netUpdate = true;
+        }
+      }
+    }
 
     public bool featherKeyDown {
       get => _featherKeyDown;
@@ -310,6 +318,7 @@ namespace OriMod {
     private string _animName = "Default";
     private Color _spriteColorPrimary = Color.LightCyan;
     private Color _spriteColorSecondary = Color.LightCyan;
+    private bool _justJumped;
     private bool _featherKeyDown;
     #endregion
     #endregion
@@ -687,6 +696,7 @@ namespace OriMod {
     }
 
     public override void ProcessTriggers(TriggersSet triggersSet) {
+      justPressedJumped = PlayerInput.Triggers.JustPressed.Jump;
       featherKeyDown = OriMod.FeatherKey.Current;
     }
 
@@ -789,9 +799,7 @@ namespace OriMod {
       if (DoPlayerLight && !abilities.burrow.Active) {
         Lighting.AddLight(player.Center, LightColor.ToVector3());
       }
-
-      justJumped = player.justJumped;
-      if (justJumped) {
+      if (justPressedJumped) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + randJump.NextNoRepeat(5), 0.75f);
       }
       bool oldGrounded = IsGrounded;

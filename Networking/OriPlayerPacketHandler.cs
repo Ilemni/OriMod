@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using System.IO;
 using Terraria;
@@ -27,6 +27,7 @@ namespace OriMod.Networking {
       Color spriteColorPrimary = reader.ReadRGB();
       Color spriteColorSecondary = reader.ReadRGBA();
 
+      bool jump = ctrl[0];
       bool feather = ctrl[1];
 
       fromPlayer.IsOri = oriSet;
@@ -40,6 +41,7 @@ namespace OriMod.Networking {
       fromPlayer.SpriteColorPrimary = spriteColorPrimary;
       fromPlayer.SpriteColorSecondary = spriteColorSecondary;
 
+      fromPlayer.justPressedJumped = jump;
       fromPlayer.featherKeyDown = feather;
 
       if (Main.netMode == NetmodeID.Server) {
@@ -66,6 +68,7 @@ namespace OriMod.Networking {
       flags[4] = fromPlayer.SeinMinionActive;
       flags[5] = fromPlayer.multiplayerPlayerLight;
       
+      ctrl[0] = fromPlayer.justPressedJumped;
       ctrl[1] = fromPlayer.featherKeyDown;
 
       packet.Write(flags);
