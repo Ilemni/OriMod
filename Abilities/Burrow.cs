@@ -304,16 +304,7 @@ namespace OriMod.Abilities {
               vel = player.velocity.Normalized();
             }
             else {
-              // Set velocity based on surrounding terrain
-              var outerPoints = OuterHitbox.Points;
-              for (int i = 0, len = outerPoints.Length; i < len; i++) {
-                Point p = outerPoints[i];
-                Tile t = Main.tile[p.X, p.Y];
-                if (CanBurrow(t)) {
-                  vel += p.ToVector2().Normalized();
-                }
-              }
-              vel.Normalize();
+              vel = Vector2.UnitY;
             }
             // TODO: consider moving this write to an Update method
             velocity = vel * Speed;
