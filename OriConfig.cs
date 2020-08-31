@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Terraria;
 using Terraria.ModLoader.Config;
 
 namespace OriMod {
@@ -69,6 +70,14 @@ namespace OriMod {
       PlayerColor.A = 255;
       if (StompHoldDownDelay < 0) {
         StompHoldDownDelay = 0;
+      }
+    }
+
+    public override void OnChanged() {
+      if (Main.LocalPlayer.active) {
+        var oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
+        oPlayer.SpriteColorPrimary = PlayerColor;
+        oPlayer.SpriteColorSecondary = PlayerColorSecondary;
       }
     }
   }

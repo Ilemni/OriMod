@@ -252,11 +252,12 @@ namespace OriMod {
     /// <summary>
     /// Primary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
     /// </summary>
-    internal Color SpriteColorPrimary {
-      get => IsLocal ? OriMod.ConfigClient.PlayerColor : _multiplayerSpriteColorPrimary;
+    public Color SpriteColorPrimary {
+      get => _spriteColorPrimary;
       set {
+        _spriteColorPrimary = value;
         if (IsLocal) {
-          _multiplayerSpriteColorPrimary = value;
+          OriMod.ConfigClient.PlayerColor = value;
         }
       }
     }
@@ -264,11 +265,12 @@ namespace OriMod {
     /// <summary>
     /// Secondary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
     /// </summary>
-    internal Color SpriteColorSecondary {
-      get => IsLocal ? OriMod.ConfigClient.PlayerColorSecondary : _multiplayerSpriteColorSecondary;
+    public Color SpriteColorSecondary {
+      get => _spriteColorSecondary;
       set {
+        _spriteColorSecondary = value;
         if (IsLocal) {
-          _multiplayerSpriteColorSecondary = value;
+          OriMod.ConfigClient.PlayerColorSecondary = value;
         }
       }
     }
@@ -293,8 +295,8 @@ namespace OriMod {
     private int _seinMinionType = 0;
     private bool _transforming = false;
     private string _animName = "Default";
-    private Color _multiplayerSpriteColorPrimary = Color.LightCyan;
-    private Color _multiplayerSpriteColorSecondary = Color.LightCyan;
+    private Color _spriteColorPrimary = Color.LightCyan;
+    private Color _spriteColorSecondary = Color.LightCyan;
     #endregion
     #endregion
 
@@ -608,6 +610,11 @@ namespace OriMod {
       }
 
       IsLocal = player.whoAmI == Main.myPlayer;
+      if (IsLocal) {
+        // These colors are overwritten by ones stored in TagCompound, if the save includes it
+        SpriteColorPrimary = OriMod.ConfigClient.PlayerColor;
+        SpriteColorSecondary = OriMod.ConfigClient.PlayerColorSecondary;
+      }
     }
 
     public override void ResetEffects() {
@@ -640,6 +647,8 @@ namespace OriMod {
       var tag = new TagCompound {
         ["OriSet"] = IsOri,
         ["Debug"] = debugMode,
+        ["Color1"] = SpriteColorPrimary,
+        ["Color2"] = SpriteColorSecondary
       };
       abilities.Save(tag);
       return tag;
@@ -648,6 +657,14 @@ namespace OriMod {
     public override void Load(TagCompound tag) {
       IsOri = tag.GetBool("OriSet");
       debugMode = tag.GetBool("Debug");
+      if (tag.ContainsKey("Color1")) {
+        SpriteColorPrimary = tag.Get<Color>("Color1");
+        SpriteColorSecondary = tag.Get<Color>("Color2");
+      }
+      else {
+        _spriteColorPrimary = OriMod.ConfigClient.PlayerColor;
+        _spriteColorSecondary = OriMod.ConfigClient.PlayerColorSecondary;
+      }
       abilities.Load(tag);
     }
 
@@ -934,6 +951,8 @@ namespace OriMod {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.SeinMinionActive = false;
       oPlayer.SeinMinionType = 0;
+      OriMod.ConfigClient.PlayerColor = oPlayer.SpriteColorPrimary;
+      OriMod.ConfigClient.PlayerColorSecondary = oPlayer.SpriteColorSecondary;
     }
 
     public override void OnRespawn(Player player) {
