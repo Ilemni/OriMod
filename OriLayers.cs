@@ -17,7 +17,7 @@ namespace OriMod {
     internal readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
-      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.PlayerAnim);
+      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.PlayerAnim);
       data.color = oPlayer.flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimationName == "TransformStart" ? Color.White : oPlayer.SpriteColorPrimary;
       Main.playerDrawData.Add(data);
 
@@ -30,7 +30,7 @@ namespace OriMod {
     internal readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "OriPlayer_SecondaryColor", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
-      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.SecondaryLayer);
+      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.SecondaryLayer);
       data.color = oPlayer.flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimationName == "TrasformStart" ? Color.White : oPlayer.SpriteColorSecondary;
       data.texture = OriTextures.Instance.PlayerSecondary;
       Main.playerDrawData.Add(data);
@@ -53,7 +53,7 @@ namespace OriMod {
     /// </summary>
     internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      Animations.Animation anim = oPlayer.Animations.BashAnim;
+      Animations.Animation anim = oPlayer.animations.BashAnim;
       var bash = oPlayer.abilities.bash;
 
       var pos = bash.BashEntity.Center - Main.screenPosition;
@@ -72,7 +72,7 @@ namespace OriMod {
     internal readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
-      Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.Animations.GlideAnim));
+      Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.GlideAnim));
     });
 
     /// <summary>

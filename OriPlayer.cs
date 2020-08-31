@@ -34,7 +34,7 @@ namespace OriMod {
     /// <summary>
     /// Container for all <see cref="OriMod.Animations.Animation"/>s on this OriPlayer instance.
     /// </summary>
-    internal AnimationContainer Animations { get; private set; }
+    internal AnimationContainer animations { get; private set; }
 
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
@@ -326,7 +326,7 @@ namespace OriMod {
     internal void BeginTransformation() {
       Transforming = true;
       transformDirection = (sbyte)player.direction;
-      transformTimer = Animations.PlayerAnim.source["TransformEnd"].duration + Animations.PlayerAnim.source["TransformStart"].duration;
+      transformTimer = animations.PlayerAnim.source["TransformEnd"].duration + animations.PlayerAnim.source["TransformStart"].duration;
     }
 
     /// <summary>
@@ -546,9 +546,9 @@ namespace OriMod {
     /// <param name="rotDegrees">Rotation of the sprite, in degrees.</param>
     private void IncrementFrame(string anim = "Default", int overrideFrame = -1, float timeOffset = 0, int overrideDur = -1, LoopMode? overrideLoopmode = null, Direction? overrideDirection = null, float rotDegrees = 0) {
       if (AnimationName != null && debugMode) {
-        Main.NewText($"Frame called: {AnimationName}, Time: {AnimationTime}, AnimIndex: {AnimationIndex}/{Animations.PlayerAnim.ActiveTrack.frames.Length}"); // Debug
-        var frame = Animations.PlayerAnim.ActiveFrame;
-        var tile = Animations.PlayerAnim.ActiveTile;
+        Main.NewText($"Frame called: {AnimationName}, Time: {AnimationTime}, AnimIndex: {AnimationIndex}/{animations.PlayerAnim.ActiveTrack.frames.Length}"); // Debug
+        var frame = animations.PlayerAnim.ActiveFrame;
+        var tile = animations.PlayerAnim.ActiveTile;
         Main.NewText($"Frame info: {frame} => {tile}");
       }
       AnimationTime += 1 + timeOffset;
@@ -580,11 +580,11 @@ namespace OriMod {
         return;
       }
 
-      Animations.PlayerAnim.CheckIfValid(value);
-      Animations.SecondaryLayer.CheckIfValid(value);
-      Animations.TrailAnim.CheckIfValid(value);
-      Animations.BashAnim.CheckIfValid(value);
-      Animations.GlideAnim.CheckIfValid(value);
+      animations.PlayerAnim.CheckIfValid(value);
+      animations.SecondaryLayer.CheckIfValid(value);
+      animations.TrailAnim.CheckIfValid(value);
+      animations.BashAnim.CheckIfValid(value);
+      animations.GlideAnim.CheckIfValid(value);
     }
 
     /// <summary>
@@ -603,7 +603,7 @@ namespace OriMod {
       abilities = new AbilityManager(this);
 
       if (!Main.dedServ) {
-        Animations = new AnimationContainer(this);
+        animations = new AnimationContainer(this);
         trail = new Trail(this, 26);
       }
 
@@ -615,7 +615,7 @@ namespace OriMod {
         float rate = HasTransformedOnce ? RepeatedTransformRate : 1;
         AnimationTime += rate - 1;
         transformTimer -= rate;
-        if (transformTimer < 0 || HasTransformedOnce && transformTimer < Animations.PlayerAnim.source["TransformEnd"].duration - 62) {
+        if (transformTimer < 0 || HasTransformedOnce && transformTimer < animations.PlayerAnim.source["TransformEnd"].duration - 62) {
           transformTimer = 0;
           Transforming = false;
           IsOri = true;
@@ -679,19 +679,19 @@ namespace OriMod {
         // Reduce gravity when clinging on wall
         if (OnWall) {
           // Either grounded or falling, not climbing
-          if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !Abilities.climb.InUse) {
+          if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !abilities.climb.InUse) {
             player.gravity = 0.1f;
             player.maxFallSpeed = 6f;
             player.jumpSpeedBoost -= 6f;
           }
           // Sliding upward on wall, not stomping
-          else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !Abilities.stomp.InUse) {
+          else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !abilities.stomp.InUse) {
             player.gravity = 0.1f;
             player.maxFallSpeed = 6f;
           }
         }
 
-        Abilities.Update();
+        abilities.Update();
       }
 
       if (Transforming) {
@@ -911,14 +911,14 @@ namespace OriMod {
           idx = layers.Count - 1;
         }
         if (IsOri) {
-          Animations.TrailAnim.InsertInLayers(layers, idx++);
-          Animations.GlideAnim.InsertInLayers(layers, idx++);
-          Animations.BashAnim.InsertInLayers(layers, idx++);
+          animations.TrailAnim.InsertInLayers(layers, idx++);
+          animations.GlideAnim.InsertInLayers(layers, idx++);
+          animations.BashAnim.InsertInLayers(layers, idx++);
         }
         if (!player.dead && !player.invis) {
-          Animations.PlayerAnim.InsertInLayers(layers, idx++);
+          animations.PlayerAnim.InsertInLayers(layers, idx++);
           if (IsOri) {
-            Animations.SecondaryLayer.InsertInLayers(layers, idx++);
+            animations.SecondaryLayer.InsertInLayers(layers, idx++);
           }
         }
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
