@@ -190,7 +190,7 @@ namespace OriMod.Abilities {
       player.immuneTime = 5;
 
       BashTarget.IsBashed = false;
-      if (Level >= 2 && BashEntity is NPC npc) {
+      if (IsLocal && Level >= 2 && BashEntity is NPC npc) {
         player.ApplyDamageToNPC(npc, BashDamage, 0, 1, false);
       }
 

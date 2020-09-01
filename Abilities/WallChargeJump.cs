@@ -102,11 +102,12 @@ namespace OriMod.Abilities {
         return;
       }
       TickCooldown();
-      if (!Charged && CanCharge) {
+      if (IsLocal && !Charged && CanCharge) {
         if (currentCharge == 0) {
           oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f, localOnly: true);
         }
         currentCharge++;
+        netUpdate = true;
         if (currentCharge > MaxCharge) {
           oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f, localOnly: true);
         }
@@ -120,15 +121,16 @@ namespace OriMod.Abilities {
         if (IsLocal) {
           direction = GetMouseDirection(out float angle);
           Angle = angle;
-        }
-        if (!CanCharge) {
-          currentCharge = 0;
-          oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f, localOnly: true);
+          if (!CanCharge) {
+            currentCharge = 0;
+            oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f, localOnly: true);
+          }
         }
       }
       if (Active) {
         if (CurrentTime > Duration) {
           SetState(State.Inactive);
+          netUpdate = false; // Deterministic
         }
       }
     }

@@ -82,29 +82,7 @@ namespace OriMod.Abilities {
     /// End the Charge Dash. Ending behavior depends on <paramref name="byNpcContact"/>.
     /// </summary>
     /// <param name="byNpcContact">If the cause for ending is by player contact with <see cref="Target"/> (true), or for any other reason (false)</param>
-    internal void End(bool byNpcContact = false) {
-      SetState(State.Inactive);
-      PutOnCooldown();
-      var target = Target;
-      Target = null;
-      if (byNpcContact) {
-        // Force player position to same as target's, and reduce speed.
-        player.position = target.position;
-        player.position.Y -= 32f;
-        player.velocity *= Speeds[CurrentTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
-      }
-      else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
-        // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
-        Vector2 newVel = target is null && !abilities.airJump.InUse ? new Vector2(direction, 0) : player.velocity;
-        newVel.Normalize();
-        newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
-        player.velocity = newVel;
-      }
-      PlayerHitboxProjectile = null;
-      Target = null;
-    }
-
-    protected override void UpdateStarting() {
+    private void Start() {
       float tempDist = 720f * 720f;
       for (int n = 0; n < Main.maxNPCs; n++) {
         NPC localNpc = Main.npc[n];
@@ -123,6 +101,27 @@ namespace OriMod.Abilities {
         : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + rand.NextNoRepeat(3), 0.5f);
       PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeDashProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
+    }
+
+    internal void End(bool byNpcContact = false) {
+      SetState(State.Inactive);
+      PutOnCooldown();
+      var target = Target;
+      if (byNpcContact) {
+        // Force player position to same as target's, and reduce speed.
+        player.position = target.position;
+        player.position.Y -= 32f;
+        player.velocity *= Speeds[CurrentTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
+      }
+      else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
+        // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
+        Vector2 newVel = target is null && !abilities.airJump.InUse ? new Vector2(direction, 0) : player.velocity;
+        newVel.Normalize();
+        newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
+        player.velocity = newVel;
+      }
+      PlayerHitboxProjectile = null;
+      Target = null;
     }
 
     protected override void UpdateUsing() {
@@ -150,10 +149,10 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
+      if (IsLocal && CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
         if (player.CheckMana(ManaCost, true, true)) {
           SetState(State.Active);
-          UpdateStarting();
+          Start();
         }
         else if (!abilities.dash.InUse) {
           abilities.dash.StartDash();
@@ -162,7 +161,6 @@ namespace OriMod.Abilities {
       }
       TickCooldown();
       if (InUse) {
-        SetState(State.Inactive);
         abilities.dash.Refreshed = false;
         if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash.InUse || player.controlJump) {
           End();

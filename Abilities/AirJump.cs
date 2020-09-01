@@ -55,9 +55,6 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (!IsLocal) {
-        return;
-      }
       if (CanUse && oPlayer.justPressedJumped) {
         if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
           SetState(State.Active);
@@ -83,6 +80,8 @@ namespace OriMod.Abilities {
           SetState(State.Inactive);
         }
       }
+      // Other than activation, Air Jump is deterministic and requires no additional syncing
+      netUpdate = false;
     }
   }
 }

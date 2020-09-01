@@ -29,18 +29,16 @@ namespace OriMod.Abilities {
     internal sbyte wallDirection;
 
     protected override void ReadPacket(BinaryReader r) {
+      wallDirection = r.ReadSByte();
       IsCharging = r.ReadBoolean();
     }
 
     protected override void WritePacket(ModPacket packet) {
+      packet.Write(wallDirection);
       packet.Write(IsCharging);
     }
 
     protected override void UpdateActive() {
-      if (CurrentTime == 0) {
-        wallDirection = (sbyte)player.direction;
-      }
-
       if (IsCharging) {
         player.velocity.Y = 0;
       }
@@ -67,17 +65,19 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (IsLocal) {
-        IsCharging = Active && abilities.wallChargeJump.Unlocked && (wallDirection == 1 && player.controlLeft || wallDirection == -1 && player.controlRight);
+      if (!IsLocal) {
+        return;
       }
       if (!InUse) {
-        if (CanUse && IsLocal && OriMod.ClimbKey.Current) {
+        if (CanUse && OriMod.ClimbKey.Current) {
           SetState(State.Active);
+          wallDirection = (sbyte)player.direction;
         }
       }
-      else if (IsLocal && (!OriMod.ClimbKey.Current || !CanUse)) {
+      else if (!CanUse || !OriMod.ClimbKey.Current) {
         SetState(State.Inactive);
       }
+      IsCharging = Active && abilities.wallChargeJump.Unlocked && (wallDirection == 1 ? player.controlLeft : player.controlRight);
     }
   }
 }
