@@ -51,7 +51,7 @@ namespace OriMod.Abilities {
     protected override void UpdateActive() {
       if (CurrentTime == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3));
-        PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
+        PlayerHitboxProjectile = Projectile.NewProjectileDirect(player.Center, Vector2.Zero, ModContent.ProjectileType<StompProjectile>(), 30, 0f, player.whoAmI, 0, 1);
       }
       if (abilities.airJump.Active) {
         return;

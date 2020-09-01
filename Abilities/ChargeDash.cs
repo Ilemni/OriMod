@@ -100,7 +100,7 @@ namespace OriMod.Abilities {
         ? (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction)
         : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + rand.NextNoRepeat(3), 0.5f);
-      PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeDashProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
+      PlayerHitboxProjectile = Projectile.NewProjectileDirect(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeDashProjectile>(), 30, 0f, player.whoAmI, 0, 1);
     }
 
     internal void End(bool byNpcContact = false) {

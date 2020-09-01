@@ -63,7 +63,7 @@ namespace OriMod.Abilities {
     private void Start() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + randChar.NextNoRepeat(3));
       currentCharge = 0;
-      PlayerHitboxProjectile = Main.projectile[Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1)];
+      PlayerHitboxProjectile = Projectile.NewProjectileDirect(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1);
       PutOnCooldown();
       // TODO: multiplayer sync of direction
       // Currently it is very, very incorrect to use mouse position for multiplayer clients
