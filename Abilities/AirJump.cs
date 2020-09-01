@@ -12,13 +12,13 @@ namespace OriMod.Abilities {
     public override int Id => AbilityID.AirJump;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 3;
+    public byte MaxLevel => 3;
 
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !player.mount.Active && !abilities.bash.InUse && !abilities.wallChargeJump.InUse;
 
     private static float JumpVelocity => 8.8f;
-    private static int EndDuration => AnimationHandler.Instance.PlayerAnim["AirJump"].duration;
-    private static int MaxJumps => Config.AirJumpCount;
+    private static int EndDuration => 32;
+    private int MaxJumps => MaxLevel;
 
     internal ushort currentCount;
     private sbyte gravityDirection;

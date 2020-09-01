@@ -90,21 +90,21 @@ namespace OriMod {
 
     [Label("Cooldown"), Tooltip("Cooldown of Soul Link, in seconds.\nDefault: 30")]
     [DefaultValue(30), Range(0f, 150), Increment(1f)]
-    [Obsolete] internal float SoulLinkCooldown;
+    [Obsolete] internal readonly float SoulLinkCooldown;
 
     [Label("Charge Time"), Tooltip("How long it takes to place a Soul Link, in seconds.\nDefault: 0.9")]
     [DefaultValue(0.9f), Range(0.1f, 10), Increment(0.1f)]
-    [Obsolete] internal float SoulLinkChargeRate;
+    [Obsolete] internal readonly float SoulLinkChargeRate;
 
     [Label("Respawn Time"), Tooltip("How long after dying it takes to respawn at a Soul Link, in seconds.\nDefault: 2.4")]
     [DefaultValue(2.4f), Range(1f, 10), Increment(0.1f)]
-    [Obsolete] internal float SoulLinkRespawnTime;
+    [Obsolete] internal readonly float SoulLinkRespawnTime;
 
     [Header("Air Jump")]
 
     [Label("Number of Jumps"), Tooltip("Amount of times the player can jump in the air.\nDefault: 2")]
     [DefaultValue(2), Range(1, int.MaxValue)]
-    public int AirJumpCount;
+    [Obsolete] internal readonly int AirJumpCount;
 
     [Header("Bash")]
 
@@ -206,10 +206,6 @@ namespace OriMod {
 
     [OnDeserialized]
     public void OnDeserializedMethod(StreamingContext stream) {
-      if (AirJumpCount < 0) {
-        AirJumpCount = 0;
-      }
-
       if (StompNumTargets < 1) {
         StompNumTargets = 1;
       }
