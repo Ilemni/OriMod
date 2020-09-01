@@ -631,13 +631,6 @@ namespace OriMod {
         animations = new AnimationContainer(this);
         trail = new Trail(this, 26);
       }
-
-      IsLocal = player.whoAmI == Main.myPlayer;
-      if (IsLocal) {
-        // These colors are overwritten by ones stored in TagCompound, if the save includes it
-        SpriteColorPrimary = OriMod.ConfigClient.PlayerColor;
-        SpriteColorSecondary = OriMod.ConfigClient.PlayerColorSecondary;
-      }
     }
 
     public override void ResetEffects() {
@@ -975,6 +968,7 @@ namespace OriMod {
 
     public override void OnEnterWorld(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+      oPlayer.IsLocal = true;
       oPlayer.SeinMinionActive = false;
       oPlayer.SeinMinionType = 0;
       OriMod.ConfigClient.PlayerColor = oPlayer.SpriteColorPrimary;
