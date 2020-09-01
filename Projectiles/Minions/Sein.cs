@@ -423,39 +423,37 @@ namespace OriMod.Projectiles.Minions {
     private void Fire(NPC npc) {
       Vector2 shootVel;
       float rotation;
-      if (npc != null) {
-        // Fire at enemy NPC
-        shootVel = npc.position - projectile.Center;
-        rotation = Main.rand.Next(-data.randDegrees, data.randDegrees) / 180f * (float)Math.PI;
-      }
-      else {
+      if (npc is null) {
         // Fire at air
         shootVel = new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(24, 48)).Normalized();
         rotation = (float)(Main.rand.Next(-180, 180) / 180f * Math.PI);
+      }
+      else {
+        // Fire at enemy NPC
+        shootVel = npc.position - projectile.Center;
+        rotation = Main.rand.Next(-data.randDegrees, data.randDegrees) / 180f * (float)Math.PI;
       }
       if (shootVel == Vector2.Zero) {
         shootVel = Vector2.UnitY;
       }
       shootVel = Utils.RotatedBy(shootVel * ShootSpeed, rotation);
+      projectile.velocity += shootVel.Normalized() * -0.2f;
 
       int dmg = (int)(projectile.damage * Main.player[projectile.owner].minionDamage *
         (!AutoFire ? ManualShootDamageMultiplier : 1));
 
-      Projectile proj = Main.projectile[Projectile.NewProjectile(projectile.Center, shootVel, spiritFlameType, dmg, projectile.knockBack, Main.myPlayer, 0, 0)];
-      projectile.velocity += shootVel.SafeNormalize(Vector2.Zero) * -0.2f;
-      proj.netUpdate = true;
-      proj.owner = projectile.owner;
 
+      Projectile spiritFlame = Projectile.NewProjectileDirect(projectile.Center, shootVel, spiritFlameType, dmg, projectile.knockBack, projectile.owner, 0, 0);
       if (npc is null) {
         var pos = Utils.RotatedBy(new Vector2(projectile.position.X, projectile.position.Y + Main.rand.Next(8, 48)), Main.rand.NextFloat((float)Math.PI * 2));
-        proj.ai[0] = pos.X;
-        proj.ai[1] = pos.Y;
-        proj.timeLeft = 15;
+        spiritFlame.ai[0] = pos.X;
+        spiritFlame.ai[1] = pos.Y;
+        spiritFlame.timeLeft = 20;
       }
       else {
-        proj.ai[0] = npc.whoAmI;
-        proj.ai[1] = 0;
-        proj.timeLeft = 30;
+        spiritFlame.ai[0] = npc.whoAmI;
+        spiritFlame.ai[1] = 0;
+        spiritFlame.timeLeft = 70;
       }
     }
 

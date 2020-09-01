@@ -66,7 +66,7 @@ namespace OriMod.Projectiles.Minions {
       projectile.minion = true;
       projectile.ignoreWater = true;
       projectile.tileCollide = false;
-      projectile.timeLeft = 45;
+      projectile.timeLeft = 70;
       Initialize();
     }
 
