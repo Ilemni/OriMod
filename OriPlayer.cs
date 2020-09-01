@@ -349,10 +349,6 @@ namespace OriMod {
       return Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
     }
 
-    /// <summary> Checks if the key is pressed and this is LocalPlayer. </summary>
-    /// <param name="triggerKey">The key that was pressed</param>
-    internal bool Input(bool triggerKey) => triggerKey && player.whoAmI == Main.myPlayer;
-
     /// <summary>
     /// Prints a debug message if "debug mode" is enabled
     /// </summary>
@@ -588,11 +584,8 @@ namespace OriMod {
     /// <param name="overrideDirection">Override <see cref="Direction"/> of the track, if the one on the track's header is undesired.</param>
     /// <param name="rotDegrees">Rotation of the sprite, in degrees.</param>
     private void IncrementFrame(string anim = "Default", int overrideFrame = -1, float timeOffset = 0, int overrideDur = -1, LoopMode? overrideLoopmode = null, Direction? overrideDirection = null, float rotDegrees = 0) {
-      if (AnimationName != null && debugMode) {
-        Main.NewText($"Frame called: {AnimationName}, Time: {AnimationTime}, AnimIndex: {AnimationIndex}/{animations.PlayerAnim.ActiveTrack.frames.Length}"); // Debug
-        var frame = animations.PlayerAnim.ActiveFrame;
-        var tile = animations.PlayerAnim.ActiveTile;
-        Main.NewText($"Frame info: {frame} => {tile}");
+      if (AnimationName != null && Local.debugMode && !IsLocal) {
+        //Main.NewText($"Frame called: {AnimationName}, Time: {AnimationTime}, AnimIndex: {AnimationIndex}/{animations.PlayerAnim.ActiveTrack.frames.Length}"); // Debug
       }
       AnimationTime += 1 + timeOffset;
       AnimationHandler.Instance.IncrementFrame(this, anim, overrideFrame, overrideDur, overrideLoopmode, overrideDirection, rotDegrees);
