@@ -9,7 +9,17 @@ namespace OriMod.Animations {
   /// Animation for a single player.
   /// </summary>
   public class Animation {
+    /// <summary>
+    /// Creates a new instance of <see cref="Animation"/> for the given <see cref="OriPlayer"/>, using the given <see cref="AnimationSource"/> and rendering with <see cref="PlayerLayer"/>.
+    /// </summary>
+    /// <param name="oPlayer"><see cref="OriPlayer"/> instance this will belong to.</param>
+    /// <param name="source"><see cref="AnimationSource"/> to determine which sprite is drawn.</param>
+    /// <param name="playerLayer"><see cref="PlayerLayer"/></param>
+    /// <exception cref="System.InvalidOperationException">Animation classes are not allowed to be constructed on a server.</exception>
     public Animation(OriPlayer oPlayer, AnimationSource source, PlayerLayer playerLayer) {
+      if (Terraria.Main.netMode == Terraria.ID.NetmodeID.Server) {
+        throw new System.InvalidOperationException($"Animation classes are not allowed to be constructed on servers.");
+      }
       this.oPlayer = oPlayer;
       this.source = source;
       this.playerLayer = playerLayer;
@@ -63,15 +73,17 @@ namespace OriMod.Animations {
     public readonly AnimationSource source;
 
     /// <summary>
-    /// Inserts the <see cref="playerLayer"/> of this animation to the given <paramref name="layers"/>.
+    /// Attempts to insert the <see cref="playerLayer"/> of this animation to the given <paramref name="layers"/>. This will fail and return false if the current track is not valid.
     /// </summary>
     /// <param name="layers">The <see cref="List{T}"/> of <see cref="PlayerLayer"/> to insert in.</param>
     /// <param name="idx">Position to insert into.</param>
-    /// <param name="force">Add even if <see cref="Valid"/> is <c>false</c>.</param>
-    public void InsertInLayers(List<PlayerLayer> layers, int idx = 0, bool force = false) {
-      if (Valid || force) {
+    /// <returns><c>true</c> if <see cref="playerLayer"/> could be inserted, otherwise false.</returns>
+    public bool TryInsertInLayers(List<PlayerLayer> layers, int idx = 0) {
+      if (Valid) {
         layers.Insert(idx, playerLayer);
+        return true;
       }
+      return false;
     }
 
     /// <summary>

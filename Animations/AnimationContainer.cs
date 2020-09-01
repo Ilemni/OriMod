@@ -3,7 +3,15 @@
   /// Container for various <see cref="Animation"/>s to be attached to an <see cref="OriPlayer"/>.
   /// </summary>
   public class AnimationContainer {
+    /// <summary>
+    /// Creates a new instance of <see cref="AnimationContainer"/> for the given <see cref="OriPlayer"/>.
+    /// </summary>
+    /// <param name="oPlayer"><see cref="OriPlayer"/> instance the animations will belong to.</param>
+    /// <exception cref="System.InvalidOperationException">Animation classes are not allowed to be constructed on a server.</exception>
     internal AnimationContainer(OriPlayer oPlayer) {
+      if (Terraria.Main.netMode == Terraria.ID.NetmodeID.Server) {
+        throw new System.InvalidOperationException($"Animation classes are not allowed to be constructed on servers.");
+      }
       PlayerAnim = new Animation(oPlayer, AnimationHandler.Instance.PlayerAnim, OriLayers.Instance.PlayerSprite);
       SecondaryLayer = new Animation(oPlayer, AnimationHandler.Instance.PlayerAnim, OriLayers.Instance.SecondaryLayer);
       TrailAnim = new Animation(oPlayer, AnimationHandler.Instance.PlayerAnim, OriLayers.Instance.Trail);

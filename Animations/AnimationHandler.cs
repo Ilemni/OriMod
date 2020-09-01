@@ -7,7 +7,15 @@ namespace OriMod.Animations {
   /// Stores all animations in the mod. Animation data is hardcoded here.
   /// </summary>
   internal sealed class AnimationHandler : SingleInstance<AnimationHandler> {
-    private AnimationHandler() { }
+    /// <summary>
+    /// Creates the singleton instance of <see cref="AnimationHandler"/>.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Animation classes are not allowed to be constructed on a server.</exception>
+    private AnimationHandler() {
+      if (Terraria.Main.netMode == Terraria.ID.NetmodeID.Server) {
+        throw new InvalidOperationException($"Animation classes are not allowed to be constructed on servers.");
+      }
+    }
 
     private static Frame F(int x, int y, int duration = -1) => new Frame(x, y, duration);
     private static Header H(LoopMode l = LoopMode.Always, Direction d = Direction.Forward, ReferencedTexture2D texture = null) => new Header(loop: l, direction: d, rtx: texture);

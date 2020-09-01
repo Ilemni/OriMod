@@ -961,14 +961,14 @@ namespace OriMod {
           idx = layers.Count - 1;
         }
         if (IsOri) {
-          animations.TrailAnim.InsertInLayers(layers, idx++);
-          animations.GlideAnim.InsertInLayers(layers, idx++);
-          animations.BashAnim.InsertInLayers(layers, idx++);
+          animations.TrailAnim.TryInsertInLayers(layers, idx++);
+          animations.GlideAnim.TryInsertInLayers(layers, idx++);
+          animations.BashAnim.TryInsertInLayers(layers, idx++);
         }
         if (!player.dead && !player.invis) {
-          animations.PlayerAnim.InsertInLayers(layers, idx++);
+          animations.PlayerAnim.TryInsertInLayers(layers, idx++);
           if (IsOri) {
-            animations.SecondaryLayer.InsertInLayers(layers, idx++);
+            animations.SecondaryLayer.TryInsertInLayers(layers, idx++);
           }
         }
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
