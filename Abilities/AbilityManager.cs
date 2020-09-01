@@ -173,7 +173,7 @@ namespace OriMod.Abilities {
 
       // Tick
       foreach (var ability in this) {
-        if (ability.InUse || oPlayer.IsLocal) {
+        if (ability.Unlocked) {
           ability.CurrentTime++;
           ability.Tick();
         }
@@ -181,7 +181,9 @@ namespace OriMod.Abilities {
 
       // Update
       foreach (var ability in this) {
-        ability.Update();
+        if (ability.Unlocked) {
+          ability.Update();
+        }
       }
     }
 

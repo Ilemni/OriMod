@@ -200,6 +200,9 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreReadPacket(BinaryReader r) {
       AbilityState = (State)r.ReadByte();
+      if (this is ILevelable levelable) {
+        levelable.Level = r.ReadByte();
+      }
       CurrentTime = r.ReadInt32();
       ReadPacket(r);
     }
@@ -209,6 +212,9 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreWritePacket(ModPacket packet) {
       packet.Write((byte)AbilityState);
+      if (this is ILevelable levelable) {
+        packet.Write(levelable.Level);
+      }
       packet.Write(CurrentTime);
       WritePacket(packet);
     }
@@ -226,12 +232,12 @@ namespace OriMod.Abilities {
 
     #region Ticking and Updating
     /// <summary>
-    /// Called in <see cref="OriPlayer.PostUpdateRunSpeeds"/>, directly after <see cref="Update"/>.
-    /// Always called, this should <strong>only</strong> be used for managing <see cref="AbilityState"/>.
+    /// Called in <see cref="OriPlayer.PostUpdateRunSpeeds"/>, directly before <see cref="Update"/>.
+    /// Always called, this should be used primarily for managing <see cref="AbilityState"/>.
     /// </summary>
     /// <remarks>
     /// As some changes are only possible to make on the local client (i.e. Glide due to dependence on <see cref="OriMod.FeatherKey"/>), the only changes should be to state.
-    /// <para>If some other changes must be made here and not in any Update methods (i.e. Bash targeting), they must be synced in <see cref="ReadPacket(BinaryReader)"/> and <see cref="WritePacket(ModPacket)"/>.</para>
+    /// If some other changes must be made here and not in any Update methods (i.e. Bash targeting), they must be synced in <see cref="ReadPacket(BinaryReader)"/> and <see cref="WritePacket(ModPacket)"/>.
     /// </remarks>
     internal abstract void Tick();
 
