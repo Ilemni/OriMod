@@ -139,6 +139,9 @@ namespace OriMod {
       }
     }
 
+    /// <summary>
+    /// Synced input for using <see cref="Glide"/>.
+    /// </summary>
     public bool featherKeyDown {
       get => _featherKeyDown;
       set {
@@ -200,6 +203,21 @@ namespace OriMod {
 
     private readonly RandomChar randJump = new RandomChar();
     private readonly RandomChar randHurt = new RandomChar();
+
+    /// <summary>
+    /// <see cref="AnimationHandler.PlayerAnim"/>["TransformStart"] track duration.
+    /// </summary>
+    private int TransformStartDuration => 392;
+
+    /// <summary>
+    /// <see cref="AnimationHandler.PlayerAnim"/>["TransformEnd"] track duration.
+    /// </summary>
+    private int TransformEndDuration => 235;
+
+    /// <summary>
+    /// For cancelling the transformation animation early on subsequent transformations.
+    /// </summary>
+    private int TransformEndEarlyDuration => 62;
 
     #region Animation Properties
     /// <summary>
@@ -351,7 +369,7 @@ namespace OriMod {
     internal void BeginTransformation() {
       Transforming = true;
       transformDirection = (sbyte)player.direction;
-      transformTimer = animations.PlayerAnim.source["TransformEnd"].duration + animations.PlayerAnim.source["TransformStart"].duration;
+      transformTimer = TransformStartDuration + TransformEndDuration;
     }
 
     /// <summary>
@@ -638,7 +656,7 @@ namespace OriMod {
         float rate = HasTransformedOnce ? RepeatedTransformRate : 1;
         AnimationTime += rate - 1;
         transformTimer -= rate;
-        if (transformTimer < 0 || HasTransformedOnce && transformTimer < animations.PlayerAnim.source["TransformEnd"].duration - 62) {
+        if (transformTimer < 0 || HasTransformedOnce && transformTimer < TransformEndDuration - TransformEndEarlyDuration) {
           transformTimer = 0;
           Transforming = false;
           IsOri = true;
@@ -739,9 +757,8 @@ namespace OriMod {
       if (Transforming) {
         player.direction = transformDirection;
         player.controlUseItem = false;
-        int dur = AnimationHandler.Instance.PlayerAnim["TransformEnd"].duration;
-        if (transformTimer > dur - 10) {
-          if (transformTimer < dur) {
+        if (transformTimer > TransformEndDuration - 10) {
+          if (transformTimer < TransformEndDuration) {
             player.gravity = 9f;
             IsOri = true;
           }
