@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -531,34 +532,8 @@ namespace OriMod {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + randJump.NextNoRepeat(5), 0.75f);
       }
       bool oldGrounded = IsGrounded;
-
-      #region Update IsGrounded
-      IsGrounded = false;
-      float vel = player.velocity.Y * player.gravDir;
-      if (vel >= 0 && vel < 0.1f) {
-        Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
-        feetVect.Y += 1f / 255f * player.gravDir;
-        Point pos = feetVect.ToTileCoordinates();
-        if (player.fireWalk || player.waterWalk || player.waterWalk2) {
-          Tile tile = Main.tile[pos.X, pos.Y];
-          bool testblock = tile.liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
-          if (testblock) {
-            IsGrounded = tile.lava() ? player.fireWalk : (player.waterWalk || player.waterWalk2);
-          }
-        }
-        if (!IsGrounded) {
-          IsGrounded = !Collision.IsClearSpotTest(player.position + new Vector2(0, 8 * player.gravDir), 16f, player.width, player.height, false, false, (int)player.gravDir, true, true);
-        }
-      }
-      #endregion
-
-      #region Update OnWall
-      Point p = new Vector2(
-        player.Center.X + player.direction + player.direction * player.width * 0.5f,
-        player.position.Y + (player.gravDir < 0f ? -1f : 2f)
-      ).ToTileCoordinates();
-      OnWall = WorldGen.SolidTile(p.X, p.Y + 1) && WorldGen.SolidTile(p.X, p.Y + 2);
-      #endregion
+      IsGrounded = CheckGrounded();
+      OnWall = CheckOnWall();
 
       // Footstep effects
       if (!Main.dedServ && IsGrounded) {
@@ -584,6 +559,32 @@ namespace OriMod {
           }
         }
       }
+    }
+
+    private bool CheckGrounded() {
+      float vel = player.velocity.Y * player.gravDir;
+      if (vel < 0 && vel > 0.1f) {
+        return false;
+      }
+      Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
+      feetVect.Y += 1f / 255f * player.gravDir;
+      Point pos = feetVect.ToTileCoordinates();
+      if (player.fireWalk || player.waterWalk || player.waterWalk2) {
+        Tile tile = Main.tile[pos.X, pos.Y];
+        bool testblock = tile.liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
+        if (testblock && tile.lava() ? player.fireWalk : (player.waterWalk || player.waterWalk2)) {
+          return true;
+        }
+      }
+      return !Collision.IsClearSpotTest(player.position + new Vector2(0, 8 * player.gravDir), 16f, player.width, player.height, false, false, (int)player.gravDir, true, true);
+    }
+
+    private bool CheckOnWall() {
+      Point p = new Vector2(
+        player.Center.X + player.direction + player.direction * player.width * 0.5f,
+        player.position.Y + (player.gravDir < 0f ? -1f : 2f)
+      ).ToTileCoordinates();
+      return WorldGen.SolidTile(p.X, p.Y + 1) && WorldGen.SolidTile(p.X, p.Y + 2);
     }
 
     public override void FrameEffects() {
