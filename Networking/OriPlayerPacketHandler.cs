@@ -17,13 +17,12 @@ namespace OriMod.Networking {
       BitsByte flags = reader.ReadByte();
       BitsByte ctrl = reader.ReadByte();
       bool oriSet = flags[0];
-      bool flashing = flags[1];
-      bool transforming = flags[2];
-      bool unrestrictedMovement = flags[3];
-      bool seinMinionActive = flags[4];
-      bool mpcPlayerLight = flags[5];
-      ushort transformTimer = flags[2] ? reader.ReadUInt16() : (ushort)0;
-      byte seinMinionType = flags[4] ? reader.ReadByte() : (byte)0;
+      bool transforming = flags[1];
+      bool unrestrictedMovement = flags[2];
+      bool seinMinionActive = flags[3];
+      bool mpcPlayerLight = flags[4];
+      ushort transformTimer = transforming ? reader.ReadUInt16() : (ushort)0;
+      byte seinMinionType = seinMinionActive ? reader.ReadByte() : (byte)0;
       Color spriteColorPrimary = reader.ReadRGB();
       Color spriteColorSecondary = reader.ReadRGBA();
 
@@ -31,7 +30,6 @@ namespace OriMod.Networking {
       bool feather = ctrl[1];
 
       fromPlayer.IsOri = oriSet;
-      fromPlayer.flashing = flashing;
       fromPlayer.Transforming = transforming;
       fromPlayer.UnrestrictedMovement = unrestrictedMovement;
       fromPlayer.transformTimer = transformTimer;
@@ -62,22 +60,21 @@ namespace OriMod.Networking {
       var flags = new BitsByte();
       var ctrl = new BitsByte();
       flags[0] = fromPlayer.IsOri;
-      flags[1] = fromPlayer.flashing;
-      flags[2] = fromPlayer.Transforming;
-      flags[3] = fromPlayer.UnrestrictedMovement;
-      flags[4] = fromPlayer.SeinMinionActive;
-      flags[5] = fromPlayer.multiplayerPlayerLight;
+      flags[1] = fromPlayer.Transforming;
+      flags[2] = fromPlayer.UnrestrictedMovement;
+      flags[3] = fromPlayer.SeinMinionActive;
+      flags[4] = fromPlayer.multiplayerPlayerLight;
       
       ctrl[0] = fromPlayer.justPressedJumped;
       ctrl[1] = fromPlayer.featherKeyDown;
 
       packet.Write(flags);
       packet.Write(ctrl);
-      if (flags[2]) {
+      if (fromPlayer.Transforming) {
         packet.Write((ushort)fromPlayer.transformTimer);
       }
 
-      if (flags[4]) {
+      if (fromPlayer.SeinMinionActive) {
         packet.Write((byte)fromPlayer.SeinMinionType);
       }
 
