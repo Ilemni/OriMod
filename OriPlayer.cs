@@ -114,12 +114,12 @@ namespace OriMod {
     /// <summary>
     /// <see cref="AnimationTrackData.PlayerAnim"/>["TransformEnd"] track duration.
     /// </summary>
-    private int TransformEndDuration => 235;
+    private int TransformEndDuration => TransformStartDuration + 225;
 
     /// <summary>
     /// For cancelling the transformation animation early on subsequent transformations.
     /// </summary>
-    private int TransformEndEarlyDuration => 62;
+    private int TransformEndEarlyDuration => TransformStartDuration + 68;
     #endregion
 
     /// <summary>
@@ -305,7 +305,7 @@ namespace OriMod {
     internal void BeginTransformation() {
       Transforming = true;
       transformDirection = (sbyte)player.direction;
-      transformTimer = TransformStartDuration + TransformEndDuration;
+      transformTimer = 0;
     }
 
     /// <summary>
@@ -370,13 +370,7 @@ namespace OriMod {
 
     public override void ResetEffects() {
       if (Transforming) {
-        float rate = HasTransformedOnce ? RepeatedTransformRate : 1;
-        transformTimer -= rate;
-        if (transformTimer < 0 || HasTransformedOnce && transformTimer < TransformEndDuration - TransformEndEarlyDuration) {
-          transformTimer = 0;
-          Transforming = false;
-          IsOri = true;
-        }
+        transformTimer += HasTransformedOnce ? RepeatedTransformRate : 1;
       }
       if (IsOri) {
         if (playerDustTimer > 0) {
@@ -473,16 +467,22 @@ namespace OriMod {
       if (Transforming) {
         player.direction = transformDirection;
         player.controlUseItem = false;
-        if (transformTimer > TransformEndDuration - 10) {
-          if (transformTimer < TransformEndDuration) {
-            player.gravity = 9f;
-            IsOri = true;
-          }
-          else {
-            player.velocity = new Vector2(0, -0.00055f * transformTimer);
-            player.gravity = 0;
-            CreatePlayerDust();
-          }
+        if (transformTimer < TransformStartDuration - 10) {
+          // Starting
+          player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - transformTimer));
+          player.gravity = 0;
+          CreatePlayerDust();
+        }
+        else if (transformTimer < TransformStartDuration) {
+          // Near end of start
+          player.gravity = 9f;
+          IsOri = true;
+        }
+        else if (transformTimer >= TransformEndDuration || HasTransformedOnce && transformTimer > TransformEndEarlyDuration) {
+          // End transformation
+          transformTimer = 0;
+          Transforming = false;
+          IsOri = true;
         }
         player.runAcceleration = 0;
         player.maxRunSpeed = 0;
