@@ -310,7 +310,7 @@ namespace OriMod.Animations {
 
       // Increment frames based on time (this should rarely be above 1)
       int duration = overrideDuration != -1 ? overrideDuration : frames[FrameIndex].Duration;
-      if (FrameTime < duration) {
+      if (FrameTime < duration || duration < 0) {
         return;
       }
 
