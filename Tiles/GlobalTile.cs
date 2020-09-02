@@ -33,7 +33,7 @@ namespace OriMod.Tiles {
       if (burrow.InUse) {
         BurrowEffects(i, j, ref drawColor, oPlayer);
       }
-      if (oPlayer.debugMode) {
+      if (oPlayer.debugMode && oPlayer.abilities.burrow.InUse) {
         var pos = new Point(i, j);
         if (Burrow.InnerHitbox.Points.Contains(pos)) {
           drawColor = Color.Red;
