@@ -81,7 +81,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// End the Charge Dash. Ending behavior depends on <paramref name="byNpcContact"/>.
     /// </summary>
-    /// <param name="byNpcContact">If the cause for ending is by player contact with <see cref="Target"/> (true), or for any other reason (false)</param>
+    /// <param name="byNpcContact">If the cause for ending is by player contact with <see cref="Target"/> (true), or for any other reason (false).</param>
     private void Start() {
       float tempDist = 720f * 720f;
       for (int n = 0; n < Main.maxNPCs; n++) {

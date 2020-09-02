@@ -138,7 +138,7 @@ namespace OriMod.Abilities {
 
     /// <summary>
     /// Time the ability was in the current State.
-    /// <para>This is automatically incremented every frame, and is reset to 0 from <see cref="SetState(State, bool)"/></para>
+    /// <para>This is automatically incremented every frame, and is reset to 0 from <see cref="SetState(State, bool)"/>.</para>
     /// </summary>
     public int CurrentTime { get; internal set; }
 

@@ -8,12 +8,12 @@ namespace OriMod.Networking {
     private ModNetHandler() { }
 
     /// <summary>
-    /// Type for <see cref="OriPlayerPacketHandler"/>
+    /// Type for <see cref="OriPlayerPacketHandler"/>.
     /// </summary>
     internal const byte OriState = 1;
 
     /// <summary>
-    /// Type for <see cref="AbilityPacketHandler"/>
+    /// Type for <see cref="AbilityPacketHandler"/>.
     /// </summary>
     internal const byte AbilityState = 2;
 

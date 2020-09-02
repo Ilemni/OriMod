@@ -12,7 +12,7 @@ namespace OriMod {
     private OriLayers() { }
 
     /// <summary>
-    /// <see cref="PlayerLayer"/> that represents the base sprite for the <see cref="OriPlayer"/> sprite.
+    /// Draws the Ori sprite.
     /// </summary>
     internal readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
@@ -34,7 +34,7 @@ namespace OriMod {
     });
 
     /// <summary>
-    /// <see cref="PlayerLayer"/> that represents the trail for the <see cref="OriPlayer"/>.
+    /// Draws the Ori trails.
     /// </summary>
     internal readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
       Player player = drawInfo.drawPlayer;
@@ -51,7 +51,7 @@ namespace OriMod {
     });
 
     /// <summary>
-    /// <see cref="PlayerLayer"/> that represents the <see cref="Abilities.Bash"/> arrow when a player Bashes.
+    /// Draws the <see cref="Abilities.Bash"/> arrow when the player Bashes.
     /// </summary>
     internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
@@ -69,7 +69,7 @@ namespace OriMod {
     });
 
     /// <summary>
-    /// <see cref="PlayerLayer"/> that represents the <see cref="Abilities.Glide"/> feather when a player Glides.
+    /// Draws the <see cref="Abilities.Glide"/> feather when the player glides.
     /// </summary>
     internal readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();

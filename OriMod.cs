@@ -29,28 +29,34 @@ namespace OriMod {
 
     internal static log4net.ILog Log => Instance.Logger;
 
-    /// <summary> Gets localiced text with key `Mods.OriMod.{key}`</summary>
-    /// <param name="key">Key in lang file</param>
+    /// <summary>
+    /// Gets localiced text with key <c>Mods.OriMod.<paramref name="key"/></c>.
+    /// </summary>
+    /// <param name="key">Key in lang file.</param>
     internal static LocalizedText GetText(string key) => Language.GetText($"Mods.OriMod.{key}");
 
-    /// <summary> Gets localiced text with key `Mods.OriMod.Error.{key}`</summary>
-    /// <param name="key">Key in lang file, starting with `Error.`</param>
+    /// <summary>
+    /// Gets localiced text with key <c>Mods.OriMod.Error.<paramref name="key"/></c>.
+    /// </summary>
+    /// <param name="key">Key in lang file, that would start with <c>Error.</c></param>
     internal static LocalizedText GetErrorText(string key) => Language.GetText($"Mods.OriMod.Error.{key}");
 
-    /// <summary> Shows an error in chat and in the logger, using default localized text. </summary>
-    /// <param name="key">Key in lang file</param>
-    /// <param name="log">Write to logger</param>
+    /// <summary>
+    /// Shows an error in chat and in the logger, with key <c>Mods.OriMod.Error.<paramref name="key"/></c>.
+    /// </summary>
+    /// <param name="key">Key in lang file, that would start with <c>Error.</c></param>
+    /// <param name="log">Whether or not to write to logger.</param>
     internal static void Error(string key, bool log = true) => PrintError(GetErrorText(key).Value, log);
 
-    /// <summary> Shows an error in chat and in the logger, using default localized text. Has formatting. </summary>
-    /// <param name="key">Key in lang file</param>
-    /// <param name="log">Write to logger</param>
+    /// <summary> Shows an error in chat and in the logger, using default localized text. Has formatting.</summary>
+    /// <param name="key">Key in lang file, that would start with <c>Error.</c></param>
+    /// <param name="log">Whether or not to write to logger.</param>
     /// <param name="args">Formatting args</param>
     internal static void Error(string key, bool log = true, params object[] args) => PrintError(GetErrorText(key).Format(args), log);
 
-    /// <summary> Shows an error in chat and in the logger, using a string literal. </summary>
-    /// <param name="text">String literal to show</param>
-    /// <param name="log">Write to logger</param>
+    /// <summary> Shows an error in chat and in the logger, using a string literal.</summary>
+    /// <param name="text">String literal to print.</param>
+    /// <param name="log">Whether or not to write to logger.</param>
     internal static void PrintError(string text, bool log = true) {
       if (log) {
         Log.Error(text);
@@ -59,7 +65,7 @@ namespace OriMod {
     }
     #endregion
 
-    [System.Obsolete] public static ModHotKey SoulLinkKey; // Unused
+    [Obsolete] public static ModHotKey SoulLinkKey; // Unused
     public static ModHotKey BashKey;
     public static ModHotKey DashKey;
     public static ModHotKey ClimbKey;

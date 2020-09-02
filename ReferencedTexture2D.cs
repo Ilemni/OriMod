@@ -3,14 +3,14 @@ using Terraria.ModLoader;
 
 namespace OriMod {
   /// <summary>
-  /// This class exists simply because I'd rather have direct reference to textures
-  /// instead of getting them from a string dictionary using ModContent.GetTexture(),
+  /// This class exists simply because I'd rather have direct reference to textures.
+  /// instead of getting them from a string dictionary using <see cref="ModContent.GetTexture(string)"/>,
   /// multiple times per frame depending on number of textures.
   /// </summary>
   /// <remarks>
-  /// Turns out that even though the description of mod.GetTexture() says it's shorthand
-  /// for ModContent.GetTexture(), that is false and the reverse is true
-  /// (ModContent.GetTexture() calls mod.GetTexture())
+  /// Turns out that even though the description of <see cref="Mod.GetTexture(string)"/> says it's shorthand
+  /// for <see cref="ModContent.GetTexture(string)"/>, that is false and the reverse is true
+  /// (<see cref="ModContent.GetTexture(string)"/> calls <see cref="Mod.GetTexture(string)"/>)
   /// </remarks>
   public class ReferencedTexture2D {
     public ReferencedTexture2D(string texturePath) {

@@ -350,9 +350,9 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Prints a debug message if "debug mode" is enabled
+    /// Prints a debug message if "debug mode" is enabled.
     /// </summary>
-    /// <param name="msg">Message to print</param>
+    /// <param name="msg">Message to print.</param>
     internal void Debug(string msg) {
       if (debugMode && IsLocal) {
         Main.NewText(msg);
@@ -360,7 +360,7 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Begins the transformation process from normal state to Spirit state
+    /// Begins the transformation process from normal state to Spirit state.
     /// </summary>
     internal void BeginTransformation() {
       Transforming = true;
@@ -592,38 +592,37 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Sets current animation frame data
+    /// Sets current animation frame data.
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="frameIndex"></param>
-    /// <param name="time"></param>
-    /// <param name="frame"></param>
-    /// <param name="animRads"></param>
+    /// <param name="name">Sets <see cref="AnimationName"/>.</param>
+    /// <param name="frameIndex">Sets <see cref="AnimationIndex"/>.</param>
+    /// <param name="time">Sets <see cref="AnimationTime"/>.</param>
+    /// <param name="frame">Sets <see cref="animationTile"/>.</param>
+    /// <param name="animRads">Sets <see cref="AnimationRotation"/>.</param>
     internal void SetFrame(string name, int frameIndex, float time, Frame frame, float animRads) {
       AnimationName = name;
       AnimationIndex = frameIndex;
       AnimationTime = time;
-      AnimationFrame = TileToPixel(frame.Tile);
+      animationTile = frame.Tile;
       AnimationRotation = animRads;
     }
 
     /// <summary>
     /// Called when a different value is supplied to this.AnimName.
     /// </summary>
-    /// <param name="value">New value of AnimName</param>
+    /// <param name="value">New value of <see cref="AnimationName"/>.</param>
     private void OnAnimNameChange(string value) {
       if (Main.dedServ) {
         return;
       }
 
       animations.PlayerAnim.CheckIfValid(value);
-      animations.TrailAnim.CheckIfValid(value);
       animations.BashAnim.CheckIfValid(value);
       animations.GlideAnim.CheckIfValid(value);
     }
 
     /// <summary>
-    /// Resets the data of this OriPlayer instance
+    /// Resets the data of this <see cref="OriPlayer"/> instance.
     /// </summary>
     internal void ResetData() {
       IsOri = false;

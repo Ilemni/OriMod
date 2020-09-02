@@ -28,10 +28,10 @@ namespace OriMod.Utilities {
     /// </summary>
     /// <param name="length">Range of letters from "A" that may be returned. Must be at least 1.</param>
     /// <returns>A char between A and alphabet[<paramref name="length"/>].</returns>
-    /// <exception cref="System.ArgumentOutOfRangeException">Value must be between 1 and <see cref="RandMaxValue"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Value must be between 1 and <see cref="RandMaxValue"/>.</exception>
     public static char Next(int length) {
       if (length < 1 || length > RandMaxValue) {
-        throw new System.ArgumentOutOfRangeException(nameof(length), "Value must be between 1 and " + RandMaxValue);
+        throw new ArgumentOutOfRangeException(nameof(length), "Value must be between 1 and " + RandMaxValue);
       }
 
       return alphabet[Main.rand.Next(length)];
