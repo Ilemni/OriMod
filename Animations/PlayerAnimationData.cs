@@ -309,20 +309,18 @@ namespace OriMod.Animations {
       }
 
       // Increment frames based on time (this should rarely be above 1)
-      int framesToAdvance = 0;
       int duration = overrideDuration != -1 ? overrideDuration : frames[FrameIndex].Duration;
-      if (duration > 0) {
-        while (FrameTime > duration) {
-          FrameTime -= duration;
-          framesToAdvance++;
-          if (framesToAdvance + FrameIndex > lastFrame) {
-            FrameTime %= duration;
-          }
-        }
+      if (FrameTime < duration) {
+        return;
       }
 
-      if (framesToAdvance == 0) {
-        return;
+      int framesToAdvance = 0;
+      while (FrameTime >= duration) {
+        FrameTime -= duration;
+        framesToAdvance++;
+        if (framesToAdvance + FrameIndex > lastFrame) {
+          FrameTime %= duration;
+        }
       }
 
       // Loop logic
