@@ -921,55 +921,47 @@ namespace OriMod {
     }
 
     public override void ModifyDrawLayers(List<PlayerLayer> layers) {
-      if (Main.dedServ) {
+      if (!IsOri && !Transforming) {
         return;
       }
 
-      if (IsOri || Transforming) {
-        #region Disable vanilla layers
-        PlayerLayer.Skin.visible = false;
-        PlayerLayer.Arms.visible = false;
-        PlayerLayer.Body.visible = false;
-        PlayerLayer.Face.visible = false;
-        PlayerLayer.Head.visible = false;
-        PlayerLayer.Legs.visible = false;
-        PlayerLayer.WaistAcc.visible = false;
-        PlayerLayer.NeckAcc.visible = false;
-        PlayerLayer.ShieldAcc.visible = false;
-        PlayerLayer.FaceAcc.visible = false;
-        PlayerLayer.Hair.visible = false;
-        PlayerLayer.ShoeAcc.visible = false;
-        PlayerLayer.HandOnAcc.visible = false;
-        PlayerLayer.HandOffAcc.visible = false;
-        if (OnWall || Transforming || abilities.stomp.InUse || abilities.airJump.InUse || abilities.burrow.InUse || abilities.chargeJump.InUse || abilities.wallChargeJump.InUse) {
-          PlayerLayer.Wings.visible = false;
-        }
-        #endregion
-
-        /*if (Abilities.soulLink.PlacedSoulLink) {
-          layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
-        }*/
-        int idx = Math.Min(layers.IndexOf(PlayerLayer.HeldItem), layers.IndexOf(PlayerLayer.HeldProjFront));
-        if (idx >= 0) {
-          idx -= 2;
-          if (idx < 0) {
-            idx = 0;
-          }
-        }
-        else {
-          idx = layers.Count - 1;
-        }
-        if (IsOri) {
-          animations.TrailAnim.TryInsertInLayers(layers, idx++);
-          animations.GlideAnim.TryInsertInLayers(layers, idx++);
-          animations.BashAnim.TryInsertInLayers(layers, idx++);
-        }
-        if (!player.dead && !player.invis) {
-          animations.PlayerAnim.TryInsertInLayers(layers, idx++);
-        }
-        player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
-        OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow.InUse && !player.mount.Active;
+      #region Disable vanilla layers
+      PlayerLayer.Skin.visible = false;
+      PlayerLayer.Arms.visible = false;
+      PlayerLayer.Body.visible = false;
+      PlayerLayer.Face.visible = false;
+      PlayerLayer.Head.visible = false;
+      PlayerLayer.Legs.visible = false;
+      PlayerLayer.WaistAcc.visible = false;
+      PlayerLayer.NeckAcc.visible = false;
+      PlayerLayer.ShieldAcc.visible = false;
+      PlayerLayer.FaceAcc.visible = false;
+      PlayerLayer.Hair.visible = false;
+      PlayerLayer.ShoeAcc.visible = false;
+      PlayerLayer.HandOnAcc.visible = false;
+      PlayerLayer.HandOffAcc.visible = false;
+      if (OnWall || Transforming || abilities.stomp.InUse || abilities.airJump.InUse || abilities.burrow.InUse || abilities.chargeJump.InUse || abilities.wallChargeJump.InUse) {
+        PlayerLayer.Wings.visible = false;
       }
+      #endregion
+
+      /*if (Abilities.soulLink.PlacedSoulLink) {
+        layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
+      }*/
+      int idx = layers.Contains(PlayerLayer.HeldItem) ? layers.IndexOf(PlayerLayer.HeldItem) : (layers.Count - 1);
+
+      if (IsOri) {
+        if (animations.PlayerAnim.Valid && !abilities.burrow.InUse && !player.mount.Active) {
+          layers.Insert(idx++, OriLayers.Instance.Trail);
+        }
+        animations.GlideAnim.TryInsertInLayers(layers, idx++);
+        animations.BashAnim.TryInsertInLayers(layers, idx++);
+      }
+      if (!player.dead && !player.invis) {
+        animations.PlayerAnim.TryInsertInLayers(layers, idx++);
+      }
+      player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
+      OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow.InUse && !player.mount.Active;
     }
 
     public override void OnEnterWorld(Player player) {

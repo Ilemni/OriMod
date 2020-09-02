@@ -13,7 +13,6 @@
         throw new System.InvalidOperationException($"Animation classes are not allowed to be constructed on servers.");
       }
       PlayerAnim = new Animation(oPlayer, AnimationHandler.Instance.PlayerAnim, OriLayers.Instance.PlayerSprite);
-      TrailAnim = new Animation(oPlayer, AnimationHandler.Instance.PlayerAnim, OriLayers.Instance.Trail);
       BashAnim = new Animation(oPlayer, AnimationHandler.Instance.BashAnim, OriLayers.Instance.BashArrow);
       GlideAnim = new Animation(oPlayer, AnimationHandler.Instance.GlideAnim, OriLayers.Instance.FeatherSprite);
     }
@@ -22,7 +21,6 @@
     /// Animation for the player sprite.
     /// </summary>
     public readonly Animation PlayerAnim;
-    public readonly Animation TrailAnim; // TODO: remove
     
     /// <summary>
     /// Animation for the Bash arrow sprite.
