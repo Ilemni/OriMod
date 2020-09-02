@@ -12,11 +12,11 @@ namespace OriMod.Animations {
     /// <summary>
     /// Creates a new instance of <see cref="Animation"/> for the given <see cref="OriPlayer"/>, using the given <see cref="AnimationSource"/> and rendering with <see cref="PlayerLayer"/>.
     /// </summary>
-    /// <param name="container"><see cref="AnimationContainer"/> instance this will belong to.</param>
+    /// <param name="container"><see cref="PlayerAnimationData"/> instance this will belong to.</param>
     /// <param name="source"><see cref="AnimationSource"/> to determine which sprite is drawn.</param>
     /// <param name="playerLayer"><see cref="PlayerLayer"/></param>
     /// <exception cref="System.InvalidOperationException">Animation classes are not allowed to be constructed on a server.</exception>
-    public Animation(AnimationContainer container, AnimationSource source, PlayerLayer playerLayer) {
+    public Animation(PlayerAnimationData container, AnimationSource source, PlayerLayer playerLayer) {
       if (Terraria.Main.netMode == Terraria.ID.NetmodeID.Server) {
         throw new System.InvalidOperationException($"Animation classes are not allowed to be constructed on servers.");
       }
@@ -65,7 +65,7 @@ namespace OriMod.Animations {
     /// <summary>
     /// <see cref="OriPlayer"/> this <see cref="Animation"/> belongs to.
     /// </summary>
-    public readonly AnimationContainer container;
+    public readonly PlayerAnimationData container;
 
     /// <summary>
     /// <see cref="AnimationSource"/> used for this <see cref="Animation"/>.

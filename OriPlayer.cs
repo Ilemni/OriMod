@@ -33,7 +33,7 @@ namespace OriMod {
     /// <summary>
     /// Container for all <see cref="OriMod.Animations.Animation"/>s on this OriPlayer instance.
     /// </summary>
-    internal AnimationContainer animations { get; private set; }
+    internal PlayerAnimationData animations { get; private set; }
 
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
@@ -204,12 +204,12 @@ namespace OriMod {
     private readonly RandomChar randHurt = new RandomChar();
 
     /// <summary>
-    /// <see cref="AnimationHandler.PlayerAnim"/>["TransformStart"] track duration.
+    /// <see cref="AnimationTrackData.PlayerAnim"/>["TransformStart"] track duration.
     /// </summary>
     private int TransformStartDuration => 392;
 
     /// <summary>
-    /// <see cref="AnimationHandler.PlayerAnim"/>["TransformEnd"] track duration.
+    /// <see cref="AnimationTrackData.PlayerAnim"/>["TransformEnd"] track duration.
     /// </summary>
     private int TransformEndDuration => 235;
 
@@ -222,12 +222,12 @@ namespace OriMod {
     /// <summary>
     /// Shorthand for <c>AnimationHandler.PlayerAnim.TileSize.X.</c>
     /// </summary>
-    internal static int SpriteWidth => AnimationHandler.Instance.PlayerAnim.spriteSize.X;
+    internal static int SpriteWidth => AnimationTrackData.Instance.PlayerAnim.spriteSize.X;
 
     /// <summary>
     /// Shorthand for <c>AnimationHandler.PlayerAnim.TileSize.Y.</c>
     /// </summary>
-    internal static int SpriteHeight => AnimationHandler.Instance.PlayerAnim.spriteSize.Y;
+    internal static int SpriteHeight => AnimationTrackData.Instance.PlayerAnim.spriteSize.Y;
 
     /// <summary>
     /// For making the player sprite appear red during hurt animations.
@@ -374,7 +374,7 @@ namespace OriMod {
       abilities = new AbilityManager(this);
 
       if (!Main.dedServ) {
-        animations = new AnimationContainer(this);
+        animations = new PlayerAnimationData(this);
         trail = new Trail(this, 26);
       }
     }

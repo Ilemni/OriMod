@@ -7,20 +7,20 @@ namespace OriMod.Animations {
   /// <summary>
   /// Container for various <see cref="Animation"/>s and data to be attached to an <see cref="OriPlayer"/>. Manages advancement of frames.
   /// </summary>
-  public class AnimationContainer {
+  public class PlayerAnimationData {
     /// <summary>
-    /// Creates a new instance of <see cref="AnimationContainer"/> for the given <see cref="OriPlayer"/>.
+    /// Creates a new instance of <see cref="PlayerAnimationData"/> for the given <see cref="OriPlayer"/>.
     /// </summary>
     /// <param name="oPlayer"><see cref="OriPlayer"/> instance the animations will belong to.</param>
     /// <exception cref="InvalidOperationException">Animation classes are not allowed to be constructed on a server.</exception>
-    internal AnimationContainer(OriPlayer oPlayer) {
+    internal PlayerAnimationData(OriPlayer oPlayer) {
       if (Main.netMode == Terraria.ID.NetmodeID.Server) {
         throw new InvalidOperationException($"Animation classes are not allowed to be constructed on servers.");
       }
       this.oPlayer = oPlayer;
-      playerAnim = new Animation(this, AnimationHandler.Instance.PlayerAnim, OriLayers.Instance.PlayerSprite);
-      bashAnim = new Animation(this, AnimationHandler.Instance.BashAnim, OriLayers.Instance.BashArrow);
-      glideAnim = new Animation(this, AnimationHandler.Instance.GlideAnim, OriLayers.Instance.FeatherSprite);
+      playerAnim = new Animation(this, AnimationTrackData.Instance.PlayerAnim, OriLayers.Instance.PlayerSprite);
+      bashAnim = new Animation(this, AnimationTrackData.Instance.BashAnim, OriLayers.Instance.BashArrow);
+      glideAnim = new Animation(this, AnimationTrackData.Instance.GlideAnim, OriLayers.Instance.FeatherSprite);
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ namespace OriMod.Animations {
     public bool Reversed { get; private set; }
 
     /// <summary>
-    /// The <see cref="OriPlayer"/> instance this <see cref="AnimationContainer"/> instance belongs to.
+    /// The <see cref="OriPlayer"/> instance this <see cref="PlayerAnimationData"/> instance belongs to.
     /// </summary>
     public readonly OriPlayer oPlayer;
 

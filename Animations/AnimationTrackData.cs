@@ -5,12 +5,12 @@ namespace OriMod.Animations {
   /// <summary>
   /// Stores all animations in the mod. Animation data is hardcoded here.
   /// </summary>
-  internal sealed class AnimationHandler : SingleInstance<AnimationHandler> {
+  internal sealed class AnimationTrackData : SingleInstance<AnimationTrackData> {
     /// <summary>
-    /// Creates the singleton instance of <see cref="AnimationHandler"/>.
+    /// Creates the singleton instance of <see cref="AnimationTrackData"/>.
     /// </summary>
     /// <exception cref="InvalidOperationException">Animation classes are not allowed to be constructed on a server.</exception>
-    private AnimationHandler() {
+    private AnimationTrackData() {
       if (Terraria.Main.netMode == Terraria.ID.NetmodeID.Server) {
         throw new InvalidOperationException($"Animation classes are not allowed to be constructed on servers.");
       }
