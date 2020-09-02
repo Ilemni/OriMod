@@ -21,21 +21,16 @@ namespace OriMod {
       data.color = oPlayer.flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimationName == "TransformStart" ? Color.White : oPlayer.SpriteColorPrimary;
       Main.playerDrawData.Add(data);
 
+      if (oPlayer.IsOri && oPlayer.AnimationName != "TransformStart") {
+        data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.PlayerAnim);
+        data.color = oPlayer.flashing ? Color.Red : oPlayer.SpriteColorSecondary;
+        data.texture = OriTextures.Instance.PlayerSecondary;
+        Main.playerDrawData.Add(data);
+      }
+
       if (oPlayer.IsLocal) {
         oPlayer.abilities.burrow.DrawEffects();
       }
-    });
-
-    /// <summary>
-    /// <see cref="PlayerLayer"/> that represents secondary colors for the <see cref="OriPlayer"/> sprite.
-    /// </summary>
-    internal readonly PlayerLayer SecondaryLayer = new PlayerLayer("OriMod", "OriPlayer_SecondaryColor", delegate (PlayerDrawInfo drawInfo) {
-      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-
-      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.SecondaryLayer);
-      data.color = oPlayer.flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimationName == "TrasformStart" ? Color.White : oPlayer.SpriteColorSecondary;
-      data.texture = OriTextures.Instance.PlayerSecondary;
-      Main.playerDrawData.Add(data);
     });
 
     /// <summary>

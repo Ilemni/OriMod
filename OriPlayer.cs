@@ -617,7 +617,6 @@ namespace OriMod {
       }
 
       animations.PlayerAnim.CheckIfValid(value);
-      animations.SecondaryLayer.CheckIfValid(value);
       animations.TrailAnim.CheckIfValid(value);
       animations.BashAnim.CheckIfValid(value);
       animations.GlideAnim.CheckIfValid(value);
@@ -967,9 +966,6 @@ namespace OriMod {
         }
         if (!player.dead && !player.invis) {
           animations.PlayerAnim.TryInsertInLayers(layers, idx++);
-          if (IsOri) {
-            animations.SecondaryLayer.TryInsertInLayers(layers, idx++);
-          }
         }
         player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
         OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow.InUse && !player.mount.Active;
