@@ -144,7 +144,7 @@ namespace OriMod {
       ConfigClient = null;
       ConfigAbilities = null;
 
-      OnUnload();
+      OnUnload?.Invoke();
       OnUnload = null;
     }
 
