@@ -38,11 +38,16 @@ namespace OriMod {
     /// </summary>
     internal readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
       Player player = drawInfo.drawPlayer;
-      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-      if (!player.dead && !player.invis) {
-        oPlayer.trail.ResetNextTrail();
+      Trail trail = player.GetModPlayer<OriPlayer>().trail;
+      if (trail.lastTrailDrawTime >= Main.time) {
+        return;
       }
-      oPlayer.trail.AddTrailDrawDataToMain();
+      trail.lastTrailDrawTime = Main.time;
+
+      if (!player.dead && !player.invis) {
+        trail.ResetNextSegment();
+      }
+      Main.playerDrawData.AddRange(trail.TrailDrawDatas);
     });
 
     /// <summary>
