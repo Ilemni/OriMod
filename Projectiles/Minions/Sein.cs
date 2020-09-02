@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OriMod.Utilities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OriMod.Utilities;
 
 namespace OriMod.Projectiles.Minions {
   /// <summary>
-  /// Minion for Sein
+  /// Minion for the Ori character Sein.
   /// </summary>
   public abstract class Sein : Minion {
     static Sein() => OriMod.OnUnload += Unload;
@@ -48,16 +48,10 @@ namespace OriMod.Projectiles.Minions {
       projectile.position = PlayerSpace();
       baseHoverPosition = hoverPosition = PlayerSpace(0, -32);
       UpdateHoverPosition();
-      Initialize();
-    }
 
-    /// <summary>
-    /// Assigns fields that are based on <see cref="SeinType"/>
-    /// </summary>
-    private void Initialize() {
       var type = SeinType;
       data = SeinData.All[type - 1];
-      
+
       if (maxDistFromPlayer < data.targetMaxDist * 0.8f) {
         maxDistFromPlayer = data.targetMaxDist * 0.8f;
       }
@@ -66,12 +60,7 @@ namespace OriMod.Projectiles.Minions {
       projectile.height = data.seinHeight;
 
       spiritFlameType = mod.ProjectileType("SpiritFlame" + type);
-
-      spiritFlameSound =
-        type <= 2 ? "" :
-        type <= 4 ? "LevelB" :
-        type <= 6 ? "LevelC" :
-        type <= 8 ? "LevelD" : "";
+      spiritFlameSound = type <= 2 ? "" : type <= 4 ? "LevelB" : type <= 6 ? "LevelC" : type <= 8 ? "LevelD" : "";
     }
 
     private SeinData data;
@@ -92,7 +81,7 @@ namespace OriMod.Projectiles.Minions {
     }
 
     /// <summary>
-    /// Current Cooldown of Spirit Flame
+    /// Current Cooldown of Spirit Flame.
     /// </summary>
     /// <remarks>Uses <see cref="Projectile.ai"/>[0]</remarks>
     private int Cooldown {
@@ -101,14 +90,14 @@ namespace OriMod.Projectiles.Minions {
     }
 
     /// <summary>
-    /// ID of <see cref="SpiritFlame"/> to shoot. Assigned in <see cref="Initialize"/>
+    /// ID of <see cref="SpiritFlame"/> to shoot. Assigned in <see cref="SetDefaults"/>
     /// </summary>
     private int spiritFlameType;
 
     /// <summary>
-    /// Speed of the created <see cref="SpiritFlame"/>
+    /// Sound that plays when firing. Assigned in <see cref="SetDefaults"/>
     /// </summary>
-    private static float ShootSpeed => 50f;
+    private string spiritFlameSound;
 
     /// <summary>
     /// Damage multiplier for when the player manually fires Spirit Flame.
@@ -176,14 +165,9 @@ namespace OriMod.Projectiles.Minions {
     private static float MinDistFromNPC => 64f;
 
     /// <summary>
-    /// The furthest <see cref="baseHoverPosition"/> can be from the player. May be modified in <see cref="Initialize"/>
+    /// The furthest <see cref="baseHoverPosition"/> can be from the player. May be modified in <see cref="SetDefaults"/>.
     /// </summary>
     private float maxDistFromPlayer = 200f;
-
-    /// <summary>
-    /// Sound that plays when firing. Assigned in <see cref="Initialize"/>
-    /// </summary>
-    private string spiritFlameSound;
 
     /// <summary>
     /// Current index of <see cref="HoverPositions"/> that is active.
@@ -256,7 +240,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Sets <see cref="hoverPositionIdx"/> to <paramref name="idx"/>.
     /// </summary>
-    /// <param name="idx">TargetPosition index to change to</param>
+    /// <param name="idx">TargetPosition index to change to.</param>
     private void SetHoverPositionIdx(int idx) {
       hoverPositionIdx = idx;
       if (hoverPositionIdx >= HoverPositions.Length || hoverPositionIdx < 0) {
@@ -289,7 +273,7 @@ namespace OriMod.Projectiles.Minions {
     private readonly RandomChar rand = new RandomChar();
 
     /// <summary>
-    /// This is the somewhat subtle swaying about Sein does at any given time in Blind Forest
+    /// This is the somewhat subtle swaying about Sein does at any given time in Blind Forest.
     /// </summary>
     private void SeinMovement() {
       if (projectile.position.HasNaNs()) {
@@ -436,7 +420,7 @@ namespace OriMod.Projectiles.Minions {
       if (shootVel == Vector2.Zero) {
         shootVel = Vector2.UnitY;
       }
-      shootVel = Utils.RotatedBy(shootVel * ShootSpeed, rotation);
+      shootVel = Utils.RotatedBy(shootVel * data.projectileSpeedStart, rotation);
       projectile.velocity += shootVel.Normalized() * -0.2f;
 
       int dmg = (int)(projectile.damage * Main.player[projectile.owner].minionDamage *
@@ -446,13 +430,13 @@ namespace OriMod.Projectiles.Minions {
       Projectile spiritFlame = Projectile.NewProjectileDirect(projectile.Center, shootVel, spiritFlameType, dmg, projectile.knockBack, projectile.owner, 0, 0);
       if (npc is null) {
         var pos = Utils.RotatedBy(new Vector2(projectile.position.X, projectile.position.Y + Main.rand.Next(8, 48)), Main.rand.NextFloat((float)Math.PI * 2));
-        spiritFlame.ai[0] = pos.X;
+        spiritFlame.ai[0] = pos.X != 0 ? pos.X : float.Epsilon;
         spiritFlame.ai[1] = pos.Y;
         spiritFlame.timeLeft = 20;
       }
       else {
-        spiritFlame.ai[0] = npc.whoAmI;
-        spiritFlame.ai[1] = 0;
+        spiritFlame.ai[0] = 0;
+        spiritFlame.ai[1] = npc.whoAmI;
         spiritFlame.timeLeft = 70;
       }
     }
