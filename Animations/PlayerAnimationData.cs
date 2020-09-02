@@ -114,13 +114,12 @@ namespace OriMod.Animations {
         return;
       }
       if (oPlayer.abilities.burrow.InUse) {
-        double rad = Math.Atan2(abilities.burrow.velocity.X, -abilities.burrow.velocity.Y);
-        int deg = (int)(rad * (180 / Math.PI));
-        deg *= player.direction;
+        float rad = (float)Math.Atan2(abilities.burrow.velocity.X, -abilities.burrow.velocity.Y);
+        rad *= player.direction;
         if (player.gravDir < 0) {
-          deg += 180;
+          rad += (float)Math.PI;
         }
-        IncrementFrame("Burrow", rotation: deg);
+        IncrementFrame("Burrow", rotation: rad);
         return;
       }
       if (abilities.wallChargeJump.Active) {
