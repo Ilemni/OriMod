@@ -1,10 +1,10 @@
 using System;
 using Microsoft.Xna.Framework;
+using OriMod.Projectiles.Abilities;
+using OriMod.Utilities;
 using Terraria;
 using Terraria.Graphics.Shaders;
-using OriMod.Utilities;
 using Terraria.ModLoader;
-using OriMod.Projectiles.Abilities;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -33,8 +33,6 @@ namespace OriMod.Abilities {
 
     private int currentHoldDown;
 
-    public Projectile PlayerHitboxProjectile { get; private set; }
-
     private readonly RandomChar randStart = new RandomChar();
     private readonly RandomChar randActive = new RandomChar();
     private readonly RandomChar randEnd = new RandomChar();
@@ -51,7 +49,7 @@ namespace OriMod.Abilities {
     protected override void UpdateActive() {
       if (CurrentTime == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3));
-        PlayerHitboxProjectile = Projectile.NewProjectileDirect(player.Center, Vector2.Zero, ModContent.ProjectileType<StompProjectile>(), 30, 0f, player.whoAmI, 0, 1);
+        Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompProjectile>(), StompProjectile.Damage, 0f, player.whoAmI, 0, 1);
       }
       if (abilities.airJump.Active) {
         return;
@@ -76,8 +74,7 @@ namespace OriMod.Abilities {
         dust.velocity.Y = -Math.Abs(dust.velocity.Y);
       }
       PutOnCooldown();
-      Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompEnd>(), PlayerHitboxProjectile.damage, 0, player.whoAmI);
-      PlayerHitboxProjectile = null;
+      Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompEnd>(), StompProjectile.Damage, 0, player.whoAmI);
       SetState(State.Inactive);
     }
 

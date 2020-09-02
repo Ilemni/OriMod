@@ -9,11 +9,13 @@ namespace OriMod.Projectiles.Abilities {
   public sealed class StompProjectile : AbilityProjectile {
     public override byte abilityID => AbilityID.Stomp;
 
+    public static int Damage = 9 + (int)OriWorld.GlobalUpgrade * 9;
+
     public override void SetDefaults() {
       base.SetDefaults();
       projectile.width = 40;
       projectile.height = 56;
-      projectile.damage = 9 + (int)OriWorld.GlobalUpgrade * 9;
+      projectile.damage = Damage;
     }
 
     public override void Behavior() {
