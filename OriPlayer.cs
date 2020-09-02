@@ -47,6 +47,9 @@ namespace OriMod {
 
     internal bool debugMode = false;
 
+    /// <summary>
+    /// Stored between <see cref="PreHurt(bool, bool, ref int, ref int, ref bool, ref bool, ref bool, ref bool, ref PlayerDeathReason)"/> and <see cref="PostHurt(bool, bool, double, int, bool)"/>, determines if custom hurt sounds are played.
+    /// </summary>
     private bool useCustomHurtSound = false;
 
     /// <summary>
@@ -68,6 +71,7 @@ namespace OriMod {
     /// </summary>
     public bool IsLocal { get; private set; }
 
+    #region Transformation
     /// <summary>
     /// Represents if the player is currently transforming into Ori.
     /// </summary>
@@ -101,6 +105,22 @@ namespace OriMod {
     /// Direction a transformation began at. Facing direction is locked until the transformation ends.
     /// </summary>
     private sbyte transformDirection = 0;
+
+    /// <summary>
+    /// <see cref="AnimationTrackData.PlayerAnim"/>["TransformStart"] track duration.
+    /// </summary>
+    private int TransformStartDuration => 392;
+
+    /// <summary>
+    /// <see cref="AnimationTrackData.PlayerAnim"/>["TransformEnd"] track duration.
+    /// </summary>
+    private int TransformEndDuration => 235;
+
+    /// <summary>
+    /// For cancelling the transformation animation early on subsequent transformations.
+    /// </summary>
+    private int TransformEndEarlyDuration => 62;
+    #endregion
 
     /// <summary>
     /// Represents if the player is on the ground.
@@ -202,21 +222,6 @@ namespace OriMod {
 
     private readonly RandomChar randJump = new RandomChar();
     private readonly RandomChar randHurt = new RandomChar();
-
-    /// <summary>
-    /// <see cref="AnimationTrackData.PlayerAnim"/>["TransformStart"] track duration.
-    /// </summary>
-    private int TransformStartDuration => 392;
-
-    /// <summary>
-    /// <see cref="AnimationTrackData.PlayerAnim"/>["TransformEnd"] track duration.
-    /// </summary>
-    private int TransformEndDuration => 235;
-
-    /// <summary>
-    /// For cancelling the transformation animation early on subsequent transformations.
-    /// </summary>
-    private int TransformEndEarlyDuration => 62;
 
     #region Aesthetics
     /// <summary>
@@ -589,8 +594,7 @@ namespace OriMod {
       flashing = !player.immuneNoBlink && player.immuneTime % 12 > 6;
     }
 
-    public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // effects when character is hurt
-      useCustomHurtSound = false;
+    public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) {
       if (!IsOri) {
         return true;
       }

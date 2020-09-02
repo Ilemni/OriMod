@@ -74,8 +74,9 @@ namespace OriMod {
     }
 
     public override void OnChanged() {
-      if (Main.LocalPlayer.active) {
-        var oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
+      var player = Main.LocalPlayer;
+      if (player.active) {
+        var oPlayer = player.GetModPlayer<OriPlayer>();
         oPlayer.SpriteColorPrimary = PlayerColor;
         oPlayer.SpriteColorSecondary = PlayerColorSecondary;
       }
