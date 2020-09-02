@@ -18,7 +18,7 @@ namespace OriMod.Abilities {
 
     private static float JumpVelocity => 8.8f;
     private static int EndDuration => 32;
-    private int MaxJumps => MaxLevel;
+    private int MaxJumps => Level;
 
     internal ushort currentCount;
     private sbyte gravityDirection;
@@ -40,11 +40,13 @@ namespace OriMod.Abilities {
     private readonly RandomChar rand = new RandomChar();
 
     protected override void UpdateActive() {
-      if (currentCount == MaxJumps) {
-        oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + rand.NextNoRepeat(5), 0.7f);
-      }
-      else {
-        oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + rand.NextNoRepeat(4), 0.75f);
+      if (CurrentTime == 0) {
+        if (MaxJumps != 1 && currentCount == MaxJumps) {
+          oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + rand.NextNoRepeat(5), 0.7f);
+        }
+        else {
+          oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + rand.NextNoRepeat(4), 0.75f);
+        }
       }
       float newVel = -JumpVelocity * ((EndDuration - CurrentTime) / EndDuration);
       if (player.velocity.Y > newVel) {
