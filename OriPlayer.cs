@@ -534,18 +534,21 @@ namespace OriMod {
 
       #region Update IsGrounded
       IsGrounded = false;
-      Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
-      feetVect.Y += 1f / 255f * player.gravDir;
-      Point pos = feetVect.ToTileCoordinates();
-      if (player.fireWalk || player.waterWalk || player.waterWalk2) {
-        Tile tile = Main.tile[pos.X, pos.Y];
-        bool testblock = tile.liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
-        if (testblock) {
-          IsGrounded = tile.lava() ? player.fireWalk : (player.waterWalk || player.waterWalk2);
+      float vel = player.velocity.Y * player.gravDir;
+      if (vel >= 0 && vel < 0.1f) {
+        Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
+        feetVect.Y += 1f / 255f * player.gravDir;
+        Point pos = feetVect.ToTileCoordinates();
+        if (player.fireWalk || player.waterWalk || player.waterWalk2) {
+          Tile tile = Main.tile[pos.X, pos.Y];
+          bool testblock = tile.liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
+          if (testblock) {
+            IsGrounded = tile.lava() ? player.fireWalk : (player.waterWalk || player.waterWalk2);
+          }
         }
-      }
-      if (!IsGrounded) {
-        IsGrounded = !Collision.IsClearSpotTest(player.position + new Vector2(0, 8 * player.gravDir), 16f, player.width, player.height, false, false, (int)player.gravDir, true, true);
+        if (!IsGrounded) {
+          IsGrounded = !Collision.IsClearSpotTest(player.position + new Vector2(0, 8 * player.gravDir), 16f, player.width, player.height, false, false, (int)player.gravDir, true, true);
+        }
       }
       #endregion
 
