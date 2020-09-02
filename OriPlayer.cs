@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -96,7 +95,7 @@ namespace OriMod {
     /// <summary>
     /// Speed multiplier to play subsequent transformations at.
     /// </summary>
-    private float RepeatedTransformRate => 2.5f;
+    internal static float RepeatedTransformRate => 2.5f;
 
     /// <summary>
     /// Direction a transformation began at. Facing direction is locked until the transformation ends.
@@ -231,53 +230,6 @@ namespace OriMod {
     internal static int SpriteHeight => AnimationHandler.Instance.PlayerAnim.spriteSize.Y;
 
     /// <summary>
-    /// Current pixel placement of the current animation tile on the spritesheet.
-    /// </summary>
-    public Point AnimationFrame {
-      get => TileToPixel(animationTile);
-      set => animationTile = PixelToTile(value);
-    }
-
-    /// <summary>
-    /// Current tile placement of the animation on the spritesheet.
-    /// <para>X and Y values are based on the sprite tile coordinates, not pixel coordinates.</para>
-    /// </summary>
-    public PointByte animationTile;
-
-    /// <summary>
-    /// The name of the animation track currently playing.
-    /// </summary>
-    public string AnimationName {
-      get => _animName;
-      private set {
-        if (value != _animName) {
-          OnAnimNameChange(value);
-          _animName = value;
-        }
-      }
-    }
-
-    /// <summary>
-    /// Current index of the <see cref="Frame"/> being played.
-    /// </summary>
-    internal int AnimationIndex { get; private set; }
-
-    /// <summary>
-    /// Current time of the <see cref="Frame"/> being played.
-    /// </summary>
-    internal float AnimationTime { get; private set; }
-
-    /// <summary>
-    /// Current rotation the sprite is set to.
-    /// </summary>
-    internal float AnimationRotation { get; private set; }
-
-    /// <summary>
-    /// Whether or not the animation is being played in reverse.
-    /// </summary>
-    internal bool animationReversed = false;
-
-    /// <summary>
     /// For making the player sprite appear red during hurt animations.
     /// </summary>
     internal bool flashing = false;
@@ -333,7 +285,6 @@ namespace OriMod {
     private int _seinMinionID;
     private int _seinMinionType = 0;
     private bool _transforming = false;
-    private string _animName = "Default";
     private Color _spriteColorPrimary = Color.LightCyan;
     private Color _spriteColorSecondary = Color.LightCyan;
     private bool _justJumped;
@@ -408,220 +359,6 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Updates the player animation by one frame, and changes it depending on various conditions.
-    /// </summary>
-    /// <param name="drawPlayer"></param>
-    private void UpdateFrame(Player drawPlayer) {
-      if (Transforming) {
-        IncrementFrame(IsOri ? "TransformEnd" : "TransformStart");
-        return;
-      }
-      if (!IsOri) {
-        return;
-      }
-
-      if (!HasTransformedOnce) {
-        HasTransformedOnce = true;
-      }
-      if (drawPlayer.pulley || drawPlayer.mount.Active) {
-        IncrementFrame("Idle");
-        return;
-      }
-      if (abilities.burrow.InUse) {
-        double rad = Math.Atan2(abilities.burrow.velocity.X, -abilities.burrow.velocity.Y);
-        int deg = (int)(rad * (180 / Math.PI));
-        deg *= drawPlayer.direction;
-        if (player.gravDir < 0) {
-          deg += 180;
-        }
-        IncrementFrame("Burrow", rotDegrees: deg);
-        return;
-      }
-      if (abilities.wallChargeJump.Active) {
-        float rad = (float)Math.Atan2(player.velocity.Y, player.velocity.X);
-        float deg = rad * (float)(180 / Math.PI) * player.direction;
-        if (player.direction == -1) {
-          deg -= 180f;
-        }
-        IncrementFrame("Dash", overrideFrame: 0, rotDegrees: deg);
-        return;
-      }
-      if (abilities.wallJump.InUse) {
-        IncrementFrame("WallJump");
-        return;
-      }
-      if (abilities.airJump.InUse && !(abilities.dash.InUse || abilities.chargeDash.InUse)) {
-        IncrementFrame("AirJump");
-        AnimationRotation = AnimationTime * 0.8f;
-        return;
-      }
-      if (abilities.bash.InUse) {
-        IncrementFrame("Bash");
-        return;
-      }
-      if (abilities.stomp.InUse) {
-        switch (abilities.stomp.AbilityState) {
-          case Ability.State.Starting:
-            IncrementFrame("AirJump");
-            AnimationRotation = AnimationTime;
-            return;
-          case Ability.State.Active:
-            IncrementFrame("ChargeJump", rotDegrees: 180f, overrideDur: 2, overrideLoopmode: LoopMode.Always, overrideDirection: Direction.PingPong);
-            return;
-        }
-      }
-      if (abilities.glide.InUse) {
-        switch (abilities.glide.AbilityState) {
-          case Ability.State.Starting:
-            IncrementFrame("GlideStart");
-            return;
-          case Ability.State.Active:
-            IncrementFrame("Glide");
-            return;
-          case Ability.State.Ending:
-            IncrementFrame("GlideStart", overrideDirection: Direction.Reverse);
-            return;
-        }
-      }
-      if (abilities.climb.InUse) {
-        if (abilities.climb.IsCharging) {
-          if (!abilities.wallChargeJump.Charged) {
-            IncrementFrame("WallChargeJumpCharge", overrideFrame: abilities.wallChargeJump.Refreshed ? -1 : 0);
-            return;
-          }
-          // TODO: Multiplayer sync of aim position
-          int frame = 0;
-          float angle = abilities.wallChargeJump.Angle;
-          if (angle < -0.46f) {
-            frame = 2;
-          }
-          else if (angle < -0.17f) {
-            frame = 1;
-          }
-          else if (angle > 0.46f) {
-            frame = 4;
-          }
-          else if (angle > 0.17f) {
-            frame = 3;
-          }
-          IncrementFrame("WallChargeJumpAim", overrideFrame: frame);
-          return;
-        }
-        if (Math.Abs(player.velocity.Y) < 0.1f) {
-          IncrementFrame("ClimbIdle");
-        }
-        else {
-          IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", timeOffset: Math.Abs(drawPlayer.velocity.Y) * 0.1f);
-        }
-        return;
-      }
-      if (OnWall && !IsGrounded) {
-        IncrementFrame("WallSlide");
-        return;
-      }
-      if (abilities.dash.InUse || abilities.chargeDash.InUse) {
-        if (Math.Abs(player.velocity.X) > 18f) {
-          IncrementFrame("Dash");
-        }
-        else {
-          IncrementFrame("Dash", overrideFrame: 2);
-        }
-        return;
-      }
-      if (abilities.lookUp.InUse) {
-        switch (abilities.lookUp.AbilityState) {
-          case Ability.State.Starting:
-            IncrementFrame("LookUpStart");
-            return;
-          case Ability.State.Active:
-            IncrementFrame("LookUp");
-            return;
-          case Ability.State.Ending:
-            IncrementFrame("LookUpStart", overrideDirection: Direction.Reverse);
-            return;
-        }
-      }
-      if (abilities.crouch.InUse) {
-        switch (abilities.crouch.AbilityState) {
-          case Ability.State.Starting:
-            IncrementFrame("CrouchStart");
-            return;
-          case Ability.State.Active:
-            IncrementFrame("Crouch");
-            return;
-          case Ability.State.Ending:
-            IncrementFrame("CrouchStart", overrideDirection: Direction.Reverse);
-            return;
-        }
-      }
-
-      if (abilities.chargeJump.Active) {
-        IncrementFrame("ChargeJump");
-        return;
-      }
-      if (!IsGrounded) {
-        // XOR so opposite signs (negative value) means jumping regardless of gravity
-        IncrementFrame(((int)drawPlayer.velocity.Y ^ (int)drawPlayer.gravity) <= 0 ? "Jump" : "Falling");
-        return;
-      }
-      if (Math.Abs(drawPlayer.velocity.X) > 0.2f) {
-        IncrementFrame("Running", timeOffset: (int)Math.Abs(player.velocity.X) / 3);
-        return;
-      }
-      IncrementFrame(OnWall ? "IdleAgainst" : "Idle");
-      return;
-    }
-
-    /// <summary>
-    /// Calls <see cref="AnimationHandler.IncrementFrame(OriPlayer, string, int, int, LoopMode?, Direction?, float)"/> with supplied arguments.
-    /// <para>This also increments <see cref="AnimationTime"/>.</para>
-    /// </summary>
-    /// <param name="anim">Name of animation track.</param>
-    /// <param name="overrideFrame">Index of frame to override, if desired.</param>
-    /// <param name="timeOffset">Additional time, used to speed up or slow down an animation.</param>
-    /// <param name="overrideDur">Override duration of the frame, used to increase or reduce how long all frames are active.</param>
-    /// <param name="overrideLoopmode">Override <see cref="LoopMode"/> of the track, if the one on the track's header is undesired.</param>
-    /// <param name="overrideDirection">Override <see cref="Direction"/> of the track, if the one on the track's header is undesired.</param>
-    /// <param name="rotDegrees">Rotation of the sprite, in degrees.</param>
-    private void IncrementFrame(string anim = "Default", int overrideFrame = -1, float timeOffset = 0, int overrideDur = -1, LoopMode? overrideLoopmode = null, Direction? overrideDirection = null, float rotDegrees = 0) {
-      if (AnimationName != null && Local.debugMode && !IsLocal) {
-        //Main.NewText($"Frame called: {AnimationName}, Time: {AnimationTime}, AnimIndex: {AnimationIndex}/{animations.PlayerAnim.ActiveTrack.frames.Length}"); // Debug
-      }
-      AnimationTime += 1 + timeOffset;
-      AnimationHandler.Instance.IncrementFrame(this, anim, overrideFrame, overrideDur, overrideLoopmode, overrideDirection, rotDegrees);
-    }
-
-    /// <summary>
-    /// Sets current animation frame data.
-    /// </summary>
-    /// <param name="name">Sets <see cref="AnimationName"/>.</param>
-    /// <param name="frameIndex">Sets <see cref="AnimationIndex"/>.</param>
-    /// <param name="time">Sets <see cref="AnimationTime"/>.</param>
-    /// <param name="frame">Sets <see cref="animationTile"/>.</param>
-    /// <param name="animRads">Sets <see cref="AnimationRotation"/>.</param>
-    internal void SetFrame(string name, int frameIndex, float time, Frame frame, float animRads) {
-      AnimationName = name;
-      AnimationIndex = frameIndex;
-      AnimationTime = time;
-      animationTile = frame.Tile;
-      AnimationRotation = animRads;
-    }
-
-    /// <summary>
-    /// Called when a different value is supplied to this.AnimName.
-    /// </summary>
-    /// <param name="value">New value of <see cref="AnimationName"/>.</param>
-    private void OnAnimNameChange(string value) {
-      if (Main.dedServ) {
-        return;
-      }
-
-      animations.PlayerAnim.CheckIfValid(value);
-      animations.BashAnim.CheckIfValid(value);
-      animations.GlideAnim.CheckIfValid(value);
-    }
-
-    /// <summary>
     /// Resets the data of this <see cref="OriPlayer"/> instance.
     /// </summary>
     internal void ResetData() {
@@ -645,7 +382,6 @@ namespace OriMod {
     public override void ResetEffects() {
       if (Transforming) {
         float rate = HasTransformedOnce ? RepeatedTransformRate : 1;
-        AnimationTime += rate - 1;
         transformTimer -= rate;
         if (transformTimer < 0 || HasTransformedOnce && transformTimer < TransformEndDuration - TransformEndEarlyDuration) {
           transformTimer = 0;
@@ -772,9 +508,11 @@ namespace OriMod {
 
     public override void PostUpdate() {
       if (!Main.dedServ) {
-        UpdateFrame(player);
+        animations.Update();
       }
-
+      if (IsOri && !Transforming) {
+        HasTransformedOnce = true;
+      }
       #region Check Sein Buffs
       if (SeinMinionActive) {
         if (!(
@@ -837,7 +575,7 @@ namespace OriMod {
           doDust = true;
           FootstepManager.Instance.PlayLandingFromPlayer(player);
         }
-        else if (AnimationName == "Running" && AnimationIndex == 4 || AnimationIndex == 9) {
+        else if (animations.TrackName == "Running" && (animations.FrameIndex == 4 || animations.FrameIndex == 9)) {
           doDust = true;
           FootstepManager.Instance.PlayFootstepFromPlayer(player);
         }
@@ -950,14 +688,14 @@ namespace OriMod {
       int idx = layers.Contains(PlayerLayer.HeldItem) ? layers.IndexOf(PlayerLayer.HeldItem) : (layers.Count - 1);
 
       if (IsOri) {
-        if (animations.PlayerAnim.Valid && !abilities.burrow.InUse && !player.mount.Active) {
+        if (animations.playerAnim.Valid && !abilities.burrow.InUse && !player.mount.Active) {
           layers.Insert(idx++, OriLayers.Instance.Trail);
         }
-        animations.GlideAnim.TryInsertInLayers(layers, idx++);
-        animations.BashAnim.TryInsertInLayers(layers, idx++);
+        animations.glideAnim.TryInsertInLayers(layers, idx++);
+        animations.bashAnim.TryInsertInLayers(layers, idx++);
       }
       if (!player.dead && !player.invis) {
-        animations.PlayerAnim.TryInsertInLayers(layers, idx++);
+        animations.playerAnim.TryInsertInLayers(layers, idx++);
       }
       player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
       OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow.InUse && !player.mount.Active;

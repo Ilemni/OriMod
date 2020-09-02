@@ -12,18 +12,18 @@ namespace OriMod.Animations {
     /// <summary>
     /// Creates a new instance of <see cref="Animation"/> for the given <see cref="OriPlayer"/>, using the given <see cref="AnimationSource"/> and rendering with <see cref="PlayerLayer"/>.
     /// </summary>
-    /// <param name="oPlayer"><see cref="OriPlayer"/> instance this will belong to.</param>
+    /// <param name="container"><see cref="AnimationContainer"/> instance this will belong to.</param>
     /// <param name="source"><see cref="AnimationSource"/> to determine which sprite is drawn.</param>
     /// <param name="playerLayer"><see cref="PlayerLayer"/></param>
     /// <exception cref="System.InvalidOperationException">Animation classes are not allowed to be constructed on a server.</exception>
-    public Animation(OriPlayer oPlayer, AnimationSource source, PlayerLayer playerLayer) {
+    public Animation(AnimationContainer container, AnimationSource source, PlayerLayer playerLayer) {
       if (Terraria.Main.netMode == Terraria.ID.NetmodeID.Server) {
         throw new System.InvalidOperationException($"Animation classes are not allowed to be constructed on servers.");
       }
-      this.oPlayer = oPlayer;
+      this.container = container;
       this.source = source;
       this.playerLayer = playerLayer;
-      CheckIfValid(oPlayer.AnimationName);
+      CheckIfValid(container.TrackName);
     }
 
     /// <summary>
@@ -34,12 +34,12 @@ namespace OriMod.Animations {
     /// <summary>
     /// Current track that is being played.
     /// </summary>
-    public Track ActiveTrack => Valid ? source.tracks[oPlayer.AnimationName] : source.tracks.First().Value;
+    public Track ActiveTrack => Valid ? source.tracks[container.TrackName] : source.tracks.First().Value;
     
     /// <summary>
     /// Current frame that is being played.
     /// </summary>
-    public Frame ActiveFrame => ActiveTrack.frames[oPlayer.AnimationIndex < ActiveTrack.frames.Length ? oPlayer.AnimationIndex : 0];
+    public Frame ActiveFrame => ActiveTrack.frames[container.FrameIndex < ActiveTrack.frames.Length ? container.FrameIndex : 0];
 
     /// <summary>
     /// Current tile's sprite position and size on the spritesheet.
@@ -65,7 +65,7 @@ namespace OriMod.Animations {
     /// <summary>
     /// <see cref="OriPlayer"/> this <see cref="Animation"/> belongs to.
     /// </summary>
-    public readonly OriPlayer oPlayer;
+    public readonly AnimationContainer container;
 
     /// <summary>
     /// <see cref="AnimationSource"/> used for this <see cref="Animation"/>.

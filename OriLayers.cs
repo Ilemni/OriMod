@@ -16,13 +16,14 @@ namespace OriMod {
     /// </summary>
     internal readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
+      bool isTransformStart = oPlayer.animations.TrackName == "TransformStart";
 
-      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.PlayerAnim);
-      data.color = oPlayer.flashing ? Color.Red : oPlayer.Transforming && oPlayer.AnimationName == "TransformStart" ? Color.White : oPlayer.SpriteColorPrimary;
+      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.playerAnim);
+      data.color = oPlayer.flashing ? Color.Red : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
       Main.playerDrawData.Add(data);
 
-      if (oPlayer.IsOri && oPlayer.AnimationName != "TransformStart") {
-        data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.PlayerAnim);
+      if (oPlayer.IsOri && !isTransformStart) {
+        data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.playerAnim);
         data.color = oPlayer.flashing ? Color.Red : oPlayer.SpriteColorSecondary;
         data.texture = OriTextures.Instance.PlayerSecondary;
         Main.playerDrawData.Add(data);
@@ -55,7 +56,7 @@ namespace OriMod {
     /// </summary>
     internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      Animations.Animation anim = oPlayer.animations.BashAnim;
+      Animations.Animation anim = oPlayer.animations.bashAnim;
       var bash = oPlayer.abilities.bash;
 
       var pos = bash.BashEntity.Center - Main.screenPosition;
@@ -74,7 +75,7 @@ namespace OriMod {
     internal readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
-      Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.GlideAnim));
+      Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.glideAnim));
     });
 
     /// <summary>
@@ -117,7 +118,7 @@ namespace OriMod {
         effect |= SpriteEffects.FlipVertically;
       }
 
-      return new DrawData(texture, pos, rect, oPlayer.SpriteColorPrimary, player.direction * oPlayer.AnimationRotation, orig, 1, effect, 0);
+      return new DrawData(texture, pos, rect, oPlayer.SpriteColorPrimary, player.direction * oPlayer.animations.SpriteRotation, orig, 1, effect, 0);
     }
   }
 }

@@ -30,7 +30,7 @@ namespace OriMod {
     public void Reset() {
       var player = oPlayer.player;
       position = player.Center;
-      tile = oPlayer.animationTile;
+      tile = oPlayer.animations.playerAnim.ActiveFrame.Tile;
 
       startAlpha = player.velocity.LengthSquared() * 0.0008f; // 0.002f
       if (startAlpha > 0.16f) {
