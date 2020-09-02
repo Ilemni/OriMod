@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OriMod.Animations;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.DataStructures;
@@ -21,8 +22,6 @@ namespace OriMod {
     private byte time;
     private float startAlpha = 1;
     private SpriteEffects effect;
-
-    private static Vector2 Origin => new Vector2(OriPlayer.SpriteWidth / 2, OriPlayer.SpriteHeight / 2 + 6);
 
     /// <summary>
     /// Resets various attributes to be based on the player's current attributes.
@@ -61,12 +60,13 @@ namespace OriMod {
     /// </summary>
     public DrawData GetDrawData() {
       var pos = position - Main.screenPosition;
-      var frame = OriPlayer.TileToPixel(tile);
-      var rect = new Rectangle(frame.X, frame.Y, OriPlayer.SpriteWidth, OriPlayer.SpriteHeight);
+      var spriteSize = AnimationTrackData.Instance.PlayerAnim.spriteSize;
+      var rect = new Rectangle(tile.X * spriteSize.X, tile.Y & spriteSize.Y, spriteSize.X, spriteSize.Y);
       var alpha = startAlpha * (time / 26f) - 0.1f * (26 - time);
       var color = oPlayer.SpriteColorPrimary * alpha;
+      var origin = new Vector2(AnimationTrackData.SpriteWidth / 2, AnimationTrackData.SpriteHeight / 2 + 6);
 
-      return new DrawData(OriTextures.Instance.Trail, pos, rect, color, 0, Origin, 1, effect, 0);
+      return new DrawData(OriTextures.Instance.Trail, pos, rect, color, 0, origin, 1, effect, 0);
     }
   }
 }

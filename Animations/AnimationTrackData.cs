@@ -19,8 +19,11 @@ namespace OriMod.Animations {
     private static Frame F(int x, int y, int duration = -1) => new Frame(x, y, duration);
     private static Header H(LoopMode l = LoopMode.Always, Direction d = Direction.Forward, ReferencedTexture2D texture = null) => new Header(loop: l, direction: d, rtx: texture);
 
+    public static byte SpriteWidth => 64;
+    public static byte SpriteHeight = 68;
+
     private AnimationSource _pa;
-    public AnimationSource PlayerAnim => _pa ?? (_pa = new AnimationSource("PlayerEffects/OriPlayer", 64, 68,
+    public AnimationSource PlayerAnim => _pa ?? (_pa = new AnimationSource("PlayerEffects/OriPlayer", SpriteWidth, SpriteHeight,
       new Dictionary<string, Track> {
         ["Default"] = new Track(
           F(0, 0)

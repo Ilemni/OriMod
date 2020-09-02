@@ -218,27 +218,6 @@ namespace OriMod {
     /// </summary>
     private int TransformEndEarlyDuration => 62;
 
-    #region Animation Properties
-    /// <summary>
-    /// Shorthand for <c>AnimationHandler.PlayerAnim.TileSize.X.</c>
-    /// </summary>
-    internal static int SpriteWidth => AnimationTrackData.Instance.PlayerAnim.spriteSize.X;
-
-    /// <summary>
-    /// Shorthand for <c>AnimationHandler.PlayerAnim.TileSize.Y.</c>
-    /// </summary>
-    internal static int SpriteHeight => AnimationTrackData.Instance.PlayerAnim.spriteSize.Y;
-
-    /// <summary>
-    /// For making the player sprite appear red during hurt animations.
-    /// </summary>
-    internal bool flashing = false;
-
-    internal static PointByte PixelToTile(Point pixel) => new PointByte((byte)(pixel.X / SpriteWidth), (byte)(pixel.Y / SpriteHeight));
-
-    internal static Point TileToPixel(PointByte tile) => new Point(tile.X * SpriteWidth, tile.Y * SpriteHeight);
-    #endregion
-
     #region Aesthetics
     /// <summary>
     /// Primary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
@@ -276,6 +255,11 @@ namespace OriMod {
     /// </summary>
     internal bool DoPlayerLight => (IsLocal || OriMod.ConfigClient.GlobalPlayerLight) ? OriMod.ConfigClient.PlayerLight : multiplayerPlayerLight;
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
+
+    /// <summary>
+    /// For making the player sprite appear red during hurt animations.
+    /// </summary>
+    internal bool flashing = false;
     #endregion
 
     #region Backing fields
