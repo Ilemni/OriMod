@@ -72,47 +72,12 @@ namespace OriMod {
 
     public override bool Autoload(ref string name) => true;
 
-    /// <summary>
-    /// Update <see cref="GlobalUpgrade"/> based on <paramref name="upgrade"/>. Called when a boss is defeated.
-    /// <para><paramref name="upgrade"/> value should be based on bosses represented in <see cref="Upgrade"/>.</para>
-    /// </summary>
-    /// <param name="upgrade"></param>
-    public static void UpdateOriPlayerSeinStates(byte upgrade) {
-      if (upgrade <= (byte)GlobalUpgrade) {
-        return;
-      }
-      // Main.NewText("Upgrade from " + GlobalSeinUpgrade + " to " + upgrade);
-      GlobalUpgrade = (Upgrade)upgrade;
-      // foreach(Player p in Main.player) {
-      //   if (!p.active) continue;
-      //   OriPlayer oPlayer = p.GetModPlayer<OriPlayer>();
-      //   oPlayer.SeinMinionUpgrade = GlobalSeinUpgrade;
-      // }
-      LocalizedText text = OriMod.GetText($"SeinUpgrade.Upgraded{GlobalUpgrade}");
-      if (Main.netMode == NetmodeID.SinglePlayer) {
-        // Main.NewText(text.ToString(), Color.White);
-      }
-      else if (Main.netMode == NetmodeID.Server) {
-        // NetMessage.BroadcastChatMessage(text.ToNetworkText(), Color.White);
-      }
-    }
-
-    public override TagCompound Save() {
-      ValidateSeinUpgrade();
-      return new TagCompound {
-        ["SeinUpgrade"] = (byte)GlobalUpgrade,
-      };
-    }
-
-    public override void Load(TagCompound tag) {
-      GlobalUpgrade = (Upgrade)tag.Get<byte>("SeinUpgrade");
-      ValidateSeinUpgrade();
-    }
+    public override void Initialize() => ValidateGlobalUpgrade();
 
     /// <summary>
     /// Ensures that <see cref="GlobalUpgrade"/> is correct.
     /// </summary>
-    internal static void ValidateSeinUpgrade() {
+    internal static void ValidateGlobalUpgrade() {
       Upgrade oldUpgrade = GlobalUpgrade;
       GlobalUpgrade = Upgrade.DefeatedMoonLord;
 
@@ -166,19 +131,20 @@ namespace OriMod {
         }
       }
 
-      if (GlobalUpgrade != oldUpgrade) {
+      if (GlobalUpgrade < oldUpgrade) {
         // string text = "Due to the world being modified, Sein's upgrade regressed from " + oldUpgrade + " to " + GlobalSeinUpgrade;
         // Main.NewText(text);
         // ErrorLogger.Log(text);
       }
-    }
-
-    public override void NetSend(BinaryWriter writer) {
-      writer.Write((byte)GlobalUpgrade);
-    }
-
-    public override void NetReceive(BinaryReader reader) {
-      GlobalUpgrade = (Upgrade)reader.ReadByte();
+      else if (GlobalUpgrade > oldUpgrade) {
+        /*LocalizedText text = OriMod.GetText($"SeinUpgrade.Upgraded{GlobalUpgrade}");
+        if (Main.netMode == NetmodeID.SinglePlayer) {
+           Main.NewText(text.ToString(), Color.White);
+        }
+        else if (Main.netMode == NetmodeID.Server) {
+           NetMessage.BroadcastChatMessage(text.ToNetworkText(), Color.White);
+        }*/
+      }
     }
   }
 }

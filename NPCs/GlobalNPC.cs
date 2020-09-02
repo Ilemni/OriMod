@@ -23,13 +23,8 @@ namespace OriMod.NPCs {
       return true;
     }
 
-    public override bool SpecialNPCLoot(NPC npc) {
-      if (!npc.boss) {
-        return false;
-      }
-      npc.NPCLoot();
-      OriWorld.ValidateSeinUpgrade();
-      return true;
+    public override void NPCLoot(NPC npc) {
+      OriWorld.ValidateGlobalUpgrade();
     }
 
     public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) {
