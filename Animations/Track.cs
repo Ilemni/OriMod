@@ -23,20 +23,12 @@ namespace OriMod.Animations {
         for (int i = 0; i < frames.Length - 1; i++) {
           Frame startFrame = frames[i];
           Frame endFrame = frames[i + 1];
-          for (int y = startFrame.Tile.Y; y < endFrame.Tile.Y; y++) {
-            newFrames.Add(new Frame(startFrame.Tile.X, y, startFrame.Duration));
+          for (int y = startFrame.tile.Y; y < endFrame.tile.Y; y++) {
+            newFrames.Add(new Frame(startFrame.tile.X, y, startFrame.duration));
           }
         }
         newFrames.Add(frames[frames.Length - 1]);
         this.frames = newFrames.ToArray();
-      }
-
-      foreach (Frame f in frames) {
-        if (f.Duration == -1) {
-          duration = -1;
-          break;
-        }
-        duration += f.Duration;
       }
     }
 
@@ -56,7 +48,6 @@ namespace OriMod.Animations {
     public Track(Header header, Frame frame) {
       this.header = header ?? throw new System.ArgumentNullException(nameof(header));
       frames = new[] { frame };
-      duration = frame.Duration;
     }
 
     /// <summary>
@@ -74,10 +65,5 @@ namespace OriMod.Animations {
     /// All frames used for this track.
     /// </summary>
     public readonly Frame[] frames;
-    
-    /// <summary>
-    /// Total duration of the track, equal to total duration of <see cref="frames"/>. May be -1, which is no duration.
-    /// </summary>
-    public readonly short duration;
   }
 }

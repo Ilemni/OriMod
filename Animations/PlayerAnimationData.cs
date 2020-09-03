@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
@@ -108,7 +108,6 @@ namespace OriMod.Animations {
         return;
       }
 
-      
       if (player.pulley || player.mount.Active) {
         IncrementFrame("Idle");
         return;
@@ -202,12 +201,7 @@ namespace OriMod.Animations {
         return;
       }
       if (abilities.dash.InUse || abilities.chargeDash.InUse) {
-        if (Math.Abs(player.velocity.X) > 18f) {
-          IncrementFrame("Dash");
-        }
-        else {
-          IncrementFrame("Dash", overrideFrameIndex: 2);
-        }
+        IncrementFrame("Dash", overrideFrameIndex: Math.Abs(player.velocity.X) < 18f ? 2 : -1);
         return;
       }
       if (abilities.lookUp.InUse) {
@@ -254,6 +248,7 @@ namespace OriMod.Animations {
       return;
     }
 
+    private string debug_oldtrack;
     /// <summary>
     /// Logic for managing which frame should play.
     /// </summary>
@@ -269,10 +264,7 @@ namespace OriMod.Animations {
       if (string.IsNullOrWhiteSpace(anim)) {
         throw new ArgumentException($"{nameof(anim)} cannot be empty.", nameof(anim));
       }
-      if (oPlayer.IsLocal && oPlayer.debugMode) {
-        //Main.NewText($"Frame called: {TrackName}{(Reversed ? "(Reversed)" : "")}, Time: {FrameTime}, AnimIndex: {FrameIndex}/{playerAnim.ActiveTrack.frames.Length}"); // Debug
-      }
-
+      
       FrameTime += 1 + timeOffset;
       SpriteRotation = rotation;
 
@@ -306,8 +298,13 @@ namespace OriMod.Animations {
         FrameTime = 0;
       }
 
+      if (oPlayer.IsLocal && oPlayer.debugMode && anim != debug_oldtrack) {
+        debug_oldtrack = anim;
+        Main.NewText($"Frame called: {TrackName}{(Reversed ? " (Reversed)" : "")}, Time: {FrameTime}, AnimIndex: {FrameIndex}/{playerAnim.ActiveTrack.frames.Length}"); // Debug
+      }
+
       // Increment frames based on time (this should rarely be above 1)
-      int duration = overrideDuration != -1 ? overrideDuration : frames[FrameIndex].Duration;
+      int duration = overrideDuration != -1 ? overrideDuration : frames[FrameIndex].duration;
       if (FrameTime < duration || duration < 0) {
         return;
       }

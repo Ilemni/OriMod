@@ -13,12 +13,12 @@
     /// <summary>
     /// <inheritdoc cref="LoopMode"/>
     /// </summary>
-    public LoopMode loop;
+    public readonly LoopMode loop;
 
     /// <summary>
     /// <inheritdoc cref="Direction"/>
     /// </summary>
-    public Direction direction;
+    public readonly Direction direction;
 
     /// <summary>
     /// Animation track to transfer to, if <see cref="LoopMode.Transfer"/> is used.

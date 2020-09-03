@@ -47,7 +47,7 @@ namespace OriMod.Animations {
     public Rectangle ActiveTile {
       get {
         var size = source.spriteSize;
-        var tile = ActiveFrame.Tile;
+        var tile = ActiveFrame.tile;
         return new Rectangle(tile.X * size.X, tile.Y * size.Y, size.X, size.Y);
       }
     }
