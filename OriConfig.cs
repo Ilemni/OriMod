@@ -13,10 +13,6 @@ namespace OriMod {
 
     [Header("Gameplay")]
 
-    [Label("Ability Cooldowns"), Tooltip("Determines if abilities have cooldowns. Keep enabled for a more balanced experience.\nDefault: true")]
-    [DefaultValue(true)]
-    public bool AbilityCooldowns;
-
     [Label("Player Light"), Tooltip("Determines if your player faintly glows.\nDefault: true")]
     [DefaultValue(true)]
     public bool PlayerLight;
@@ -86,6 +82,12 @@ namespace OriMod {
   [Label("Ability Config")]
   public class OriConfigClient2 : ModConfig {
     public override ConfigScope Mode => ConfigScope.ServerSide;
+    
+    [Header("Global")]
+
+    [Label("Ability Cooldowns"), Tooltip("Determines if abilities have cooldowns. Keep enabled for a more balanced experience.\nDefault: true")]
+    [DefaultValue(true)]
+    public bool AbilityCooldowns;
 
     [Header("Soul Link")]
 
