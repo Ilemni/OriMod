@@ -39,7 +39,7 @@ namespace OriMod.Animations {
     public readonly PointByte spriteSize;
 
     /// <summary>
-    /// Shortcut for accessing <see cref="tracks">.
+    /// Shortcut for accessing <see cref="tracks"/>.
     /// </summary>
     public Track this[string name] => tracks[name];
   }

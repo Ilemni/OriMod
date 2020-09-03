@@ -180,7 +180,7 @@ namespace OriMod.Projectiles.Minions {
     private readonly List<byte> targetIDs = new List<byte>();
 
     /// <summary>
-    /// Current number of shots fired in rapid succession. Used to incur <see cref="longCooldown"/>.
+    /// Current number of shots fired in rapid succession. Used to incur <see cref="SeinData.cooldownLong"/>.
     /// </summary>
     private int currentShotsFired = 1;
 

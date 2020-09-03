@@ -6,15 +6,32 @@ namespace OriMod.Utilities {
   /// Uses <see cref="byte"/>s to represent a point.
   /// </summary>
   public struct PointByte : IEquatable<PointByte> {
+    /// <summary>
+    /// Creates a new instance of <see cref="PointByte"/> with the given X and Y value.
+    /// </summary>
+    /// <param name="x">X value.</param>
+    /// <param name="y">Y value.</param>
     public PointByte(byte x, byte y) {
       X = x;
       Y = y;
     }
 
+    /// <summary>
+    /// X value.
+    /// </summary>
     public byte X;
+    /// <summary>
+    /// Y value.
+    /// </summary>
     public byte Y;
 
+    /// <inheritdoc/>
     public override bool Equals(object obj) => obj is PointByte point && Equals(point);
+    /// <summary>
+    /// Returns a value indicating whether this instance and a specified <see cref="PointByte"/> object represent the same value.
+    /// </summary>
+    /// <param name="other">A <see cref="PointByte"/> to compare to this instance.</param>
+    /// <returns></returns>
     public bool Equals(PointByte other) => X.Equals(other.X) && Y.Equals(other.Y);
 
     public override int GetHashCode() {

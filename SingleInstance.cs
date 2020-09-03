@@ -2,7 +2,7 @@ using System;
 
 namespace OriMod {
   /// <summary>
-  /// Class used to hold a single static reference to an instance of <see cref="T"/>.
+  /// Class used to hold a single static reference to an instance of <typeparamref name="T"/>.
   /// <para>Classes inheriting from this should use a private constructor.</para>
   /// </summary>
   /// <typeparam name="T">The type to make Singleton.</typeparam>

@@ -57,7 +57,7 @@ namespace OriMod.Utilities {
     /// <para>If <paramref name="entity"/> is null, this value is not modified.</para>
     /// </param>
     /// <param name="entity">Closest <see cref="Entity"/> in-range, or null if no entities are in range.</param>
-    /// <param name="distanceSquaredCheck">How the closest distance is checked. Defaults to `<see cref="DistanceShortSquared(Entity, Entity)"/>`, getting closest distance between two entities.</param>
+    /// <param name="distanceSquaredCheck">How the closest distance is checked. Defaults to `<see cref="DistanceBetweenTwoEntitiesSquared(Entity, Entity)"/>`, getting closest distance between two entities.</param>
     /// <param name="condition">Extra condition to filter out entities. If <paramref name="condition"/> returns false, the entity is skipped.</param>
     /// <typeparam name="T">Type of Entity (i.e. <see cref="Player"/>, <see cref="NPC"/>, <see cref="Projectile"/>).</typeparam>
     /// <returns><c>true</c> if there is an <see cref="Entity"/> closer than <paramref name="distance"/> (<paramref name="entity"/> is not null), else <c>false</c>.</returns>
@@ -139,6 +139,7 @@ namespace OriMod.Utilities {
     /// <summary>
     /// Assigns multiple indexes of an array to <paramref name="value"/>.
     /// </summary>
+    /// <param name="arr">The array to assign values to.</param>
     /// <param name="value">The value to assign to.</param>
     /// <param name="keys">Indices of the array to assign to.</param>
     internal static void AssignValueToKeys<T>(this T[] arr, T value, params int[] keys) {

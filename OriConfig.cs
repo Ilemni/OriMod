@@ -7,6 +7,9 @@ using Terraria;
 using Terraria.ModLoader.Config;
 
 namespace OriMod {
+  /// <summary>
+  /// Configurations for the player's own Ori settings.
+  /// </summary>
   [Label("Client Config")]
   public class OriConfigClient1 : ModConfig {
     public override ConfigScope Mode => ConfigScope.ClientSide;
@@ -79,6 +82,9 @@ namespace OriMod {
     }
   }
 
+  /// <summary>
+  /// Configurations for all abilities.
+  /// </summary>
   [Label("Ability Config")]
   public class OriConfigClient2 : ModConfig {
     public override ConfigScope Mode => ConfigScope.ServerSide;

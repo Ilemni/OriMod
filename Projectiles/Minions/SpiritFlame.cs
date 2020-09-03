@@ -27,7 +27,7 @@ namespace OriMod.Projectiles.Minions {
     private float lerp;
 
     /// <summary>
-    /// Elapsed time for <see cref="lerpDelay"/>.
+    /// Elapsed time for <see cref="SeinData.homingIncreaseDelay"/>.
     /// </summary>
     private int currentLerpDelay;
 
@@ -37,7 +37,7 @@ namespace OriMod.Projectiles.Minions {
     private float speed;
 
     /// <summary>
-    /// Elapsed time for <see cref="accelerationDelay"/>.
+    /// Elapsed time for <see cref="SeinData.projectileSpeedIncreaseDelay"/>.
     /// </summary>
     private int currentAccelerationDelay;
 

@@ -3,6 +3,13 @@
   /// Contains info for a <see cref="Track"/>.
   /// </summary>
   public class Header {
+    /// <summary>
+    /// Creates a <see cref="Header"/> instance
+    /// </summary>
+    /// <param name="loop">Looping option for the track.</param>
+    /// <param name="direction">Direction to play the track in.</param>
+    /// <param name="transferTo">Track to transfer to. Requires <paramref name="loop"/> to be <see cref="LoopMode.Transfer"/>.</param>
+    /// <param name="rtx">Spritesheet that may be used instead of <see cref="AnimationSource.texture"/>.</param>
     public Header(LoopMode loop = LoopMode.None, Direction direction = Direction.Forward, string transferTo = null, ReferencedTexture2D rtx = null) {
       this.loop = loop;
       this.direction = direction;

@@ -81,7 +81,7 @@ namespace OriMod.Animations {
     /// <summary>
     /// Called when a different value is supplied to this.AnimName.
     /// </summary>
-    /// <param name="value">New value of <see cref="AnimationName"/>.</param>
+    /// <param name="value">New value of <see cref="TrackName"/>.</param>
     private void OnTrackSwitched(string value) {
       if (Main.dedServ) {
         return;
@@ -95,7 +95,6 @@ namespace OriMod.Animations {
     /// <summary>
     /// Updates the player animation by one frame, and changes it depending on various conditions.
     /// </summary>
-    /// <param name="player"></param>
     internal void Update() {
       var player = oPlayer.player;
       var abilities = oPlayer.abilities;
@@ -252,7 +251,6 @@ namespace OriMod.Animations {
     /// <summary>
     /// Logic for managing which frame should play.
     /// </summary>
-    /// <param name="oPlayer">Player to animate.</param>
     /// <param name="anim">Name of the animation track to play/continue.</param>
     /// <param name="overrideFrameIndex">Optional override for the frame to play. This prevents normal playback.</param>
     /// <param name="timeOffset">Optional offset to time.</param>

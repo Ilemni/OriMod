@@ -37,7 +37,9 @@ namespace OriMod.Abilities {
     /// </summary>
     public AbilityManager abilities => oPlayer.abilities;
 
-
+    /// <summary>
+    /// True if this ability belongs to the local <see cref="OriPlayer"/> instance.
+    /// </summary>
     public bool IsLocal => oPlayer.IsLocal;
 
     /// <summary>

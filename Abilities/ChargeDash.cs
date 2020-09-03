@@ -78,10 +78,6 @@ namespace OriMod.Abilities {
       }
     }
 
-    /// <summary>
-    /// End the Charge Dash. Ending behavior depends on <paramref name="byNpcContact"/>.
-    /// </summary>
-    /// <param name="byNpcContact">If the cause for ending is by player contact with <see cref="Target"/> (true), or for any other reason (false).</param>
     private void Start() {
       float tempDist = 720f * 720f;
       for (int n = 0; n < Main.maxNPCs; n++) {
@@ -103,6 +99,10 @@ namespace OriMod.Abilities {
       PlayerHitboxProjectile = Projectile.NewProjectileDirect(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeDashProjectile>(), 30, 0f, player.whoAmI, 0, 1);
     }
 
+    /// <summary>
+    /// End the Charge Dash. Ending behavior depends on <paramref name="byNpcContact"/>.
+    /// </summary>
+    /// <param name="byNpcContact">If the cause for ending is by player contact with <see cref="Target"/> (true), or for any other reason (false).</param>
     internal void End(bool byNpcContact = false) {
       SetState(State.Inactive);
       PutOnCooldown();

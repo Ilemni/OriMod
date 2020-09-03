@@ -8,6 +8,7 @@ namespace OriMod.Animations {
     /// <summary>
     /// Creates a track with the given <see cref="Header"/> and <see cref="Frame"/> array. This may be used as range parameters instead, if desired.
     /// </summary>
+    /// <param name="header">Assigns to <see cref="header"/>. If this is the default value, consider constructing with <see cref="Track(bool, Frame[])"/>.</param>
     /// <param name="asRange">Whether to use <paramref name="frames"/> as-is (false) or populate the range between frames (true).</param>
     /// <param name="frames">Assigns to <see cref="frames"/>. Used instead as a range if <paramref name="asRange"/> is <c>true</c>.</param>
     public Track(Header header, bool asRange, params Frame[] frames) {
@@ -35,7 +36,6 @@ namespace OriMod.Animations {
     /// <summary>
     /// Creates a track using <see cref="Header.Default"/> and with the given <see cref="Frame"/> array. This may be used as range parameters instead, if desired.
     /// </summary>
-    /// <param name="header">Assigns to <see cref="header"/>.</param>
     /// <param name="asRange">Whether to use <paramref name="frames"/> as-is (false) or populate the range between frames (true).</param>
     /// <param name="frames">Assigns to <see cref="frames"/>. Used instead as a range if <paramref name="asRange"/> is <c>true</c>.</param>
     public Track(bool asRange, params Frame[] frames) : this(Header.Default, asRange, frames) { }
@@ -43,7 +43,7 @@ namespace OriMod.Animations {
     /// <summary>
     /// Creates a track that consists of a single <see cref="Frame"/>, and uses the given <see cref="Header"/>.
     /// </summary>
-    /// <param name="header">Assigns to <see cref="header"/>.</param>
+    /// <param name="header">Assigns to <see cref="header"/>. If this is the default value, consider constructing with <see cref="Track(Frame)"/>.</param>
     /// <param name="frame">Assigns to <see cref="frames"/> as a single <see cref="Frame"/>.</param>
     public Track(Header header, Frame frame) {
       this.header = header ?? throw new System.ArgumentNullException(nameof(header));

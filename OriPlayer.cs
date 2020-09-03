@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
@@ -32,7 +31,7 @@ namespace OriMod {
     internal AbilityManager abilities { get; private set; }
 
     /// <summary>
-    /// Container for all <see cref="OriMod.Animations.Animation"/>s on this OriPlayer instance.
+    /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
     /// </summary>
     internal PlayerAnimationData animations { get; private set; }
 

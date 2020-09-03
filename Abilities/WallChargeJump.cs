@@ -29,9 +29,12 @@ namespace OriMod.Abilities {
     private static float SpeedMultiplier => Config.WCJumpSpeedMultipler * 0.5f;
     private static float MaxAngle => Config.WCJumpMaxAngle;
 
-    internal bool CanCharge => base.CanUse && abilities.climb.IsCharging;
-    internal bool Charged => currentCharge >= MaxCharge;
+    public bool CanCharge => base.CanUse && abilities.climb.IsCharging;
+    public bool Charged => currentCharge >= MaxCharge;
     private int currentCharge;
+    /// <summary>
+    /// Angle that the player is facing.
+    /// </summary>
     public float Angle {
       get => _angle;
       set {
@@ -43,8 +46,6 @@ namespace OriMod.Abilities {
     }
     private float _angle;
     private Vector2 direction;
-
-    public Projectile PlayerHitboxProjectile { get; private set; }
 
     private readonly RandomChar randChar = new RandomChar();
 
@@ -63,7 +64,7 @@ namespace OriMod.Abilities {
     private void Start() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + randChar.NextNoRepeat(3));
       currentCharge = 0;
-      PlayerHitboxProjectile = Projectile.NewProjectileDirect(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1);
+      Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1);
       PutOnCooldown();
       // TODO: multiplayer sync of direction
       // Currently it is very, very incorrect to use mouse position for multiplayer clients

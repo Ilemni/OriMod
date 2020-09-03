@@ -136,7 +136,7 @@ namespace OriMod.Abilities {
     /// Get the <see cref="Ability"/> with the matching <see cref="AbilityID"/>.
     /// </summary>
     /// <param name="idx"></param>
-    /// <exception cref="ArgumentOutOfRangeException">The value does not match any <see cref="AbilityID"/>.</exception>
+    /// <exception cref="System.ArgumentOutOfRangeException">The value does not match any <see cref="AbilityID"/>.</exception>
     /// <returns></returns>
     public Ability this[int idx] {
       get {
@@ -155,7 +155,7 @@ namespace OriMod.Abilities {
           case AbilityID.LookUp: return lookUp;
           case AbilityID.Crouch: return crouch;
           case AbilityID.Burrow: return burrow;
-          default: throw new System.ArgumentOutOfRangeException(nameof(idx));
+          default: throw new System.ArgumentOutOfRangeException(nameof(idx), $"The value {idx} does not match any AbilityID.");
         }
       }
     }

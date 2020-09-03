@@ -24,12 +24,22 @@ namespace OriMod.Items {
       item.useStyle = ItemUseStyleID.HoldingUp;
     }
 
+    /// <summary>
+    /// Returns <c>true</c> if the player does not have the <see cref="Ability"/> this Item represents upgraded to the <see cref="Ability.Level"/> this Item upgrades to.
+    /// </summary>
+    /// <param name="player">The <see cref="Player"/> using the item.</param>
+    /// <returns></returns>
     public override bool CanUseItem(Player player) {
       // Can only use the item if the ability to be unlocked has not been unlocked
       var oPlayer = player.GetModPlayer<OriPlayer>();
       return oPlayer.abilities[ID].Level < Level;
     }
 
+    /// <summary>
+    /// Upgrades <paramref name="player"/>'s <see cref="Ability"/> this Item represents to the <see cref="ILevelable.Level"/> this Item upgrades to.
+    /// </summary>
+    /// <param name="player">The player using the item.</param>
+    /// <returns>True if the ability can be leveled. If this returns false, this <see cref="AbilityMedallion"/> or the <see cref="Ability"/> must be fixed.</returns>
     public override bool UseItem(Player player) {
       var oPlayer = player.GetModPlayer<OriPlayer>();
       var ability = oPlayer.abilities[ID];

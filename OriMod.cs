@@ -8,6 +8,9 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OriMod {
+  /// <summary>
+  /// The mod of this assembly.
+  /// </summary>
   public sealed class OriMod : Mod {
     public OriMod() {
       Properties = new ModProperties() {
@@ -17,12 +20,30 @@ namespace OriMod {
       };
       Instance = this;
     }
+
+    /// <summary>
+    /// Singleton instance of this mod.
+    /// </summary>
     public static OriMod Instance;
 
+    /// <summary>
+    /// <inheritdoc cref="OriConfigClient1"/>
+    /// </summary>
     public static OriConfigClient1 ConfigClient { get; internal set; }
+
+    /// <summary>
+    /// <inheritdoc cref="OriConfigClient2"/>
+    /// </summary>
     public static OriConfigClient2 ConfigAbilities { get; internal set; }
 
+    /// <summary>
+    /// GitHub profile that the mod's repository is stored on.
+    /// </summary>
     public static string GithubUserName => "TwiliChaos";
+
+    /// <summary>
+    /// Name of the GitHub repository this mod is stored on.
+    /// </summary>
     public static string GithubProjectName => "OriMod";
 
     #region Logging Shortcuts
@@ -65,12 +86,33 @@ namespace OriMod {
     }
     #endregion
 
+    /// <summary>
+    /// Key used for controlling <see cref="Abilities.SoulLink"/>.
+    /// </summary>
     [Obsolete] public static ModHotKey SoulLinkKey; // Unused
+    /// <summary>
+    /// Key used for controlling <see cref="Abilities.Bash"/>.
+    /// </summary>
     public static ModHotKey BashKey;
+    /// <summary>
+    /// Key used for activating <see cref="Abilities.Dash"/> and <see cref="Abilities.ChargeDash"/>.
+    /// </summary>
     public static ModHotKey DashKey;
+    /// <summary>
+    /// Key used for controlling <see cref="Abilities.Climb"/>.
+    /// </summary>
     public static ModHotKey ClimbKey;
+    /// <summary>
+    /// Key used for controlling <see cref="Abilities.Glide"/>.
+    /// </summary>
     public static ModHotKey FeatherKey;
+    /// <summary>
+    /// Key used for the charging of <see cref="Abilities.ChargeDash"/> and <see cref="Abilities.ChargeJump"/>.
+    /// </summary>
     public static ModHotKey ChargeKey;
+    /// <summary>
+    /// Key used for activating <see cref="Abilities.Burrow"/>.
+    /// </summary>
     public static ModHotKey BurrowKey;
 
     public override void AddRecipeGroups() {
@@ -127,7 +169,7 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Use this to set static reference types to null on unload.
+    /// Use this to null static reference types on unload.
     /// </summary>
     public static event Action OnUnload;
 

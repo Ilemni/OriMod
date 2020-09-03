@@ -1,9 +1,5 @@
-using System.IO;
 using Terraria;
-using Terraria.Localization;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
-using Terraria.ID;
 
 namespace OriMod {
   /// <summary>
@@ -14,6 +10,9 @@ namespace OriMod {
     /// Enum representing world progression for Ori-based upgrades.
     /// </summary>
     public enum Upgrade : byte {
+      /// <summary>
+      /// The world has no progression.
+      /// </summary>
       None = 0,
       /// <summary>
       /// Defeated Eye of Cthuhlu, tied to <see cref="NPC.downedBoss1"/>.
