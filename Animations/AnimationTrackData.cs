@@ -58,8 +58,8 @@ namespace OriMod.Animations {
         ["AirJump"] = new Track(
           F(3, 0, 32)
         ),
-        ["Jump"] = new Track(H(d: Direction.Reverse), asRange: false,
-          F(3, 1), F(3, 2, 14)
+        ["Jump"] = new Track(asRange: false,
+          F(3, 2, 14), F(3, 1)
         ),
         ["IntoJumpBall"] = new Track(Header.None, asRange: false,
           F(3, 3, 6), F(3, 4, 4)
