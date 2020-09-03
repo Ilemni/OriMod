@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
@@ -124,11 +124,10 @@ namespace OriMod.Animations {
       }
       if (abilities.wallChargeJump.Active) {
         float rad = (float)Math.Atan2(player.velocity.Y, player.velocity.X);
-        float deg = rad * (float)(180 / Math.PI) * player.direction;
         if (player.direction == -1) {
-          deg -= 180f;
+          rad -= (float)Math.PI;
         }
-        IncrementFrame("Dash", overrideFrameIndex: 0, rotation: deg);
+        IncrementFrame("Dash", overrideFrameIndex: 0, rotation: rad);
         return;
       }
       if (abilities.wallJump.InUse) {
