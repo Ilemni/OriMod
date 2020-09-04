@@ -2,11 +2,14 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Animations {
   /// <summary>
-  /// Animation for a single player.
+  /// Animation for a single player. This class uses runtime data from a <see cref="PlayerAnimationData"/> to retrieve values from an <see cref="AnimationSource"/>.
   /// </summary>
   public class Animation {
     /// <summary>
@@ -17,7 +20,7 @@ namespace OriMod.Animations {
     /// <param name="playerLayer"><see cref="PlayerLayer"/></param>
     /// <exception cref="System.InvalidOperationException">Animation classes are not allowed to be constructed on a server.</exception>
     public Animation(PlayerAnimationData container, AnimationSource source, PlayerLayer playerLayer) {
-      if (Terraria.Main.netMode == Terraria.ID.NetmodeID.Server) {
+      if (Main.netMode == NetmodeID.Server) {
         throw new System.InvalidOperationException($"Animation classes are not allowed to be constructed on servers.");
       }
       this.container = container;
@@ -91,5 +94,36 @@ namespace OriMod.Animations {
     /// </summary>
     /// <param name="name">Track name to check.</param>
     public void CheckIfValid(string name) => Valid = source.tracks.ContainsKey(name);
+
+    /// <summary>
+    /// Gets a <see cref="DrawData"/> that is based on this <see cref="Animation"/>.
+    /// <list type="bullet">
+    /// <item><see cref="DrawData.texture"/> is <see cref="Texture"/> (recommended)</item>
+    /// <item><see cref="DrawData.position"/> is the center of the <see cref="PlayerDrawInfo.drawPlayer"/>, in screen-space. (recommended)</item>
+    /// <item><see cref="DrawData.sourceRect"/> is <see cref="ActiveTile"/> (recommended)</item>
+    /// <item><see cref="DrawData.rotation"/> is <see cref="Entity.direction"/> <see langword="*"/> <see cref="PlayerAnimationData.SpriteRotation"/> (recommended)</item>
+    /// <item><see cref="DrawData.origin"/> is half of <see cref="ActiveTile"/>'s size, plus (5 * <see cref="Player.gravDir"/>) on the Y axis. Feel free to modify this.</item>
+    /// <item><see cref="DrawData.effect"/> is based on <see cref="Entity.direction"/> and <see cref="Player.gravDir"/>. (recommended)</item>
+    /// </list>
+    /// </summary>
+    /// <param name="drawInfo">Parameter of <see cref="PlayerLayer(string, string, System.Action{PlayerDrawInfo})"/>.</param>
+    /// <returns></returns>
+    public DrawData GetDrawData(PlayerDrawInfo drawInfo) {
+      Player player = drawInfo.drawPlayer;
+      Texture2D texture = Texture;
+      Vector2 pos = drawInfo.position - Main.screenPosition + player.Size / 2;
+      Rectangle rect = ActiveTile;
+      var orig = new Vector2(rect.Width / 2, rect.Height / 2 + 5 * player.gravDir);
+      SpriteEffects effect = SpriteEffects.None;
+      if (player.direction == -1) {
+        effect |= SpriteEffects.FlipHorizontally;
+      }
+
+      if (player.gravDir == -1) {
+        effect |= SpriteEffects.FlipVertically;
+      }
+
+      return new DrawData(texture, pos, rect, Color.White, player.direction * container.SpriteRotation, orig, 1, effect, 0);
+    }
   }
 }

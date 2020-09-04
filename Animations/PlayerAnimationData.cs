@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace OriMod.Animations {
   /// <summary>
@@ -49,7 +50,7 @@ namespace OriMod.Animations {
     public float FrameTime { get; private set; }
 
     /// <summary>
-    /// Current rotation the sprite is set to.
+    /// Current rotation the sprite is set to. Used in <see cref="Animation.GetDrawData(PlayerDrawInfo)"/>
     /// </summary>
     public float SpriteRotation { get; private set; }
 

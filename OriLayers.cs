@@ -18,12 +18,12 @@ namespace OriMod {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
       bool isTransformStart = oPlayer.animations.TrackName == "TransformStart";
 
-      DrawData data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.playerAnim);
+      DrawData data = oPlayer.animations.playerAnim.GetDrawData(drawInfo);
       data.color = oPlayer.flashing ? Color.Red : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
       Main.playerDrawData.Add(data);
 
       if (oPlayer.IsOri && !isTransformStart) {
-        data = DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.playerAnim);
+        data = oPlayer.animations.playerAnim.GetDrawData(drawInfo);
         data.color = oPlayer.flashing ? Color.Red : oPlayer.SpriteColorSecondary;
         data.texture = OriTextures.Instance.PlayerSecondary;
         Main.playerDrawData.Add(data);
@@ -75,7 +75,7 @@ namespace OriMod {
     internal readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
 
-      Main.playerDrawData.Add(DefaultDrawData(drawInfo, oPlayer, oPlayer.animations.glideAnim));
+      Main.playerDrawData.Add(oPlayer.animations.glideAnim.GetDrawData(drawInfo));
     });
 
     /// <summary>
@@ -95,30 +95,5 @@ namespace OriMod {
       var data = new DrawData(OriTextures.Instance.SoulLink, pos, rect, Color.White, 0, orig, 1, effect, 0);
       Main.playerDrawData.Add(data);
     });
-
-    /// <summary>
-    /// Gets a <see cref="DrawData"/> that's set up for animations.
-    /// </summary>
-    /// <param name="drawInfo">Parameter of <see cref="PlayerLayer(string, string, System.Action{PlayerDrawInfo})"/>.</param>
-    /// <param name="oPlayer"><see cref="OriPlayer"/> to draw.</param>
-    /// <param name="anim"><see cref="Animation"/> to get sprite data from.</param>
-    /// <returns></returns>
-    private static DrawData DefaultDrawData(PlayerDrawInfo drawInfo, OriPlayer oPlayer, Animations.Animation anim) {
-      Player player = oPlayer.player;
-      Texture2D texture = anim.Texture;
-      Vector2 pos = drawInfo.position - Main.screenPosition + player.Size / 2;
-      Rectangle rect = anim.ActiveTile;
-      var orig = new Vector2(rect.Width / 2, rect.Height / 2 + 5 * player.gravDir);
-      SpriteEffects effect = SpriteEffects.None;
-      if (player.direction == -1) {
-        effect |= SpriteEffects.FlipHorizontally;
-      }
-
-      if (player.gravDir == -1) {
-        effect |= SpriteEffects.FlipVertically;
-      }
-
-      return new DrawData(texture, pos, rect, oPlayer.SpriteColorPrimary, player.direction * oPlayer.animations.SpriteRotation, orig, 1, effect, 0);
-    }
   }
 }
