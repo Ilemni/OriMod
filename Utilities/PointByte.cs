@@ -25,13 +25,7 @@ namespace OriMod.Utilities {
     /// </summary>
     public byte Y;
 
-    /// <inheritdoc/>
     public override bool Equals(object obj) => obj is PointByte point && Equals(point);
-    /// <summary>
-    /// Returns a value indicating whether this instance and a specified <see cref="PointByte"/> object represent the same value.
-    /// </summary>
-    /// <param name="other">A <see cref="PointByte"/> to compare to this instance.</param>
-    /// <returns></returns>
     public bool Equals(PointByte other) => X.Equals(other.X) && Y.Equals(other.Y);
 
     public override int GetHashCode() {

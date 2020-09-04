@@ -27,9 +27,9 @@ namespace OriMod.Animations {
     }
 
     /// <summary>
-    /// Current texture that is being used. Uses <see cref="Header.texture"/> if it is not null, otherwise <see cref="AnimationSource.texture"/>.
+    /// Current texture that is being used. Uses <see cref="Track.Texture"/> if it is not null, otherwise <see cref="AnimationSource.texture"/>.
     /// </summary>
-    public Texture2D Texture => ActiveTrack.header.texture ?? source.texture;
+    public Texture2D Texture => ActiveTrack.Texture ?? source.texture;
 
     /// <summary>
     /// Current track that is being played.

@@ -267,8 +267,8 @@ namespace OriMod.Animations {
       SpriteRotation = rotation;
 
       Track track = playerAnim.source[anim];
-      LoopMode loop = overrideLoopmode ?? track.header.loop;
-      Direction direction = overrideDirection ?? track.header.direction;
+      LoopMode loop = overrideLoopmode ?? track.loop;
+      Direction direction = overrideDirection ?? track.direction;
       Frame[] frames = track.frames;
       int lastFrame = frames.Length - 1;
 
@@ -323,7 +323,7 @@ namespace OriMod.Animations {
             if (FrameIndex == lastFrame) {
               // Forward, end of track w/ transfer: transfer to next track
               if (loop == LoopMode.Transfer) {
-                TrackName = track.header.transferTo;
+                TrackName = track.transferTo;
                 FrameIndex = 0;
                 FrameTime = 0;
               }
@@ -360,7 +360,7 @@ namespace OriMod.Animations {
             // Reverse, if loop: replay track backwards
             if (FrameIndex == 0) {
               if (loop == LoopMode.Transfer) {
-                TrackName = track.header.transferTo;
+                TrackName = track.transferTo;
                 FrameIndex = 0;
                 FrameTime = 0;
               }

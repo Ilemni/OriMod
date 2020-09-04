@@ -17,7 +17,6 @@ namespace OriMod.Animations {
     }
 
     private static Frame F(int x, int y, int duration = -1) => new Frame(x, y, duration);
-    private static Header H(LoopMode l = LoopMode.Always, Direction d = Direction.Forward, ReferencedTexture2D texture = null) => new Header(loop: l, direction: d, rtx: texture);
 
     public static byte SpriteWidth => 64;
     public static byte SpriteHeight = 68;
@@ -61,10 +60,10 @@ namespace OriMod.Animations {
         ["Jump"] = new Track(asRange: false,
           F(3, 2, 14), F(3, 1)
         ),
-        ["IntoJumpBall"] = new Track(Header.None, asRange: false,
+        ["IntoJumpBall"] = new Track(LoopMode.None, asRange: false,
           F(3, 3, 6), F(3, 4, 4)
         ),
-        ["ChargeJump"] = new Track(H(l: LoopMode.None, d: Direction.PingPong), asRange: true,
+        ["ChargeJump"] = new Track(LoopMode.None, Direction.PingPong, asRange: true,
           F(3, 5, 4), F(3, 8, 4)
         ),
         ["Falling"] = new Track(asRange: true,
@@ -73,7 +72,7 @@ namespace OriMod.Animations {
         ["FallNoAnim"] = new Track(
           F(3, 13)
         ),
-        ["GlideStart"] = new Track(Header.None, asRange: true,
+        ["GlideStart"] = new Track(LoopMode.None, asRange: true,
           F(4, 0, 5), F(4, 2, 5)
         ),
         ["GlideIdle"] = new Track(
@@ -103,10 +102,10 @@ namespace OriMod.Animations {
         ["Burrow"] = new Track(asRange: true,
           F(7, 0, 3), F(7, 7, 3)
         ),
-        ["TransformStart"] = new Track(H(l: LoopMode.Transfer, texture: OriTextures.Instance.Transform), asRange: false, // TODO: Migrate TransformStart textures to OriPlayer
+        ["TransformStart"] = new Track(LoopMode.Transfer, asRange: false, // TODO: Migrate TransformStart textures to OriPlayer
           F(0, 0, 2), F(0, 1, 60), F(0, 2, 60), F(0, 3, 120),
           F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30)
-        ),
+        ).WithTexture(OriTextures.Instance.Transform),
         ["TransformEnd"] = new Track(asRange: true,
           F(6, 7, 6), F(6, 8, 50), F(6, 9, 6), F(6, 10, 60),
           F(6, 11, 10), F(6, 12, 40), F(6, 13, 3), F(6, 14, 60)
@@ -126,7 +125,7 @@ namespace OriMod.Animations {
     private AnimationSource _ga;
     public AnimationSource GlideAnim => _ga ?? (_ga = new AnimationSource("PlayerEffects/Feather", 128, 128,
       new Dictionary<string, Track> {
-        ["GlideStart"] = new Track(Header.None, asRange: true,
+        ["GlideStart"] = new Track(LoopMode.None, asRange: true,
           F(0, 0, 5), F(0, 2, 5)
         ),
         ["GlideIdle"] = new Track(
