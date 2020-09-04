@@ -2,9 +2,7 @@
 using OriMod.Utilities;
 
 namespace OriMod.Animations {
-  /// <summary>
-  /// Single frame of animation. Stores sprite position on the sprite sheet, and duration of the frame.
-  /// </summary>
+  /// <inheritdoc cref="IFrame"/>
   public readonly struct Frame : IFrame {
     /// <summary>
     /// Creates a <see cref="Frame"/> with the given X and Y position, and frame duration to play. These values will be cast to smaller data types.
@@ -34,7 +32,7 @@ namespace OriMod.Animations {
     /// </summary>
     /// <remarks>
     /// This should only ever be used if a single <strong><see cref="Track"/></strong> needs to use more than one spritesheet.
-    /// If all of one <see cref="Track"/> can fit on a 2048x2048 spritesheet, use <see cref="Track.WithTexture(ReferencedTexture2D)"/> instead.
+    /// If all of one <see cref="Track"/> can fit on a 2048x2048 spritesheet, use <see cref="Track.WithTexture(Texture2D)"/> instead.
     /// </remarks>
     public SwitchTextureFrame WithNextSpritesheet(Texture2D texture) {
       if (texture is null) {
