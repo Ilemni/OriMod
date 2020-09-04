@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OriMod.Animations {
   /// <summary>
@@ -11,7 +12,7 @@ namespace OriMod.Animations {
     /// <param name="start">First <see cref="Frame"/> of the track.</param>
     /// <param name="end">Last <see cref="Frame"/> of the track.</param>
     /// <returns>A new <see cref="Track"/> with the frames ranging from <paramref name="start"/> to <paramref name="end"/>.</returns>
-    public static Track Range(Frame start, Frame end) => Range(LoopMode.Always, Direction.Forward, start, end);
+    public static Track Range(IFrame start, IFrame end) => Range(LoopMode.Always, Direction.Forward, start, end);
 
     /// <summary>
     /// Creates a track with the given <see cref="LoopMode"/> and using <see cref="Direction.Forward"/>, with a <see cref="Frame"/> array ranging from <paramref name="start"/> to <paramref name="end"/>.
@@ -20,7 +21,7 @@ namespace OriMod.Animations {
     /// <param name="start">First <see cref="Frame"/> of the track.</param>
     /// <param name="end">Last <see cref="Frame"/> of the track.</param>
     /// <returns>A new <see cref="Track"/> with the frames ranging from <paramref name="start"/> to <paramref name="end"/>.</returns>
-    public static Track Range(LoopMode loopMode, Frame start, Frame end) => Range(loopMode, Direction.Forward, start, end);
+    public static Track Range(LoopMode loopMode, IFrame start, IFrame end) => Range(loopMode, Direction.Forward, start, end);
 
     /// <summary>
     /// Creates a track with the given <see cref="LoopMode"/> and <see cref="Direction"/>, with a <see cref="Frame"/> array ranging from <paramref name="start"/> to <paramref name="end"/>.
@@ -30,10 +31,10 @@ namespace OriMod.Animations {
     /// <param name="start">First <see cref="Frame"/> of the track.</param>
     /// <param name="end">Last <see cref="Frame"/> of the track.</param>
     /// <returns>A new <see cref="Track"/> with the frames ranging from <paramref name="start"/> to <paramref name="end"/>.</returns>
-    public static Track Range(LoopMode loopMode, Direction direction, Frame start, Frame end) {
+    public static Track Range(LoopMode loopMode, Direction direction, IFrame start, IFrame end) {
       // Fill range of frames
       // I.e. if given [(0,1), (0,4)], we make [(0,1), (0,2), (0,3), (0,4)]
-      var frames = new List<Frame>();
+      var frames = new List<IFrame>();
       for (int y = start.tile.Y; y < end.tile.Y; y++) {
         frames.Add(new Frame(start.tile.X, y, start.duration));
       }
@@ -45,7 +46,7 @@ namespace OriMod.Animations {
     /// Creates a track that consists of a single <see cref="Frame"/>.
     /// </summary>
     /// <param name="frame">Assigns to <see cref="frames"/> as a single <see cref="Frame"/>.</param>
-    public static Track Single(Frame frame) => new Track(new[] { frame });
+    public static Track Single(Frame frame) => new Track(new IFrame[] { frame });
 
     /// <summary>
     /// Creates a track with the given <see cref="LoopMode"/>, <see cref="Direction"/>, and <see cref="Frame"/> array. This may be used as range parameters instead, if desired.
@@ -53,10 +54,16 @@ namespace OriMod.Animations {
     /// <param name="loopMode"><see cref="LoopMode"/> of the track.</param>
     /// <param name="direction"><see cref="Direction"/> of the track.</param>
     /// <param name="frames">Assigns to <see cref="frames"/>.</param>
-    public Track(LoopMode loopMode, Direction direction, Frame[] frames) {
+    public Track(LoopMode loopMode, Direction direction, IFrame[] frames) {
       loop = loopMode;
       this.direction = direction;
       this.frames = frames;
+      foreach (var frame in frames) {
+        if (frame is SwitchTextureFrame) {
+          multiTexture = true;
+          break;
+        }
+      }
     }
 
     /// <summary>
@@ -64,19 +71,19 @@ namespace OriMod.Animations {
     /// </summary>
     /// <param name="loopMode"><see cref="LoopMode"/> of the track.</param>
     /// <param name="frames">Assigns to <see cref="frames"/>.</param>
-    public Track(LoopMode loopMode, Frame[] frames) : this(loopMode, Direction.Forward, frames) { }
+    public Track(LoopMode loopMode, IFrame[] frames) : this(loopMode, Direction.Forward, frames) { }
 
     /// <summary>
     /// Creates a track using <see cref="LoopMode.Always"/> and <see cref="Direction.Forward"/>, and with the given <see cref="Frame"/> array.
     /// </summary>
     /// <param name="frames">Assigns to <see cref="frames"/>.</param> 
-    public Track(Frame[] frames) : this(LoopMode.Always, Direction.Forward, frames) { }
+    public Track(IFrame[] frames) : this(LoopMode.Always, Direction.Forward, frames) { }
 
     
     /// <summary>
     /// All frames used for this track.
     /// </summary>
-    public readonly Frame[] frames;
+    public readonly IFrame[] frames;
 
     /// <inheritdoc cref="LoopMode"/>
     public readonly LoopMode loop = LoopMode.Always;
@@ -85,15 +92,40 @@ namespace OriMod.Animations {
     public readonly Direction direction = Direction.Forward;
 
     /// <summary>
-    /// Optional spritesheet that may be used instead of <see cref="AnimationSource.texture"/>.
+    /// Assigned to <see langword="true"/> if any <see cref="IFrame"/> in <see cref="frames"/> is a <see cref="SwitchTextureFrame"/> (from <see cref="Frame.WithNextSpritesheet(Texture2D)"/>).
     /// </summary>
-    public ReferencedTexture2D Texture { get; private set; }
+    public readonly bool multiTexture;
 
+    /// <summary>
+    /// Optional spritesheet that may be used instead of <see cref="AnimationSource.texture"/>.
+    /// <para>If any frame after or including the current frame (at <paramref name="frameIdx"/>) is a <see cref="SwitchTextureFrame"/>, that <see cref="Texture2D"/> will be returned instead.</para>
+    /// </summary>
+    /// <param name="frameIdx">Index of the <see cref="IFrame"/> currently being played.</param>
+    /// <returns>A valid <see cref="Texture2D"/> if <see cref="AnimationSource.texture"/> should be overridden, else <see langword="null"/>.</returns>
+    public Texture2D GetTexture(int frameIdx) {
+      if (frameIdx < 0 || frameIdx >= frames.Length) {
+        throw new System.ArgumentOutOfRangeException(nameof(frameIdx), $"Expected value between 0 and {frames.Length - 1}, got {frameIdx}");
+      }
+      if (multiTexture) {
+        while (frameIdx >= 0) {
+          if (frames[frameIdx] is SwitchTextureFrame stf) {
+            return stf.texture;
+          }
+        }
+      }
+      return trackTexture;
+    }
+
+    /// <summary>
+    /// Texture of the track itself. If any <see cref="SwitchTextureFrame"/>s are in use, use <see cref="GetTexture(int)"/> instead.
+    /// </summary>
+    public Texture2D trackTexture { get; private set; }
+    
     /// <summary>
     /// Assign a spritesheet that will be used instead of <see cref="AnimationSource.texture"/>.
     /// </summary>
-    public Track WithTexture(ReferencedTexture2D texture) {
-      Texture = texture;
+    public Track WithTexture(Texture2D texture) {
+      this.trackTexture = texture;
       return this;
     }
 

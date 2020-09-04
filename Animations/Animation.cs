@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +27,9 @@ namespace OriMod.Animations {
     }
 
     /// <summary>
-    /// Current texture that is being used. Uses <see cref="Track.Texture"/> if it is not null, otherwise <see cref="AnimationSource.texture"/>.
+    /// Current texture that is being used. Uses the result of <see cref="Track.GetTexture(int)"/> if it is not <see langword="null"/>, otherwise <see cref="AnimationSource.texture"/>.
     /// </summary>
-    public Texture2D Texture => ActiveTrack.Texture ?? source.texture;
+    public Texture2D Texture => ActiveTrack.GetTexture(container.FrameIndex) ?? source.texture;
 
     /// <summary>
     /// Current track that is being played.
@@ -39,7 +39,7 @@ namespace OriMod.Animations {
     /// <summary>
     /// Current frame that is being played.
     /// </summary>
-    public Frame ActiveFrame => ActiveTrack.frames[container.FrameIndex < ActiveTrack.frames.Length ? container.FrameIndex : 0];
+    public IFrame ActiveFrame => ActiveTrack.frames[container.FrameIndex < ActiveTrack.frames.Length ? container.FrameIndex : 0];
 
     /// <summary>
     /// Current tile's sprite position and size on the spritesheet.

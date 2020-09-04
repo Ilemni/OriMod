@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
@@ -269,7 +269,7 @@ namespace OriMod.Animations {
       Track track = playerAnim.source[anim];
       LoopMode loop = overrideLoopmode ?? track.loop;
       Direction direction = overrideDirection ?? track.direction;
-      Frame[] frames = track.frames;
+      IFrame[] frames = track.frames;
       int lastFrame = frames.Length - 1;
 
       if (anim != TrackName) {
