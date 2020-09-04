@@ -67,7 +67,7 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// True if this <see cref="OriPlayer"/> belongs to the local client.
+    /// <see langword="true"/> if this <see cref="OriPlayer"/> belongs to the local client, otherwise <see langword="false"/>.
     /// </summary>
     public bool IsLocal { get; private set; }
 

@@ -89,11 +89,11 @@ namespace OriMod.Abilities {
     }
 
     /// <summary>
-    /// Filter to determine if this <see cref="NPC"/> can be bashed. Returns true if the NPC should be bashed.
+    /// Filter to determine if this <see cref="NPC"/> can be bashed. Returns <see langword="true"/> if the NPC should be bashed.
     /// <para>Excludes friendly NPCs, bosses, specific NPCs, and NPCs that are already being Bashed.</para>
     /// </summary>
-    /// <param name="npc"></param>
-    /// <returns>True if the NPC should be bashed.</returns>
+    /// <param name="npc"><see cref="NPC"/> to check.</param>
+    /// <returns><see langword="true"/> if the NPC should be bashed, otherwise <see langword="false"/>.</returns>
     private bool BashNpcFilter(NPC npc) =>
       !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBashNPC.Contains((short)npc.type) && !npc.GetGlobalNPC<OriNPC>().IsBashed;
 
@@ -102,7 +102,7 @@ namespace OriMod.Abilities {
     /// <para>Excludes friendly if disallowed, 0 damage projectiles, minions, sentries, traps, grapples, and projectiles that are already being Bashed.</para>
     /// </summary>
     /// <param name="proj"></param>
-    /// <returns>True if the projectile should be bashed.</returns>
+    /// <returns><see langword="true"/> if the projectile should be bashed, otherwise <see langword="false"/>.</returns>
     private bool BashProjFilter(Projectile proj) =>
       (Config.BashOnProjectilesFriendly || !proj.friendly) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type) && !proj.GetGlobalProjectile<OriProjectile>().IsBashed;
 
@@ -119,7 +119,7 @@ namespace OriMod.Abilities {
     }
 
     /// <summary>
-    /// Sets the target to be bashed to <paramref name="entity"/>. Set to null to not bash anything.
+    /// Sets the target to be bashed to <paramref name="entity"/>. Pass in <see langword="null"/> to not bash anything.
     /// </summary>
     /// <param name="entity"><see cref="Entity"/> to target for bashing.</param>
     private void SetTarget(Entity entity) {
@@ -132,7 +132,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Attempt to start Bash. This will search for an <see cref="NPC"/> or <see cref="Projectile"/> to bash, and set it as target.
     /// </summary>
-    /// <returns>True if an <see cref="Entity"/> to bash was found and set as target, otherwise false.</returns>
+    /// <returns><see langword="true"/> if an <see cref="Entity"/> to bash was found and set as target, otherwise <see langword="false"/>.</returns>
     private bool Start() {
       SetTarget(null);
       float currDist = BashRange;

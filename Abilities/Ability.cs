@@ -38,12 +38,12 @@ namespace OriMod.Abilities {
     public AbilityManager abilities => oPlayer.abilities;
 
     /// <summary>
-    /// True if this ability belongs to the local <see cref="OriPlayer"/> instance.
+    /// <see langword="true"/> if this ability belongs to the local <see cref="OriPlayer"/> instance.
     /// </summary>
     public bool IsLocal => oPlayer.IsLocal;
 
     /// <summary>
-    /// Determines if the ability has been unlocked by the player. This is <c>true</c> if <see cref="Level"/> is at least <c>1</c>.
+    /// Determines if the ability has been unlocked by the player. This is <see langword="true"/> if <see cref="Level"/> is at least <see langword="1"/>.
     /// </summary>
     public bool Unlocked => Level > 0;
 
@@ -77,7 +77,7 @@ namespace OriMod.Abilities {
 
     /// <summary>
     /// Color of dust spawned in <see cref="OnRefreshed"/>.
-    /// <para>This property is only ever used if <see cref="Cooldown"/> is not <c>0</c>.</para>
+    /// <para>This property is only ever used if <see cref="Cooldown"/> is greater than <see langword="0"/>.</para>
     /// </summary>
     protected virtual Color RefreshColor => Color.White;
     #endregion
@@ -128,7 +128,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// If <see cref="AbilityState"/> is either <see cref="State.Starting"/>, <see cref="State.Active"/>, or <see cref="State.Ending"/>.
     /// </summary>
-    /// <value>True if the state is either <see cref="State.Starting"/>, <see cref="State.Active"/>, or <see cref="State.Ending"/>.</value>
+    /// <value><see langword="true"/> if the state is either <see cref="State.Starting"/>, <see cref="State.Active"/>, or <see cref="State.Ending"/>, otherwise <see langword="false"/>.</value>
     public bool InUse => Starting || Active || Ending;
     #endregion
 
@@ -145,7 +145,7 @@ namespace OriMod.Abilities {
     public int CurrentTime { get; internal set; }
 
     /// <summary>
-    /// True if ready to use, false if on cooldown.
+    /// <see langword="true"/> if ready to use, otherwise <see langword="false"/>.
     /// </summary>
     internal bool Refreshed {
       get => _refreshed;
@@ -170,7 +170,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Set this ability on cooldown.
     /// </summary>
-    /// <param name="force">If true, ignore config options that may otherwise prevent cooldown.</param>
+    /// <param name="force">If <see langword="true"/>, puts this on cooldown, ignoring config options that may otherwise prevent cooldown.</param>
     internal virtual void PutOnCooldown(bool force = false) {
       if (force || Config.AbilityCooldowns && (!CooldownOnlyOnBoss || OriUtils.AnyBossAlive())) {
         currentCooldown = Cooldown;

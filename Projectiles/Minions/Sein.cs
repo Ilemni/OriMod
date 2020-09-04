@@ -68,7 +68,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Whether the AI should automatically fire projectiles or not.
     /// </summary>
-    /// <returns>True if the held item is not the same type that spawned this projectile.</returns>
+    /// <returns><see langword="true"/> if the held item is not the same type that spawned this projectile.</returns>
     private bool AutoFire {
       get {
         if (projectile.owner == 255) {
@@ -403,7 +403,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Creates one Spirit Flame projectile that targets <paramref name="npc"/> or is fired randomly.
     /// </summary>
-    /// <param name="npc">NPC to target. If null, fires at the air randomly</param>
+    /// <param name="npc">NPC to target. If this is <see langword="null"/>, fires at the air randomly</param>
     private void Fire(NPC npc) {
       Vector2 shootVel;
       float rotation;

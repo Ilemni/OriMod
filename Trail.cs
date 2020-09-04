@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 
@@ -12,14 +13,14 @@ namespace OriMod {
     /// </summary>
     /// <param name="oPlayer">The <see cref="OriPlayer"/> this <see cref="Trail"/> will belong to.</param>
     /// <param name="segmentCount">Number of sprites to use for the trail.</param>
-    /// <exception cref="System.ArgumentNullException"><paramref name="oPlayer"/> is null.</exception>
-    /// <exception cref="System.ArgumentOutOfRangeException">Expected value of 1 or greater.</exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentOutOfRangeException">Expected value of <see langword="1"/> or greater.</exception>
     internal Trail(OriPlayer oPlayer, int segmentCount) {
       if (oPlayer is null) {
-        throw new System.ArgumentNullException(nameof(oPlayer));
+        throw new ArgumentNullException(nameof(oPlayer));
       }
       if (segmentCount < 1) {
-        throw new System.ArgumentOutOfRangeException(nameof(segmentCount), "Expected value of 1 or greater.");
+        throw new ArgumentOutOfRangeException(nameof(segmentCount), "Expected value of 1 or greater.");
       }
 
       segments = new TrailSegment[segmentCount];

@@ -11,7 +11,7 @@ namespace OriMod.Animations {
     PointByte tile { get; }
 
     /// <summary>
-    /// Duration of the tile. -1 if the animation should stay on this frame.
+    /// Duration of the tile. <see langword="-1"/> if the animation should stay on this frame.
     /// </summary>
     short duration { get; }
   }

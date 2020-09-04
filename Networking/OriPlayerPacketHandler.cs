@@ -51,7 +51,7 @@ namespace OriMod.Networking {
     /// <para>Sends a <see cref="ModPacket"/> with <see cref="OriPlayer"/> data.</para>
     /// <inheritdoc cref="ModPacket.Send(int, int)"/>
     /// </summary>
-    /// <param name="toWho">Who to send to. 255 for server, -1 for all players.</param>
+    /// <param name="toWho">Who to send to. <see langword="255"/> for server, <see langword="-1"/> for all players.</param>
     /// <param name="fromWho">Sender, client to ignore.</param>
     internal void SendOriState(int toWho, int fromWho) {
       ModPacket packet = GetPacket(fromWho);

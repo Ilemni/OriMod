@@ -35,11 +35,11 @@ namespace OriMod.Abilities {
     /// Check if <paramref name="npc"/> is <see cref="Target"/>.
     /// </summary>
     /// <param name="npc"><see cref="NPC"/> to check.</param>
-    /// <returns>True if <paramref name="npc"/> is <see cref="Target"/>.</returns>
+    /// <returns><see langword="true"/> if <paramref name="npc"/> is <see cref="Target"/>, otherwise <see langword="false"/>.</returns>
     public bool NpcIsTarget(NPC npc) => npc.whoAmI == npcID;
 
     /// <summary>
-    /// Target of this Charge Dash. May be null.
+    /// Target of this Charge Dash. May be <see langword="null"/>.
     /// </summary>
     public NPC Target {
       get => npcID < Main.npc.Length ? Main.npc[npcID] : null;

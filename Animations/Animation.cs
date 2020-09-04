@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +77,7 @@ namespace OriMod.Animations {
     /// </summary>
     /// <param name="layers">The <see cref="List{T}"/> of <see cref="PlayerLayer"/> to insert in.</param>
     /// <param name="idx">Position to insert into.</param>
-    /// <returns><c>true</c> if <see cref="playerLayer"/> could be inserted, otherwise false.</returns>
+    /// <returns><see langword="true"/> if <see cref="playerLayer"/> was inserted, otherwise <see langword="false"/>.</returns>
     public bool TryInsertInLayers(List<PlayerLayer> layers, int idx = 0) {
       if (Valid) {
         layers.Insert(idx, playerLayer);

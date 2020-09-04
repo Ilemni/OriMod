@@ -25,7 +25,7 @@ namespace OriMod.Items {
     }
 
     /// <summary>
-    /// Returns <c>true</c> if the player does not have the <see cref="Ability"/> this Item represents upgraded to the <see cref="Ability.Level"/> this Item upgrades to.
+    /// Returns <see langword="true"/> if the player does not have the <see cref="Ability"/> this Item represents upgraded to the <see cref="Ability.Level"/> this Item upgrades to.
     /// </summary>
     /// <param name="player">The <see cref="Player"/> using the item.</param>
     /// <returns></returns>
@@ -39,7 +39,7 @@ namespace OriMod.Items {
     /// Upgrades <paramref name="player"/>'s <see cref="Ability"/> this Item represents to the <see cref="ILevelable.Level"/> this Item upgrades to.
     /// </summary>
     /// <param name="player">The player using the item.</param>
-    /// <returns>True if the ability can be leveled. If this returns false, this <see cref="AbilityMedallion"/> or the <see cref="Ability"/> must be fixed.</returns>
+    /// <returns><see langword="true"/> if the ability can be leveled. If this returns <see langword="false"/>, this <see cref="AbilityMedallion"/> or the <see cref="Ability"/> must be fixed.</returns>
     public override bool UseItem(Player player) {
       var oPlayer = player.GetModPlayer<OriPlayer>();
       var ability = oPlayer.abilities[ID];

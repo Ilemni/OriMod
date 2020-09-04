@@ -10,7 +10,7 @@ namespace OriMod {
     private static readonly object _lock = new object();
 
     /// <summary>
-    /// The instance of this type.
+    /// The singleton instance of this type.
     /// </summary>
     public static T Instance {
       get {
@@ -37,7 +37,7 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Sets the static reference of <see cref="SingleInstance{T}"/> to <c>null</c>. Calls <see cref="IDisposable.Dispose"/> first, if applicable.
+    /// Sets the static reference of <see cref="SingleInstance{T}"/> to <see langword="null"/>. Calls <see cref="IDisposable.Dispose"/> first, if applicable.
     /// </summary>
     private static void Unload() {
       if (_instance is IDisposable dispoable) {

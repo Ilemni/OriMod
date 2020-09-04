@@ -21,7 +21,7 @@ namespace OriMod {
     bool IsBashed { get; set; }
 
     /// <summary>
-    /// Time since this was last Bashed, in frames. 0 if <see cref="IsBashed"/> is <c>true</c>, positive value otherwise.
+    /// Time since this was last Bashed, in frames. <see langword="0"/> if <see cref="IsBashed"/> is <see langword="true"/>, otherwise a positive value.
     /// </summary>
     int FramesSinceLastBash { get; }
   }

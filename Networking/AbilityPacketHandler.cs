@@ -29,7 +29,7 @@ namespace OriMod.Networking {
     /// <para>Sends a <see cref="ModPacket"/> with ability data.</para>
     /// <inheritdoc cref="ModPacket.Send(int, int)"/>
     /// </summary>
-    /// <param name="toWho">Who to send to. 255 for server, -1 for all players.</param>
+    /// <param name="toWho">Who to send to. <see langword="255"/> for server, <see langword="-1"/> for all players.</param>
     /// <param name="fromWho">Sender, client to ignore.</param>
     /// <param name="changes">List of <see cref="AbilityID"/>s for abilities that have changed.</param>
     internal void SendAbilityState(int toWho, int fromWho, List<byte> changes) {
