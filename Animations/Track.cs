@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace OriMod.Animations {
   /// <summary>
@@ -6,59 +6,73 @@ namespace OriMod.Animations {
   /// </summary>
   public class Track {
     /// <summary>
+    /// Creates a track with <see cref="LoopMode.Always"/> and <see cref="Direction.Forward"/>, with a <see cref="Frame"/> array ranging from <paramref name="start"/> to <paramref name="end"/>.
+    /// </summary>
+    /// <param name="start">First <see cref="Frame"/> of the track.</param>
+    /// <param name="end">Last <see cref="Frame"/> of the track.</param>
+    /// <returns>A new <see cref="Track"/> with the frames ranging from <paramref name="start"/> to <paramref name="end"/>.</returns>
+    public static Track Range(Frame start, Frame end) => Range(LoopMode.Always, Direction.Forward, start, end);
+
+    /// <summary>
+    /// Creates a track with the given <see cref="LoopMode"/> and using <see cref="Direction.Forward"/>, with a <see cref="Frame"/> array ranging from <paramref name="start"/> to <paramref name="end"/>.
+    /// </summary>
+    /// <param name="loopMode"><see cref="LoopMode"/> of the track.</param>
+    /// <param name="start">First <see cref="Frame"/> of the track.</param>
+    /// <param name="end">Last <see cref="Frame"/> of the track.</param>
+    /// <returns>A new <see cref="Track"/> with the frames ranging from <paramref name="start"/> to <paramref name="end"/>.</returns>
+    public static Track Range(LoopMode loopMode, Frame start, Frame end) => Range(loopMode, Direction.Forward, start, end);
+
+    /// <summary>
+    /// Creates a track with the given <see cref="LoopMode"/> and <see cref="Direction"/>, with a <see cref="Frame"/> array ranging from <paramref name="start"/> to <paramref name="end"/>.
+    /// </summary>
+    /// <param name="loopMode"><see cref="LoopMode"/> of the track.</param>
+    /// <param name="direction"><see cref="Direction"/> of the track.</param>
+    /// <param name="start">First <see cref="Frame"/> of the track.</param>
+    /// <param name="end">Last <see cref="Frame"/> of the track.</param>
+    /// <returns>A new <see cref="Track"/> with the frames ranging from <paramref name="start"/> to <paramref name="end"/>.</returns>
+    public static Track Range(LoopMode loopMode, Direction direction, Frame start, Frame end) {
+      // Fill range of frames
+      // I.e. if given [(0,1), (0,4)], we make [(0,1), (0,2), (0,3), (0,4)]
+      var frames = new List<Frame>();
+      for (int y = start.tile.Y; y < end.tile.Y; y++) {
+        frames.Add(new Frame(start.tile.X, y, start.duration));
+      }
+      frames.Add(end);
+      return new Track(loopMode, direction, frames.ToArray());
+    }
+
+    /// <summary>
+    /// Creates a track that consists of a single <see cref="Frame"/>.
+    /// </summary>
+    /// <param name="frame">Assigns to <see cref="frames"/> as a single <see cref="Frame"/>.</param>
+    public static Track Single(Frame frame) => new Track(new[] { frame });
+
+    /// <summary>
     /// Creates a track with the given <see cref="LoopMode"/>, <see cref="Direction"/>, and <see cref="Frame"/> array. This may be used as range parameters instead, if desired.
     /// </summary>
     /// <param name="loopMode"><see cref="LoopMode"/> of the track.</param>
     /// <param name="direction"><see cref="Direction"/> of the track.</param>
-    /// <param name="asRange">Whether to use <paramref name="frames"/> as-is (false) or populate the range between frames (true).</param>
-    /// <param name="frames">Assigns to <see cref="frames"/>. Used instead as a range if <paramref name="asRange"/> is <c>true</c>.</param>
-    public Track(LoopMode loopMode, Direction direction, bool asRange, params Frame[] frames) {
+    /// <param name="frames">Assigns to <see cref="frames"/>.</param>
+    public Track(LoopMode loopMode, Direction direction, Frame[] frames) {
       loop = loopMode;
       this.direction = direction;
-
-      if (!asRange || frames.Length < 2) {
-        this.frames = frames;
-      }
-      else {
-        // Fill range of frames
-        // I.e. if given [(0,1), (0,4)], we make [(0,1), (0,2), (0,3), (0,4)]
-        var newFrames = new List<Frame>();
-        for (int i = 0; i < frames.Length - 1; i++) {
-          Frame startFrame = frames[i];
-          Frame endFrame = frames[i + 1];
-          for (int y = startFrame.tile.Y; y < endFrame.tile.Y; y++) {
-            newFrames.Add(new Frame(startFrame.tile.X, y, startFrame.duration));
-          }
-        }
-        newFrames.Add(frames[frames.Length - 1]);
-        this.frames = newFrames.ToArray();
-      }
+      this.frames = frames;
     }
 
     /// <summary>
     /// Creates a track with the given <see cref="LoopMode"/>, <see cref="Direction.Forward"/>, and the given <see cref="Frame"/> array. This may be used as range parameters instead, if desired.
     /// </summary>
     /// <param name="loopMode"><see cref="LoopMode"/> of the track.</param>
-    /// <param name="asRange">Whether to use <paramref name="frames"/> as-is (false) or populate the range between frames (true).</param>
-    /// <param name="frames">Assigns to <see cref="frames"/>. Used instead as a range if <paramref name="asRange"/> is <c>true</c>.</param>
-    public Track(LoopMode loopMode, bool asRange, params Frame[] frames) : this(loopMode, Direction.Forward, asRange, frames) { }
+    /// <param name="frames">Assigns to <see cref="frames"/>.</param>
+    public Track(LoopMode loopMode, Frame[] frames) : this(loopMode, Direction.Forward, frames) { }
 
     /// <summary>
-    /// Creates a track using <see cref="LoopMode.Always"/> and <see cref="Direction.Forward"/>, and with the given <see cref="Frame"/> array. The array may instead be used as range parameters, if desired.
+    /// Creates a track using <see cref="LoopMode.Always"/> and <see cref="Direction.Forward"/>, and with the given <see cref="Frame"/> array.
     /// </summary>
-    /// <param name="asRange">Whether to use <paramref name="frames"/> as-is (false) or populate the range between frames (true).</param>
-    /// <param name="frames">Assigns to <see cref="frames"/>. Used instead as a range if <paramref name="asRange"/> is <c>true</c>.</param>
-    public Track(bool asRange, params Frame[] frames) : this(LoopMode.Always, Direction.Forward, asRange, frames) { }
+    /// <param name="frames">Assigns to <see cref="frames"/>.</param> 
+    public Track(Frame[] frames) : this(LoopMode.Always, Direction.Forward, frames) { }
 
-    /// <summary>
-    /// Creates a track that consists of a single <see cref="Frame"/>.
-    /// </summary>
-    /// <param name="frame">Assigns to <see cref="frames"/> as a single <see cref="Frame"/>.</param>
-    public Track(Frame frame) {
-      frames = new[] { frame };
-    }
-
-
+    
     /// <summary>
     /// All frames used for this track.
     /// </summary>
@@ -71,10 +85,13 @@ namespace OriMod.Animations {
     public readonly Direction direction = Direction.Forward;
 
     /// <summary>
-    /// Optional spritesheet that may be used instead of <see cref="AnimationSource.texture"/>
+    /// Optional spritesheet that may be used instead of <see cref="AnimationSource.texture"/>.
     /// </summary>
     public ReferencedTexture2D Texture { get; private set; }
 
+    /// <summary>
+    /// Assign a spritesheet that will be used instead of <see cref="AnimationSource.texture"/>.
+    /// </summary>
     public Track WithTexture(ReferencedTexture2D texture) {
       Texture = texture;
       return this;
