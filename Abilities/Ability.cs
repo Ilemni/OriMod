@@ -56,6 +56,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Unique ID of this ability. Corresponds with an <see cref="AbilityID"/>.
     /// </summary>
+    /// <completionlist cref="AbilityID"/>
     public abstract int Id { get; }
 
     /// <summary>
@@ -293,7 +294,11 @@ namespace OriMod.Abilities {
     internal virtual void DrawEffects() { }
     #endregion
 
-    public override string ToString() => $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} Level:{Level} Cooldown:{currentCooldown}/{Cooldown}";
+    public override string ToString() {
+      return $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} " +
+        $"Level:{Level}{(this is ILevelable levelable ? $"/{levelable.MaxLevel}" : "")}" +
+        (Cooldown != 0 ? " Cooldown:{currentCooldown}/{Cooldown}" : "");
+    }
 
     /// <summary>
     /// States that the <see cref="Ability"/> can be in. Determines update logic.

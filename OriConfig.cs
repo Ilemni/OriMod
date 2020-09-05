@@ -96,7 +96,7 @@ namespace OriMod {
     public bool AbilityCooldowns;
 
     [Header("Soul Link")]
-
+#pragma warning disable CS0649
     [Label("Cooldown"), Tooltip("Cooldown of Soul Link, in seconds.\nDefault: 30")]
     [DefaultValue(30), Range(0f, 150), Increment(1f)]
     [Obsolete] internal readonly float SoulLinkCooldown;
@@ -114,7 +114,7 @@ namespace OriMod {
     [Label("Number of Jumps"), Tooltip("Amount of times the player can jump in the air.\nDefault: 2")]
     [DefaultValue(2), Range(1, int.MaxValue)]
     [Obsolete] internal readonly int AirJumpCount;
-
+#pragma warning restore CS0649
     [Header("Bash")]
 
     [Label("Cooldown"), Tooltip("Cooldown of Bash, in seconds.\nDefault: 0.75")]
