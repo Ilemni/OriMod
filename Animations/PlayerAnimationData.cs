@@ -48,7 +48,7 @@ namespace OriMod.Animations {
       var abilities = oPlayer.abilities;
 
       if (oPlayer.Transforming) {
-        IncrementFrame(oPlayer.IsOri ? "TransformEnd" : "TransformStart", speed: oPlayer.HasTransformedOnce ? (OriPlayer.RepeatedTransformRate - 1) : 0);
+        IncrementFrame(oPlayer.IsOri ? "TransformEnd" : "TransformStart", speed: oPlayer.HasTransformedOnce ? OriPlayer.RepeatedTransformRate : 1);
         return;
       }
       if (!oPlayer.IsOri) {
@@ -65,7 +65,7 @@ namespace OriMod.Animations {
         if (player.gravDir < 0) {
           rad += (float)Math.PI;
         }
-        IncrementFrame("Burrow", speed: 1, rotation: rad);
+        IncrementFrame("Burrow", rotation: rad);
         return;
       }
       if (abilities.wallChargeJump.Active) {
@@ -81,7 +81,7 @@ namespace OriMod.Animations {
         return;
       }
       if (abilities.airJump.InUse && !(abilities.dash.InUse || abilities.chargeDash.InUse)) {
-        IncrementFrame("AirJump", speed: 1, rotation: FrameTime * 0.6f);
+        IncrementFrame("AirJump", rotation: FrameTime * 0.6f);
         return;
       }
       if (abilities.bash.InUse) {
@@ -91,7 +91,7 @@ namespace OriMod.Animations {
       if (abilities.stomp.InUse) {
         switch (abilities.stomp.AbilityState) {
           case Ability.State.Starting:
-            IncrementFrame("AirJump", speed: 1, rotation: FrameTime * 0.8f);
+            IncrementFrame("AirJump", rotation: FrameTime * 0.8f);
             return;
           case Ability.State.Active:
             IncrementFrame("ChargeJump", null, null, duration: 2, rotation: MathHelper.ToRadians(180), loop: LoopMode.Always, direction: Direction.PingPong);
@@ -141,7 +141,7 @@ namespace OriMod.Animations {
           IncrementFrame("ClimbIdle");
         }
         else {
-          IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", speed: Math.Abs(player.velocity.Y) * 0.1f);
+          IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", speed: Math.Abs(player.velocity.Y) * 0.4f);
         }
         return;
       }
@@ -190,7 +190,7 @@ namespace OriMod.Animations {
         return;
       }
       if (Math.Abs(player.velocity.X) > 0.2f) {
-        IncrementFrame("Running", speed: (int)Math.Abs(player.velocity.X) / 3);
+        IncrementFrame("Running", speed: (int)Math.Abs(player.velocity.X) * 0.45f);
         return;
       }
       IncrementFrame(oPlayer.OnWall ? "IdleAgainst" : "Idle");
