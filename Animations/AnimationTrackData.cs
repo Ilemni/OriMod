@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AnimLib;
 using AnimLib.Animations;
 using Microsoft.Xna.Framework.Graphics;
@@ -100,7 +99,7 @@ namespace OriMod.Animations {
         }),
     };
 
-    public override Texture2D Texture => OriTextures.Instance.PlayerPrimary;
+    public override Texture2D texture => OriTextures.Instance.PlayerPrimary;
   }
 
   /// <summary>
@@ -115,7 +114,7 @@ namespace OriMod.Animations {
       )
     };
 
-    public override Texture2D Texture => OriTextures.Instance.BashArrow;
+    public override Texture2D texture => OriTextures.Instance.BashArrow;
   }
 
   /// <summary>
@@ -136,6 +135,6 @@ namespace OriMod.Animations {
       ),
     };
 
-    public override Texture2D Texture => OriTextures.Instance.Feather;
+    public override Texture2D texture => OriTextures.Instance.Feather;
   }
 }

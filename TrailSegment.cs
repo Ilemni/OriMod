@@ -2,7 +2,6 @@ using AnimLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Animations;
-using OriMod.Utilities;
 using Terraria;
 using Terraria.DataStructures;
 

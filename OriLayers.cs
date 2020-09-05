@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
-using AnimLib.Animations;
 using Animation = AnimLib.Animations.Animation;
 
 namespace OriMod {
