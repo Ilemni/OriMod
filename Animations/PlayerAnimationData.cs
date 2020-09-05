@@ -185,8 +185,7 @@ namespace OriMod.Animations {
         return;
       }
       if (!oPlayer.IsGrounded) {
-        // XOR so opposite signs (negative value) means jumping regardless of gravity
-        IncrementFrame(((int)player.velocity.Y ^ (int)player.gravity) <= 0 ? "Jump" : "Falling");
+        IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Jump" : "Falling");
         return;
       }
       if (Math.Abs(player.velocity.X) > 0.2f) {
