@@ -29,7 +29,7 @@ namespace OriMod.Abilities {
     private static int MaxDuration => (int)(Config.BurrowDuration * 60);
     private static int UiIncrement => 60;
     private static float Speed => 8f;
-    private static float SpeedExitMultiplier => 1.5f;
+    private static float SpeedExitMultiplier => 1.2f;
 
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
 
@@ -236,15 +236,15 @@ namespace OriMod.Abilities {
       }
     }
 
-    public void UpdateBurrowStrength(bool force = false) {
-      if (force || (int)Main.time % 64 == 0) {
-        int pick = OriMod.ConfigAbilities.BurrowStrength;
-        foreach (Item item in player.inventory) {
-          if (item.pick > pick) {
-            pick = item.pick;
-          }
+    /// <summary>
+    /// Updates <see cref="strength"/> based on the player's highest pickaxe power, or <see cref="OriConfigClient2.BurrowStrength"/>.
+    /// </summary>
+    public void UpdateBurrowStrength() {
+      strength = OriMod.ConfigAbilities.BurrowStrength;
+      foreach (Item item in player.inventory) {
+        if (item.pick > strength) {
+          strength = item.pick;
         }
-        strength = pick;
       }
     }
 
@@ -253,7 +253,7 @@ namespace OriMod.Abilities {
         EnterHitbox.UpdateHitbox(player.Center);
         OuterHitbox.UpdateHitbox(player.Center);
         InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * 16);
-        if (IsLocal) {
+        if (IsLocal && Main.time % 64 == 0) {
           UpdateBurrowStrength();
         }
         abilities.glide.SetState(State.Inactive);
@@ -285,7 +285,7 @@ namespace OriMod.Abilities {
         TickCooldown();
 
         if (CanUse && IsLocal && (OriMod.BurrowKey.JustPressed && abilities.crouch.InUse || autoBurrow)) {
-          UpdateBurrowStrength(force: true);
+          UpdateBurrowStrength();
           EnterHitbox.UpdateHitbox(player.position);
 
           // Check if player can enter Burrow
@@ -305,14 +305,8 @@ namespace OriMod.Abilities {
             currentCooldown = Cooldown;
 
             autoBurrow = OriMod.ConfigClient.AutoBurrow && OriMod.BurrowKey.Current;
-            if (autoBurrow) {
-              vel = player.velocity.Normalized();
-            }
-            else {
-              vel = Vector2.UnitY;
-            }
             // TODO: consider moving this write to an Update method
-            velocity = vel * Speed;
+            velocity = (autoBurrow ? player.velocity.Normalized() : Vector2.UnitY) * Speed;
             player.position += velocity;
           }
         }
