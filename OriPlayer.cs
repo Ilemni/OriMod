@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AnimLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using OriMod.Abilities;
@@ -33,8 +34,8 @@ namespace OriMod {
     /// <summary>
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
     /// </summary>
-    internal PlayerAnimationData animations { get; private set; }
-
+    internal PlayerAnimationData animations => _anim ?? (_anim = AnimLibMod.GetPlayerAnimationData<PlayerAnimationData>(player));
+    private PlayerAnimationData _anim;
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
     /// </summary>
@@ -107,12 +108,12 @@ namespace OriMod {
     private sbyte transformDirection = 0;
 
     /// <summary>
-    /// <see cref="AnimationTrackData.PlayerAnim"/>["TransformStart"] track duration.
+    /// <see cref="PlayerAnim"/>["TransformStart"] track duration.
     /// </summary>
     private int TransformStartDuration => 392;
 
     /// <summary>
-    /// <see cref="AnimationTrackData.PlayerAnim"/>["TransformEnd"] track duration.
+    /// <see cref="PlayerAnim"/>["TransformEnd"] track duration.
     /// </summary>
     private int TransformEndDuration => TransformStartDuration + 225;
 
@@ -363,7 +364,6 @@ namespace OriMod {
       abilities = new AbilityManager(this);
 
       if (!Main.dedServ) {
-        animations = new PlayerAnimationData(this);
         trail = new Trail(this, 26);
       }
     }
@@ -496,9 +496,6 @@ namespace OriMod {
     }
 
     public override void PostUpdate() {
-      if (!Main.dedServ) {
-        animations.Update();
-      }
       if (IsOri && !Transforming) {
         HasTransformedOnce = true;
       }
@@ -682,11 +679,11 @@ namespace OriMod {
         if (animations.playerAnim.Valid && !abilities.burrow.InUse && !player.mount.Active) {
           layers.Insert(idx++, OriLayers.Instance.Trail);
         }
-        animations.glideAnim.TryInsertInLayers(layers, idx++);
-        animations.bashAnim.TryInsertInLayers(layers, idx++);
+        animations.glideAnim.TryInsertInLayers(layers, OriLayers.Instance.FeatherSprite, idx++);
+        animations.bashAnim.TryInsertInLayers(layers, OriLayers.Instance.BashArrow, idx++);
       }
       if (!player.dead && !player.invis) {
-        animations.playerAnim.TryInsertInLayers(layers, idx++);
+        animations.playerAnim.TryInsertInLayers(layers, OriLayers.Instance.PlayerSprite, idx++);
       }
       player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
       OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow.InUse && !player.mount.Active;

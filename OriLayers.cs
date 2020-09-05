@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
+using AnimLib.Animations;
+using Animation = AnimLib.Animations.Animation;
 
 namespace OriMod {
   /// <summary>
@@ -56,16 +58,16 @@ namespace OriMod {
     /// </summary>
     internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      Animations.Animation anim = oPlayer.animations.bashAnim;
+      Animation anim = oPlayer.animations.bashAnim;
       var bash = oPlayer.abilities.bash;
 
       var pos = bash.BashEntity.Center - Main.screenPosition;
-      var orig = anim.ActiveTile.Size() / 2;
+      var orig = anim.CurrentTile.Size() / 2;
       int frame = bash.CurrentTime < 40 ? 0 : bash.CurrentTime < 50 ? 1 : 2;
       var rect = new Rectangle(0, frame * anim.source.spriteSize.Y, anim.source.spriteSize.X, anim.source.spriteSize.Y);
       var rotation = oPlayer.abilities.bash.bashAngle;
       var effect = SpriteEffects.None;
-      var data = new DrawData(anim.Texture, pos, rect, Color.White, rotation, orig, 1, effect, 0);
+      var data = new DrawData(anim.CurrentTexture, pos, rect, Color.White, rotation, orig, 1, effect, 0);
       Main.playerDrawData.Add(data);
     });
 

@@ -1,3 +1,4 @@
+using AnimLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Animations;
@@ -29,7 +30,7 @@ namespace OriMod {
     public void Reset() {
       var player = oPlayer.player;
       position = player.Center;
-      tile = oPlayer.animations.playerAnim.ActiveFrame.tile;
+      tile = oPlayer.animations.playerAnim.CurrentFrame.tile;
 
       startAlpha = player.velocity.LengthSquared() * 0.0008f; // 0.002f
       if (startAlpha > 0.16f) {
@@ -60,11 +61,11 @@ namespace OriMod {
     /// </summary>
     public DrawData GetDrawData() {
       var pos = position - Main.screenPosition;
-      var spriteSize = AnimationTrackData.Instance.PlayerAnim.spriteSize;
+      var spriteSize = PlayerAnim.Instance.spriteSize;
       var rect = new Rectangle(tile.X * spriteSize.X, tile.Y & spriteSize.Y, spriteSize.X, spriteSize.Y);
       var alpha = startAlpha * (time / 26f) - 0.1f * (26 - time);
       var color = oPlayer.SpriteColorPrimary * alpha;
-      var origin = new Vector2(AnimationTrackData.SpriteWidth / 2, AnimationTrackData.SpriteHeight / 2 + 6);
+      var origin = new Vector2(PlayerAnim.Instance.spriteSize.X / 2, PlayerAnim.Instance.spriteSize.Y / 2 + 6);
 
       return new DrawData(OriTextures.Instance.Trail, pos, rect, color, 0, origin, 1, effect, 0);
     }
