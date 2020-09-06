@@ -110,9 +110,7 @@ namespace OriMod.Animations {
       if (abilities.climb.InUse) {
         if (abilities.climb.IsCharging) {
           if (!abilities.wallChargeJump.Charged) {
-            if (abilities.wallChargeJump.Refreshed) {
-              IncrementFrame("WallChargeJumpCharge", frameIndex: abilities.wallChargeJump.Refreshed ? null : (int?)0);
-            }
+            IncrementFrame("WallChargeJumpCharge", frameIndex: abilities.wallChargeJump.Refreshed ? null : (int?)0);
             return;
           }
           // TODO: Multiplayer sync of aim position
