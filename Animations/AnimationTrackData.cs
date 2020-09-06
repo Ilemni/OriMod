@@ -37,13 +37,13 @@ namespace OriMod.Animations {
       ["Dash"] = Track.Range(
           F(2, 11, 36), F(2, 12, 12)
         ),
-      ["Bash"] = new Track(new IFrame[] {
+      ["Bash"] = new Track(new Frame[] {
           F(2, 13, 40), F(2, 12)
       }),
       ["AirJump"] = Track.Single(
           F(3, 0, 32)
         ),
-      ["Jump"] = new Track(new IFrame[] {
+      ["Jump"] = new Track(new Frame[] {
           F(3, 2, 14), F(3, 1)
         }),
       ["IntoJumpBall"] = Track.Range(LoopMode.None,
@@ -79,7 +79,7 @@ namespace OriMod.Animations {
       ["WallJump"] = Track.Single(
           F(5, 13, 12)
         ),
-      ["WallChargeJumpCharge"] = new Track(new IFrame[] {
+      ["WallChargeJumpCharge"] = new Track(new Frame[] {
           F(6, 0, 16), F(6, 1, 10), F(6, 2)
         }),
       ["WallChargeJumpAim"] = Track.Range(
@@ -88,11 +88,11 @@ namespace OriMod.Animations {
       ["Burrow"] = Track.Range(
           F(7, 0, 3), F(7, 7, 3)
         ),
-      ["TransformStart"] = new Track(LoopMode.Transfer, new IFrame[] { // TODO: Migrate TransformStart textures to OriPlayer
+      ["TransformStart"] = new Track(LoopMode.Transfer, new Frame[] { // TODO: Migrate TransformStart textures to OriPlayer
           F(0, 0, 2), F(0, 1, 60), F(0, 2, 60), F(0, 3, 120),
           F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30)
         }).WithTexture("OriMod/Animations/TransformAnim"),
-      ["TransformEnd"] = new Track(new IFrame[] {
+      ["TransformEnd"] = new Track(new Frame[] {
           F(6, 7, 6), F(6, 8, 50), F(6, 9, 6), F(6, 10, 60),
           F(6, 11, 10), F(6, 12, 40), F(6, 13, 3), F(6, 14, 60)
         }),
