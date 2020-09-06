@@ -201,6 +201,24 @@ namespace OriMod {
       ModNetHandler.Instance.HandlePacket(reader, fromWho);
     }
 
+    /// <summary>
+    /// Interact with <see cref="OriMod"/> using various inputs.
+    /// <list type="table">
+    /// <listheader>
+    /// <term>Command/Parameters</term>
+    /// <description>Description</description>
+    /// </listheader>
+    /// <item>
+    /// <term>"ResetPlayerModData", <see cref="Player"/> -or- <see cref="ModPlayer"/></term>
+    /// <description>
+    /// Resets the <see cref="OriPlayer"/> data on the given <see cref="Player"/>/<see cref="ModPlayer"/> —
+    /// Returns <see langword="true"/> if arguments are valid; otherwise, <see langword="false"/>.
+    /// </description>
+    /// </item>
+    /// </list>
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
     public override object Call(params object[] args) {
       int len = args.Length;
       if (len > 0 && args[0] is string cmd) {
@@ -218,7 +236,7 @@ namespace OriMod {
                 player.GetModPlayer<OriPlayer>().ResetData();
                 return true;
               }
-              break;
+              return false;
             }
         }
       }
