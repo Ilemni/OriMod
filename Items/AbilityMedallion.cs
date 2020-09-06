@@ -56,13 +56,13 @@ namespace OriMod.Items {
     public abstract override void AddRecipes();
 
     /// <summary>
-    /// Gets a <see cref="ModRecipe"/> that uses the ingredient <see cref="AbilityMaterialItem"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
+    /// Gets a <see cref="ModRecipe"/> that uses the ingredient <see cref="MedallionEmpty"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
     /// <para>These are standard recipes to all <see cref="AbilityMedallion"/> types.</para>
     /// </summary>
     /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallion"/> items.</returns>
     protected ModRecipe GetAbilityRecipe() {
       var recipe = new ModRecipe(mod);
-      recipe.AddIngredient(ModContent.ItemType<AbilityMaterialItem>());
+      recipe.AddIngredient(ModContent.ItemType<MedallionEmpty>());
       recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
       recipe.SetResult(this);
       return recipe;
