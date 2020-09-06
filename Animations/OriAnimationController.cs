@@ -7,7 +7,7 @@ namespace OriMod.Animations {
   /// <summary>
   /// Container for various <see cref="Animation"/>s and data to be attached to an <see cref="OriPlayer"/>. Manages advancement of frames.
   /// </summary>
-  public class PlayerAnimationData : AnimLib.Animations.PlayerAnimationData {
+  public class OriAnimationController : AnimationController {
     public override void Initialize() {
       playerAnim = GetAnimation<PlayerAnim>();
       bashAnim = GetAnimation<BashAnim>();
@@ -16,7 +16,7 @@ namespace OriMod.Animations {
     }
 
     /// <summary>
-    /// The <see cref="OriPlayer"/> instance this <see cref="PlayerAnimationData"/> instance belongs to.
+    /// The <see cref="OriPlayer"/> instance this <see cref="OriAnimationController"/> instance belongs to.
     /// </summary>
     public OriPlayer oPlayer => _op ?? (_op = player.GetModPlayer<OriPlayer>());
     private OriPlayer _op;
