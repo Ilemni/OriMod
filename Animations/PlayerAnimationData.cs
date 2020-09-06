@@ -44,7 +44,7 @@ namespace OriMod.Animations {
       var abilities = oPlayer.abilities;
 
       if (oPlayer.Transforming) {
-        IncrementFrame(oPlayer.IsOri ? "TransformEnd" : "TransformStart", speed: oPlayer.HasTransformedOnce ? OriPlayer.RepeatedTransformRate : 1);
+        IncrementFrame("Transform", speed: oPlayer.HasTransformedOnce ? OriPlayer.RepeatedTransformRate : 1);
         return;
       }
       if (!oPlayer.IsOri) {

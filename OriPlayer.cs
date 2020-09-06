@@ -108,17 +108,17 @@ namespace OriMod {
     private sbyte transformDirection = 0;
 
     /// <summary>
-    /// <see cref="PlayerAnim"/>["TransformStart"] track duration.
+    /// Duration of Transformation where <see cref="IsOri"/> stays false.
     /// </summary>
     private int TransformStartDuration => 392;
 
     /// <summary>
-    /// <see cref="PlayerAnim"/>["TransformEnd"] track duration.
+    /// Total duration of Transformation before <see cref="Transforming"/> ends.
     /// </summary>
     private int TransformEndDuration => TransformStartDuration + 225;
 
     /// <summary>
-    /// For cancelling the transformation animation early on subsequent transformations.
+    /// Shorter duration of Transformation, for cancelling the animation early on subsequent transformations.
     /// </summary>
     private int TransformEndEarlyDuration => TransformStartDuration + 68;
     #endregion

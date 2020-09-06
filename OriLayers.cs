@@ -17,13 +17,13 @@ namespace OriMod {
     /// </summary>
     internal readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      bool isTransformStart = oPlayer.animations.TrackName == "TransformStart";
+      bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
       DrawData data = oPlayer.animations.playerAnim.GetDrawData(drawInfo);
       data.color = oPlayer.flashing ? Color.Red : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
       Main.playerDrawData.Add(data);
 
-      if (oPlayer.IsOri && !isTransformStart) {
+      if (oPlayer.IsOri) {
         data = oPlayer.animations.playerAnim.GetDrawData(drawInfo);
         data.color = oPlayer.flashing ? Color.Red : oPlayer.SpriteColorSecondary;
         data.texture = OriTextures.Instance.PlayerSecondary;

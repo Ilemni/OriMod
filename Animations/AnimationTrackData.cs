@@ -88,13 +88,9 @@ namespace OriMod.Animations {
       ["Burrow"] = Track.Range(
           F(7, 0, 3), F(7, 7, 3)
         ),
-      ["TransformStart"] = new Track(LoopMode.Transfer, new Frame[] { // TODO: Migrate TransformStart textures to OriPlayer
-          F(0, 0, 2), F(0, 1, 60), F(0, 2, 60), F(0, 3, 120),
-          F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30)
-        }).WithTexture("OriMod/Animations/TransformAnim"),
-      ["TransformEnd"] = new Track(new Frame[] {
-          F(6, 7, 6), F(6, 8, 50), F(6, 9, 6), F(6, 10, 60),
-          F(6, 11, 10), F(6, 12, 40), F(6, 13, 3), F(6, 14, 60)
+      ["Transform"] = new Track(LoopMode.Transfer, new IFrame[] {
+          F("OriMod/Animations/TransformAnim", 0, 0, 2), F(0, 1, 60), F(0, 2, 60), F(0, 3, 120), F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30),
+          F("OriMod/Animations/PlayerAnim", 6, 7, 6), F(6, 8, 50), F(6, 9, 6), F(6, 10, 60), F(6, 11, 10), F(6, 12, 40), F(6, 13, 3), F(6, 14, 60)
         }),
     };
 
