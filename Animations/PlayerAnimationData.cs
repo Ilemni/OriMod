@@ -2,17 +2,13 @@
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using AnimLib.Animations;
-using Terraria.ModLoader;
-using Terraria;
-using Animation = AnimLib.Animations.Animation;
 
 namespace OriMod.Animations {
   /// <summary>
   /// Container for various <see cref="Animation"/>s and data to be attached to an <see cref="OriPlayer"/>. Manages advancement of frames.
   /// </summary>
   public class PlayerAnimationData : AnimLib.Animations.PlayerAnimationData {
-    /// <inheritdoc cref="AnimLib.Animations.PlayerAnimationData(Player, Mod)"/>
-    public PlayerAnimationData(Player player, Mod mod) : base(player, mod) {
+    public override void Initialize() {
       playerAnim = GetAnimation<PlayerAnim>();
       bashAnim = GetAnimation<BashAnim>();
       glideAnim = GetAnimation<GlideAnim>();
@@ -28,17 +24,17 @@ namespace OriMod.Animations {
     /// <summary>
     /// Animation for the player sprite.
     /// </summary>
-    public readonly Animation playerAnim;
+    public Animation playerAnim { get; private set; }
     
     /// <summary>
     /// Animation for the Bash arrow sprite.
     /// </summary>
-    public readonly Animation bashAnim;
+    public Animation bashAnim { get; private set; }
 
     /// <summary>
     /// Animation for the Glide feather sprite.
     /// </summary>
-    public readonly Animation glideAnim;
+    public Animation glideAnim { get; private set; }
 
     /// <summary>
     /// Updates the player animation by one frame, and changes it depending on various conditions.

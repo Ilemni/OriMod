@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using AnimLib;
 using AnimLib.Animations;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace OriMod.Animations {
   /// <summary>
   /// Animation data for the Ori sprite.
   /// </summary>
-  public sealed class PlayerAnim : AnimationSource<PlayerAnim> {
+  public sealed class PlayerAnim : AnimationSource {
     public override PointByte spriteSize { get; } = new PointByte(64, 68);
 
     public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
@@ -92,20 +91,21 @@ namespace OriMod.Animations {
       ["TransformStart"] = new Track(LoopMode.Transfer, new IFrame[] { // TODO: Migrate TransformStart textures to OriPlayer
           F(0, 0, 2), F(0, 1, 60), F(0, 2, 60), F(0, 3, 120),
           F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30)
-        }).WithTexture(OriTextures.Instance.Transform),
+        }).WithTexture("OriMod/Animations/TransformAnim"),
       ["TransformEnd"] = new Track(new IFrame[] {
           F(6, 7, 6), F(6, 8, 50), F(6, 9, 6), F(6, 10, 60),
           F(6, 11, 10), F(6, 12, 40), F(6, 13, 3), F(6, 14, 60)
         }),
     };
 
-    public override Texture2D texture => OriTextures.Instance.PlayerPrimary;
+    public static PlayerAnim Instance => _instance ?? (_instance = AnimLibMod.GetAnimationSource<PlayerAnim>(OriMod.Instance));
+    private static PlayerAnim _instance;
   }
 
   /// <summary>
   /// Animation data for the Bash sprite.
   /// </summary>
-  public sealed class BashAnim : AnimationSource<BashAnim> {
+  public sealed class BashAnim : AnimationSource {
     public override PointByte spriteSize { get; } = new PointByte(152, 20);
 
     public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
@@ -113,14 +113,12 @@ namespace OriMod.Animations {
         F(0, 0)
       )
     };
-
-    public override Texture2D texture => OriTextures.Instance.BashArrow;
   }
 
   /// <summary>
   /// Animation data for the Feather sprite.
   /// </summary>
-  public sealed class GlideAnim : AnimationSource<GlideAnim> {
+  public sealed class GlideAnim : AnimationSource {
     public override PointByte spriteSize { get; } = new PointByte(128, 128);
 
     public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
@@ -134,7 +132,5 @@ namespace OriMod.Animations {
         F(0, 4, 5), F(0, 9, 5)
       ),
     };
-
-    public override Texture2D texture => OriTextures.Instance.Feather;
   }
 }
