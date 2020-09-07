@@ -199,7 +199,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateUsing() {
       if (!Ending) {
-        if (BashEntity != null) {
+        if (!(BashEntity is null)) {
           BashEntity.Center = targetStartPos;
         }
 

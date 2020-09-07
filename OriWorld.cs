@@ -107,7 +107,7 @@ namespace OriMod {
                   GlobalUpgrade = Upgrade.DefeatedAllMechs;
                   if (!(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3)) {
                     GlobalUpgrade = Upgrade.DefeatedAnyMechs;
-                    if (!(NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3)) {
+                    if (!NPC.downedMechBossAny) {
                       GlobalUpgrade = Upgrade.InHardMode;
                       if (!Main.hardMode) {
                         GlobalUpgrade = Upgrade.DefeatedSkeletron;
@@ -116,6 +116,11 @@ namespace OriMod {
                           if (!NPC.downedBoss2) {
                             GlobalUpgrade = Upgrade.DefeatedEyeOfCthuhlu;
                             if (!NPC.downedBoss1) {
+                              // Hello, welcome to my humble abode,
+                              // Deep in all these dang brackets.
+                              // Now get out, there's only enough space here for one of us.
+                              // And I ain't budging.
+                              // ...because I'm a comment. I ain't just gonna get up and walk away.
                               GlobalUpgrade = Upgrade.None;
                             }
                           }

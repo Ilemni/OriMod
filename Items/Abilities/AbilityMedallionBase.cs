@@ -1,4 +1,4 @@
-﻿using OriMod.Abilities;
+using OriMod.Abilities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,8 +19,9 @@ namespace OriMod.Items.Abilities {
     public virtual byte Level => 1;
 
     public override void SetDefaults() {
-      item.consumable = true;
       item.useStyle = ItemUseStyleID.HoldingUp;
+      item.useTime = 45;
+      item.useAnimation = 45;
     }
 
     /// <summary>
@@ -35,7 +36,8 @@ namespace OriMod.Items.Abilities {
     }
 
     /// <summary>
-    /// Upgrades <paramref name="player"/>'s <see cref="Ability"/> this Item represents to the <see cref="ILevelable.Level"/> this Item upgrades to.
+    /// Increases the level of <paramref name="player"/>'s <see cref="Ability"/> this Item represents to by 1.
+    /// <para>By increasing by 1, the player can level it multiple times if they skip one, rather than having their level skip.</para>
     /// </summary>
     /// <param name="player">The player using the item.</param>
     /// <returns><see langword="true"/> if the ability can be leveled. If this returns <see langword="false"/>, this <see cref="AbilityMedallionBase"/> or the <see cref="Ability"/> must be fixed.</returns>

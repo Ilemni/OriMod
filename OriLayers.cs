@@ -9,7 +9,7 @@ namespace OriMod {
   /// <summary>
   /// Contains all <see cref="PlayerLayer"/>s this mod creates.
   /// </summary>
-  internal class OriLayers : SingleInstance<OriLayers> {
+  internal sealed class OriLayers : SingleInstance<OriLayers> {
     private OriLayers() { }
 
     /// <summary>

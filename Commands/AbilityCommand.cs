@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
 using Terraria.ModLoader;
@@ -40,12 +40,13 @@ namespace OriMod.Commands {
         ability = oPlayer.abilities[id];
       }
       else {
+        var abilityName = args[0].ToLower();
         foreach (var ab in oPlayer.abilities) {
-          if (ab.GetType().Name.ToLower() == args[0]) {
+          if (ab.GetType().Name.ToLower() == abilityName) {
             ability = ab;
           }
         }
-        if (ability == null) {
+        if (ability is null) {
           Main.NewText($"\"{args[0]}\" is not a valid Ability.", Color.Red);
           return;
         }
@@ -56,15 +57,35 @@ namespace OriMod.Commands {
           Main.NewText($"{ability.GetType().Name}'s Level is {levelable.Level}.", Color.LightGreen);
         }
         else if (byte.TryParse(args[1], out byte level)) {
-          levelable.Level = level;
-          Main.NewText($"{ability.GetType().Name}'s Level has been set to {level}.", Color.LightGreen);
+          if (level > levelable.MaxLevel) {
+            Main.NewText($"\"{level}\" is too high a level; the max level for {ability.GetType().Name} is {levelable.MaxLevel}", Color.Red);
+          }
+          else {
+            levelable.Level = level;
+            Main.NewText($"{ability.GetType().Name}'s Level has been set to {level}.", Color.LightGreen);
+          }
         }
         else {
           Main.NewText($"\"{args[1]}\" is not a valid input for level.", Color.Red);
         }
       }
       else {
-        Main.NewText($"{ability.GetType().Name} cannot have its level read or modified.", Color.Red);
+        if (args.Length < 2) {
+          Main.NewText($"{ability.GetType().Name}'s fixed Level is {ability.Level}.", Color.LightGreen);
+        }
+        else {
+          Main.NewText($"{ability.GetType().Name} cannot have its level modified. {FailedAbilityReason(ability)}", Color.Red);
+        }
+      }
+    }
+
+    private static string FailedAbilityReason(Ability ability) {
+      switch (ability) {
+        case LookUp _: return "LookUp is always enabled.";
+        case Crouch _: return "Crouch is always enabled.";
+        case ChargeDash _: return "ChargeDash's level is dependent on Dash.";
+        case WallChargeJump _: return "WallChargeJump's level is dependent on ChargeJump.";
+        default: return string.Empty;
       }
     }
   }

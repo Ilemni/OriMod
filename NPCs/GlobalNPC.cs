@@ -28,7 +28,7 @@ namespace OriMod.NPCs {
     }
 
     public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) {
-      if (FramesSinceLastBash < 15 && BashPlayer != null && target.whoAmI == BashPlayer.player.whoAmI) {
+      if (IsBashed || FramesSinceLastBash < 15 && !(BashPlayer is null) && target.whoAmI == BashPlayer.player.whoAmI) {
         return false;
       }
       return true;
