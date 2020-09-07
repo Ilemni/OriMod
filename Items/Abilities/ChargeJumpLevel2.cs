@@ -9,7 +9,7 @@ namespace OriMod.Items.Abilities {
     public override byte ID => AbilityID.ChargeJump;
 
     public override void AddRecipes() {
-      var recipe = GetAbilityRecipe();
+      var recipe = GetAbilityRecipe<ChargeJumpLevel1>();
       recipe.AddRecipeGroup("OriMod:LunarFragments", 30);
       recipe.AddIngredient(ItemID.SoulofFlight, 20);
       recipe.AddRecipe();

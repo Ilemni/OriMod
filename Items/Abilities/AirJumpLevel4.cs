@@ -10,7 +10,7 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 4;
 
     public override void AddRecipes() {
-      var recipe = GetAbilityRecipe();
+      var recipe = GetAbilityRecipe<AirJumpLevel3>();
       recipe.AddIngredient(ItemID.SpectreBar, 18);
       recipe.AddIngredient(ItemID.BundleofBalloons);
       recipe.AddRecipe();

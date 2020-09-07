@@ -10,7 +10,7 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 2;
 
     public override void AddRecipes() {
-      var recipe = GetAbilityRecipe();
+      var recipe = GetAbilityRecipe<StompLevel2>();
       recipe.AddRecipeGroup("OriMod:LunarFragments", 24);
       recipe.AddIngredient(ItemID.SoulofMight, 18);
       recipe.AddRecipe();
