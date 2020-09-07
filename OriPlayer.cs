@@ -679,11 +679,11 @@ namespace OriMod {
         if (animations.playerAnim.Valid && !abilities.burrow.InUse && !player.mount.Active) {
           layers.Insert(idx++, OriLayers.Instance.Trail);
         }
-        animations.glideAnim.TryInsertInLayers(layers, OriLayers.Instance.FeatherSprite, idx++);
-        animations.bashAnim.TryInsertInLayers(layers, OriLayers.Instance.BashArrow, idx++);
+        animations.glideAnim.TryAddToLayers(layers, OriLayers.Instance.FeatherSprite, idx++);
+        animations.bashAnim.TryAddToLayers(layers, OriLayers.Instance.BashArrow, idx++);
       }
       if (!player.dead && !player.invis) {
-        animations.playerAnim.TryInsertInLayers(layers, OriLayers.Instance.PlayerSprite, idx++);
+        animations.playerAnim.TryAddToLayers(layers, OriLayers.Instance.PlayerSprite, idx++);
       }
       player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
       OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow.InUse && !player.mount.Active;

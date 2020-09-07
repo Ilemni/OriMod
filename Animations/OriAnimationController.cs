@@ -90,7 +90,7 @@ namespace OriMod.Animations {
             IncrementFrame("AirJump", rotation: FrameTime * 0.8f);
             return;
           case Ability.State.Active:
-            IncrementFrame("ChargeJump", null, null, duration: 2, rotation: MathHelper.ToRadians(180), loop: LoopMode.Always, direction: Direction.PingPong);
+            IncrementFrame("ChargeJump", duration: 2, rotation: MathHelper.ToRadians(180), loop: LoopMode.Always, direction: Direction.PingPong);
             return;
         }
       }
@@ -144,7 +144,7 @@ namespace OriMod.Animations {
         return;
       }
       if (abilities.dash.InUse || abilities.chargeDash.InUse) {
-        IncrementFrame("Dash", frameIndex: Math.Abs(player.velocity.X) < 18f ? (int?)2 : null);
+        IncrementFrame("Dash", frameIndex: Math.Abs(player.velocity.X) < 18f ? 1 : 0);
         return;
       }
       if (abilities.lookUp.InUse) {
