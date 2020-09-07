@@ -213,10 +213,25 @@ namespace OriMod.Abilities {
       }
     }
 
+    /// <summary>
+    /// Sets the level of all Levelable Abilities to their max level.
+    /// </summary>
     public void UnlockAllAbilities() {
       foreach (var ability in this) {
         if (ability is ILevelable levelable) {
           levelable.Level = levelable.MaxLevel;
+        }
+      }
+    }
+
+
+    /// <summary>
+    /// Sets the level of all Levelable Abilities to 0.
+    /// </summary>
+    public void ResetAllAbilities() {
+      foreach (var ability in this) {
+        if (ability is ILevelable levelable) {
+          levelable.Level = 0;
         }
       }
     }

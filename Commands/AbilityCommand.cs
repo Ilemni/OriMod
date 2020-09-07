@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
 using Terraria.ModLoader;
@@ -29,6 +29,11 @@ namespace OriMod.Commands {
         oPlayer.abilities.UnlockAllAbilities();
         Main.NewText($"Unlocked all abilities.", Color.LightGreen);
         return;
+      }
+
+      if (args[1] == "resetall") {
+        oPlayer.abilities.ResetAllAbilities();
+        Main.NewText($"Reset all abilities.", Color.LightGreen);
       }
 
       Ability ability = null;
