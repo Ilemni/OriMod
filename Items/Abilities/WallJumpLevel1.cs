@@ -1,10 +1,10 @@
 ﻿using OriMod.Abilities;
 
-namespace OriMod.Items {
+namespace OriMod.Items.Abilities {
   /// <summary>
   /// Medallion that grants <see cref="WallJump"/>.
   /// </summary>
-  public class MedallionWallJump : AbilityMedallion {
+  public class WallJumpLevel1 : AbilityMedallionBase {
     public override byte ID => AbilityID.WallJump;
 
     public override void AddRecipes() {

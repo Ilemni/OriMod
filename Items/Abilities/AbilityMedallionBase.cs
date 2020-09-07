@@ -3,12 +3,11 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Items {
+namespace OriMod.Items.Abilities {
   /// <summary>
   /// Base class for items that unlocks or upgrades an <see cref="Ability"/>.
   /// </summary>
-  public abstract class AbilityMedallion : ModItem {
-    public override bool Autoload(ref string name) => false;
+  public abstract class AbilityMedallionBase : ModItem {
     /// <summary>
     /// <see cref="AbilityID"/> of the <see cref="Ability"/> to unlock.
     /// </summary>
@@ -39,7 +38,7 @@ namespace OriMod.Items {
     /// Upgrades <paramref name="player"/>'s <see cref="Ability"/> this Item represents to the <see cref="ILevelable.Level"/> this Item upgrades to.
     /// </summary>
     /// <param name="player">The player using the item.</param>
-    /// <returns><see langword="true"/> if the ability can be leveled. If this returns <see langword="false"/>, this <see cref="AbilityMedallion"/> or the <see cref="Ability"/> must be fixed.</returns>
+    /// <returns><see langword="true"/> if the ability can be leveled. If this returns <see langword="false"/>, this <see cref="AbilityMedallionBase"/> or the <see cref="Ability"/> must be fixed.</returns>
     public override bool UseItem(Player player) {
       var oPlayer = player.GetModPlayer<OriPlayer>();
       var ability = oPlayer.abilities[ID];
@@ -56,13 +55,13 @@ namespace OriMod.Items {
     public abstract override void AddRecipes();
 
     /// <summary>
-    /// Gets a <see cref="ModRecipe"/> that uses the ingredient <see cref="MedallionEmpty"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
-    /// <para>These are standard recipes to all <see cref="AbilityMedallion"/> types.</para>
+    /// Gets a <see cref="ModRecipe"/> that uses the ingredient <see cref="AbilityMedallionEmpty"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
+    /// <para>These are standard recipes to all <see cref="AbilityMedallionBase"/> types.</para>
     /// </summary>
-    /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallion"/> items.</returns>
+    /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
     protected ModRecipe GetAbilityRecipe() {
       var recipe = new ModRecipe(mod);
-      recipe.AddIngredient(ModContent.ItemType<MedallionEmpty>());
+      recipe.AddIngredient(ModContent.ItemType<AbilityMedallionEmpty>());
       recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
       recipe.SetResult(this);
       return recipe;

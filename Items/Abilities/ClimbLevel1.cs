@@ -1,11 +1,11 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
 
-namespace OriMod.Items {
+namespace OriMod.Items.Abilities {
   /// <summary>
   /// Medallion that grants <see cref="Climb"/>.
   /// </summary>
-  public class MedallionClimb : AbilityMedallion {
+  public class ClimbLevel1 : AbilityMedallionBase {
     public override byte ID => AbilityID.Climb;
 
     public override void AddRecipes() {
