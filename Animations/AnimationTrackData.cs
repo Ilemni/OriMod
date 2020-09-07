@@ -94,8 +94,13 @@ namespace OriMod.Animations {
         }),
     };
 
-    public static PlayerAnim Instance => _instance ?? (_instance = AnimLibMod.GetAnimationSource<PlayerAnim>(OriMod.Instance));
+    public static PlayerAnim Instance => _instance ?? (_instance = GetInstance());
     private static PlayerAnim _instance;
+
+    private static PlayerAnim GetInstance() {
+      OriMod.OnUnload += () => _instance = null;
+      return AnimLibMod.GetAnimationSource<PlayerAnim>(OriMod.Instance);
+    }
   }
 
   /// <summary>
