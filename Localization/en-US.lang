@@ -1,52 +1,70 @@
+--- Common ---
+
 Common.Sein=Sein
+Common.SF=Spirit Flame
 Common.SpiritOrb=Spirit Orb
 Common.OriPotion=Spirit Potion
+Common.Medal=Spirit Medallion
+
+--- Sein, Spirit Orbs, Spirit Flame ---
 
 ItemName.SpiritOrb1={$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff1={$Mods.OriMod.Common.Sein}
 ItemTooltip.SpiritOrb1=Calls forth a familiar ally.
 BuffDescription.SeinBuff1="The eyes of the Spirit Tree."
+ProjectileName.SpiritFlame1={$Mods.OriMod.Common.SF}
 
 ItemName.SpiritOrb2=Darkened {$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff2={$Mods.OriMod.Common.Sein} (Darkened)
 ItemTooltip.SpiritOrb2=Calls forth a trustworthy companion.
 BuffDescription.SeinBuff2="The wrath of the Spirit Tree, sharpened by evil forces."
+ProjectileName.SpiritFlame2=Darkened {$Mods.OriMod.Common.SF}
 
 ItemName.SpiritOrb3=Blazing {$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff3={$Mods.OriMod.Common.Sein} (Blazed)
 ItemTooltip.SpiritOrb3=Calls forth a reliable friend.
 BuffDescription.SeinBuff3="The fury of the Spirit Tree, reinforced by the inferno."
+ProjectileName.SpiritFlame3=Blazing {$Mods.OriMod.Common.SF}
 
 ItemName.SpiritOrb4=Focused {$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff4={$Mods.OriMod.Common.Sein} (Focused)
 ItemTooltip.SpiritOrb4=Calls forth a dependable partner.
 BuffDescription.SeinBuff4="The focus of the Spirit Tree, fortified by serene metal."
+ProjectileName.SpiritFlame4=Focused {$Mods.OriMod.Common.SF}
 
 ItemName.SpiritOrb5=Divine {$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff5={$Mods.OriMod.Common.Sein} (Divine)
 ItemTooltip.SpiritOrb5=Calls forth your honorable comrade.
 BuffDescription.SeinBuff5="The light of the Spirit Tree, illuminated by holy essence."
+ProjectileName.SpiritFlame5=Divine {$Mods.OriMod.Common.SF}
 
 ItemName.SpiritOrb6=Spiritual {$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff6={$Mods.OriMod.Common.Sein} (Spiritual)
 ItemTooltip.SpiritOrb6=Calls forth your soul mate.
 BuffDescription.SeinBuff6="The intuition of the Spirit Tree, amplified by the supernatural."
+ProjectileName.SpiritFlame6=Amplified {$Mods.OriMod.Common.SF}
 
 ItemName.SpiritOrb7=Ascended {$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff7={$Mods.OriMod.Common.Sein} (Ascended)
 ItemTooltip.SpiritOrb7=Calls forth the oracle of the Spirit Tree.
 BuffDescription.SeinBuff7="The presence of the Spirit Tree, brought forth by higher forces."
+ProjectileName.SpiritFlame7=Heightened {$Mods.OriMod.Common.SF}
 
 ItemName.SpiritOrb8=Grandmaster {$Mods.OriMod.Common.SpiritOrb}
 BuffName.SeinBuff8={$Mods.OriMod.Common.Sein} (Grandmaster)
 ItemTooltip.SpiritOrb8=Calls forth the full might of the Spirit Tree.
 BuffDescription.SeinBuff8="The ultimate power of the Spirit Tree."
+ProjectileName.SpiritFlame1=Grand {$Mods.OriMod.Common.SF}
+
+--- Potions ---
 
 ItemName.OriPotion={$Mods.OriMod.Common.OriPotion}
-ItemTooltip.OriPotion=Remotely change yourself to and from a Spirit\nAfter use, the bottle can be refilled\n"Taste the spirit!"
+ItemTooltip.OriPotion=Remotely change yourself to and from a Spirit\nAfter use, the bottle can be refilled\n"Taste the Spirit!"
 
 ItemName.OriPotionEmpty=Spirit Bottle
-ItemTooltip.OriPotionEmpty=Refill at a Spirit Sapling\n"The spirit energy has been all used up."
+ItemTooltip.OriPotionEmpty=Refill at a Spirit Sapling\n"The Spirit energy has been all used up."
+
+--- Spirit Tree crafting station ---
 
 ItemName.SpiritSapling=Spirit Sprout
 MapObject.SpiritSapling=Spirit Sprout
@@ -60,47 +78,95 @@ ItemName.SpiritSapling3=Spirit Tree
 MapObject.SpiritSapling3=Spirit Tree
 ItemTooltip.SpiritSapling3=A fully grown Spirit Tree, smaller in size than the most powerful ones.
 
+--- Abilities ---
 
-Upgrade.Sein.Unlock.Name = Sein
-Upgrade.Sein.Unlock.Description = A companion, known as the Light and Eyes of the Spirit Tree.
-Upgrade.Sein.Unlock.Flavor = Once a valuable companion to Ori, Sein is willing to help you on your quest.
+ItemName.AbilityMedallionEmpty=Blank {$Mods.OriMod.Common.Medal}
+ItemTooltip.AbilityMedallionEmpty=Used to create strong {$Mods.OriMod.Common.Medal}s to unlock or upgrade abilities.
 
-Upgrade.WallJump.Unlock.Name = Wall Jump
-Upgrade.WallJump.Unlock.Description = Allows you to jump on walls to ascend.
-Upgrade.WallJump.Unlock.Flavor = Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon.
+- Capped at Lv1 -
 
-Upgrade.AirJump.Unlock.Name = Double Jump
-Upgrade.AirJump.Unlock.Description = Allows you to jump again in the air.
-Upgrade.AirJump.Unlock.Flavor = A legacy left by Leru, this gift proved instumental in aiding Ori with their quest.
+ItenName.WallJumpLevel1=Wall Jump {$Mods.OriMod.Common.Medal}
+ItemTooltip.WallJumpLevel1=Allows you to jump on walls to ascend.
+Lore.WallJump.Lv1=Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
 
-Upgrade.Bash.Unlock.Name = Bash
-Upgrade.Bash.Unlock.Description = Allows you to Bash on enemies and projectiles, pushing you in one direction and the target in the opposite direction.
-Upgrade.Bash.Unlock.Flavor = When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the plague would be when the forest went blind.
+ItemName.GlideLevel1=Glide {$Mods.OriMod.Common.Medal}
+ItemTooltip.GlideLevel1=Allows you to glide, staying in the air for longer and falling slower.
+Lore.Glide.1=This {$Mods.OriMod.Common.Medal} holds memories of a feather, one that Ori took when he tricked Kuro.
 
-Upgrade.Stomp.Unlock.Name = Stomp
-Upgrade.Stomp.Unlock.Description = Allows you to slam towards the ground, creating a powerful shockwave to damage nearby enemies.
-Upgrade.Stomp.Unlock.Flavor = Despite being known as the strongest of the Spirits, Ilo was a gentle spirit.
+ItemName.ClimbLevel1=Climb {$Mods.OriMod.Common.Medal}
+ItemTooltip.ClimbLevel1=Allows you to hold on to and ascend walls.
+Lore.Climb.1=Tatsu and Atsu, brother and sister, often played in the Misty Woods, but when the Spirit Tree's Light faltered, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
 
-Upgrade.Glide.Unlock.Name = Glide
-Upgrade.Glide.Unlock.Description = Allows you to glide, staying in the air for longer and falling slower.
-Upgrade.Glide.Unlock.Flavor = This feather resembles the same one that Ori took when they tricked Kuro.
+---
 
-Upgrade.Climb.Unlock.Name = Climb
-Upgrade.Climb.Unlock.Description = Allows you to hold on to and ascend walls.
-Upgrade.Climb.Unlock.Flavor = Tatsu and Atsu often played in the Misty Woods, but without the Spirit Tree's Light, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
+ItemName.AirJumpLevel1=Double Jump {$Mods.OriMod.Common.Medal}
+ItemName.AirJumpLevel2=Triple Jump {$Mods.OriMod.Common.Medal}
+ItemName.AirJumpLevel3=Quadruple Jump {$Mods.OriMod.Common.Medal}
+ItemName.AirJumpLevel4=Quintuple Jump {$Mods.OriMod.Common.Medal}
 
-Upgrade.ChargeJump.Unlock.Name = Charge Jump
-Upgrade.ChargeJump.Unlock.Description = Allows you to jump high into the air.
-Upgrade.ChargeJump.Unlock.Flavor = Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful spirit, the blinding of the forest and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.
+ItemTooltip.AirJumpLevel1=Allows you to jump again in the air.
+ItemTooltip.AirJumpLevel2=Allows yet another jump in the air.
+ItemTooltip.AirJumpLevel3=Allows a fourth jump in the air.
+ItemTooltip.AirJumpLevel4=You already know what this will do.
 
-Upgrade.WallChargeJump.Unlock.Name = Wall Charge Jump
-Upgrade.WallChargeJump.Unlock.Description = Allows you to Charge Jump from walls.
-Upgrade.WallChargeJump.Unlock.Flavor = A union of Nir's and Tatsu's gifts, this was the final ability Ori used in their quest to save Nibel.
+Lore.AirJump.1=Leru's gift, to cut through the air, proved instumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
+Lore.AirJump.2=In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving Nibel.
+Lore.AirJump.3=Gumo had stolen the Water Vein from Leru. Without it, she could not enter the Ginso tree, the path to saving Nibel from Decay.
+Lore.AirJump.4=Leru had understood. Despite her determination, she simply lacked the strength to face Ginso's malaise. Even Reem, certainly more capable than Leru, has fallen to it already.
 
+---
 
-Error.SoulLinkBossActive=Cannot place a Soul Link while powerful enemies are around.
-Error.SoulLinkObstructed=Your Soul Link has been blocked and despawned.
-Error.SoulLinkCannotPlace=Cannot place a Soul Link here.
+ItemName.BashLevel1=Bash {$Mods.OriMod.Common.Medal}
+ItemName.BashLevel2=Enhanced Bash {$Mods.OriMod.Common.Medal}
+ItemName.BashLevel3=Ultra Bash {$Mods.OriMod.Common.Medal}
+
+ItemTooltip.BashLevel1=Allows you to Bash on enemies and projectiles, launching you in one direction and the target in the opposite direction.
+ItemTooltip.BashLevel2=Enhances your Bashing capabilities to target projectiles, and deal damage to NPCs.
+ItemTooltip.BashLevel3=Greatly enhances your Bashing speeds, distance, and damage dealt.
+
+Lore.Bash.1=When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind. This {$Mods.OriMod.Common.Medal} was a manifestation of his legacy.
+Lore.Bash.2=Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise.
+Lore.Bash.3=Decay was a vicious force, Reem was forced to learn in her attempts in saving Nibel. That knowledge was left to rot in her Ancestral Tree, deep within the Ginso Tree.
+
+---
+
+ItemName.StompLevel1=Stomp {$Mods.OriMod.Common.Medal}
+ItemName.StompLevel2=Ultra Stomp {$Mods.OriMod.Common.Medal}
+
+ItemTooltip.StompLevel1=Allows you to slam into the ground, creating a powerful shockwave to damage nearby enemies.
+ItemTooltip.StompLevel2=Enhances your stomping capabilities for even more damage, pushing enemies far back.
+
+Lore.Stomp.1=Despite being known as the strongest of Nibel's Spirits, Ilo was a gentle Spirit. Still, his strength knew no bounds. This {$Mods.OriMod.Common.Medal} was a manifestation of his power.
+Lore.Stomp.2=Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath...
+
+---
+
+ItemName.ChargeJumpLevel1=Charge Jump {$Mods.OriMod.Common.Medal}
+ItemName.ChargeJumpLevel2=Wall Charge Jump {$Mods.OriMod.Common.Medal}
+ItemName.ChargeJumpLevel3=Launch {$Mods.OriMod.Common.Medal}
+ItemName.ChargeJumpLevel4=Ultra Launch {$Mods.OriMod.Common.Medal}
+
+ItemTooltip.ChargeJumpLevel1=Allows you to jump high into the air.
+ItemTooltip.ChargeJumpLevel2=Allows you to make large jumps from walls.
+ItemTooltip.ChargeJumpLevel3=Allows you to launch yourself from the air.
+ItemTooltip.ChargeJumpLevel4=Allows for powerful chains of Launches in the air.
+
+Lore.ChargeJump.1=Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful Spirit, the blinding of the forest and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.
+Lore.ChargeJump.2=A union of Nir's and Tatsu's gifts, this {$Mods.OriMod.Common.Medal} represents the final ability Ori used in their quest to save Nibel.
+Lore.ChargeJump.3=Many Spirits held a blind faith to Niwen's Spirit Tree, the Mother of Light. Among the most devoted was one commonly referred to as high priestess. Her proficiency was unmatched by any other Spirit alive.
+Lore.ChargeJump.4=A Spirit bearing a Spirit Tree's Light? A ridiculous idea; a Spirit bearing so much Light would surely burst and sink roots on the spot.
+
+---
+
+Upgrade.Sein.Unlock.Name - Sein
+Upgrade.Sein.Unlock.Description - A companion, known as the Light and Eyes of the Spirit Tree.
+Upgrade.Sein.Unlock.Flavor - Once a valuable companion to Ori, Sein is willing to help you on your quest.
+
+--- Error Messages ---
+
+Error.SoulLinkBossActive = Cannot place a Soul Link while powerful enemies are around.
+Error.SoulLinkObstructed = Your Soul Link has been blocked and despawned.
+Error.SoulLinkCannotPlace = Cannot place a Soul Link here.
 
 Error.UnknownPacket=Error with packet: Unknown Packet type {0}
 

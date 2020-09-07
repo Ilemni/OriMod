@@ -1,6 +1,8 @@
+﻿using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
@@ -45,14 +47,31 @@ namespace OriMod.Items.Abilities {
       var oPlayer = player.GetModPlayer<OriPlayer>();
       var ability = oPlayer.abilities[ID];
       if (ability is ILevelable levelable) {
-        levelable.Level = Level;
+        levelable.Level++;
+        if (player.whoAmI == Main.myPlayer) {
+          var key = $"Mods.OriMod.Lore.{ability.GetType().Name}.{levelable.Level}";
+          if (Language.Exists(key)) {
+            var txt = Language.GetText(key);
+            Main.NewText(txt, Color.LightCyan);
+          }
+        }
+        else {
+          if (levelable.Level == 1) {
+            Main.NewText($"{player.name} has unlocked {NiceName(ability)}!", Color.LightCyan);
+          }
+          else {
+            Main.NewText($"{player.name} has upgraded {NiceName(ability)} to Level {levelable.Level}!", Color.LightCyan);
+          }
+        }
         return true;
       }
       else {
-        Main.NewText($"OriMod dev bug: Ability {ability.GetType().Name} cannot be leveled.");
+        Main.NewText($"OriMod dev bug: Ability {ability.GetType().Name} cannot be leveled.", Color.Red);
         return false;
       }
     }
+
+    private string NiceName(Ability ability) => System.Text.RegularExpressions.Regex.Replace(ability.GetType().Name, "(\\B[A-Z])", " $1");
 
     public abstract override void AddRecipes();
 
@@ -64,6 +83,19 @@ namespace OriMod.Items.Abilities {
     protected ModRecipe GetAbilityRecipe() {
       var recipe = new ModRecipe(mod);
       recipe.AddIngredient(ModContent.ItemType<AbilityMedallionEmpty>());
+      recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
+      recipe.SetResult(this);
+      return recipe;
+    }
+
+    /// <summary>
+    /// Gets a <see cref="ModRecipe"/> that uses the ingredient <typeparamref name="T"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
+    /// <para>This is intended for leveled Medallions, where <typeparamref name="T"/> is the previous level's Medallion.</para>
+    /// </summary>
+    /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
+    protected ModRecipe GetAbilityRecipe<T>() where T : ModItem {
+      var recipe = new ModRecipe(mod);
+      recipe.AddIngredient(ModContent.ItemType<T>());
       recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
       recipe.SetResult(this);
       return recipe;
