@@ -40,12 +40,75 @@ namespace OriMod.Abilities {
     private static List<short> _cannotBashNPC;
     private static List<short> _cannotBashProj;
 
-    private static float BashPlayerStrength => Config.BashStrength;
-    private static float BashNpcStrength => BashPlayerStrength * 0.8f;
-    private static float BashRange => 48f;
-    private static int MinBashDuration => 30;
-    private static int MaxBashDuration => 85;
-    private static int BashDamage => 15 + (int)OriWorld.GlobalUpgrade * 9;
+    private float BashPlayerStrength {
+      get {
+        switch (Level) {
+          case 0: return 0;
+          case 1:
+          case 2: return 15;
+          default: return 5 + Level * 5;
+        }
+      }
+    }
+
+    private float BashNpcStrength {
+      get {
+        switch (Level) {
+          case 0: return 0;
+          case 1:
+          case 2: return 12;
+          default: return Level * 6;
+        }
+      }
+    }
+
+    private int MinBashDuration {
+      get {
+        switch (Level) {
+          case 0: return 0;
+          case 1:
+          case 2: return 30;
+          case 3: return 24;
+          default: return 10 + Level * 14 / 255;
+        }
+      }
+    }
+
+    private int MaxBashDuration {
+      get {
+        switch (Level) {
+          case 0: return 0;
+          case 1:
+          case 2: return 85;
+          case 3: return 105;
+          default: return 70 + Level * 10;
+        }
+      }
+    }
+
+    private int BashDamage {
+      get {
+        switch (Level) {
+          case 0:
+          case 1: return 0;
+          case 2: return 20;
+          case 3: return 45;
+          default: return 20 + Level * 15;
+        }
+      }
+    }
+
+    private float BashRange {
+      get {
+        switch (Level) {
+          case 0: return 0;
+          case 1:
+          case 2: return 56;
+          case 3: return 90;
+          default: return 60 + Level * 10;
+        }
+      }
+    }
 
     private Vector2 playerStartPos;
     private Vector2 targetStartPos;
@@ -148,8 +211,8 @@ namespace OriMod.Abilities {
         SetTarget(npc);
       }
       else {
-        // If no NPCs to Bash, check for Projectiles
-        if (!Config.BashOnProjectiles) {
+        // Bash Lv2 or higher required for projectiles
+        if (Level < 2) {
           return false;
         }
 
