@@ -13,6 +13,11 @@ namespace OriMod.Projectiles.Abilities {
     public abstract byte abilityID { get; }
 
     /// <summary>
+    /// The level of the <see cref="Ability"/> when this <see cref="AbilityProjectile"/> was created.
+    /// </summary>
+    public int Level => (int)projectile.ai[0];
+
+    /// <summary>
     /// THe <see cref="OriPlayer"/> that this <see cref="AbilityProjectile"/> belongs to.
     /// </summary>
     public OriPlayer oPlayer => _oPlayer ?? (_oPlayer = Main.player[projectile.owner].GetModPlayer<OriPlayer>());
@@ -25,6 +30,10 @@ namespace OriMod.Projectiles.Abilities {
 
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
 
+    /// <summary>
+    /// <para>Ability projectile SetDefaults(): magic, low timeleft, magic, no tile collision, friendly.</para>
+    /// <inheritdoc/>
+    /// </summary>
     public override void SetDefaults() {
       projectile.timeLeft = 2;
       projectile.penetrate = int.MaxValue;

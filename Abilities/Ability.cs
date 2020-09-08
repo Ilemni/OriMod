@@ -1,5 +1,6 @@
 using System.IO;
 using Microsoft.Xna.Framework;
+using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.ModLoader;
@@ -293,6 +294,16 @@ namespace OriMod.Abilities {
     /// </summary>
     internal virtual void DrawEffects() { }
     #endregion
+
+    /// <summary>
+    /// Creates an ability mod projectile of type <typeparamref name="T"/>, owned by this player. The ai[0] field is this <see cref="Ability"/>'s current Level.
+    /// </summary>
+    /// <param name="offset">Offset from the player center that this projectile will spawn.</param>
+    /// <param name="velocity">Starting velocity of the projectile.</param>
+    /// <param name="damage">Damage of the projectile. Use this if the <see cref="AbilityProjectile"/> does not modify damage on its own.</param>
+    /// <typeparam name="T">Type of <see cref="AbilityProjectile"/> to create.</typeparam>
+    /// <returns></returns>
+    protected Projectile NewAbilityProjectile<T>(Vector2 offset = default, Vector2 velocity = default, int damage = 0) where T : AbilityProjectile => Projectile.NewProjectileDirect(player.Center + offset, velocity, ModContent.ProjectileType<T>(), damage, 0, player.whoAmI, Level);
 
     public override string ToString() {
       return $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} " +

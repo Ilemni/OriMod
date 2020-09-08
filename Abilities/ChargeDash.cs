@@ -96,7 +96,7 @@ namespace OriMod.Abilities {
         ? (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction)
         : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + rand.NextNoRepeat(3), 0.5f);
-      PlayerHitboxProjectile = Projectile.NewProjectileDirect(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeDashProjectile>(), 30, 0f, player.whoAmI, 0, 1);
+      NewAbilityProjectile<ChargeDashProjectile>(damage: 30);
     }
 
     /// <summary>
@@ -120,7 +120,6 @@ namespace OriMod.Abilities {
         newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
         player.velocity = newVel;
       }
-      PlayerHitboxProjectile = null;
       Target = null;
     }
 
