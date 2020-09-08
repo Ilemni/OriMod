@@ -45,9 +45,9 @@ namespace OriMod.Commands {
         ability = oPlayer.abilities[id];
       }
       else {
-        var abilityName = args[0].ToLower();
+        var testName = args[0].ToLower();
         foreach (var ab in oPlayer.abilities) {
-          if (ab.GetType().Name.ToLower() == abilityName) {
+          if (ab.GetType().Name.ToLower() == testName) {
             ability = ab;
           }
         }
@@ -57,17 +57,18 @@ namespace OriMod.Commands {
         }
       }
 
+      string abilityName = ability.GetType().Name;
       if (ability is ILevelable levelable) {
         if (args.Length < 2) {
-          Main.NewText($"{ability.GetType().Name}'s Level is {levelable.Level}.", Color.LightGreen);
+          Main.NewText($"{abilityName}'s Level is {levelable.Level}.", Color.LightGreen);
         }
         else if (byte.TryParse(args[1], out byte level)) {
-          if (level > levelable.MaxLevel) {
-            Main.NewText($"\"{level}\" is too high a level; the max level for {ability.GetType().Name} is {levelable.MaxLevel}", Color.Red);
+          levelable.Level = level;
+          if (level <= levelable.MaxLevel) {
+            Main.NewText($"{abilityName}'s Level has been set to {level}.", Color.LightGreen);
           }
           else {
-            levelable.Level = level;
-            Main.NewText($"{ability.GetType().Name}'s Level has been set to {level}.", Color.LightGreen);
+            Main.NewText($"{abilityName}'s Level has been set to {level}. Note that {abilityName}'s max level is {levelable.MaxLevel}, so this ability's behavior may be unexpected or unbalanced.", Color.GreenYellow);
           }
         }
         else {
@@ -76,10 +77,10 @@ namespace OriMod.Commands {
       }
       else {
         if (args.Length < 2) {
-          Main.NewText($"{ability.GetType().Name}'s fixed Level is {ability.Level}.", Color.LightGreen);
+          Main.NewText($"{abilityName}'s fixed Level is {ability.Level}.", Color.LightGreen);
         }
         else {
-          Main.NewText($"{ability.GetType().Name} cannot have its level modified. {FailedAbilityReason(ability)}", Color.Red);
+          Main.NewText($"{abilityName} cannot have its level modified. {FailedAbilityReason(ability)}", Color.Red);
         }
       }
     }
