@@ -1,10 +1,11 @@
 using Microsoft.Xna.Framework;
+using OriMod.Abilities;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Projectiles {
   /// <summary>
-  /// <see cref="GlobalProjectile"/> for handling <see cref="global::OriMod.Abilities.Bash"/>
+  /// <see cref="GlobalProjectile"/> for handling <see cref="Bash"/>
   /// </summary>
   public class OriProjectile : GlobalProjectile, IBashable {
     public override bool InstancePerEntity => true;

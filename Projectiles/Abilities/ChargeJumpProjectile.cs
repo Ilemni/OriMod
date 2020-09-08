@@ -1,13 +1,14 @@
 using System;
+using OriMod.Abilities;
 using Terraria;
 
 namespace OriMod.Projectiles.Abilities {
   /// <summary>
-  /// Projectile hitbox for when the player is using <see cref="global::OriMod.Abilities.ChargeJump"/> and <see cref="global::OriMod.Abilities.WallChargeJump"/>.
+  /// Projectile hitbox for when the player is using <see cref="ChargeJump"/> and <see cref="WallChargeJump"/>.
   /// </summary>
   public sealed class ChargeJumpProjectile : AbilityProjectile {
     /// <summary>
-    /// This is not used, as this <see cref="AbilityProjectile"/> is used by both <see cref="global::OriMod.Abilities.ChargeJump"/> and <see cref="global::OriMod.Abilities.WallChargeJump"/>.
+    /// This is not used, as this <see cref="AbilityProjectile"/> is used by both <see cref="ChargeJump"/> and <see cref="WallChargeJump"/>.
     /// </summary>
     public override byte abilityID => AbilityID.ChargeJump;
 

@@ -1,9 +1,10 @@
 using System;
+using OriMod.Abilities;
 using Terraria;
 
 namespace OriMod.Projectiles.Abilities {
   /// <summary>
-  /// Projectile hitbox for when the player is in the stomping animation. Used to end <see cref="global::OriMod.Abilities.Stomp"/>.
+  /// Projectile hitbox for when the player is in the stomping animation. Used to end <see cref="Stomp"/>.
   /// <para>Ending stomp spawns a <see cref="StompEnd"/> projectile to deal damage.</para>
   /// </summary>
   public sealed class StompProjectile : AbilityProjectile {

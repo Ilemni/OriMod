@@ -1,9 +1,10 @@
 using System;
+using OriMod.Abilities;
 using Terraria;
 
 namespace OriMod.Projectiles.Abilities {
   /// <summary>
-  /// Projectile hitbox for when the player is using <see cref="global::OriMod.Abilities.ChargeDash"/>.
+  /// Projectile hitbox for when the player is using <see cref="ChargeDash"/>.
   /// </summary>
   public sealed class ChargeDashProjectile : AbilityProjectile {
     public override byte abilityID => AbilityID.ChargeDash;
@@ -24,7 +25,7 @@ namespace OriMod.Projectiles.Abilities {
     }
 
     /// <summary>
-    /// Ends <see cref="global::OriMod.Abilities.ChargeDash"/> if this hits the target NPC
+    /// Ends <see cref="ChargeDash"/> if this hits the target NPC
     /// </summary>
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
       var cDash = oPlayer.abilities.chargeDash;
