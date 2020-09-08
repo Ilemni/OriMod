@@ -90,7 +90,7 @@ ItemTooltip.WallJumpLevel1=Allows you to jump on walls to ascend.
 Lore.WallJump.Lv1=Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
 
 ItemName.GlideLevel1=Glide {$Mods.OriMod.Common.Medal}
-ItemTooltip.GlideLevel1=Allows you to glide, staying in the air for longer and falling slower.
+ItemTooltip.GlideLevel1=Allows you to glide through the air.
 Lore.Glide.1=This {$Mods.OriMod.Common.Medal} holds memories of a feather, one that Ori took when he tricked Kuro.
 
 ItemName.ClimbLevel1=Climb {$Mods.OriMod.Common.Medal}
@@ -110,7 +110,7 @@ ItemTooltip.AirJumpLevel3=Allows a fourth jump in the air.
 ItemTooltip.AirJumpLevel4=You already know what this will do.
 
 Lore.AirJump.1=Leru's gift, to cut through the air, proved instumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
-Lore.AirJump.2=In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving Nibel.
+Lore.AirJump.2=In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving her land.
 Lore.AirJump.3=Gumo had stolen the Water Vein from Leru. Without it, she could not enter the Ginso tree, the path to saving Nibel from Decay.
 Lore.AirJump.4=Leru had understood. Despite her determination, she simply lacked the strength to face Ginso's malaise. Even Reem, certainly more capable than Leru, has fallen to it already.
 
@@ -120,21 +120,21 @@ ItemName.BashLevel1=Bash {$Mods.OriMod.Common.Medal}
 ItemName.BashLevel2=Enhanced Bash {$Mods.OriMod.Common.Medal}
 ItemName.BashLevel3=Ultra Bash {$Mods.OriMod.Common.Medal}
 
-ItemTooltip.BashLevel1=Allows you to Bash on enemies and projectiles, launching you in one direction and the target in the opposite direction.
-ItemTooltip.BashLevel2=Enhances your Bashing capabilities to target projectiles, and deal damage to NPCs.
-ItemTooltip.BashLevel3=Greatly enhances your Bashing speeds, distance, and damage dealt.
+ItemTooltip.BashLevel1=Allows you to Bash on enemies,\nlaunching you and your target\nin opposite directions.
+ItemTooltip.BashLevel2=Enhances your Bashing capabilities to\ntarget projectiles, and deal damage to foes.
+ItemTooltip.BashLevel3=Greatly enhances your Bashing speeds,\ndistance, and damage dealt.
 
-Lore.Bash.1=When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind. This {$Mods.OriMod.Common.Medal} was a manifestation of his legacy.
-Lore.Bash.2=Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise.
-Lore.Bash.3=Decay was a vicious force, Reem was forced to learn in her attempts in saving Nibel. That knowledge was left to rot in her Ancestral Tree, deep within the Ginso Tree.
+Lore.Bash.1=Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise.
+Lore.Bash.2=When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind.
+Lore.Bash.3=Decay was a vicious force, Reem was forced to learn when he ascended the Ginso Tree. That knowledge was left to rot in his Ancestral Tree, deep within.
 
 ---
 
 ItemName.StompLevel1=Stomp {$Mods.OriMod.Common.Medal}
 ItemName.StompLevel2=Ultra Stomp {$Mods.OriMod.Common.Medal}
 
-ItemTooltip.StompLevel1=Allows you to slam into the ground, creating a powerful shockwave to damage nearby enemies.
-ItemTooltip.StompLevel2=Enhances your stomping capabilities for even more damage, pushing enemies far back.
+ItemTooltip.StompLevel1=Allows you to slam into the ground,\ncreating a shockwave to damage nearby enemies.
+ItemTooltip.StompLevel2=Enhances your stomping capabilities\nfor even more damage, pushing enemies far back.
 
 Lore.Stomp.1=Despite being known as the strongest of Nibel's Spirits, Ilo was a gentle Spirit. Still, his strength knew no bounds. This {$Mods.OriMod.Common.Medal} was a manifestation of his power.
 Lore.Stomp.2=Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath...
@@ -148,7 +148,7 @@ ItemName.ChargeJumpLevel4=Ultra Launch {$Mods.OriMod.Common.Medal}
 
 ItemTooltip.ChargeJumpLevel1=Allows you to jump high into the air.
 ItemTooltip.ChargeJumpLevel2=Allows you to make large jumps from walls.
-ItemTooltip.ChargeJumpLevel3=Allows you to launch yourself from the air.
+ItemTooltip.ChargeJumpLevel3=Allows you to Launch yourself through the air.
 ItemTooltip.ChargeJumpLevel4=Allows for powerful chains of Launches in the air.
 
 Lore.ChargeJump.1=Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful Spirit, the blinding of the forest and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.

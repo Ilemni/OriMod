@@ -52,7 +52,7 @@ namespace OriMod.Items.Abilities {
           var key = $"Mods.OriMod.Lore.{ability.GetType().Name}.{levelable.Level}";
           if (Language.Exists(key)) {
             var txt = Language.GetText(key);
-            Main.NewText(txt, Color.LightCyan);
+            Main.NewText($"Spirit Lore: {txt}", Color.LightCyan);
           }
         }
         else {
