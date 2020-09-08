@@ -34,7 +34,16 @@ namespace OriMod.Abilities {
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
 
     private float breath = MaxDuration;
-    private int strength;
+    private int strength {
+      get {
+        switch (Level) {
+          case 0: return 0;
+          case 1: return 55; // Exclude evil biomes, dungeon
+          case 2: return 200; // Exclude lihzahrd
+          default: return 100 + Level * 50;
+        }
+      }
+    }
 
     internal static bool CanBurrowAny => OriMod.ConfigAbilities.BurrowStrength < 0;
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
@@ -110,7 +119,6 @@ namespace OriMod.Abilities {
       player.position = r.ReadVector2();
       velocity = r.ReadVector2();
       breath = r.ReadSingle();
-      strength = r.ReadInt32();
       autoBurrow = r.ReadBoolean();
     }
 
@@ -118,7 +126,6 @@ namespace OriMod.Abilities {
       packet.WriteVector2(player.position);
       packet.WriteVector2(velocity);
       packet.Write(breath);
-      packet.Write(strength);
       packet.Write(autoBurrow);
     }
 
@@ -235,27 +242,11 @@ namespace OriMod.Abilities {
         }
       }
     }
-
-    /// <summary>
-    /// Updates <see cref="strength"/> based on the player's highest pickaxe power, or <see cref="OriConfigClient2.BurrowStrength"/>.
-    /// </summary>
-    public void UpdateBurrowStrength() {
-      strength = OriMod.ConfigAbilities.BurrowStrength;
-      foreach (Item item in player.inventory) {
-        if (item.pick > strength) {
-          strength = item.pick;
-        }
-      }
-    }
-
     internal override void Tick() {
       if (InUse) {
         EnterHitbox.UpdateHitbox(player.Center);
         OuterHitbox.UpdateHitbox(player.Center);
         InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * 16);
-        if (IsLocal && Main.time % 64 == 0) {
-          UpdateBurrowStrength();
-        }
         abilities.glide.SetState(State.Inactive);
 
         if (Active) {
@@ -285,7 +276,6 @@ namespace OriMod.Abilities {
         TickCooldown();
 
         if (CanUse && IsLocal && (OriMod.BurrowKey.JustPressed && abilities.crouch.InUse || autoBurrow)) {
-          UpdateBurrowStrength();
           EnterHitbox.UpdateHitbox(player.position);
 
           // Check if player can enter Burrow
