@@ -21,10 +21,31 @@ namespace OriMod.Abilities {
     protected override int Cooldown => (int)(Config.StompCooldown * 30);
     protected override Color RefreshColor => Color.Orange;
 
+    public int Damage => 30 + Level * 20;
+
     private static float Gravity => 8f;
-    private static int StartDuration => 24;
+    private int StartDuration {
+      get {
+        switch (Level) {
+          case 0: return 100000; // \o/ \\
+          case 1: return 24;
+          case 2: return 20;
+          default: return 16;
+        }
+      }
+    }
+
     private static int MinDuration => 30;
-    private static float MaxFallSpeed => Config.StompFallSpeed;
+    private float MaxFallSpeed {
+      get {
+        switch (Level) {
+          case 0: return 300;
+          case 1: return 28;
+          case 2: return 36;
+          default: return 25 + Level * 5;
+        }
+      }
+    }
 
     /// <summary>
     /// Minimum frames required to hold <see cref="Player.controlDown"/> before Stomp can start.
@@ -49,7 +70,7 @@ namespace OriMod.Abilities {
     protected override void UpdateActive() {
       if (CurrentTime == 0) {
         oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3));
-        Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompProjectile>(), StompProjectile.Damage, 0f, player.whoAmI, 0, 1);
+        NewAbilityProjectile<StompProjectile>(damage: Damage * 2);
       }
       if (abilities.airJump.Active) {
         return;
@@ -74,7 +95,7 @@ namespace OriMod.Abilities {
         dust.velocity.Y = -Math.Abs(dust.velocity.Y);
       }
       PutOnCooldown();
-      Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<StompEnd>(), StompProjectile.Damage, 0, player.whoAmI);
+      NewAbilityProjectile<StompEnd>(damage: Damage);
       SetState(State.Inactive);
     }
 

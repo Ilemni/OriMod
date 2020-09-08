@@ -10,13 +10,10 @@ namespace OriMod.Projectiles.Abilities {
   public sealed class StompProjectile : AbilityProjectile {
     public override byte abilityID => AbilityID.Stomp;
 
-    public static int Damage = 9 + (int)OriWorld.GlobalUpgrade * 9;
-
     public override void SetDefaults() {
       base.SetDefaults();
       projectile.width = 40;
       projectile.height = 56;
-      projectile.damage = Damage;
     }
 
     public override void Behavior() {
@@ -28,6 +25,7 @@ namespace OriMod.Projectiles.Abilities {
 
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
       var stomp = oPlayer.abilities.stomp;
+      Main.NewText($"StompProjectile OnHit {target.life}");
       if (target.life > 0 && stomp.InUse) {
         stomp.EndStomp();
       }
