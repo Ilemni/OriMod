@@ -86,7 +86,10 @@ namespace OriMod.Animations {
       }
       if (abilities.launch) {
         if (!abilities.launch.Ending) {
-          IncrementFrame("Bash");
+          var ct = abilities.launch.CurrentTime;
+          var accel = ct * (ct < 5 ? 0.05f : ct < 20 ? 0.03f : 0.02f);
+          // Somewhat accelerating speed of rotation
+          IncrementFrame("AirJump", rotation: SpriteRotation + accel);
         }
         else {
           IncrementFrame("ChargeJump", duration: 6, rotation: (abilities.launch.launchAngle + (float)Math.PI / 2) * player.direction, loop: LoopMode.Always, direction: Direction.PingPong);

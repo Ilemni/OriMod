@@ -63,19 +63,21 @@ namespace OriMod {
 
       Vector2 pos;
       float rotation;
+      int frame;
       var ab = abilities.bash ? (Ability)abilities.bash : abilities.launch;
       if (abilities.bash) {
         pos = abilities.bash.BashEntity.Center;
         rotation = abilities.bash.bashAngle;
+        frame = ab.CurrentTime < 40 ? 0 : ab.CurrentTime < 50 ? 1 : 2;
       }
       else {
         pos = oPlayer.player.Center;
         rotation = abilities.launch.launchAngle;
+        frame = ab.CurrentTime < 25 ? 0 : ab.CurrentTime < 35 ? 1 : 2;
       }
       pos -= Main.screenPosition;
-      var orig = anim.CurrentTile.Size() / 2;
-      int frame = ab.CurrentTime < 40 ? 0 : ab.CurrentTime < 50 ? 1 : 2;
-      var rect = anim.TileAt(frame);
+      var rect = anim.TileAt(anim.source["Bash"], frame);
+      var orig = rect.Size() / 2;
       var effect = SpriteEffects.None;
       var data = new DrawData(anim.CurrentTexture, pos, rect, Color.White, rotation, orig, 1, effect, 0);
       Main.playerDrawData.Add(data);

@@ -110,8 +110,8 @@ namespace OriMod.Animations {
     public override PointByte spriteSize { get; } = new PointByte(152, 20);
 
     public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
-      ["Bash"] = Track.Single(
-        F(0, 0)
+      ["Bash"] = Track.Range(
+        F(0, 0), F(0, 2)
       )
     };
   }

@@ -4,7 +4,6 @@ using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.Graphics.Shaders;
-using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
