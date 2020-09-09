@@ -25,8 +25,8 @@ namespace OriMod.Abilities {
     internal override bool CanUse => base.CanUse && Inactive && !oPlayer.IsGrounded && !abilities.stomp && !abilities.chargeJump && !abilities.bash;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);
 
-    private int MinLaunchDuration => 10;
-    private int MaxLaunchDuration => 40;
+    private int MinLaunchDuration => 15;
+    private int MaxLaunchDuration => 45;
     private int EndDuration => 16;
     private float LaunchSpeed => 15;
 
