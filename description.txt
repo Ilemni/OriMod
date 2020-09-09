@@ -5,16 +5,13 @@ crossover pack.
 Updated to tML v0.11.7.5
 
 -- Additions --
+- Added Ability Levels
+  - These are upgraded by the new craftable Spirit Medalion items.
+- Added Launch.
+  - From WotW, this ability launches you through the air.
 - Proper multiplayer support.
-- Added Spirit Medallions.
-  - These medallions will either unlock or upgrade various
-    abilities, depending on the ones you craft.
-    [ BETA NOTE: this is not yet implemented ]
 - Added time limit to Burrow.
   - Behaves like underwater breath.
-- Added config options for Burrow.
-  - Duration: How long Burrow lasts before suffocating.
-  - Recovery: How fast Burrow recovers when not in use.
 
 -- Changes --
 - Abilities are no longer unlocked upon start.
@@ -24,7 +21,6 @@ Updated to tML v0.11.7.5
   - Reduced damage, number of targets, number of shots fired
     at once, on all Sein levels.
 - Burrow now requires being crouched to enter.
-- Charging for Charge Jump is no longer always bound to Up.
 - Config tooltips now show default values.
 - Optimize textures for better memory usage.
 
@@ -33,13 +29,22 @@ Updated to tML v0.11.7.5
   reloading mods.
 - Fixed abilities being active when they shouldn't be, such as
   when respawning and when under The Tongue debuff.
-- Charging for Charge Jump is no longer caused by looking up.
+- Charging for Charge Jump is no longer always bound to Up.
+- Charge Dash no longer tries to target NPCs through walls.
 - Fixed texture glitch while burrowing with an armor effect.
 - Fixed Bash not properly detecting NPCs that are in-range.
   - Distance now properly based on how far the player hitbox
     is from a bashable NPC.
 
+-- Removals --
+- Removed Ability configs
+  - This is replaced with leveling abilities through
+    in-game progression.
 To read about previous versions, visit our mod's homepage.
+
+-- Misc --
+- The animation system used for this mod was ported to the
+  mod AnimLib.
 
 --- Summary ---
 
