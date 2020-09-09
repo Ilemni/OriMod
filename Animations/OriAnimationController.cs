@@ -84,6 +84,15 @@ namespace OriMod.Animations {
         IncrementFrame("Bash");
         return;
       }
+      if (abilities.launch.InUse) {
+        if (!abilities.launch.Ending) {
+          IncrementFrame("Bash");
+        }
+        else {
+          IncrementFrame("ChargeJump", duration: 6, rotation: abilities.launch.launchAngle + (float)Math.PI / 2, loop: LoopMode.Always, direction: Direction.PingPong);
+        }
+        return;
+      }
       if (abilities.stomp.InUse) {
         switch (abilities.stomp.AbilityState) {
           case Ability.State.Starting:

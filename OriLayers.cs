@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using OriMod.Abilities;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
@@ -53,18 +54,28 @@ namespace OriMod {
     });
 
     /// <summary>
-    /// Draws the <see cref="Abilities.Bash"/> arrow when the player Bashes.
+    /// Draws the <see cref="Abilities.Bash"/> arrow when the player Bashes or Launches.
     /// </summary>
     internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
       Animation anim = oPlayer.animations.bashAnim;
-      var bash = oPlayer.abilities.bash;
+      var abilities = oPlayer.abilities;
 
-      var pos = bash.BashEntity.Center - Main.screenPosition;
+      Vector2 pos;
+      float rotation;
+      var ab = abilities.bash.InUse ? (Ability)abilities.bash : abilities.launch;
+      if (abilities.bash.InUse) {
+        pos = abilities.bash.BashEntity.Center - Main.screenPosition;
+        rotation = abilities.bash.bashAngle;
+      }
+      else {
+        pos = oPlayer.player.Center;
+        rotation = abilities.launch.launchAngle;
+      }
+
       var orig = anim.CurrentTile.Size() / 2;
-      int frame = bash.CurrentTime < 40 ? 0 : bash.CurrentTime < 50 ? 1 : 2;
+      int frame = ab.CurrentTime < 40 ? 0 : ab.CurrentTime < 50 ? 1 : 2;
       var rect = new Rectangle(0, frame * anim.source.spriteSize.Y, anim.source.spriteSize.X, anim.source.spriteSize.Y);
-      var rotation = oPlayer.abilities.bash.bashAngle;
       var effect = SpriteEffects.None;
       var data = new DrawData(anim.CurrentTexture, pos, rect, Color.White, rotation, orig, 1, effect, 0);
       Main.playerDrawData.Add(data);

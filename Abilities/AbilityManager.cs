@@ -64,9 +64,13 @@ namespace OriMod {
     /// </summary>
     public const byte Burrow = 13;
     /// <summary>
+    /// ID for <see cref="Abilities.Launch"/>
+    /// </summary>
+    public const byte Launch = 14;
+    /// <summary>
     /// ID count for iterating through a loop.
     /// </summary>
-    public const int Count = 14;
+    public static readonly int Count = 15;
   }
 }
 
@@ -92,6 +96,7 @@ namespace OriMod.Abilities {
       lookUp = new LookUp(this);
       crouch = new Crouch(this);
       burrow = new Burrow(this);
+      launch = new Launch(this);
     }
 
     /// <summary>
@@ -114,12 +119,14 @@ namespace OriMod.Abilities {
     public readonly LookUp lookUp;
     public readonly Crouch crouch;
     public readonly Burrow burrow;
+    public readonly Launch launch;
 
     public IEnumerator<Ability> GetEnumerator() {
       //yield return soulLink;
       yield return wallJump;
       yield return airJump;
       yield return bash;
+      yield return launch; // Run Launch directly after Bash
       yield return stomp;
       yield return glide;
       yield return climb;
@@ -135,12 +142,12 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Get the <see cref="Ability"/> with the matching <see cref="AbilityID"/>.
     /// </summary>
-    /// <param name="idx"></param>
+    /// <param name="index">Index that corresponds to an <see cref="AbilityID"/>.</param>
     /// <exception cref="System.ArgumentOutOfRangeException">The value does not match any <see cref="AbilityID"/>.</exception>
-    /// <returns></returns>
-    public Ability this[int idx] {
+    /// <returns>An <see cref="Ability"/> with the matching <see cref="AbilityID"/>.</returns>
+    public Ability this[int index] {
       get {
-        switch (idx) {
+        switch (index) {
           //case AbilityID.SoulLink: return soulLink;
           case AbilityID.WallJump: return wallJump;
           case AbilityID.AirJump: return airJump;
@@ -155,7 +162,8 @@ namespace OriMod.Abilities {
           case AbilityID.LookUp: return lookUp;
           case AbilityID.Crouch: return crouch;
           case AbilityID.Burrow: return burrow;
-          default: throw new System.ArgumentOutOfRangeException(nameof(idx), $"The value {idx} does not match any AbilityID.");
+          case AbilityID.Launch: return launch;
+          default: throw new System.ArgumentOutOfRangeException(nameof(index), $"The value {index} does not match any AbilityID.");
         }
       }
     }
