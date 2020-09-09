@@ -65,14 +65,14 @@ namespace OriMod {
       float rotation;
       var ab = abilities.bash ? (Ability)abilities.bash : abilities.launch;
       if (abilities.bash) {
-        pos = abilities.bash.BashEntity.Center - Main.screenPosition;
+        pos = abilities.bash.BashEntity.Center;
         rotation = abilities.bash.bashAngle;
       }
       else {
         pos = oPlayer.player.Center;
         rotation = abilities.launch.launchAngle;
       }
-
+      pos -= Main.screenPosition;
       var orig = anim.CurrentTile.Size() / 2;
       int frame = ab.CurrentTime < 40 ? 0 : ab.CurrentTime < 50 ? 1 : 2;
       var rect = new Rectangle(0, frame * anim.source.spriteSize.Y, anim.source.spriteSize.X, anim.source.spriteSize.Y);
