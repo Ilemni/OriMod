@@ -22,7 +22,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Bash restrictions, plus in air and bash failed
     /// </summary>
-    internal override bool CanUse => base.CanUse && Inactive && !oPlayer.IsGrounded && !abilities.stomp && !abilities.chargeJump && !abilities.bash;
+    internal override bool CanUse => base.CanUse && Inactive && !oPlayer.IsGrounded && !abilities.stomp && !abilities.chargeJump && !abilities.bash && !abilities.climb;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);
 
     private int MinLaunchDuration => 15;

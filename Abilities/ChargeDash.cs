@@ -15,7 +15,7 @@ namespace OriMod.Abilities {
     public override int Id => AbilityID.ChargeDash;
     public override byte Level => (byte)(abilities.dash.Level >= 3 ? 1 : 0);
 
-    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !abilities.stomp && !abilities.bash && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !abilities.stomp && !abilities.bash && !abilities.launch && !player.mount.Active;
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);
     protected override Color RefreshColor => Color.LightBlue;
 
@@ -161,7 +161,7 @@ namespace OriMod.Abilities {
       TickCooldown();
       if (InUse) {
         abilities.dash.Refreshed = false;
-        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash || player.controlJump) {
+        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash || abilities.launch || player.controlJump) {
           End();
         }
       }
