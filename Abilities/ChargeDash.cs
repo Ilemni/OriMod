@@ -81,15 +81,15 @@ namespace OriMod.Abilities {
     private void Start() {
       float tempDist = 720f * 720f;
       for (int n = 0; n < Main.maxNPCs; n++) {
-        NPC localNpc = Main.npc[n];
-        if (!localNpc.active || localNpc.friendly) {
+        NPC npc = Main.npc[n];
+        if (!npc.active || npc.friendly || !Collision.CanHitLine(player.Center, player.width, player.height, npc.Center, player.width, player.height)) {
           continue;
         }
 
-        float dist = (player.position - localNpc.position).LengthSquared();
+        float dist = (player.position - npc.position).LengthSquared();
         if (dist < tempDist) {
           tempDist = dist;
-          Target = localNpc;
+          Target = npc;
         }
       }
       direction = Target is null
