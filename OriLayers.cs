@@ -75,7 +75,7 @@ namespace OriMod {
       pos -= Main.screenPosition;
       var orig = anim.CurrentTile.Size() / 2;
       int frame = ab.CurrentTime < 40 ? 0 : ab.CurrentTime < 50 ? 1 : 2;
-      var rect = new Rectangle(0, frame * anim.source.spriteSize.Y, anim.source.spriteSize.X, anim.source.spriteSize.Y);
+      var rect = anim.TileAt(frame);
       var effect = SpriteEffects.None;
       var data = new DrawData(anim.CurrentTexture, pos, rect, Color.White, rotation, orig, 1, effect, 0);
       Main.playerDrawData.Add(data);
