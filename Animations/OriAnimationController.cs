@@ -55,7 +55,7 @@ namespace OriMod.Animations {
         IncrementFrame("Idle");
         return;
       }
-      if (oPlayer.abilities.burrow.InUse) {
+      if (oPlayer.abilities.burrow) {
         float rad = (float)Math.Atan2(abilities.burrow.velocity.X, -abilities.burrow.velocity.Y);
         rad *= player.direction;
         if (player.gravDir < 0) {
@@ -72,19 +72,19 @@ namespace OriMod.Animations {
         IncrementFrame("Dash", frameIndex: 0, rotation: -rad);
         return;
       }
-      if (abilities.wallJump.InUse) {
+      if (abilities.wallJump) {
         IncrementFrame("WallJump");
         return;
       }
-      if (abilities.airJump.InUse && !(abilities.dash.InUse || abilities.chargeDash.InUse)) {
+      if (abilities.airJump && !(abilities.dash || abilities.chargeDash)) {
         IncrementFrame("AirJump", rotation: FrameTime * 0.6f);
         return;
       }
-      if (abilities.bash.InUse) {
+      if (abilities.bash) {
         IncrementFrame("Bash");
         return;
       }
-      if (abilities.launch.InUse) {
+      if (abilities.launch) {
         if (!abilities.launch.Ending) {
           IncrementFrame("Bash");
         }
@@ -93,7 +93,7 @@ namespace OriMod.Animations {
         }
         return;
       }
-      if (abilities.stomp.InUse) {
+      if (abilities.stomp) {
         switch (abilities.stomp.AbilityState) {
           case Ability.State.Starting:
             IncrementFrame("AirJump", rotation: FrameTime * 0.8f);
@@ -103,7 +103,7 @@ namespace OriMod.Animations {
             return;
         }
       }
-      if (abilities.glide.InUse) {
+      if (abilities.glide) {
         switch (abilities.glide.AbilityState) {
           case Ability.State.Starting:
             IncrementFrame("GlideStart");
@@ -116,7 +116,7 @@ namespace OriMod.Animations {
             return;
         }
       }
-      if (abilities.climb.InUse) {
+      if (abilities.climb) {
         if (abilities.climb.IsCharging) {
           if (!abilities.wallChargeJump.Charged) {
             IncrementFrame("WallChargeJumpCharge", frameIndex: abilities.wallChargeJump.Refreshed ? null : (int?)0);
@@ -152,11 +152,11 @@ namespace OriMod.Animations {
         IncrementFrame("WallSlide");
         return;
       }
-      if (abilities.dash.InUse || abilities.chargeDash.InUse) {
+      if (abilities.dash || abilities.chargeDash) {
         IncrementFrame("Dash", frameIndex: Math.Abs(player.velocity.X) < 18f ? 1 : 0);
         return;
       }
-      if (abilities.lookUp.InUse) {
+      if (abilities.lookUp) {
         switch (abilities.lookUp.AbilityState) {
           case Ability.State.Starting:
             IncrementFrame("LookUpStart");
@@ -169,7 +169,7 @@ namespace OriMod.Animations {
             return;
         }
       }
-      if (abilities.crouch.InUse) {
+      if (abilities.crouch) {
         switch (abilities.crouch.AbilityState) {
           case Ability.State.Starting:
             IncrementFrame("CrouchStart");

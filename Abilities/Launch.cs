@@ -22,7 +22,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Bash restrictions, plus in air and bash failed
     /// </summary>
-    internal override bool CanUse => base.CanUse && Inactive && !oPlayer.IsGrounded && !abilities.stomp.InUse && !abilities.chargeJump.InUse && !abilities.bash.InUse;
+    internal override bool CanUse => base.CanUse && Inactive && !oPlayer.IsGrounded && !abilities.stomp && !abilities.chargeJump && !abilities.bash;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);
 
     private int MinLaunchDuration => 10;
@@ -146,7 +146,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void TickCooldown() {
-      if (oPlayer.IsGrounded || oPlayer.OnWall || abilities.bash.InUse) {
+      if (oPlayer.IsGrounded || oPlayer.OnWall || abilities.bash) {
         Refreshed = true;
       }
     }

@@ -343,8 +343,8 @@ namespace OriMod {
       dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
       dust.noGravity = false;
       playerDustTimer = Transforming ? Main.rand.Next(3, 8)
-        : abilities.dash.InUse || abilities.chargeDash.InUse ? Main.rand.Next(2, 4)
-        : abilities.burrow.InUse ? Main.rand.Next(6, 10)
+        : abilities.dash || abilities.chargeDash ? Main.rand.Next(2, 4)
+        : abilities.burrow ? Main.rand.Next(6, 10)
         : Main.rand.Next(10, 15);
     }
 
@@ -449,13 +449,13 @@ namespace OriMod {
         // Reduce gravity when clinging on wall
         if (OnWall) {
           // Either grounded or falling, not climbing
-          if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !abilities.climb.InUse) {
+          if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !abilities.climb) {
             player.gravity = 0.1f;
             player.maxFallSpeed = 6f;
             player.jumpSpeedBoost -= 6f;
           }
           // Sliding upward on wall, not stomping
-          else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !abilities.stomp.InUse) {
+          else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !abilities.stomp) {
             player.gravity = 0.1f;
             player.maxFallSpeed = 6f;
           }
@@ -600,7 +600,7 @@ namespace OriMod {
       }
 
       genGore = false;
-      if (abilities.stomp.InUse || abilities.chargeDash.InUse || abilities.chargeJump.InUse) {
+      if (abilities.stomp || abilities.chargeDash || abilities.chargeJump) {
         return false;
       }
       if (playSound) {
@@ -665,7 +665,7 @@ namespace OriMod {
       PlayerLayer.ShoeAcc.visible = false;
       PlayerLayer.HandOnAcc.visible = false;
       PlayerLayer.HandOffAcc.visible = false;
-      if (OnWall || Transforming || abilities.stomp.InUse || abilities.airJump.InUse || abilities.burrow.InUse || abilities.chargeJump.InUse || abilities.wallChargeJump.InUse) {
+      if (OnWall || Transforming || abilities.stomp || abilities.airJump || abilities.burrow || abilities.chargeJump || abilities.wallChargeJump) {
         PlayerLayer.Wings.visible = false;
       }
       #endregion
@@ -676,7 +676,7 @@ namespace OriMod {
       int idx = layers.Contains(PlayerLayer.HeldItem) ? layers.IndexOf(PlayerLayer.HeldItem) : (layers.Count - 1);
 
       if (IsOri) {
-        if (animations.playerAnim.Valid && !abilities.burrow.InUse && !player.mount.Active) {
+        if (animations.playerAnim.Valid && !abilities.burrow && !player.mount.Active) {
           layers.Insert(idx++, OriLayers.Instance.Trail);
         }
         animations.glideAnim.TryAddToLayers(layers, OriLayers.Instance.FeatherSprite, idx++);
@@ -686,7 +686,7 @@ namespace OriMod {
         animations.playerAnim.TryAddToLayers(layers, OriLayers.Instance.PlayerSprite, idx++);
       }
       player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
-      OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow.InUse && !player.mount.Active;
+      OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow && !player.mount.Active;
     }
 
     public override void OnEnterWorld(Player player) {

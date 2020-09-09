@@ -98,7 +98,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (abilities.burrow.InUse) {
+      if (abilities.burrow) {
         currentCharge = 0;
         return;
       }

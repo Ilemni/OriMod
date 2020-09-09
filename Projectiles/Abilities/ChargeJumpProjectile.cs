@@ -19,7 +19,7 @@ namespace OriMod.Projectiles.Abilities {
     }
 
     public override void CheckAbilityActive() {
-      if (oPlayer.abilities.chargeJump.InUse || oPlayer.abilities.wallChargeJump.InUse) {
+      if (oPlayer.abilities.chargeJump || oPlayer.abilities.wallChargeJump) {
         projectile.timeLeft = 2;
       }
     }

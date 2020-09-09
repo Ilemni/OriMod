@@ -16,7 +16,7 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 3;
 
-    internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !abilities.stomp.InUse && !abilities.bash.InUse && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !abilities.stomp && !abilities.bash && !player.mount.Active;
     protected override int Cooldown => (int)(Config.DashCooldown * 30);
     protected override bool CooldownOnlyOnBoss => true;
     protected override Color RefreshColor => Color.White;
@@ -68,14 +68,14 @@ namespace OriMod.Abilities {
     protected override void TickCooldown() {
       if (currentCooldown > 0 || !Refreshed) {
         currentCooldown--;
-        if (currentCooldown < 0 && (abilities.bash.InUse || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
+        if (currentCooldown < 0 && (abilities.bash || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
           Refreshed = true;
         }
       }
     }
 
     internal override void Tick() {
-      if (abilities.chargeDash.InUse) {
+      if (abilities.chargeDash) {
         SetState(State.Inactive);
         return;
       }
@@ -86,7 +86,7 @@ namespace OriMod.Abilities {
       }
       TickCooldown();
       if (InUse) {
-        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash.InUse) {
+        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash) {
           SetState(State.Inactive);
           PutOnCooldown();
         }

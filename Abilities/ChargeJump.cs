@@ -16,7 +16,7 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 3;
 
-    internal override bool CanUse => base.CanUse && !InUse && Charged && !abilities.burrow.InUse && !abilities.climb.InUse;
+    internal override bool CanUse => base.CanUse && !InUse && Charged && !abilities.burrow && !abilities.climb;
     protected override int Cooldown => (int)(Config.CJumpCooldown * 30);
     protected override Color RefreshColor => Color.Blue;
 
@@ -74,7 +74,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (abilities.burrow.InUse) {
+      if (abilities.burrow) {
         currentCharge = 0;
         currentGrace = 0;
         return;

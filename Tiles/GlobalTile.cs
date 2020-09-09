@@ -29,20 +29,19 @@ namespace OriMod.Tiles {
 
     public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex) {
       var oPlayer = OriPlayer.Local;
-      var burrow = oPlayer.abilities.burrow;
-      if (burrow.InUse) {
+      if (oPlayer.abilities.burrow) {
         BurrowEffects(i, j, ref drawColor, oPlayer);
-      }
-      if (oPlayer.debugMode && oPlayer.abilities.burrow.InUse) {
-        var pos = new Point(i, j);
-        if (Burrow.InnerHitbox.Points.Contains(pos)) {
-          drawColor = Color.Red;
-        }
-        else if (Burrow.EnterHitbox.Points.Contains(pos)) {
-          drawColor = Color.LimeGreen;
-        }
-        else if (Burrow.OuterHitbox.Points.Contains(pos)) {
-          drawColor = Color.Turquoise;
+        if (oPlayer.debugMode) {
+          var pos = new Point(i, j);
+          if (Burrow.InnerHitbox.Points.Contains(pos)) {
+            drawColor = Color.Red;
+          }
+          else if (Burrow.EnterHitbox.Points.Contains(pos)) {
+            drawColor = Color.LimeGreen;
+          }
+          else if (Burrow.OuterHitbox.Points.Contains(pos)) {
+            drawColor = Color.Turquoise;
+          }
         }
       }
     }

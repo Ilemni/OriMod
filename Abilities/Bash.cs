@@ -19,7 +19,7 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 2;
 
-    internal override bool CanUse => base.CanUse && Inactive && !abilities.stomp.InUse && !abilities.chargeJump.InUse && !abilities.launch.InUse;
+    internal override bool CanUse => base.CanUse && Inactive && !abilities.stomp && !abilities.chargeJump && !abilities.launch;
     protected override int Cooldown => (int)(Config.BashCooldown * 30);
     protected override Color RefreshColor => Color.LightYellow;
 

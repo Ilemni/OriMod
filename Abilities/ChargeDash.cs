@@ -15,7 +15,7 @@ namespace OriMod.Abilities {
     public override int Id => AbilityID.ChargeDash;
     public override byte Level => (byte)(abilities.dash.Level >= 3 ? 1 : 0);
 
-    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !abilities.stomp.InUse && !abilities.bash.InUse && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !abilities.stomp && !abilities.bash && !player.mount.Active;
     protected override int Cooldown => (int)(Config.CDashCooldown * 30);
     protected override Color RefreshColor => Color.LightBlue;
 
@@ -115,7 +115,7 @@ namespace OriMod.Abilities {
       }
       else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
-        Vector2 newVel = target is null && !abilities.airJump.InUse ? new Vector2(direction, 0) : player.velocity;
+        Vector2 newVel = target is null && !abilities.airJump ? new Vector2(direction, 0) : player.velocity;
         newVel.Normalize();
         newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
         player.velocity = newVel;
@@ -153,7 +153,7 @@ namespace OriMod.Abilities {
           SetState(State.Active);
           Start();
         }
-        else if (!abilities.dash.InUse) {
+        else if (!abilities.dash) {
           abilities.dash.StartDash();
         }
         return;
@@ -161,7 +161,7 @@ namespace OriMod.Abilities {
       TickCooldown();
       if (InUse) {
         abilities.dash.Refreshed = false;
-        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash.InUse || player.controlJump) {
+        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash || player.controlJump) {
           End();
         }
       }

@@ -63,8 +63,8 @@ namespace OriMod {
 
       Vector2 pos;
       float rotation;
-      var ab = abilities.bash.InUse ? (Ability)abilities.bash : abilities.launch;
-      if (abilities.bash.InUse) {
+      var ab = abilities.bash ? (Ability)abilities.bash : abilities.launch;
+      if (abilities.bash) {
         pos = abilities.bash.BashEntity.Center - Main.screenPosition;
         rotation = abilities.bash.bashAngle;
       }

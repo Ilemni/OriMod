@@ -17,8 +17,8 @@ namespace OriMod.Abilities {
 
     internal override bool CanUse =>
       base.CanUse && !Ending &&
-      !abilities.airJump.InUse && !abilities.stomp.InUse && !abilities.dash.InUse && !abilities.chargeDash.InUse &&
-      !abilities.wallChargeJump.InUse && !abilities.burrow.InUse &&
+      !abilities.airJump && !abilities.stomp && !abilities.dash && !abilities.chargeDash &&
+      !abilities.wallChargeJump && !abilities.burrow &&
       player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active;
 
     private static float MaxFallSpeed => 2f;
@@ -62,7 +62,7 @@ namespace OriMod.Abilities {
         SetState(State.Starting);
         return;
       }
-      if (abilities.dash.InUse || abilities.airJump.InUse) {
+      if (abilities.dash || abilities.airJump) {
         SetState(State.Inactive);
         return;
       }
