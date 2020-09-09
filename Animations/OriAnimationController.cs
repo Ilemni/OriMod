@@ -25,7 +25,7 @@ namespace OriMod.Animations {
     /// Animation for the player sprite.
     /// </summary>
     public Animation playerAnim { get; private set; }
-    
+
     /// <summary>
     /// Animation for the Bash arrow sprite.
     /// </summary>
@@ -89,7 +89,7 @@ namespace OriMod.Animations {
           IncrementFrame("Bash");
         }
         else {
-          IncrementFrame("ChargeJump", duration: 6, rotation: abilities.launch.launchAngle + (float)Math.PI / 2, loop: LoopMode.Always, direction: Direction.PingPong);
+          IncrementFrame("ChargeJump", duration: 6, rotation: (abilities.launch.launchAngle + (float)Math.PI / 2) * player.direction, loop: LoopMode.Always, direction: Direction.PingPong);
         }
         return;
       }
