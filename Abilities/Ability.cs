@@ -315,7 +315,7 @@ namespace OriMod.Abilities {
     /// Whether or not the <see cref="Ability"/> is in use.
     /// </summary>
     /// <seealso cref="InUse"/>
-    public static implicit operator bool (Ability ability) => ability.InUse;
+    public static implicit operator bool (Ability ability) => !(ability is null) && ability.InUse;
 
     /// <summary>
     /// States that the <see cref="Ability"/> can be in. Determines update logic.
