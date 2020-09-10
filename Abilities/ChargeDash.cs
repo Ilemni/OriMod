@@ -111,13 +111,12 @@ namespace OriMod.Abilities {
         // Force player position to same as target's, and reduce speed.
         player.position = target.position;
         player.position.Y -= 32f;
-        player.velocity *= Speeds[CurrentTime] * SpeedMultiplier < 50 ? 0.5f : 0.25f;
+        player.velocity = player.velocity.Normalized() * Speeds[Speeds.Length - 1];
       }
       else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
         Vector2 newVel = target is null && !abilities.airJump ? new Vector2(direction, 0) : player.velocity;
-        newVel.Normalize();
-        newVel *= Speeds[Speeds.Length - 1] * SpeedMultiplier;
+        newVel = newVel.Normalized() * Speeds[Speeds.Length - 1];
         player.velocity = newVel;
       }
       Target = null;
