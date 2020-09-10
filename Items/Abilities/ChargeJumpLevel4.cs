@@ -3,9 +3,9 @@ using Terraria.ID;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
-  /// Medallion that grants <see cref="ChargeJump"/> Level 3: Launch.
+  /// Medallion that grants <see cref="ChargeJump"/> Level 4: Multi-Launch.
   /// </summary>
-  public class ChargeJumpLevel3 : AbilityMedallionBase {
+  public class ChargeJumpLevel4 : AbilityMedallionBase {
     public override byte ID => AbilityID.ChargeJump;
 
     public override void AddRecipes() {

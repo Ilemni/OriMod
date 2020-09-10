@@ -83,20 +83,6 @@ ItemTooltip.SpiritSapling3=A fully grown Spirit Tree, smaller in size than the m
 ItemName.AbilityMedallionEmpty=Blank {$Mods.OriMod.Common.Medal}
 ItemTooltip.AbilityMedallionEmpty=Used to create strong {$Mods.OriMod.Common.Medal}s to unlock or upgrade abilities.
 
-- Capped at Lv1 -
-
-ItenName.WallJumpLevel1=Wall Jump {$Mods.OriMod.Common.Medal}
-ItemTooltip.WallJumpLevel1=Allows you to jump on walls to ascend.
-Lore.WallJump.Lv1=Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
-
-ItemName.GlideLevel1=Glide {$Mods.OriMod.Common.Medal}
-ItemTooltip.GlideLevel1=Allows you to glide through the air.
-Lore.Glide.1=This {$Mods.OriMod.Common.Medal} holds memories of a feather, one that Ori took when he tricked Kuro.
-
-ItemName.ClimbLevel1=Climb {$Mods.OriMod.Common.Medal}
-ItemTooltip.ClimbLevel1=Allows you to hold on to and ascend walls.
-Lore.Climb.1=Tatsu and Atsu, brother and sister, often played in the Misty Woods, but when the Spirit Tree's Light faltered, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
-
 ---
 
 ItemName.AirJumpLevel1=Double Jump {$Mods.OriMod.Common.Medal}
@@ -104,10 +90,10 @@ ItemName.AirJumpLevel2=Triple Jump {$Mods.OriMod.Common.Medal}
 ItemName.AirJumpLevel3=Quadruple Jump {$Mods.OriMod.Common.Medal}
 ItemName.AirJumpLevel4=Quintuple Jump {$Mods.OriMod.Common.Medal}
 
-ItemTooltip.AirJumpLevel1=Allows you to jump again in the air.
-ItemTooltip.AirJumpLevel2=Allows yet another jump in the air.
-ItemTooltip.AirJumpLevel3=Allows a fourth jump in the air.
-ItemTooltip.AirJumpLevel4=You already know what this will do.
+ItemTooltip.AirJumpLevel1=Unlocks Air Jump\nGranting you the ability to jump from the air!
+ItemTooltip.AirJumpLevel2=Upgrades Air Jump to Level 2\nAllows a second jump in the air!
+ItemTooltip.AirJumpLevel3=Upgrades Air Jump to Level 3\nAllows a third jump in the air!
+ItemTooltip.AirJumpLevel4=Upgrades Air Jump to Level 4\nYou already know what this will do.
 
 Lore.AirJump.1=Leru's gift, to cut through the air, proved instumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
 Lore.AirJump.2=In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving her land.
@@ -120,9 +106,9 @@ ItemName.BashLevel1=Bash {$Mods.OriMod.Common.Medal}
 ItemName.BashLevel2=Enhanced Bash {$Mods.OriMod.Common.Medal}
 ItemName.BashLevel3=Ultra Bash {$Mods.OriMod.Common.Medal}
 
-ItemTooltip.BashLevel1=Allows you to Bash on enemies,\nlaunching you and your target\nin opposite directions.
-ItemTooltip.BashLevel2=Enhances your Bashing capabilities to\ntarget projectiles, and deal damage to foes.
-ItemTooltip.BashLevel3=Greatly enhances your Bashing speeds,\ndistance, and damage dealt.
+ItemTooltip.BashLevel1=Unlocks Bash\nAllows you to Bash on enemies, launching you\nand your target in opposite directions!
+ItemTooltip.BashLevel2=Upgrades Bash to Level 2\nAllows you to Bash \nprojectiles, and deal damage to foes!
+ItemTooltip.BashLevel3=Upgrades Bash to Level 3\nGreatly enhances your Bashing speeds,\ndistance, and damage dealt!
 
 Lore.Bash.1=Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise.
 Lore.Bash.2=When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind.
@@ -130,14 +116,17 @@ Lore.Bash.3=Decay was a vicious force, Reem was forced to learn when he ascended
 
 ---
 
-ItemName.StompLevel1=Stomp {$Mods.OriMod.Common.Medal}
-ItemName.StompLevel2=Ultra Stomp {$Mods.OriMod.Common.Medal}
+ItemName.BurrowLevel1=Burrow {$Mods.OriMod.Common.Medal}
+ItemName.BurrowLevel2=Enhanced Burrow {$Mods.OriMod.Common.Medal}
+ItemName.BurrowLevel3=Greater Burrow {$Mods.OriMod.Common.Medal}
 
-ItemTooltip.StompLevel1=Allows you to slam into the ground,\ncreating a shockwave to damage nearby enemies.
-ItemTooltip.StompLevel2=Enhances your stomping capabilities\nfor even more damage, pushing enemies far back.
+ItemTooltip.BurrowLevel1=Unlocks Burrow\nAllows you to burrow through the ground!
+ItemTooltip.BurrowLevel2=Upgrades Burrow to Level 2\nAllows you to burrow through tougher terrain!
+ItemTooltip.BurrowLevel3=Upgrades Burrow to Level 3\nAllows you to burrow through all terrain!
 
-Lore.Stomp.1=Despite being known as the strongest of Nibel's Spirits, Ilo was a gentle Spirit. Still, his strength knew no bounds. This {$Mods.OriMod.Common.Medal} was a manifestation of his power.
-Lore.Stomp.2=Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath...
+Lore.Burrow.1=Many are the nameless Spirits of Niwen that have fallen to the Decay when the Mother of Light passed.
+Lore.Burrow.2=What is a name, after life? It is a way to be remembered. A name conjures to mind the personality and accomplishments of those before.
+Lore.Burrow.3=The Mother of Light, the Spirit Willow, what was her name? Was it forgotten? Had her second death preceeded her first?
 
 ---
 
@@ -146,10 +135,10 @@ ItemName.ChargeJumpLevel2=Wall Charge Jump {$Mods.OriMod.Common.Medal}
 ItemName.ChargeJumpLevel3=Launch {$Mods.OriMod.Common.Medal}
 ItemName.ChargeJumpLevel4=Ultra Launch {$Mods.OriMod.Common.Medal}
 
-ItemTooltip.ChargeJumpLevel1=Allows you to jump high into the air.
-ItemTooltip.ChargeJumpLevel2=Allows you to make large jumps from walls.
-ItemTooltip.ChargeJumpLevel3=Allows you to Launch yourself through the air.
-ItemTooltip.ChargeJumpLevel4=Allows for powerful chains of Launches in the air.
+ItemTooltip.ChargeJumpLevel1=Unlocks Charge Jump\nAllows you to jump high into the air!
+ItemTooltip.ChargeJumpLevel2=Upgrades Charge Jump to Level 2\nAllows you to jump high from walls!
+ItemTooltip.ChargeJumpLevel3=Upgrades Charge Jump to Level 3\nAllows you to Launch yourself through the air!
+ItemTooltip.ChargeJumpLevel4=Upgrades Charge Jump to Level 4\mAllows for powerful chains of Launches in the air!
 
 Lore.ChargeJump.1=Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful Spirit, the blinding of the forest and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.
 Lore.ChargeJump.2=A union of Nir's and Tatsu's gifts, this {$Mods.OriMod.Common.Medal} represents the final ability Ori used in their quest to save Nibel.
@@ -158,17 +147,52 @@ Lore.ChargeJump.4=A Spirit bearing a Spirit Tree's Light? A ridiculous idea; a S
 
 ---
 
+ItemName.ClimbLevel1=Climb {$Mods.OriMod.Common.Medal}
+ItemTooltip.ClimbLevel1=Unlocks Climb\nAllows you to hold on to and ascend walls!
+Lore.Climb.1=Tatsu and Atsu, brother and sister, often played in the Misty Woods, but when the Spirit Tree's Light faltered, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
+
+---
+
+ItemName.DashLevel1=Dash {$Mods.OriMod.Common.Medal}
+ItemName.DashLevel2=Air Dash {$Mods.OriMod.Common.Medal}
+ItemName.DashLevel3=Charge Dash {$Mods.OriMod.Common.Medal}
+
+ItemTooltip.DashLevel1=Unlocks Dash\nAllows you to Dash at high speeds!
+ItemTooltip.DashLevel2=Upgrades Dash to Level 2\nAllows you to Dash in the air!
+ItemTooltip.DashLevel3=Upgrades Dash to Level 3\nAllows you to quickly Dash into enemies, dealing damage!
+
+Lore.Dash.1=Eki was known as the fastest of spirits. Though that doesn't mean he was in a league of his own, many are able to keep pace.
+Lore.Dash.2=Formidable rivals to Eki were well-known in Nibel's time. Among these were Amgis, Eatij, and Anoive.
+Lore.Dash.3=In time, the spirit Sudicul would prove to be faster than even Eki.
+
+---
+
+ItemName.GlideLevel1=Glide {$Mods.OriMod.Common.Medal}
+ItemTooltip.GlideLevel1=Unlocks Glide\nAllows you to glide through the air!
+Lore.Glide.1=This {$Mods.OriMod.Common.Medal} holds memories of a feather, one that Ori took when he tricked Kuro.
+
+---
+
+ItemName.StompLevel1=Stomp {$Mods.OriMod.Common.Medal}
+ItemName.StompLevel2=Enhanced Stomp {$Mods.OriMod.Common.Medal}
+ItemName.StompLevel3=Ultra Stomp {$Mods.OriMod.Common.Medal}
+
+ItemTooltip.StompLevel1=Unlocks Stomp\nAllows you to slam into the ground,\ncreating a shockwave to damage nearby enemies!
+ItemTooltip.StompLevel2=Upgrades Stomp to Level 2\nEnhances your stomping capabilities\nfor even more damage, pushing enemies far back!
+ItemTooltip.StompLevel3=Upgrades Stomp to Level 3\nFurther enhances the power of Stomp!
+
+Lore.Stomp.1=Despite being known as the strongest of Nibel's Spirits, Ilo was a gentle Spirit. Still, his strength knew no bounds. This {$Mods.OriMod.Common.Medal} was a manifestation of his power.
+Lore.Stomp.2=Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath...
+Lore.Stomp.3=Ori alone would prove that strength does not come from power alone, no matter how much of it one has.
+
+---
+
+ItemName.WallJumpLevel1=Wall Jump {$Mods.OriMod.Common.Medal}
+ItemTooltip.WallJumpLevel1=Unlocks Wall Jump\nAllows you to jump on walls to ascend!
+Lore.WallJump.Lv1=Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
+
+---
+
 Upgrade.Sein.Unlock.Name - Sein
 Upgrade.Sein.Unlock.Description - A companion, known as the Light and Eyes of the Spirit Tree.
 Upgrade.Sein.Unlock.Flavor - Once a valuable companion to Ori, Sein is willing to help you on your quest.
-
---- Error Messages ---
-
-Error.SoulLinkBossActive = Cannot place a Soul Link while powerful enemies are around.
-Error.SoulLinkObstructed = Your Soul Link has been blocked and despawned.
-Error.SoulLinkCannotPlace = Cannot place a Soul Link here.
-
-Error.UnknownPacket=Error with packet: Unknown Packet type {0}
-
-Error.BadTrack=Error with animation: The animation track {0} does not exist.
-Error.BadFrame=Error with animation: Invalid frame for {0}: {1}
