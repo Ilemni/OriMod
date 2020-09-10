@@ -86,7 +86,12 @@ namespace OriMod.Abilities {
       }
       TickCooldown();
       if (InUse) {
-        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash) {
+        if (abilities.airJump) {
+          SetState(State.Inactive);
+          player.velocity.X = Speeds[24] * direction; // Rip hyperspeed dash-jump
+          PutOnCooldown();
+        }
+        else if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash) {
           SetState(State.Inactive);
           PutOnCooldown();
         }

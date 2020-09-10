@@ -60,10 +60,6 @@ namespace OriMod.Abilities {
       if (CanUse && oPlayer.justPressedJumped) {
         if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
           SetState(State.Active);
-          if (abilities.dash.Active) {
-            abilities.dash.SetState(State.Inactive);
-            abilities.dash.PutOnCooldown();
-          }
           currentCount++;
           gravityDirection = (sbyte)player.gravDir;
         }
