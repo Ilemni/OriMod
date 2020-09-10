@@ -199,7 +199,7 @@ namespace OriMod.Abilities {
     /// Condition for if the player can use any abilities.
     /// <para>Used to disable all abilities.</para>
     /// </summary>
-    /// <returns></returns>
+    /// <returns><see langword="true"/> if any ability can be used; otherwise, <see langword="false"/>.</returns>
     public bool CanUseAnyAbilities() {
       var player = oPlayer.player;
       if (player.dead) {

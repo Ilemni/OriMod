@@ -18,16 +18,16 @@ namespace OriMod.Utilities {
     private static char[] _alphabet;
 
     /// <summary>
-    /// Gets a random char between A and Z.
+    /// Gets a random <see cref="char"/> between A and Z.
     /// </summary>
-    /// <returns>A char between A and Z.</returns>
+    /// <returns>A <see cref="char"/> between A and Z.</returns>
     public static char Next() => Next(RandMaxValue);
 
     /// <summary>
-    /// Gets a random char between A and alphabet[<paramref name="length"/>].
+    /// Gets a random <see cref="char"/> between A and alphabet[<paramref name="length"/>].
     /// </summary>
     /// <param name="length">Range of letters from "A" that may be returned. Must be at least 1.</param>
-    /// <returns>A char between A and alphabet[<paramref name="length"/>].</returns>
+    /// <returns>A <see cref="char"/> between A and alphabet[<paramref name="length"/>].</returns>
     /// <exception cref="ArgumentOutOfRangeException">Value must be between 1 and <see cref="RandMaxValue"/>.</exception>
     public static char Next(int length) {
       if (length < 1 || length > RandMaxValue) {
@@ -38,16 +38,16 @@ namespace OriMod.Utilities {
     }
 
     /// <summary>
-    /// Gets a random char between A and Z, without repeating the previous result of this method.
+    /// Gets a random <see cref="char"/> between A and Z, without repeating the previous result of this method.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A <see cref="char"/> between A and Z, different from the previous result.</returns>
     public char NextNoRepeat() => NextNoRepeat(RandMaxValue);
 
     /// <summary>
-    /// Gets a random char between A and alphabet[<paramref name="length"/>], without repeating the previous result of this method.
+    /// Gets a random <see cref="char"/> between A and alphabet[<paramref name="length"/>], without repeating the previous result of this method.
     /// </summary>
     /// <param name="length">Range of letters from "A" that may be returned. Must be at least 1.</param>
-    /// <returns></returns>
+    /// <returns>A <see cref="char"/> between A and alphabet[<paramref name="length"/>], different from the previous result.</returns>
     public char NextNoRepeat(int length) {
       if (length < 1 || length > RandMaxValue) {
         throw new ArgumentOutOfRangeException(nameof(length), "Value must be between 1 and " + RandMaxValue);

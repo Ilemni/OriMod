@@ -54,7 +54,7 @@ namespace OriMod {
     });
 
     /// <summary>
-    /// Draws the <see cref="Abilities.Bash"/> arrow when the player Bashes or Launches.
+    /// Draws the <see cref="Bash"/> arrow when the player Bashes or Launches.
     /// </summary>
     internal readonly PlayerLayer BashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
@@ -84,7 +84,7 @@ namespace OriMod {
     });
 
     /// <summary>
-    /// Draws the <see cref="Abilities.Glide"/> feather when the player glides.
+    /// Draws the <see cref="Glide"/> feather when the player glides.
     /// </summary>
     internal readonly PlayerLayer FeatherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
@@ -93,7 +93,7 @@ namespace OriMod {
     });
 
     /// <summary>
-    /// <see cref="PlayerLayer"/> that represents the <see cref="Abilities.SoulLink"/> a player can place within the world.
+    /// <see cref="PlayerLayer"/> that represents the <see cref="SoulLink"/> a player can place within the world.
     /// <para>(Consider using <see cref="Dust"/> or <see cref="Projectile"/> instead of <see cref="PlayerLayer"/>).</para>
     /// </summary>
     [System.Obsolete]

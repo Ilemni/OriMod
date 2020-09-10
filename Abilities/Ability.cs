@@ -49,7 +49,7 @@ namespace OriMod.Abilities {
     public bool Unlocked => Level > 0;
 
     /// <summary>
-    /// Current level of the ability. Unless an ability is always unlocked, if this is 0, the ability is not unlocked.
+    /// Current level of the ability. If this is 0, the ability is not unlocked and cannot be used.
     /// </summary>
     public abstract byte Level { get; }
 
@@ -302,7 +302,7 @@ namespace OriMod.Abilities {
     /// <param name="velocity">Starting velocity of the projectile.</param>
     /// <param name="damage">Damage of the projectile. Use this if the <see cref="AbilityProjectile"/> does not modify damage on its own.</param>
     /// <typeparam name="T">Type of <see cref="AbilityProjectile"/> to create.</typeparam>
-    /// <returns></returns>
+    /// <returns>A new <see cref="Projectile"/> with a <see cref="ModProjectile"/> of type <typeparamref name="T"/>.</returns>
     protected Projectile NewAbilityProjectile<T>(Vector2 offset = default, Vector2 velocity = default, int damage = 0) where T : AbilityProjectile => Projectile.NewProjectileDirect(player.Center + offset, velocity, ModContent.ProjectileType<T>(), damage, 0, player.whoAmI, Level);
 
     public override string ToString() {

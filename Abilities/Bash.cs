@@ -164,7 +164,7 @@ namespace OriMod.Abilities {
     /// Filter to determine if this <see cref="Projectile"/> can be bashed. Returns true if the projectile should be bashed.
     /// <para>Excludes friendly if disallowed, 0 damage projectiles, minions, sentries, traps, grapples, and projectiles that are already being Bashed.</para>
     /// </summary>
-    /// <param name="proj"></param>
+    /// <param name="proj">Projectile to check for bashing.</param>
     /// <returns><see langword="true"/> if the projectile should be bashed, otherwise <see langword="false"/>.</returns>
     private bool BashProjFilter(Projectile proj) =>
       (Config.BashOnProjectilesFriendly || !proj.friendly) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type) && !proj.GetGlobalProjectile<OriProjectile>().IsBashed;

@@ -72,7 +72,7 @@ namespace OriMod {
     /// <summary> Shows an error in chat and in the logger, using default localized text. Has formatting.</summary>
     /// <param name="key">Key in lang file, that would start with <c>Error.</c></param>
     /// <param name="log">Whether or not to write to logger.</param>
-    /// <param name="args">Formatting args</param>
+    /// <param name="args">Formatting args.</param>
     internal static void Error(string key, bool log = true, params object[] args) => PrintError(GetErrorText(key).Format(args), log);
 
     /// <summary> Shows an error in chat and in the logger, using a string literal.</summary>
@@ -217,8 +217,6 @@ namespace OriMod {
     /// </item>
     /// </list>
     /// </summary>
-    /// <param name="args"></param>
-    /// <returns></returns>
     public override object Call(params object[] args) {
       int len = args.Length;
       if (len > 0 && args[0] is string cmd) {

@@ -13,7 +13,7 @@ namespace OriMod {
     /// </summary>
     /// <param name="oPlayer">The <see cref="OriPlayer"/> this <see cref="Trail"/> will belong to.</param>
     /// <param name="segmentCount">Number of sprites to use for the trail.</param>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentNullException"><paramref name="oPlayer"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Expected value of <see langword="1"/> or greater.</exception>
     internal Trail(OriPlayer oPlayer, int segmentCount) {
       if (oPlayer is null) {

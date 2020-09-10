@@ -13,13 +13,13 @@ namespace OriMod.Items {
     /// <summary>
     /// Type for <see cref="Buffs.SeinBuff"/>. This value should be from <see cref="ModContent.BuffType{T}"/>.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The type of the <see cref="ModBuff"/>.</returns>
     protected abstract int GetBuffType();
 
     /// <summary>
     /// Type for <see cref="Projectiles.Minions.Sein"/>. This value should be from <see cref="ModContent.ProjectileType{T}"/>.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The type of the <see cref="Projectiles.Minions.Sein"/>.</returns>
     protected abstract int GetShootType();
 
     /// <summary>

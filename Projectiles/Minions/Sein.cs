@@ -83,7 +83,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Current Cooldown of Spirit Flame.
     /// </summary>
-    /// <remarks>Uses <see cref="Projectile.ai"/>[0]</remarks>
+    /// <remarks>Gets and sets to <see cref="Projectile.ai"/>[0].</remarks>
     private int Cooldown {
       get => (int)projectile.ai[0];
       set => projectile.ai[0] = value;
@@ -403,7 +403,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Creates one Spirit Flame projectile that targets <paramref name="npc"/> or is fired randomly.
     /// </summary>
-    /// <param name="npc">NPC to target. If this is <see langword="null"/>, fires at the air randomly</param>
+    /// <param name="npc">NPC to target. If this is <see langword="null"/>, fires at the air randomly.</param>
     private void Fire(NPC npc) {
       Vector2 shootVel;
       float rotation;

@@ -18,7 +18,7 @@ namespace OriMod {
     /// <summary>
     /// Creates a new instance of <see cref="ReferencedTexture2D"/> with the given texture path.
     /// </summary>
-    /// <param name="texturePath"></param>
+    /// <param name="texturePath">Path of the texture to gete. Either relative to <see cref="OriMod"/> or Modloader.</param>
     /// <exception cref="System.InvalidOperationException">Texture classes cannot be constructed on a server.</exception>
     /// <exception cref="System.ArgumentException"><paramref name="texturePath"/> is empty, or is not a valid texture path.</exception>
     public ReferencedTexture2D(string texturePath) {

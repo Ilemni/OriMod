@@ -30,7 +30,7 @@ namespace OriMod.Items.Abilities {
     /// Returns <see langword="true"/> if the player does not have the <see cref="Ability"/> this Item represents upgraded to the <see cref="Ability.Level"/> this Item upgrades to.
     /// </summary>
     /// <param name="player">The <see cref="Player"/> using the item.</param>
-    /// <returns></returns>
+    /// <returns><see langword="true"/> if the player does not have the <see cref="Ability"/> at this <see cref="Level"/>; otherwise, <see langword="false"/>.</returns>
     public override bool CanUseItem(Player player) {
       // Can only use the item if the ability to be unlocked has not been unlocked
       var oPlayer = player.GetModPlayer<OriPlayer>();

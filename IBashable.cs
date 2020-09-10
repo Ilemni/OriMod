@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using Terraria.ModLoader;
 
 namespace OriMod {
   /// <summary>
-  /// For <see cref="Terraria.ModLoader.GlobalNPC"/>s or <see cref="Terraria.ModLoader.GlobalProjectile"/>s that can be Bashed.
+  /// For <see cref="GlobalNPC"/>s or <see cref="GlobalProjectile"/>s that can be Bashed.
   /// </summary>
   public interface IBashable {
     /// <summary>

@@ -25,7 +25,7 @@ namespace OriMod.Networking {
     /// <summary>
     /// Gets a <see cref="ModPacket"/> with <see cref="handlerType"/> and <paramref name="fromWho"/> written to it.
     /// </summary>
-    /// <param name="fromWho"></param>
+    /// <param name="fromWho">The whoAmI of the player whose data will be in this packet.</param>
     protected ModPacket GetPacket(int fromWho) {
       ModPacket p = OriMod.Instance.GetPacket();
       if (Main.netMode == NetmodeID.Server) {

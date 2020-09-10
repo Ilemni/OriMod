@@ -148,8 +148,8 @@ namespace OriMod {
     /// <summary>
     /// For external mods, attempts to get a sound based on their name.
     /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
+    /// <param name="name">Name of the mod tile.</param>
+    /// <returns>A <see cref="FootstepSound"/> that best represents the sound from the name, -or- <see cref="FootstepSound.NoModTranslation"/> if none could be found.</returns>
     private FootstepSound SoundFromName(string name) {
       name = name.ToLower();
       if (name == "mysterytile" || name == "pendingmysterytile") {
