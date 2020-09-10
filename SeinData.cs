@@ -260,11 +260,13 @@ namespace OriMod {
     /// NPCs within this distance from the player can be targeted by the minion, if there is line of sight between it and the player.
     /// </summary>
     public float targetMaxDist = 240f;
+    public float targetMaxDistSquared => targetMaxDist * targetMaxDist;
 
     /// <summary>
     /// NPCs within this distance from the player can be targeted by the minion, regardless of line of sight.
     /// </summary>
     public float targetThroughWallDist = 80f;
+    public float targetThroughWallDistSquared => targetThroughWallDist * targetThroughWallDist;
 
     /// <summary>
     /// The knockback of Spirit Flame.

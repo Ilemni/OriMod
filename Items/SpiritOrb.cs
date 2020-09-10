@@ -66,7 +66,7 @@ namespace OriMod.Items {
       if (player.altFunctionUse == 2) {
         player.MinionNPCTargetAim();
       }
-      oPlayer.SeinMinionID = Projectile.NewProjectile(player.position, Vector2.Zero, item.shoot, item.damage, item.knockBack, player.whoAmI, 0, 0);
+      oPlayer.SeinMinionID = Projectile.NewProjectile(player.Center, -Vector2.UnitY, item.shoot, item.damage, item.knockBack, player.whoAmI, 0, 0);
       return false;
     }
   }
