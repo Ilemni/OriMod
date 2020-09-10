@@ -95,7 +95,7 @@ ItemTooltip.AirJumpLevel2=Upgrades Air Jump to Level 2\nAllows a second jump in 
 ItemTooltip.AirJumpLevel3=Upgrades Air Jump to Level 3\nAllows a third jump in the air!
 ItemTooltip.AirJumpLevel4=Upgrades Air Jump to Level 4\nYou already know what this will do.
 
-Lore.AirJump.1=Leru's gift, to cut through the air, proved instumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
+Lore.AirJump.1=Leru's gift, to cut through the air, proved instrumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
 Lore.AirJump.2=In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving her land.
 Lore.AirJump.3=Gumo had stolen the Water Vein from Leru. Without it, she could not enter the Ginso tree, the path to saving Nibel from Decay.
 Lore.AirJump.4=Leru had understood. Despite her determination, she simply lacked the strength to face Ginso's malaise. Even Reem, certainly more capable than Leru, has fallen to it already.
@@ -126,7 +126,7 @@ ItemTooltip.BurrowLevel3=Upgrades Burrow to Level 3\nAllows you to burrow throug
 
 Lore.Burrow.1=Many are the nameless Spirits of Niwen that have fallen to the Decay when the Mother of Light passed.
 Lore.Burrow.2=What is a name, after life? It is a way to be remembered. A name conjures to mind the personality and accomplishments of those before.
-Lore.Burrow.3=The Mother of Light, the Spirit Willow, what was her name? Was it forgotten? Had her second death preceeded her first?
+Lore.Burrow.3=The Mother of Light, the Spirit Willow, what was her name? Was it forgotten? Had her second death preceded her first?
 
 ---
 
