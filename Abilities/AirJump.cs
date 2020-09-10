@@ -12,7 +12,7 @@ namespace OriMod.Abilities {
     public override int Id => AbilityID.AirJump;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
-    public byte MaxLevel => 3;
+    public byte MaxLevel => 4;
 
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !player.mount.Active && !abilities.bash && !abilities.launch && !abilities.wallChargeJump;
 

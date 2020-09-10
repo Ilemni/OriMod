@@ -14,7 +14,7 @@ namespace OriMod.Abilities {
     public override int Id => AbilityID.Stomp;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 2;
+    byte ILevelable.MaxLevel => 3;
 
     internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !abilities.dash && !abilities.chargeDash && !abilities.glide.Active && !abilities.climb && !abilities.stomp.Active && !player.mount.Active && player.grapCount == 0;
     protected override int Cooldown => (int)(Config.StompCooldown * 30);

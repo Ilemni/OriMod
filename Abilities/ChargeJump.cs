@@ -14,7 +14,7 @@ namespace OriMod.Abilities {
     public override int Id => AbilityID.ChargeJump;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 3;
+    byte ILevelable.MaxLevel => 4;
 
     internal override bool CanUse => base.CanUse && !InUse && Charged && !abilities.burrow && !abilities.climb;
     protected override int Cooldown => (int)(Config.CJumpCooldown * 30);
