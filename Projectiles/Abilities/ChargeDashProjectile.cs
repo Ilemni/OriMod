@@ -13,7 +13,7 @@ namespace OriMod.Projectiles.Abilities {
       base.SetDefaults();
       projectile.width = 96;
       projectile.height = 96;
-      projectile.damage = 12 + (int)OriWorld.GlobalUpgrade * 9;
+      projectile.damage = 40;
     }
 
     public override void Behavior() {

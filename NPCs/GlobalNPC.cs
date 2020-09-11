@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace OriMod.NPCs {
   /// <summary>
-  /// <see cref="GlobalNPC"/> for handling <see cref="Abilities.Bash"/> and <see cref="OriWorld.GlobalUpgrade"/>
+  /// <see cref="GlobalNPC"/> for handling <see cref="Abilities.Bash"/>
   /// </summary>
   public class OriNPC : GlobalNPC, IBashable {
     public override bool InstancePerEntity => true;
@@ -21,10 +21,6 @@ namespace OriMod.NPCs {
       }
       FramesSinceLastBash++;
       return true;
-    }
-
-    public override void NPCLoot(NPC npc) {
-      OriWorld.ValidateGlobalUpgrade();
     }
 
     public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) {
