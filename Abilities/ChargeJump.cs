@@ -87,11 +87,11 @@ namespace OriMod.Abilities {
       }
       if (!Charged && CanCharge) {
         if (currentCharge == 0) {
-          oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+          oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 0.6f, .2f);
         }
         currentCharge++;
         if (currentCharge > MaxCharge) {
-          oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+          oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 0.6f, .2f);
         }
       }
       if (CanUse && oPlayer.justPressedJumped) {
@@ -107,7 +107,7 @@ namespace OriMod.Abilities {
           currentGrace--;
           if (currentGrace < 0) {
             currentCharge = 0;
-            oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
+            oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDashUncharge", 0.6f, .3f);
           }
         }
       }

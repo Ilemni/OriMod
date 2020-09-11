@@ -42,10 +42,10 @@ namespace OriMod.Abilities {
     protected override void UpdateActive() {
       if (CurrentTime == 0) {
         if (MaxJumps != 1 && currentCount == MaxJumps) {
-          oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + rand.NextNoRepeat(5), 0.7f);
+          oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + rand.NextNoRepeat(5), 0.6f);
         }
         else {
-          oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + rand.NextNoRepeat(4), 0.75f);
+          oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + rand.NextNoRepeat(4), 0.5f);
         }
       }
       float newVel = -JumpVelocity * ((EndDuration - CurrentTime) / EndDuration);

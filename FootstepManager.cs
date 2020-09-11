@@ -207,14 +207,15 @@ namespace OriMod {
         case FootstepSound.SpiritTreeRock:
         case FootstepSound.SpiritTreeWood:
         case FootstepSound.Rock:
-          return Footstep(5, 1f);
+          return Footstep(5, 0.7f);
         case FootstepSound.Snow:
+        return Footstep(10, 0.45f);
         case FootstepSound.LightDark:
-          return Footstep(10, 0.85f);
+          return Footstep(10, 0.3f);
         case FootstepSound.Wood:
-          return Footstep(5, 0.85f);
+          return Footstep(5, 0.2f);
         case FootstepSound.Sand:
-          return Footstep(8, 0.85f);
+          return Footstep(8, 0.4f);
         default:
           return null;
       }
@@ -246,11 +247,11 @@ namespace OriMod {
           mat = "Rock";
           return Landing(3, 1f);
         case FootstepSound.Water:
-          return Landing(5, 0.25f);
+          return Landing(5, 0.15f);
         case FootstepSound.SpiritTreeWood:
         case FootstepSound.Wood:
           mat = "Wood";
-          return Landing(5, 0.85f);
+          return Landing(5, 0.15f);
         default:
           return PlayFootstepFromPlayer(player);
       }

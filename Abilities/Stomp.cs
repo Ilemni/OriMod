@@ -59,7 +59,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateStarting() {
       if (CurrentTime == 0) {
-        oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + randStart.NextNoRepeat(3), 1f, 0.2f);
+        oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + randStart.NextNoRepeat(3), 0.8f, 0.2f);
       }
       player.velocity.X = 0;
       player.velocity.Y *= 0.9f;
@@ -68,7 +68,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateActive() {
       if (CurrentTime == 0) {
-        oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3));
+        oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3), 0.8f);
         NewAbilityProjectile<StompProjectile>(damage: Damage * 2);
       }
       if (abilities.airJump.Active) {
@@ -83,7 +83,7 @@ namespace OriMod.Abilities {
     }
 
     internal void EndStomp() {
-      oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + randEnd.NextNoRepeat(3));
+      oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + randEnd.NextNoRepeat(3), 0.9f);
       abilities.airJump.currentCount = 0;
       player.velocity = Vector2.Zero;
       var position = new Vector2(player.position.X, player.position.Y + 32);

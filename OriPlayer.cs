@@ -525,7 +525,7 @@ namespace OriMod {
         Lighting.AddLight(player.Center, LightColor.ToVector3());
       }
       if (justPressedJumped && IsGrounded) {
-        PlayNewSound("Ori/Jump/seinJumpsGrass" + randJump.NextNoRepeat(5), 0.75f);
+        PlayNewSound("Ori/Jump/seinJumpsGrass" + randJump.NextNoRepeat(5), 0.6f);
       }
       bool oldGrounded = IsGrounded;
       IsGrounded = CheckGrounded();
@@ -559,7 +559,7 @@ namespace OriMod {
 
     private bool CheckGrounded() {
       float vel = player.velocity.Y * player.gravDir;
-      if (vel < 0 && vel > 0.1f) {
+      if (vel != 0) {
         return false;
       }
       Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
@@ -614,7 +614,7 @@ namespace OriMod {
     public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit) {
       if (useCustomHurtSound) {
         useCustomHurtSound = false;
-        PlayNewSound("Ori/Hurt/seinHurtRegular" + randHurt.NextNoRepeat(4));
+        PlayNewSound("Ori/Hurt/seinHurtRegular" + randHurt.NextNoRepeat(4), 0.75f);
       }
     }
 
@@ -624,7 +624,7 @@ namespace OriMod {
           playSound = false;
           switch (damageSource.SourceOtherIndex) {
             case 1:
-              PlayNewSound("Ori/Death/seinSwimmingDrowningDeath" + RandomChar.Next(3), 3f);
+              PlayNewSound("Ori/Death/seinSwimmingDrowningDeath" + RandomChar.Next(3));
               break;
             case 2:
               PlayNewSound("Ori/Death/seinDeathLava" + RandomChar.Next(5));

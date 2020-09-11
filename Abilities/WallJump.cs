@@ -39,7 +39,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateActive() {
       player.velocity.Y = WallJumpVelocity.Y * gravDirection;
-      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + rand.NextNoRepeat(5));
+      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + rand.NextNoRepeat(5), 0.75f);
     }
 
     protected override void UpdateEnding() {
