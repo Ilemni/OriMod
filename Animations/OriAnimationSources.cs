@@ -9,90 +9,91 @@ namespace OriMod.Animations {
   public sealed class PlayerAnim : AnimationSource {
     public override PointByte spriteSize { get; } = new PointByte(64, 68);
 
-    public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
-      ["Default"] = Track.Single(
+    public override Dictionary<string, Track> tracks => _tracks ?? (_tracks = new Dictionary<string, Track> {
+      ["Default"] = Single(
           F(0, 0)
         ),
-      ["Idle"] = Track.Range(
+      ["Idle"] = Range(
           F(0, 1, 9), F(0, 8, 9)
         ),
-      ["IdleAgainst"] = Track.Range(
+      ["IdleAgainst"] = Range(
           F(0, 9, 7), F(0, 14, 7)
         ),
-      ["LookUpStart"] = Track.Single(
+      ["LookUpStart"] = Single(
           F(1, 0)
         ),
-      ["LookUp"] = Track.Range(
+      ["LookUp"] = Range(
           F(1, 1, 8), F(1, 7, 8)
         ),
-      ["CrouchStart"] = Track.Single(
+      ["CrouchStart"] = Single(
           F(1, 8)
         ),
-      ["Crouch"] = Track.Single(
+      ["Crouch"] = Single(
           F(1, 9)
         ),
-      ["Running"] = Track.Range(
+      ["Running"] = Range(
           F(2, 0, 4), F(2, 10, 4)
         ),
-      ["Dash"] = Track.Range(
+      ["Dash"] = Range(
           F(2, 11, 36), F(2, 12, 12)
         ),
-      ["Bash"] = new Track(new Frame[] {
+      ["Bash"] = new Track(this, new Frame[] {
           F(2, 13, 40), F(2, 12)
       }),
-      ["AirJump"] = Track.Single(
+      ["AirJump"] = Single(
           F(3, 0, 32)
         ),
-      ["Jump"] = new Track(new Frame[] {
+      ["Jump"] = new Track(this, new Frame[] {
           F(3, 2, 14), F(3, 1)
         }),
-      ["IntoJumpBall"] = Track.Range(LoopMode.None,
+      ["IntoJumpBall"] = Range(LoopMode.None,
           F(3, 3, 6), F(3, 4, 4)
         ),
-      ["ChargeJump"] = Track.Range(LoopMode.None, Direction.PingPong,
+      ["ChargeJump"] = Range(LoopMode.None, Direction.PingPong,
           F(3, 5, 4), F(3, 8, 4)
         ),
-      ["Falling"] = Track.Range(
+      ["Falling"] = Range(
           F(3, 9, 4), F(3, 12, 4)
         ),
-      ["FallNoAnim"] = Track.Single(
+      ["FallNoAnim"] = Single(
           F(3, 13)
         ),
-      ["GlideStart"] = Track.Range(LoopMode.None,
+      ["GlideStart"] = Range(LoopMode.None,
           F(4, 0, 5), F(4, 2, 5)
         ),
-      ["GlideIdle"] = Track.Single(
+      ["GlideIdle"] = Single(
           F(4, 3)
         ),
-      ["Glide"] = Track.Range(
+      ["Glide"] = Range(
           F(4, 4, 5), F(4, 9, 5)
         ),
-      ["ClimbIdle"] = Track.Single(
+      ["ClimbIdle"] = Single(
           F(5, 0)
         ),
-      ["Climb"] = Track.Range(
+      ["Climb"] = Range(
           F(5, 1, 4), F(5, 8, 4)
         ),
-      ["WallSlide"] = Track.Range(
+      ["WallSlide"] = Range(
           F(5, 9, 5), F(5, 12, 5)
         ),
-      ["WallJump"] = Track.Single(
+      ["WallJump"] = Single(
           F(5, 13, 12)
         ),
-      ["WallChargeJumpCharge"] = new Track(new Frame[] {
+      ["WallChargeJumpCharge"] = new Track(this, new Frame[] {
           F(6, 0, 16), F(6, 1, 10), F(6, 2)
         }),
-      ["WallChargeJumpAim"] = Track.Range(
+      ["WallChargeJumpAim"] = Range(
           F(6, 2), F(6, 6) // No duration, frames are selected by code, i.e. player mouse position
         ),
-      ["Burrow"] = Track.Range(
+      ["Burrow"] = Range(
           F(7, 0, 3), F(7, 7, 3)
         ),
-      ["Transform"] = new Track(new IFrame[] {
+      ["Transform"] = new Track(this, new IFrame[] {
           F("OriMod/Animations/TransformAnim", 0, 0, 2), F(0, 1, 60), F(0, 2, 60), F(0, 3, 120), F(0, 4, 40), F(0, 5, 40), F(0, 6, 40), F(0, 7, 30),
           F("OriMod/Animations/PlayerAnim", 6, 7, 6), F(6, 8, 50), F(6, 9, 6), F(6, 10, 60), F(6, 11, 10), F(6, 12, 40), F(6, 13, 3), F(6, 14, 60)
         }),
-    };
+    });
+    private Dictionary<string, Track> _tracks;
 
     public static PlayerAnim Instance => _instance ?? (_instance = GetInstance());
     private static PlayerAnim _instance;
@@ -109,11 +110,12 @@ namespace OriMod.Animations {
   public sealed class BashAnim : AnimationSource {
     public override PointByte spriteSize { get; } = new PointByte(152, 20);
 
-    public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
-      ["Bash"] = Track.Range(
+    Dictionary<string, Track> _tracks;
+    public override Dictionary<string, Track> tracks => _tracks ?? (_tracks = new Dictionary<string, Track> {
+      ["Bash"] = Range(
         F(0, 0), F(0, 2)
       )
-    };
+    });
   }
 
   /// <summary>
@@ -122,16 +124,17 @@ namespace OriMod.Animations {
   public sealed class GlideAnim : AnimationSource {
     public override PointByte spriteSize { get; } = new PointByte(128, 128);
 
-    public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
-      ["GlideStart"] = Track.Range(LoopMode.None,
+    private Dictionary<string, Track> _tracks;
+    public override Dictionary<string, Track> tracks => _tracks ?? (_tracks = new Dictionary<string, Track> {
+      ["GlideStart"] = Range(LoopMode.None,
         F(0, 0, 5), F(0, 2, 5)
       ),
-      ["GlideIdle"] = Track.Single(
+      ["GlideIdle"] = Single(
         F(0, 3)
       ),
-      ["Glide"] = Track.Range(
+      ["Glide"] = Range(
         F(0, 4, 5), F(0, 9, 5)
       ),
-    };
+    });
   }
 }
