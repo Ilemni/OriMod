@@ -152,7 +152,7 @@ namespace OriMod.Animations {
         return;
       }
       if (abilities.dash || abilities.chargeDash) {
-        IncrementFrame("Dash", frameIndex: Math.Abs(player.velocity.X) < 18f ? 1 : 0);
+        IncrementFrame("Dash", frameIndex: Math.Abs(player.velocity.X) < 12f ? 1 : 0);
         return;
       }
       if (abilities.lookUp) {

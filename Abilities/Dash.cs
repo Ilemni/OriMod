@@ -18,7 +18,6 @@ namespace OriMod.Abilities {
 
     internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !abilities.stomp && !abilities.bash && !abilities.launch && !player.mount.Active && (Level >= 2 || oPlayer.IsGrounded);
     protected override int Cooldown => Level >= 3 ? 0 : 60;
-    protected override bool CooldownOnlyOnBoss => true;
     protected override Color RefreshColor => Color.White;
 
     private static float[] Speeds => _speeds ?? (_speeds = new float[25] {
@@ -88,11 +87,11 @@ namespace OriMod.Abilities {
         if (abilities.airJump) {
           SetState(State.Inactive);
           player.velocity.X = Speeds[24] * direction; // Rip hyperspeed dash-jump
-          PutOnCooldown();
+          PutOnCooldown(true);
         }
         else if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash) {
           SetState(State.Inactive);
-          PutOnCooldown();
+          PutOnCooldown(true);
         }
       }
     }
