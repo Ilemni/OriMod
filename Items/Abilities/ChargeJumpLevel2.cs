@@ -10,7 +10,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<ChargeJumpLevel1>();
-      recipe.AddRecipeGroup(ItemID.ChlorophyteBar, 22);
+      recipe.AddIngredient(ItemID.ChlorophyteBar, 22);
       recipe.AddIngredient(ItemID.SoulofFlight, 15);
       recipe.AddRecipe();
     }
