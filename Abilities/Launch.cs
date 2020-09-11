@@ -37,8 +37,8 @@ namespace OriMod.Abilities {
     }
     private int MinLaunchDuration => CurrentChain == 1 ? 15 : 20;
     private int MaxLaunchDuration => CurrentChain == 1 ? 45 : 30;
-    private int EndDuration => CurrentChain == 1 ? 12 : 8;
-    private float LaunchSpeed => CurrentChain == 1 ? 20 : 30;
+    private int EndDuration => CurrentChain == 1 || CurrentChain == MaxChain ? 12 : 6;
+    private float LaunchSpeed => CurrentChain == 1 ? 25 : 40;
 
     private Vector2 startPos;
     public float launchAngle { get; private set; }
@@ -121,14 +121,15 @@ namespace OriMod.Abilities {
     private void End() {
       player.velocity = launchDirection * 10;
       oPlayer.UnrestrictedMovement = true;
-      oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.5f);
       Refreshed = false;
     }
 
     internal override void Tick() {
       if (CanUse && IsLocal && OriMod.BashKey.JustPressed) {
         startPos = player.Center;
-        oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.5f, localOnly: true);
+        if (CurrentChain == 0) {
+          oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.5f, localOnly: true);
+        }
         SetState(State.Starting);
         CurrentChain = 1;
         return;
@@ -149,9 +150,6 @@ namespace OriMod.Abilities {
           return;
         }
         if (Active) {
-          if (CurrentTime == MinLaunchDuration + 4) {
-            oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.5f, localOnly: true);
-          }
           if (CurrentTime > MaxLaunchDuration || IsLocal && !OriMod.BashKey.Current) {
             SetState(State.Ending);
           }
@@ -166,10 +164,12 @@ namespace OriMod.Abilities {
             if (CurrentChain < MaxChain && OriMod.BashKey.Current) {
               CurrentChain++;
               SetState(State.Starting);
+              oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.35f);
             }
             else {
               End();
               SetState(State.Inactive);
+              oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.55f);
             }
           }
         }
