@@ -65,11 +65,7 @@ namespace OriMod.Animations {
         return;
       }
       if (abilities.wallChargeJump.Active) {
-        float rad = (float)Math.Atan2(player.velocity.Y, player.velocity.X);
-        if (player.direction == -1) {
-          rad -= (float)Math.PI;
-        }
-        IncrementFrame("Dash", frameIndex: 0, rotation: -rad);
+        IncrementFrame("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle);
         return;
       }
       if (abilities.wallJump) {
