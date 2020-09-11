@@ -55,13 +55,12 @@ namespace OriMod.Items.Abilities {
             Main.NewText($"Spirit Lore: {txt}", Color.LightCyan);
           }
         }
+        var strStart = player.whoAmI == Main.myPlayer ? "You" : $"{player.name} has";
+        if (levelable.Level == 1) {
+          Main.NewText($"{strStart} unlocked {NiceName(ability)}!", Color.LightGreen);
+        }
         else {
-          if (levelable.Level == 1) {
-            Main.NewText($"{player.name} has unlocked {NiceName(ability)}!", Color.LightCyan);
-          }
-          else {
-            Main.NewText($"{player.name} has upgraded {NiceName(ability)} to Level {levelable.Level}!", Color.LightCyan);
-          }
+          Main.NewText($"{strStart} upgraded {NiceName(ability)} to Level {levelable.Level}!", Color.LightGreen);
         }
         return true;
       }
