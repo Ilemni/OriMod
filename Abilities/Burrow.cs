@@ -54,7 +54,7 @@ namespace OriMod.Abilities {
 
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
 
-    private float breath;
+    private float breath = float.MaxValue;
     private int strength {
       get {
         switch (Level) {
@@ -324,9 +324,9 @@ namespace OriMod.Abilities {
 
         if (breath < MaxDuration) {
           breath += RecoveryRate;
-          if (breath > MaxDuration) {
-            breath = MaxDuration;
-          }
+        }
+        if (breath > MaxDuration) {
+          breath = MaxDuration;
         }
       }
     }
