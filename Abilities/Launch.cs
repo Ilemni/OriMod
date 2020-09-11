@@ -24,7 +24,6 @@ namespace OriMod.Abilities {
     /// Bash restrictions, plus in air and bash failed
     /// </summary>
     internal override bool CanUse => base.CanUse && Inactive && !oPlayer.IsGrounded && !abilities.stomp && !abilities.chargeJump && !abilities.bash && !abilities.climb;
-    protected override int Cooldown => (int)(Config.BashCooldown * 30);
 
     public ushort CurrentChain { get; private set; }
     public ushort MaxChain {

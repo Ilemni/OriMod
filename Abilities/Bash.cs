@@ -20,7 +20,6 @@ namespace OriMod.Abilities {
     byte ILevelable.MaxLevel => 3;
 
     internal override bool CanUse => base.CanUse && Inactive && !abilities.stomp && !abilities.chargeJump && !abilities.launch && !abilities.climb;
-    protected override int Cooldown => (int)(Config.BashCooldown * 30);
     protected override Color RefreshColor => Color.LightYellow;
 
     public static List<short> CannotBashNPC => _cannotBashNPC ?? (_cannotBashNPC = new List<short> {
@@ -167,7 +166,7 @@ namespace OriMod.Abilities {
     /// <param name="proj">Projectile to check for bashing.</param>
     /// <returns><see langword="true"/> if the projectile should be bashed, otherwise <see langword="false"/>.</returns>
     private bool BashProjFilter(Projectile proj) =>
-      (Config.BashOnProjectilesFriendly || !proj.friendly) && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type) && !proj.GetGlobalProjectile<OriProjectile>().IsBashed;
+      !proj.friendly && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type) && !proj.GetGlobalProjectile<OriProjectile>().IsBashed;
 
     private void SetTarget(bool isNPC, ushort id) {
       if (id == ushort.MaxValue) {

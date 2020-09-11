@@ -17,7 +17,7 @@ namespace OriMod.Abilities {
     byte ILevelable.MaxLevel => 4;
 
     internal override bool CanUse => base.CanUse && !InUse && Charged && !abilities.burrow && !abilities.climb;
-    protected override int Cooldown => (int)(Config.CJumpCooldown * 30);
+    protected override int Cooldown => 120;
     protected override Color RefreshColor => Color.Blue;
 
     internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && IsLocal && OriMod.ChargeKey.Current;
@@ -33,7 +33,6 @@ namespace OriMod.Abilities {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f, 12f
     });
     private static float[] _speeds;
-    private static float SpeedMultiplier => Config.CJumpSpeedMultiplier * 0.35f;
     private static int Duration => Speeds.Length;
 
     private int currentCharge;
@@ -64,7 +63,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      float speed = Speeds[CurrentTime] * SpeedMultiplier;
+      float speed = Speeds[CurrentTime] * 0.35f;
       player.velocity.Y = speed * -player.gravDir;
       oPlayer.immuneTimer = 12;
     }

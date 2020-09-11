@@ -19,11 +19,6 @@ namespace OriMod.Abilities {
     }
 
     /// <summary>
-    /// Configuration for abilities.
-    /// </summary>
-    internal static OriConfigClient2 Config => OriMod.ConfigAbilities;
-
-    /// <summary>
     /// The <see cref="OriPlayer"/> this ability belongs to.
     /// </summary>
     public readonly OriPlayer oPlayer;
@@ -66,7 +61,7 @@ namespace OriMod.Abilities {
     internal virtual bool CanUse => Unlocked && Refreshed;
 
     /// <summary>
-    /// Cooldown of the ability. This should point to an <see cref="OriConfigClient2"/> field.
+    /// Cooldown of the ability.
     /// </summary>
     protected virtual int Cooldown { get; }
 
@@ -174,7 +169,7 @@ namespace OriMod.Abilities {
     /// </summary>
     /// <param name="force">If <see langword="true"/>, puts this on cooldown, ignoring config options that may otherwise prevent cooldown.</param>
     internal virtual void PutOnCooldown(bool force = false) {
-      if (force || Config.AbilityCooldowns && (!CooldownOnlyOnBoss || OriUtils.AnyBossAlive())) {
+      if (force && (!CooldownOnlyOnBoss || OriUtils.AnyBossAlive())) {
         currentCooldown = Cooldown;
         Refreshed = false;
       }

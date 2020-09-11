@@ -15,7 +15,7 @@ namespace OriMod.Abilities {
     public override byte Level => 0;
 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && player.CheckMana(ManaCost, blockQuickMana: true);
-    protected override int Cooldown => (int)(Config.SoulLinkCooldown * 30);
+    protected override int Cooldown => 900;
 
     private static Point P(int x, int y) => new Point(x, y);
     private static TileHitbox Box => _b ?? (_b = new TileHitbox(
@@ -28,9 +28,9 @@ namespace OriMod.Abilities {
     internal Point Center => placedSoulLink && Box.Points[4] != Point.Zero ? Box.Points[4] : player.Center.ToTileCoordinates();
     internal Point SoulLinkLocation { get; private set; }
 
-    private static float ChargeRate => 1 / (Config.SoulLinkChargeRate * 60);
+    private static float ChargeRate => 0.2f;
     private static float UnchargeRate => ChargeRate * 1.75f;
-    private static int RespawnTime => (int)(Config.SoulLinkRespawnTime * 30);
+    private static int RespawnTime => 60;
     private static int ManaCost => 20;
 
     private float currentCharge;

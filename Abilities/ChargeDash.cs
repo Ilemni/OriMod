@@ -16,7 +16,7 @@ namespace OriMod.Abilities {
     public override byte Level => (byte)(abilities.dash.Level >= 3 ? 1 : 0);
 
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !abilities.stomp && !abilities.bash && !abilities.launch && !player.mount.Active;
-    protected override int Cooldown => (int)(Config.CDashCooldown * 30);
+    protected override int Cooldown => Level >= 3 ? 0 : 90;
     protected override Color RefreshColor => Color.LightBlue;
 
     private static int ManaCost => 20;
@@ -25,8 +25,6 @@ namespace OriMod.Abilities {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
     });
     private static float[] _speeds;
-
-    private static float SpeedMultiplier => Config.CDashSpeedMultiplier * 0.8f;
 
     private ushort npcID = ushort.MaxValue;
     private sbyte direction;
@@ -123,7 +121,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateUsing() {
-      float speed = Speeds[CurrentTime] * SpeedMultiplier;
+      float speed = Speeds[CurrentTime];
       player.gravity = 0;
       var target = Target;
 

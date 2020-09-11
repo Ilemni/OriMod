@@ -32,11 +32,6 @@ namespace OriMod {
     public static OriConfigClient1 ConfigClient { get; internal set; }
 
     /// <summary>
-    /// <inheritdoc cref="OriConfigClient2"/>
-    /// </summary>
-    public static OriConfigClient2 ConfigAbilities { get; internal set; }
-
-    /// <summary>
     /// GitHub profile that the mod's repository is stored on.
     /// </summary>
     public static string GithubUserName => "TwiliChaos";
@@ -185,7 +180,6 @@ namespace OriMod {
       BurrowKey = null;
       //SoulLinkKey = null;
       ConfigClient = null;
-      ConfigAbilities = null;
 
       OnUnload?.Invoke();
       OnUnload = null;

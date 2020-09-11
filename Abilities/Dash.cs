@@ -17,7 +17,7 @@ namespace OriMod.Abilities {
     byte ILevelable.MaxLevel => 3;
 
     internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !abilities.stomp && !abilities.bash && !abilities.launch && !player.mount.Active && (Level >= 2 || oPlayer.IsGrounded);
-    protected override int Cooldown => (int)(Config.DashCooldown * 30);
+    protected override int Cooldown => Level >= 3 ? 0 : 60;
     protected override bool CooldownOnlyOnBoss => true;
     protected override Color RefreshColor => Color.White;
 
@@ -26,7 +26,6 @@ namespace OriMod.Abilities {
       19.6f, 19.1f, 18.7f, 18.3f, 17.9f, 17.4f, 17f, 16.5f, 16.1f, 15.7f, 15.2f
     });
     private static float[] _speeds;
-    private static float SpeedMultiplier => Config.DashSpeedMultiplier * 0.65f;
     private static int Duration => Speeds.Length - 1;
 
     private sbyte direction;
@@ -53,7 +52,7 @@ namespace OriMod.Abilities {
         PutOnCooldown();
         return;
       }
-      player.velocity.X = Speeds[CurrentTime] * SpeedMultiplier * direction;
+      player.velocity.X = Speeds[CurrentTime] * 0.5f * direction;
       player.velocity.Y = 0.25f * (CurrentTime + 1) * player.gravDir;
       if (CurrentTime > 20) {
         player.runSlowdown = 26f;

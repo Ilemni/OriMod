@@ -26,14 +26,35 @@ namespace OriMod.Abilities {
     protected override int Cooldown => 12;
     protected override Color RefreshColor => Color.SandyBrown;
 
-    private static int MaxDuration => (int)(Config.BurrowDuration * 60);
+    private int MaxDuration {
+      get {
+        switch (Level) {
+          case 1: return 240;
+          case 2: return 420;
+          case 3: return 600;
+          default: return 120 + Level * 120;
+        }
+      }
+    }
+
+    private float RecoveryRate {
+      get {
+        switch (Level) {
+          case 1: return 0.1f;
+          case 2: return 0.2f;
+          case 3: return 0.35f;
+          default: return Level * 0.125f;
+        }
+      }
+    }
+
     private static int UiIncrement => 60;
     private static float Speed => 8f;
     private static float SpeedExitMultiplier => 1.2f;
 
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
 
-    private float breath = MaxDuration;
+    private float breath;
     private int strength {
       get {
         switch (Level) {
@@ -45,7 +66,7 @@ namespace OriMod.Abilities {
       }
     }
 
-    internal static bool CanBurrowAny => OriMod.ConfigAbilities.BurrowStrength < 0;
+    internal bool CanBurrowAny => Level >= 3;
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
 
     internal bool CanBurrow(Tile t) => CanBurrowAny && IsSolid(t) || TileCollection.Instance.TilePickaxeMin[t.type] <= strength;
@@ -302,7 +323,7 @@ namespace OriMod.Abilities {
         }
 
         if (breath < MaxDuration) {
-          breath += Config.BurrowRecoveryRate;
+          breath += RecoveryRate;
           if (breath > MaxDuration) {
             breath = MaxDuration;
           }
