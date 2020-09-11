@@ -7,6 +7,7 @@ namespace OriMod.Items.Abilities {
   /// </summary>
   public class ChargeJumpLevel2 : AbilityMedallionBase {
     public override byte ID => AbilityID.ChargeJump;
+    public override byte Level => 2;
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<ChargeJumpLevel1>();
