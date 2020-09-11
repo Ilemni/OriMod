@@ -559,9 +559,10 @@ namespace OriMod {
 
     private bool CheckGrounded() {
       float vel = player.velocity.Y * player.gravDir;
-      if (vel != 0) {
+      if (vel < 0 || vel > 0.01f || abilities.climb) {
         return false;
       }
+
       Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
       feetVect.Y += 1f / 255f * player.gravDir;
       Point pos = feetVect.ToTileCoordinates();
