@@ -95,11 +95,6 @@ ItemTooltip.AirJumpLevel2=Upgrades Air Jump to Level 2\nAllows a second jump in 
 ItemTooltip.AirJumpLevel3=Upgrades Air Jump to Level 3\nAllows a third jump in the air!
 ItemTooltip.AirJumpLevel4=Upgrades Air Jump to Level 4\nYou already know what this will do.
 
-Lore.AirJump.1=Leru's gift, to cut through the air, proved instrumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
-Lore.AirJump.2=In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving her land.
-Lore.AirJump.3=Gumo had stolen the Water Vein from Leru. Without it, she could not enter the Ginso tree, the path to saving Nibel from Decay.
-Lore.AirJump.4=Leru had understood. Despite her determination, she simply lacked the strength to face Ginso's malaise. Even Reem, certainly more capable than Leru, has fallen to it already.
-
 ---
 
 ItemName.BashLevel1=Bash {$Mods.OriMod.Common.Medal}
@@ -110,9 +105,6 @@ ItemTooltip.BashLevel1=Unlocks Bash\nAllows you to Bash on enemies, launching yo
 ItemTooltip.BashLevel2=Upgrades Bash to Level 2\nAllows you to Bash \nprojectiles, and deal damage to foes!
 ItemTooltip.BashLevel3=Upgrades Bash to Level 3\nGreatly enhances your Bashing speeds,\ndistance, and damage dealt!
 
-Lore.Bash.1=Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise.
-Lore.Bash.2=When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind.
-Lore.Bash.3=Decay was a vicious force, Reem was forced to learn when he ascended the Ginso Tree. That knowledge was left to rot in his Ancestral Tree, deep within.
 
 ---
 
@@ -124,9 +116,6 @@ ItemTooltip.BurrowLevel1=Unlocks Burrow\nAllows you to burrow through the ground
 ItemTooltip.BurrowLevel2=Upgrades Burrow to Level 2\nAllows you to burrow through tougher terrain!
 ItemTooltip.BurrowLevel3=Upgrades Burrow to Level 3\nAllows you to burrow through all terrain!
 
-Lore.Burrow.1=Many are the nameless Spirits of Niwen that have fallen to the Decay when the Mother of Light passed.
-Lore.Burrow.2=What is a name, after life? It is a way to be remembered. A name conjures to mind the personality and accomplishments of those before.
-Lore.Burrow.3=The Mother of Light, the Spirit Willow, what was her name? Was it forgotten? Had her second death preceded her first?
 
 ---
 
@@ -140,16 +129,11 @@ ItemTooltip.ChargeJumpLevel2=Upgrades Charge Jump to Level 2\nAllows you to jump
 ItemTooltip.ChargeJumpLevel3=Upgrades Charge Jump to Level 3\nAllows you to Launch yourself through the air!
 ItemTooltip.ChargeJumpLevel4=Upgrades Charge Jump to Level 4\mAllows for powerful chains of Launches in the air!
 
-Lore.ChargeJump.1=Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful Spirit, the blinding of the forest and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.
-Lore.ChargeJump.2=A union of Nir's and Tatsu's gifts, this {$Mods.OriMod.Common.Medal} represents the final ability Ori used in their quest to save Nibel.
-Lore.ChargeJump.3=Many Spirits held a blind faith to Niwen's Spirit Tree, the Mother of Light. Among the most devoted was one commonly referred to as high priestess. Her proficiency was unmatched by any other Spirit alive.
-Lore.ChargeJump.4=A Spirit bearing a Spirit Tree's Light? A ridiculous idea; a Spirit bearing so much Light would surely burst and sink roots on the spot.
 
 ---
 
 ItemName.ClimbLevel1=Climb {$Mods.OriMod.Common.Medal}
 ItemTooltip.ClimbLevel1=Unlocks Climb\nAllows you to hold on to and ascend walls!
-Lore.Climb.1=Tatsu and Atsu, brother and sister, often played in the Misty Woods, but when the Spirit Tree's Light faltered, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
 
 ---
 
@@ -161,15 +145,11 @@ ItemTooltip.DashLevel1=Unlocks Dash\nAllows you to Dash at high speeds!
 ItemTooltip.DashLevel2=Upgrades Dash to Level 2\nAllows you to Dash in the air!
 ItemTooltip.DashLevel3=Upgrades Dash to Level 3\nAllows you to quickly Dash into enemies, dealing damage!
 
-Lore.Dash.1=Eki was known as the fastest of spirits. Though that doesn't mean he was in a league of his own, many are able to keep pace.
-Lore.Dash.2=Formidable rivals to Eki were well-known in Nibel's time. Among these were Amgis, Eatij, and Anoive.
-Lore.Dash.3=In time, the spirit Sudicul would prove to be faster than even Eki.
 
 ---
 
 ItemName.GlideLevel1=Glide {$Mods.OriMod.Common.Medal}
 ItemTooltip.GlideLevel1=Unlocks Glide\nAllows you to glide through the air!
-Lore.Glide.1=This {$Mods.OriMod.Common.Medal} holds memories of a feather, one that Ori took when he tricked Kuro.
 
 ---
 
@@ -181,14 +161,36 @@ ItemTooltip.StompLevel1=Unlocks Stomp\nAllows you to slam into the ground,\ncrea
 ItemTooltip.StompLevel2=Upgrades Stomp to Level 2\nEnhances your stomping capabilities\nfor even more damage, pushing enemies far back!
 ItemTooltip.StompLevel3=Upgrades Stomp to Level 3\nFurther enhances the power of Stomp!
 
-Lore.Stomp.1=Despite being known as the strongest of Nibel's Spirits, Ilo was a gentle Spirit. Still, his strength knew no bounds. This {$Mods.OriMod.Common.Medal} was a manifestation of his power.
-Lore.Stomp.2=Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath...
-Lore.Stomp.3=Ori alone would prove that strength does not come from power alone, no matter how much of it one has.
 
 ---
 
 ItemName.WallJumpLevel1=Wall Jump {$Mods.OriMod.Common.Medal}
 ItemTooltip.WallJumpLevel1=Unlocks Wall Jump\nAllows you to jump on walls to ascend!
+
+--- Lores ---
+
+Lore.AirJump.1=Leru's gift, to cut through the air, proved instrumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
+Lore.AirJump.2=In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving her land.
+Lore.AirJump.3=Gumo had stolen the Water Vein from Leru. Without it, she could not enter the Ginso tree, the path to saving Nibel from Decay.
+Lore.AirJump.4=Leru had understood. Despite her determination, she simply lacked the strength to face Ginso's malaise. Even Reem, certainly more capable than Leru, has fallen to it already.
+Lore.Bash.1=Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise.
+Lore.Bash.2=When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind.
+Lore.Bash.3=Decay was a vicious force, Reem was forced to learn when he ascended the Ginso Tree. That knowledge was left to rot in his Ancestral Tree, deep within.
+Lore.Burrow.1=Many are the nameless Spirits of Niwen that have fallen to the Decay when the Mother of Light passed.
+Lore.Burrow.2=What is a name, after life? It is a way to be remembered. A name conjures to mind the personality and accomplishments of those before.
+Lore.Burrow.3=The Mother of Light, the Spirit Willow, what was her name? Was it forgotten? Had her second death preceded her first?
+Lore.ChargeJump.1=Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful Spirit, the blinding of the forest and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.
+Lore.ChargeJump.2=A union of Nir's and Tatsu's gifts, this {$Mods.OriMod.Common.Medal} represents the final ability Ori used in their quest to save Nibel.
+Lore.ChargeJump.3=Many Spirits held a blind faith to Niwen's Spirit Tree, the Mother of Light. Among the most devoted was one commonly referred to as high priestess. Her proficiency was unmatched by any other Spirit alive.
+Lore.ChargeJump.4=A Spirit bearing a Spirit Tree's Light? A ridiculous idea; a Spirit carrying so much Light would surely burst and sink roots on the spot.
+Lore.Climb.1=Tatsu and Atsu, brother and sister, often played in the Misty Woods, but when the Spirit Tree's Light faltered, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
+Lore.Dash.1=Eki was known as the fastest of spirits. Though that doesn't mean he was in a league of his own, many are able to keep pace.
+Lore.Dash.2=Formidable rivals to Eki were well-known in Nibel's time. Among these were Amgis, Eatij, and Anoive.
+Lore.Dash.3=In time, the spirit Sudicul would prove to be faster than even Eki.
+Lore.Glide.1=This {$Mods.OriMod.Common.Medal} holds memories of a feather, one that Ori took when he tricked Kuro.
+Lore.Stomp.1=Despite being known as the strongest of Nibel's Spirits, Ilo was a gentle Spirit. Still, his strength knew no bounds. This {$Mods.OriMod.Common.Medal} was a manifestation of his power.
+Lore.Stomp.2=Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath...
+Lore.Stomp.3=Ori alone would prove that strength does not come from power alone, no matter how much of it one has.
 Lore.WallJump.Lv1=Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
 
 ---
