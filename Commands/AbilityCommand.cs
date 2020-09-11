@@ -21,7 +21,7 @@ namespace OriMod.Commands {
       }
 
       if (args.Length < 1) {
-        Main.NewText($"Expected one or two arguments, got {args.Length}.", Color.Red);
+        Main.NewText($"This command requires arguments. Usage: {Usage}", Color.Red);
         return;
       }
 
@@ -31,32 +31,14 @@ namespace OriMod.Commands {
         return;
       }
 
-      if (args[1] == "resetall") {
+      if (args[0] == "resetall") {
         oPlayer.abilities.ResetAllAbilities();
         Main.NewText($"Reset all abilities.", Color.LightGreen);
+        return;
       }
 
-      Ability ability = null;
-      if (int.TryParse(args[0], out int id)) {
-        if (id < 0 || id > AbilityID.Count) {
-          Main.NewText($"\"{id}\" does not map to a valid AbilityID.", Color.Red);
-          return;
-        }
-        ability = oPlayer.abilities[id];
-      }
-      else {
-        var testName = args[0].ToLower();
-        foreach (var ab in oPlayer.abilities) {
-          if (ab.GetType().Name.ToLower() == testName) {
-            ability = ab;
-          }
-        }
-        if (ability is null) {
-          Main.NewText($"\"{args[0]}\" is not a valid Ability.", Color.Red);
-          return;
-        }
-      }
-
+      Ability ability = AbilityFromObject(args[0], oPlayer);
+      
       string abilityName = ability.GetType().Name;
       if (ability is ILevelable levelable) {
         if (args.Length < 2) {
@@ -92,6 +74,26 @@ namespace OriMod.Commands {
         case ChargeDash _: return "ChargeDash's level is dependent on Dash.";
         case WallChargeJump _: return "WallChargeJump's level is dependent on ChargeJump.";
         default: return string.Empty;
+      }
+    }
+
+    private static Ability AbilityFromObject(string str, OriPlayer oPlayer) {
+      if (int.TryParse(str, out int id)) {
+        if (id < 0 || id > AbilityID.Count) {
+          Main.NewText($"\"{id}\" does not map to a valid AbilityID.", Color.Red);
+          return null;
+        }
+        return oPlayer.abilities[id];
+      }
+      else {
+        var testName = str.ToLower();
+        foreach (var ab in oPlayer.abilities) {
+          if (ab.GetType().Name.ToLower() == testName) {
+            return ab;
+          }
+        }
+        Main.NewText($"\"{str}\" is not a valid Ability.", Color.Red);
+        return null;
       }
     }
   }
