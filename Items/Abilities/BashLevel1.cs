@@ -10,7 +10,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe();
-      recipe.AddIngredient(ItemID.HallowedBar, 16);
+      recipe.AddRecipeGroup("OriMod:HardmodeBars1", 16);
       recipe.AddIngredient(ItemID.SoulofLight, 30); // Bleh, Souls the best I can come up with???
       recipe.AddRecipe();
     }

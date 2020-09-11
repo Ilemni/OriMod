@@ -9,10 +9,10 @@ namespace OriMod.Items.Abilities {
     public override byte ID => AbilityID.ChargeJump;
 
     public override void AddRecipes() {
-      var recipe = GetAbilityRecipe<ChargeJumpLevel2>();
+      var recipe = GetAbilityRecipe<ChargeJumpLevel3>();
       recipe.AddIngredient(ItemID.LunarBar, 24);
-      recipe.AddIngredient(ItemID.SoulofFlight, 40);
-      recipe.AddIngredient(ItemID.SoulofLight, 25);
+      recipe.AddIngredient(ItemID.SoulofFlight, 35);
+      recipe.AddIngredient(ItemID.SoulofLight, 50);
       recipe.AddRecipe();
     }
   }

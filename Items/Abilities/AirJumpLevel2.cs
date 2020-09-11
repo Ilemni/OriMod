@@ -10,7 +10,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<AirJumpLevel1>();
-      recipe.AddRecipeGroup("OriMod:HardmodeBars1", 12);
+      recipe.AddRecipeGroup("OriMod:HardmodeBars2", 12);
       recipe.AddRecipeGroup("OriMod:JumpBalloons");
       recipe.AddRecipe();
     }

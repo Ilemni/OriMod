@@ -14,8 +14,8 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<DashLevel2>();
-      recipe.AddRecipeGroup("OriMod:LunarFragments", 15);
-      recipe.AddIngredient(ItemID.SoulofLight, 25);
+      recipe.AddIngredient(ItemID.ShroomiteBar, 16);
+      recipe.AddIngredient(ItemID.SoulofLight, 35);
       recipe.AddIngredient(ItemID.Tabi);
       recipe.AddRecipe();
     }

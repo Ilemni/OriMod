@@ -11,8 +11,8 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<DashLevel1>();
-      recipe.AddIngredient(ItemID.HallowedBar, 6);
-      recipe.AddIngredient(ItemID.SoulofLight, 25);
+      recipe.AddIngredient(ItemID.HallowedBar, 20);
+      recipe.AddIngredient(ItemID.SoulofLight, 20);
       recipe.AddRecipe();
     }
   }

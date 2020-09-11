@@ -11,7 +11,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<AirJumpLevel2>();
-      recipe.AddIngredient(ItemID.HallowedBar, 16);
+      recipe.AddIngredient(ItemID.ChlorophyteBar, 16);
       recipe.AddIngredient(ItemID.BundleofBalloons);
       recipe.AddRecipe();
     }

@@ -10,7 +10,7 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 3;
 
     public override void AddRecipes() {
-      var recipe = GetAbilityRecipe<BurrowLevel1>();
+      var recipe = GetAbilityRecipe<BurrowLevel2>();
       recipe.AddIngredient(ItemID.ChlorophyteBar, 28);
       recipe.AddRecipe();
     }

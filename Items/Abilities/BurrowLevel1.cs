@@ -1,4 +1,5 @@
 ﻿using OriMod.Abilities;
+using Terraria.ID;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -9,7 +10,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe();
-      recipe.AddRecipeGroup("OriMod:DarkBars", 26);
+      recipe.AddIngredient(ItemID.HellstoneBar, 26);
       recipe.AddRecipe();
     }
   }

@@ -12,7 +12,7 @@ namespace OriMod.Items.Abilities {
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<BashLevel1>();
       recipe.AddIngredient(ItemID.SpectreBar, 22);
-      recipe.AddIngredient(ItemID.SoulofLight, 40);
+      recipe.AddIngredient(ItemID.SoulofLight, 25);
       recipe.AddRecipe();
     }
   }

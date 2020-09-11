@@ -10,7 +10,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe();
-      recipe.AddRecipeGroup("OriMod:HardmodeBars2", 12);
+      recipe.AddIngredient(ItemID.HellstoneBar, 14);
       recipe.AddIngredient(ItemID.TigerClimbingGear);
       recipe.AddRecipe();
     }

@@ -11,7 +11,6 @@ namespace OriMod.Items.Abilities {
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe();
       recipe.AddRecipeGroup("OriMod:HardmodeBars3", 18);
-      recipe.AddIngredient(ItemID.SoulofMight, 12);
       recipe.AddRecipe();
     }
   }

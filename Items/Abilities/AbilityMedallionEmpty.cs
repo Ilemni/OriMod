@@ -5,5 +5,11 @@ namespace OriMod.Items.Abilities {
   /// Base material to craft into various <see cref="AbilityMedallionBase"/>s.
   /// </summary>
   public sealed class AbilityMedallionEmpty : ModItem {
+    public override void AddRecipes() {
+      var recipe = new ModRecipe(mod);
+      recipe.AddRecipeGroup("OriMod:IronBars", 8);
+      recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
+      recipe.SetResult(this);
+    }
   }
 }
