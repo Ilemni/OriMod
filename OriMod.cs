@@ -136,6 +136,7 @@ namespace OriMod {
         ItemID.ClimbingClaws
       }));
 
+      RecipeGroup.RegisterGroup("OriMod:IronBars", new RecipeGroup(() => "Iron/Lead Bars", new int[] { ItemID.IronBar, ItemID.LeadBar }));
       RecipeGroup.RegisterGroup("OriMod:GoldBars", new RecipeGroup(() => "Gold/Platinum Bars", new int[] { ItemID.GoldBar, ItemID.PlatinumBar }));
       RecipeGroup.RegisterGroup("OriMod:DarkBars", new RecipeGroup(() => "Demonite/Crimtane Bars", new int[] { ItemID.DemoniteBar, ItemID.CrimtaneBar }));
       RecipeGroup.RegisterGroup("OriMod:HardmodeBars1", new RecipeGroup(() => "Cobalt/Palladium Bars", new int[] { ItemID.CobaltBar, ItemID.PalladiumBar }));
