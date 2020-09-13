@@ -10,6 +10,7 @@ namespace OriMod.Items.Abilities {
       recipe.AddRecipeGroup("OriMod:IronBars", 8);
       recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
       recipe.SetResult(this);
+      recipe.AddRecipe();
     }
   }
 }
