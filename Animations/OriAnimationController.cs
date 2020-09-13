@@ -16,12 +16,6 @@ namespace OriMod.Animations {
     }
 
     /// <summary>
-    /// The <see cref="OriPlayer"/> instance this <see cref="OriAnimationController"/> instance belongs to.
-    /// </summary>
-    public OriPlayer oPlayer => _op ?? (_op = player.GetModPlayer<OriPlayer>());
-    private OriPlayer _op;
-
-    /// <summary>
     /// Animation for the player sprite.
     /// </summary>
     public Animation playerAnim { get; private set; }
@@ -40,11 +34,11 @@ namespace OriMod.Animations {
     /// Updates the player animation by one frame, and changes it depending on various conditions.
     /// </summary>
     public override void Update() {
-      var player = oPlayer.player;
+      var oPlayer = player.GetModPlayer<OriPlayer>();
       var abilities = oPlayer.abilities;
 
       if (oPlayer.Transforming) {
-        IncrementFrame("Transform", speed: oPlayer.HasTransformedOnce ? OriPlayer.RepeatedTransformRate : 1);
+        PlayTrack("Transform", speed: oPlayer.HasTransformedOnce ? OriPlayer.RepeatedTransformRate : 1);
         return;
       }
       if (!oPlayer.IsOri) {
@@ -52,73 +46,72 @@ namespace OriMod.Animations {
       }
 
       if (player.pulley || player.mount.Active) {
-        IncrementFrame("Idle");
+        PlayTrack("Idle");
         return;
       }
+
+      // TODO: consider "switch (oPlayer.abilities.GetActiveAbility())
+      // Requires ensuring only one ability can ever be active at once
       if (oPlayer.abilities.burrow) {
         float rad = (float)Math.Atan2(abilities.burrow.velocity.X, -abilities.burrow.velocity.Y);
-        rad *= player.direction;
-        if (player.gravDir < 0) {
-          rad += (float)Math.PI;
-        }
-        IncrementFrame("Burrow", rotation: rad);
+        PlayTrack("Burrow", rotation: rad);
         return;
       }
-      if (abilities.wallChargeJump.Active) {
-        IncrementFrame("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle);
+      if (abilities.wallChargeJump) {
+        PlayTrack("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle);
         return;
       }
       if (abilities.wallJump) {
-        IncrementFrame("WallJump");
+        PlayTrack("WallJump");
         return;
       }
-      if (abilities.airJump && !(abilities.dash || abilities.chargeDash)) {
-        IncrementFrame("AirJump", rotation: FrameTime * 0.6f);
+      if (abilities.airJump) {
+        PlayTrack("AirJump", rotation: FrameTime * 0.6f);
         return;
       }
       if (abilities.bash) {
-        IncrementFrame("Bash");
+        PlayTrack("Bash");
         return;
       }
       if (abilities.launch) {
-        if (!abilities.launch.Ending) {
+        if (abilities.launch.Ending) {
+          PlayTrack("ChargeJump", duration: 6, rotation: (abilities.launch.launchAngle + (float)Math.PI / 2) * player.direction, loop: LoopMode.Always, direction: Direction.PingPong);
+        }
+        else {
           var ct = abilities.launch.CurrentTime;
           var accel = ct * (ct < 5 ? 0.05f : ct < 20 ? 0.03f : 0.02f);
           // Somewhat accelerating speed of rotation
-          IncrementFrame("AirJump", rotation: SpriteRotation + accel);
-        }
-        else {
-          IncrementFrame("ChargeJump", duration: 6, rotation: (abilities.launch.launchAngle + (float)Math.PI / 2) * player.direction, loop: LoopMode.Always, direction: Direction.PingPong);
+          PlayTrack("AirJump", rotation: SpriteRotation + accel);
         }
         return;
       }
       if (abilities.stomp) {
         switch (abilities.stomp.AbilityState) {
           case Ability.State.Starting:
-            IncrementFrame("AirJump", rotation: FrameTime * 0.8f);
+            PlayTrack("AirJump", rotation: FrameTime * 0.8f);
             return;
           case Ability.State.Active:
-            IncrementFrame("ChargeJump", duration: 2, rotation: MathHelper.ToRadians(180), loop: LoopMode.Always, direction: Direction.PingPong);
+            PlayTrack("ChargeJump", duration: 2, rotation: MathHelper.ToRadians(180), loop: LoopMode.Always, direction: Direction.PingPong);
             return;
         }
       }
       if (abilities.glide) {
         switch (abilities.glide.AbilityState) {
           case Ability.State.Starting:
-            IncrementFrame("GlideStart");
+            PlayTrack("GlideStart");
             return;
           case Ability.State.Active:
-            IncrementFrame("Glide");
+            PlayTrack("Glide");
             return;
           case Ability.State.Ending:
-            IncrementFrame("GlideStart", direction: Direction.Reverse);
+            PlayTrack("GlideStart", direction: Direction.Reverse);
             return;
         }
       }
       if (abilities.climb) {
         if (abilities.climb.IsCharging) {
           if (!abilities.wallChargeJump.Charged) {
-            IncrementFrame("WallChargeJumpCharge", frameIndex: abilities.wallChargeJump.Refreshed ? null : (int?)0);
+            PlayTrack("WallChargeJumpCharge", frameIndex: abilities.wallChargeJump.Refreshed ? null : (int?)0);
             return;
           }
           // TODO: Multiplayer sync of aim position
@@ -136,65 +129,65 @@ namespace OriMod.Animations {
           else if (angle > 0.17f) {
             frame = 3;
           }
-          IncrementFrame("WallChargeJumpAim", frameIndex: frame);
+          PlayTrack("WallChargeJumpAim", frameIndex: frame);
           return;
         }
         if (Math.Abs(player.velocity.Y) < 0.1f) {
-          IncrementFrame("ClimbIdle");
+          PlayTrack("ClimbIdle");
         }
         else {
-          IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", speed: Math.Abs(player.velocity.Y) * 0.4f);
+          PlayTrack(player.velocity.Y * player.gravDir < 0 ? "Climb" : "WallSlide", speed: Math.Abs(player.velocity.Y) * 0.4f);
         }
         return;
       }
       if (oPlayer.OnWall && !oPlayer.IsGrounded) {
-        IncrementFrame("WallSlide");
+        PlayTrack("WallSlide");
         return;
       }
       if (abilities.dash || abilities.chargeDash) {
-        IncrementFrame("Dash", frameIndex: Math.Abs(player.velocity.X) < 12f ? 1 : 0);
+        PlayTrack("Dash", frameIndex: Math.Abs(player.velocity.X) < 12f ? 1 : 0);
         return;
       }
       if (abilities.lookUp) {
         switch (abilities.lookUp.AbilityState) {
           case Ability.State.Starting:
-            IncrementFrame("LookUpStart");
+            PlayTrack("LookUpStart");
             return;
           case Ability.State.Active:
-            IncrementFrame("LookUp");
+            PlayTrack("LookUp");
             return;
           case Ability.State.Ending:
-            IncrementFrame("LookUpStart", direction: Direction.Reverse);
+            PlayTrack("LookUpStart", direction: Direction.Reverse);
             return;
         }
       }
       if (abilities.crouch) {
         switch (abilities.crouch.AbilityState) {
           case Ability.State.Starting:
-            IncrementFrame("CrouchStart");
+            PlayTrack("CrouchStart");
             return;
           case Ability.State.Active:
-            IncrementFrame("Crouch");
+            PlayTrack("Crouch");
             return;
           case Ability.State.Ending:
-            IncrementFrame("CrouchStart", direction: Direction.Reverse);
+            PlayTrack("CrouchStart", direction: Direction.Reverse);
             return;
         }
       }
-
       if (abilities.chargeJump.Active) {
-        IncrementFrame("ChargeJump");
+        PlayTrack("ChargeJump");
         return;
       }
+
       if (!oPlayer.IsGrounded) {
-        IncrementFrame(player.velocity.Y * player.gravDir < 0 ? "Jump" : "Falling");
+        PlayTrack(player.velocity.Y * player.gravDir < 0 ? "Jump" : "Falling");
         return;
       }
       if (Math.Abs(player.velocity.X) > 0.2f) {
-        IncrementFrame("Running", speed: (int)Math.Abs(player.velocity.X) * 0.45f);
+        PlayTrack("Running", speed: (int)Math.Abs(player.velocity.X) * 0.45f);
         return;
       }
-      IncrementFrame(oPlayer.OnWall ? "IdleAgainst" : "Idle");
+      PlayTrack(oPlayer.OnWall ? "IdleAgainst" : "Idle");
       return;
     }
   }

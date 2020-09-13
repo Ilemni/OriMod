@@ -79,13 +79,7 @@ namespace OriMod.Items.Abilities {
     /// <para>These are standard recipes to all <see cref="AbilityMedallionBase"/> types.</para>
     /// </summary>
     /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
-    protected ModRecipe GetAbilityRecipe() {
-      var recipe = new ModRecipe(mod);
-      recipe.AddIngredient(ModContent.ItemType<AbilityMedallionEmpty>());
-      recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
-      recipe.SetResult(this);
-      return recipe;
-    }
+    protected ModRecipe GetAbilityRecipe() => GetAbilityRecipe<AbilityMedallionEmpty>();
 
     /// <summary>
     /// Gets a <see cref="ModRecipe"/> that uses the ingredient <typeparamref name="T"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
