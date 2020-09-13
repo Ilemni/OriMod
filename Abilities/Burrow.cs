@@ -323,6 +323,9 @@ namespace OriMod.Abilities {
         }
 
         if (breath < MaxDuration) {
+          if (breath < 0) {
+            breath = 0;
+          }
           breath += RecoveryRate;
         }
         if (breath > MaxDuration) {
