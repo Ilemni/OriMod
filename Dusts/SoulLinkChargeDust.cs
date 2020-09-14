@@ -8,11 +8,11 @@ namespace OriMod.Dusts {
   /// </summary>
   [System.Obsolete]
   public class SoulLinkChargeDust : ModDust {
-    protected int alphaRate = 16;
+    protected int alphaRate = 5;
     public override bool Autoload(ref string name, ref string texture) {
       texture = "OriMod/Dusts/AbilityRefreshedDust";
       //return base.Autoload(ref name, ref texture);
-      return false;
+      return true;
     }
 
     public override void OnSpawn(Dust dust) {
@@ -23,9 +23,9 @@ namespace OriMod.Dusts {
     }
 
     public override bool Update(Dust dust) {
-      dust.position += (dust.customData as Player).velocity;
+      //dust.position += (dust.customData as Player).velocity;
       dust.alpha += alphaRate;
-      if (dust.alpha > 255) {
+      if (dust.alpha > 50) {
         dust.alpha = 255;
         dust.active = false;
       }

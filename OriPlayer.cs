@@ -5,7 +5,9 @@ using Microsoft.Xna.Framework.Audio;
 using OriMod.Abilities;
 using OriMod.Animations;
 using OriMod.Buffs;
+using OriMod.Dusts;
 using OriMod.Networking;
+using OriMod.NPCs.Bosses;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.DataStructures;
@@ -495,7 +497,20 @@ namespace OriMod {
       }
     }
 
+    internal static bool __dorotate;
     public override void PostUpdate() {
+      if (debugMode) {
+        if (PlayerInput.Triggers.JustPressed.Down) {
+          __dorotate ^= true;
+        }
+        if (Main.time % 5 == 0) {
+          for (int i = 0; i < WillowStoneHead.MaxSegmentCount; i++) {
+            var pos = WillowStoneHelper.Test_Position(i);
+            Dust.NewDust(pos, 2, 2, ModContent.DustType<SoulLinkChargeDust>(), 0f, 0f, 0, new Color(255, 255, 255), 1f);
+          }
+        }
+      }
+
       if (IsOri && !Transforming) {
         HasTransformedOnce = true;
       }
