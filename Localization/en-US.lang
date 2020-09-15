@@ -6,6 +6,9 @@ Common.SpiritOrb=Spirit Orb
 Common.OriPotion=Spirit Potion
 Common.Medal=Spirit Medallion
 
+Common.LoreNibel=Words of the Fallen Land of Nibel: 
+Common.LoreNiwen=Words of the Spirits of New Niwen: 
+
 --- Sein, Spirit Orbs, Spirit Flame ---
 
 ItemName.SpiritOrb1={$Mods.OriMod.Common.SpiritOrb}
@@ -170,27 +173,27 @@ ItemTooltip.WallJumpLevel1=Unlocks Wall Jump\nAllows you to jump on walls to asc
 --- Lores ---
 
 Lore.AirJump.1=Leru's gift, to cut through the air, proved instrumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
-Lore.AirJump.2=In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving her land.
-Lore.AirJump.3=Gumo had stolen the Water Vein from Leru. Without it, she could not enter the Ginso tree, the path to saving Nibel from Decay.
-Lore.AirJump.4=Leru had understood. Despite her determination, she simply lacked the strength to face Ginso's malaise. Even Reem, certainly more capable than Leru, has fallen to it already.
-Lore.Bash.1=Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise.
-Lore.Bash.2=When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind.
-Lore.Bash.3=Decay was a vicious force, Reem was forced to learn when he ascended the Ginso Tree. That knowledge was left to rot in his Ancestral Tree, deep within.
-Lore.Burrow.1=Many are the nameless Spirits of Niwen that have fallen to the Decay when the Mother of Light passed.
-Lore.Burrow.2=What is a name, after life? It is a way to be remembered. A name conjures to mind the personality and accomplishments of those before.
-Lore.Burrow.3=The Mother of Light, the Spirit Willow, what was her name? Was it forgotten? Had her second death preceded her first?
-Lore.ChargeJump.1=Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful Spirit, the blinding of the forest and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.
+Lore.AirJump.2={$Mods.OriMod.Common.LoreNibel}In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving her land.
+Lore.AirJump.3={$Mods.OriMod.Common.LoreNibel}Gumo had stolen the Water Vein from Leru. Without it, she could not enter the Ginso tree, the path to saving Nibel from Decay.
+Lore.AirJump.4={$Mods.OriMod.Common.LoreNibel}Leru had understood. Despite her determination, she simply lacked the strength to face Ginso's malaise. Even Reem, certainly more capable than Leru, has fallen to it already.
+Lore.Bash.1={$Mods.OriMod.Common.LoreNibel}Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise.
+Lore.Bash.2={$Mods.OriMod.Common.LoreNibel}When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind.
+Lore.Bash.3={$Mods.OriMod.Common.LoreNibel}Decay was a vicious force, Reem was forced to learn when he ascended the Ginso Tree. That knowledge was left to rot in his Ancestral Tree, deep within.
+Lore.Burrow.1={$Mods.OriMod.Common.LoreNiwen}Many are the nameless Spirits of Niwen that have fallen to the Decay when the Mother of Light passed.
+Lore.Burrow.2={$Mods.OriMod.Common.LoreNiwen}What is a name, after life? It is a way to be remembered. A name conjures to mind the personality and accomplishments of those before.
+Lore.Burrow.3={$Mods.OriMod.Common.LoreNiwen}The Mother of Light, the Spirit Willow, what was her name? Was it forgotten? Had her second death preceded her first?
+Lore.ChargeJump.1={$Mods.OriMod.Common.LoreNibel}Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful Spirit, the blinding of Nibel and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.
 Lore.ChargeJump.2=A union of Nir's and Tatsu's gifts, this {$Mods.OriMod.Common.Medal} represents the final ability Ori used in their quest to save Nibel.
-Lore.ChargeJump.3=Many Spirits held a blind faith to Niwen's Spirit Tree, the Mother of Light. Among the most devoted was one commonly referred to as high priestess. Her proficiency was unmatched by any other Spirit alive.
-Lore.ChargeJump.4=A Spirit bearing a Spirit Tree's Light? A ridiculous idea; a Spirit carrying so much Light would surely burst and sink roots on the spot.
-Lore.Climb.1=Tatsu and Atsu, brother and sister, often played in the Misty Woods, but when the Spirit Tree's Light faltered, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
-Lore.Dash.1=Eki was known as the fastest of spirits. Though that doesn't mean he was in a league of his own, many are able to keep pace.
-Lore.Dash.2=Formidable rivals to Eki were well-known in Nibel's time. Among these were Amgis, Eatij, and Anoive.
-Lore.Dash.3=In time, the spirit Sudicul would prove to be faster than even Eki.
+Lore.ChargeJump.3={$Mods.OriMod.Common.LoreNiwen}A Spirit bearing a Spirit Tree's Light? A ridiculous idea; a Spirit carrying so much Light would surely burst and sink roots on the spot.
+Lore.ChargeJump.4={$Mods.OriMod.Common.LoreNiwen}Normally Spiritkind is prepared for the death of their Spirit Tree; an extinction as a result of such a death is a truly rare event. Yet perhaps the cause was due to the nature of the Spirit Tree—Willow Trees have an incredibly short lifespan, and Niwen's spirits failed to prepare in time.
+Lore.Climb.1={$Mods.OriMod.Common.LoreNibel}Tatsu and Atsu, brother and sister, often played in the Misty Woods, but when the Spirit Tree's Light faltered, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
+Lore.Dash.1={$Mods.OriMod.Common.LoreNibel}Eki was known as the fastest of spirits. Though that doesn't mean he was in a league of his own, many are able to keep pace.
+Lore.Dash.2={$Mods.OriMod.Common.LoreNibel}Formidable rivals to Eki were well-known in Nibel's time. Among these were Amgis, Eatij, and Anoive.
+Lore.Dash.3={$Mods.OriMod.Common.LoreNibel}In time, the spirit Sudicul would prove to be faster than even Eki.
 Lore.Glide.1=This {$Mods.OriMod.Common.Medal} holds memories of a feather, one that Ori took when he tricked Kuro.
 Lore.Stomp.1=Despite being known as the strongest of Nibel's Spirits, Ilo was a gentle Spirit. Still, his strength knew no bounds. This {$Mods.OriMod.Common.Medal} was a manifestation of his power.
-Lore.Stomp.2=Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath...
-Lore.Stomp.3=Ori alone would prove that strength does not come from power alone, no matter how much of it one has.
+Lore.Stomp.2={$Mods.OriMod.Common.LoreNibel}Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath...
+Lore.Stomp.3={$Mods.OriMod.Common.LoreNibel}Ori alone would prove that strength does not come from power alone, no matter how much of it one has.
 Lore.WallJump.Lv1=Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
 
 ---

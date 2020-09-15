@@ -51,8 +51,7 @@ namespace OriMod.Items.Abilities {
         if (player.whoAmI == Main.myPlayer) {
           var key = $"Mods.OriMod.Lore.{ability.GetType().Name}.{levelable.Level}";
           if (Language.Exists(key)) {
-            var txt = Language.GetText(key);
-            Main.NewText($"Spirit Lore: {txt}", Color.LightCyan);
+            Main.NewText(Language.GetText(key), Color.LightCyan);
           }
         }
         var strStart = player.whoAmI == Main.myPlayer ? "You" : $"{player.name} has";
