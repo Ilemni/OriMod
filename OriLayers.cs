@@ -31,7 +31,7 @@ namespace OriMod {
         Main.playerDrawData.Add(data);
       }
 
-      if (oPlayer.IsLocal) {
+      if (oPlayer.IsLocal && oPlayer.abilities.burrow.Unlocked) {
         oPlayer.abilities.burrow.DrawEffects();
       }
     });

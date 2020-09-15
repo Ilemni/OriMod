@@ -231,7 +231,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void DrawEffects() {
-      if (breath != MaxDuration) {
+      if (breath < MaxDuration) {
 
         // UI indication for breath
         Vector2 drawAnchor = player.BottomRight - Main.screenPosition;
@@ -263,6 +263,7 @@ namespace OriMod.Abilities {
         }
       }
     }
+
     internal override void Tick() {
       if (InUse) {
         EnterHitbox.UpdateHitbox(player.Center);
