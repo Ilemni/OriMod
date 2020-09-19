@@ -357,6 +357,7 @@ namespace OriMod {
       UnrestrictedMovement = false;
       SeinMinionActive = false;
       SeinMinionType = 0;
+      abilities.ResetAllAbilities();
     }
     #endregion
 
