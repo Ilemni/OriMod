@@ -11,7 +11,7 @@ namespace OriMod {
   /// <summary>
   /// The mod of this assembly.
   /// </summary>
-  public sealed class OriMod : Mod {
+  public sealed partial class OriMod : Mod {
     public OriMod() {
       Properties = new ModProperties() {
         Autoload = true,
@@ -194,46 +194,6 @@ namespace OriMod {
         fromWho = reader.ReadUInt16();
       }
       ModNetHandler.Instance.HandlePacket(reader, fromWho);
-    }
-
-    /// <summary>
-    /// Interact with <see cref="OriMod"/> using various inputs.
-    /// <list type="table">
-    /// <listheader>
-    /// <term>Command/Parameters</term>
-    /// <description>Description</description>
-    /// </listheader>
-    /// <item>
-    /// <term>"ResetPlayerModData", <see cref="Player"/> -or- <see cref="ModPlayer"/></term>
-    /// <description>
-    /// Resets the <see cref="OriPlayer"/> data on the given <see cref="Player"/>/<see cref="ModPlayer"/> —
-    /// Returns <see langword="true"/> if arguments are valid; otherwise, <see langword="false"/>.
-    /// </description>
-    /// </item>
-    /// </list>
-    /// </summary>
-    public override object Call(params object[] args) {
-      int len = args.Length;
-      if (len > 0 && args[0] is string cmd) {
-        switch (cmd) {
-          case "ResetPlayerModData": {
-              if (len >= 2) {
-                object obj = args[1];
-                Player player =
-                  obj is Player p ? p :
-                  obj is ModPlayer modPlayer ? modPlayer.player : null;
-                if (player is null) {
-                  Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type {typeof(Player)}, got {obj.GetType()}");
-                  return false;
-                }
-                player.GetModPlayer<OriPlayer>().ResetData();
-                return true;
-              }
-              return false;
-            }
-        }
-      }
-      return null;
     }
   }
 }
