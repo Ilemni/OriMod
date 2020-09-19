@@ -111,7 +111,7 @@ namespace OriMod.Abilities {
         player.position.Y -= 32f;
         player.velocity = player.velocity.Normalized() * Speeds[Speeds.Length - 1];
       }
-      else if ((target is null || CurrentTime > 4) && Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
+      else if (Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
         Vector2 newVel = target is null && !abilities.airJump ? new Vector2(direction, 0) : player.velocity;
         newVel = newVel.Normalized() * Speeds[Speeds.Length - 1];
