@@ -17,6 +17,13 @@ namespace OriMod {
     /// Returns <see langword="true"/> if arguments are valid; otherwise, <see langword="false"/>.
     /// </description>
     /// </item>
+    /// <item>
+    /// <term>"IsOri", <see cref="Player"/> -or- <see cref="ModPlayer"/></term>
+    /// <description>
+    /// Checks if the player is in Ori state (readonly) —
+    /// Returns <see langword="true"/> if the player is Ori or transforming into Ori; <see langword="false"/> if neither; or <see langword="null"/> if arguments are invalid.
+    /// </description>
+    /// </item>
     /// </list>
     /// </summary>
     public override object Call(params object[] args) {
@@ -35,6 +42,12 @@ namespace OriMod {
             }
             Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type {typeof(Player)}, got {args[1].GetType()}");
             return false;
+          case "IsOri":
+            if (!(oPlayer is null)) {
+              return oPlayer.IsOri || oPlayer.Transforming;
+            }
+            Log.Warn($"{this.Name}.Call() - Transforming - Expected type {typeof(Player)}, got {args[1].GetType()}");
+            return null;
         }
       }
       return null;
