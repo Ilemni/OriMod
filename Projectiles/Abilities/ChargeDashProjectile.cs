@@ -19,9 +19,10 @@ namespace OriMod.Projectiles.Abilities {
     public override void Behavior() {
       base.Behavior();
       // Size is stretched greatly based on velocity.
-      var vel = oPlayer.player.velocity;
-      projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 1.25f, 32, 96);
-      projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 1.25f, 32, 96);
+      var player = oPlayer.player;
+      var vel = player.velocity;
+      projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 1.5f, player.width * 1.5f, 96);
+      projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 1.5f, player.height * 1.5f, 96);
     }
 
     /// <summary>

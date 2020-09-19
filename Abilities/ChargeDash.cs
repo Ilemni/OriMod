@@ -80,7 +80,7 @@ namespace OriMod.Abilities {
       float tempDist = 720f * 720f;
       for (int n = 0; n < Main.maxNPCs; n++) {
         NPC npc = Main.npc[n];
-        if (!npc.active || npc.friendly || !Collision.CanHitLine(player.Center, player.width, player.height, npc.Center, player.width, player.height)) {
+        if (!npc.active || npc.friendly || !Collision.CanHitLine(player.Center, player.width, player.height, npc.Center, 16, 16)) {
           continue;
         }
 
@@ -94,7 +94,7 @@ namespace OriMod.Abilities {
         ? (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction)
         : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
       oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + rand.NextNoRepeat(3), 0.5f);
-      NewAbilityProjectile<ChargeDashProjectile>(damage: 30);
+      NewAbilityProjectile<ChargeDashProjectile>(damage: 50);
     }
 
     /// <summary>
@@ -127,13 +127,10 @@ namespace OriMod.Abilities {
 
       if (target?.active ?? false) {
         player.maxFallSpeed = speed;
-        Vector2 dir = target.position - player.position;
+        Vector2 dir = target.Center - player.Center;
         dir.Y -= 32f;
         dir.Normalize();
         player.velocity = dir * speed;
-        if (CurrentTime < Duration && (player.position - target.position).LengthSquared() < speed * speed) {
-          End(byNpcContact: true);
-        }
       }
       else {
         player.velocity.X = speed * direction * 0.8f;
