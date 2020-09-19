@@ -40,7 +40,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<AirJumpLevel2>();
-      recipe.AddIngredient(ItemID.ChlorophyteBar, 16);
+      recipe.AddIngredient(ItemID.HallowedBar, 16);
       recipe.AddIngredient(ItemID.BundleofBalloons);
       recipe.AddRecipe();
     }
@@ -55,7 +55,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<AirJumpLevel3>();
-      recipe.AddIngredient(ItemID.ShroomiteBar, 18);
+      recipe.AddIngredient(ItemID.ShroomiteBar, 8);
       recipe.AddIngredient(ItemID.BundleofBalloons);
       recipe.AddRecipe();
     }

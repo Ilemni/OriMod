@@ -24,7 +24,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       var recipe = GetAbilityRecipe<StompLevel1>();
-      recipe.AddIngredient(ItemID.ShroomiteBar, 24);
+      recipe.AddIngredient(ItemID.ShroomiteBar, 12);
       recipe.AddIngredient(ItemID.SoulofMight, 18);
       recipe.AddRecipe();
     }
