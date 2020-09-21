@@ -40,14 +40,6 @@ namespace OriMod.Abilities {
     private readonly RandomChar rand = new RandomChar();
 
     protected override void UpdateActive() {
-      if (CurrentTime == 0) {
-        if (MaxJumps != 1 && currentCount == MaxJumps) {
-          oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + rand.NextNoRepeat(5), 0.6f);
-        }
-        else {
-          oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + rand.NextNoRepeat(4), 0.5f);
-        }
-      }
       float newVel = -JumpVelocity * ((EndDuration - CurrentTime) / EndDuration);
       if (player.velocity.Y > newVel) {
         player.velocity.Y = newVel;
@@ -62,6 +54,13 @@ namespace OriMod.Abilities {
           SetState(State.Active);
           currentCount++;
           gravityDirection = (sbyte)player.gravDir;
+          
+          if (MaxJumps != 1 && currentCount == MaxJumps) {
+            oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + rand.NextNoRepeat(5), 0.6f);
+          }
+          else {
+            oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + rand.NextNoRepeat(4), 0.5f);
+          }
         }
         return;
       }
