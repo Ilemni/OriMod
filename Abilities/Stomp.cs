@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
+using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 
 namespace OriMod.Abilities {
@@ -114,11 +115,24 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (player.controlDown && CanUse) {
-        currentHoldDown++;
-        if (HoldDownDelay == 0 || currentHoldDown > HoldDownDelay) {
-          SetState(State.Starting);
+      if (Inactive) {
+        if (CanUse && IsLocal) {
+          if (PlayerInput.Triggers.JustPressed.Down) {
+            currentHoldDown = 1;
+          }
+          if (currentHoldDown >= 1 && player.controlDown) {
+            currentHoldDown++;
+            if (currentHoldDown > HoldDownDelay) {
+              SetState(State.Starting);
+              currentHoldDown = 0;
+            }
+          }
+        }
+        if (Starting) {
           currentHoldDown = 0;
+        }
+        else {
+          TickCooldown();
         }
       }
       else if (Starting) {
@@ -133,10 +147,6 @@ namespace OriMod.Abilities {
         if (oPlayer.IsGrounded) {
           EndStomp();
         }
-      }
-      else {
-        currentHoldDown = 0;
-        TickCooldown();
       }
     }
   }
