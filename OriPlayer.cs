@@ -134,6 +134,12 @@ namespace OriMod {
     public bool OnWall { get; private set; }
 
     /// <summary>
+    /// Represents whether a player is grappling onto a wall.
+    /// This will still return <see langword="false"/> if there are grapples in use that do not stick to walls.
+    /// </summary>
+    public bool IsGrappling { get; private set; }
+
+    /// <summary>
     /// When true, sets <see cref="Player.runSlowdown"/> to 0 every frame.
     /// </summary>
     public bool UnrestrictedMovement {
@@ -423,7 +429,8 @@ namespace OriMod {
     }
 
     public override void PostUpdateMiscEffects() {
-      if (player.HasBuff(BuffID.TheTongue)) {
+      IsGrappling = player.grappling[0] > -1;
+      if (player.HasBuff(BuffID.TheTongue) || IsGrappling) {
         abilities.DisableAllAbilities();
       }
     }

@@ -140,10 +140,6 @@ namespace OriMod.Animations {
         }
         return;
       }
-      if (oPlayer.OnWall && !oPlayer.IsGrounded) {
-        PlayTrack("WallSlide");
-        return;
-      }
       if (abilities.dash || abilities.chargeDash) {
         PlayTrack("Dash", frameIndex: Math.Abs(player.velocity.X) < 12f ? 1 : 0);
         return;
@@ -179,6 +175,18 @@ namespace OriMod.Animations {
         return;
       }
 
+      if (oPlayer.IsGrappling) {
+        if (Math.Abs(player.velocity.X) > 0.1f) {
+          PlayTrack("Jump", frameIndex: 1);
+          return;
+        }
+        PlayTrack(oPlayer.OnWall ? "IdleAgainst" : "Default");
+        return;
+      }
+      if (oPlayer.OnWall && !oPlayer.IsGrounded) {
+        PlayTrack("WallSlide");
+        return;
+      }
       if (!oPlayer.IsGrounded) {
         PlayTrack(player.velocity.Y * player.gravDir < 0 ? "Jump" : "Falling");
         return;
