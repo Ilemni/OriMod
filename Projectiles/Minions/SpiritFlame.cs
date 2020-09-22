@@ -75,12 +75,7 @@ namespace OriMod.Projectiles.Minions {
     private void CreateDust() {
       Dust dust = Main.dust[Dust.NewDust(projectile.position, 10, 10, dustType)];
       dust.scale = data.dustScale;
-      if (projectile.velocity == Vector2.Zero) {
-        dust.velocity.Y -= 1f;
-      }
-      else {
-        dust.velocity = projectile.velocity * 0.05f;
-      }
+      dust.velocity = projectile.velocity * 0.05f;
 
       dust.rotation = (float)(Math.Atan2(projectile.velocity.Y, projectile.velocity.X) - Math.PI / 180 * 270);
       dust.position = projectile.Center;
