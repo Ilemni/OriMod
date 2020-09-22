@@ -116,11 +116,11 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (Inactive) {
-        if (CanUse && IsLocal) {
-          if (PlayerInput.Triggers.JustPressed.Down) {
+        if (CanUse) {
+          if (input.stomp.JustPressed) {
             currentHoldDown = 1;
           }
-          if (currentHoldDown >= 1 && player.controlDown) {
+          if (currentHoldDown >= 1 && input.stomp.Current) {
             currentHoldDown++;
             if (currentHoldDown > HoldDownDelay) {
               SetState(State.Starting);

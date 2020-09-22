@@ -15,7 +15,6 @@ namespace OriMod.Networking {
     internal override void HandlePacket(BinaryReader reader, int fromWho) {
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
       BitsByte flags = reader.ReadByte();
-      BitsByte ctrl = reader.ReadByte();
       bool oriSet = flags[0];
       bool transforming = flags[1];
       bool unrestrictedMovement = flags[2];
@@ -25,9 +24,6 @@ namespace OriMod.Networking {
       byte seinMinionType = seinMinionActive ? reader.ReadByte() : (byte)0;
       Color spriteColorPrimary = reader.ReadRGB();
       Color spriteColorSecondary = reader.ReadRGBA();
-
-      bool jump = ctrl[0];
-      bool feather = ctrl[1];
 
       fromPlayer.IsOri = oriSet;
       fromPlayer.Transforming = transforming;
@@ -39,8 +35,7 @@ namespace OriMod.Networking {
       fromPlayer.SpriteColorPrimary = spriteColorPrimary;
       fromPlayer.SpriteColorSecondary = spriteColorSecondary;
 
-      fromPlayer.justPressedJumped = jump;
-      fromPlayer.featherKeyDown = feather;
+      fromPlayer.input.ReadPacket(reader);
 
       if (Main.netMode == NetmodeID.Server) {
         SendOriState(-1, fromWho);
@@ -57,19 +52,15 @@ namespace OriMod.Networking {
       ModPacket packet = GetPacket(fromWho);
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
 
-      var flags = new BitsByte();
-      var ctrl = new BitsByte();
-      flags[0] = fromPlayer.IsOri;
-      flags[1] = fromPlayer.Transforming;
-      flags[2] = fromPlayer.UnrestrictedMovement;
-      flags[3] = fromPlayer.SeinMinionActive;
-      flags[4] = fromPlayer.multiplayerPlayerLight;
-      
-      ctrl[0] = fromPlayer.justPressedJumped;
-      ctrl[1] = fromPlayer.featherKeyDown;
+      var flags = new BitsByte {
+        [0] = fromPlayer.IsOri,
+        [1] = fromPlayer.Transforming,
+        [2] = fromPlayer.UnrestrictedMovement,
+        [3] = fromPlayer.SeinMinionActive,
+        [4] = fromPlayer.multiplayerPlayerLight,
+      };
 
       packet.Write(flags);
-      packet.Write(ctrl);
       if (fromPlayer.Transforming) {
         packet.Write((ushort)fromPlayer.transformTimer);
       }
@@ -80,6 +71,8 @@ namespace OriMod.Networking {
 
       packet.WriteRGB(fromPlayer.SpriteColorPrimary);
       packet.WriteRGBA(fromPlayer.SpriteColorSecondary);
+
+      fromPlayer.input.WritePacket(packet);
 
       packet.Send(toWho, fromWho);
     }

@@ -69,12 +69,12 @@ namespace OriMod.Abilities {
         return;
       }
       if (!InUse) {
-        if (CanUse && OriMod.ClimbKey.Current) {
+        if (CanUse && input.climb.Current) {
           SetState(State.Active);
           wallDirection = (sbyte)player.direction;
         }
       }
-      else if (!CanUse || !OriMod.ClimbKey.Current) {
+      else if (!CanUse || !input.climb.Current) {
         SetState(State.Inactive);
       }
       IsCharging = Active && abilities.wallChargeJump.Unlocked && (wallDirection == 1 ? player.controlLeft : player.controlRight);

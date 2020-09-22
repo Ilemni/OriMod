@@ -297,7 +297,7 @@ namespace OriMod.Abilities {
         // Not in use
         TickCooldown();
 
-        if (CanUse && IsLocal && (OriMod.BurrowKey.JustPressed && abilities.crouch || autoBurrow)) {
+        if (CanUse && IsLocal && (input.burrow.JustPressed && abilities.crouch || autoBurrow)) {
           EnterHitbox.UpdateHitbox(player.position);
 
           // Check if player can enter Burrow
@@ -316,7 +316,7 @@ namespace OriMod.Abilities {
             SetState(State.Active);
             currentCooldown = Cooldown;
 
-            autoBurrow = OriMod.ConfigClient.AutoBurrow && OriMod.BurrowKey.Current;
+            autoBurrow = OriMod.ConfigClient.AutoBurrow && input.burrow.Current;
             // TODO: consider moving this write to an Update method
             velocity = (autoBurrow ? player.velocity.Normalized() : Vector2.UnitY) * Speed;
             player.position += velocity;

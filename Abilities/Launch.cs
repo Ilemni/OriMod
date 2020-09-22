@@ -40,25 +40,20 @@ namespace OriMod.Abilities {
     private int EndDuration => CurrentChain == 1 || CurrentChain == MaxChain ? 12 : 6;
     private float LaunchSpeed => CurrentChain == 1 ? 25 : 40;
 
-    private Vector2 startPos;
     public float launchAngle { get; private set; }
     public Vector2 launchDirection => new Vector2((float)Math.Cos(launchAngle), (float)Math.Sin(launchAngle));
     private readonly RandomChar rand = new RandomChar();
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
       if (InUse) {
-        if (Starting) {
-          startPos = r.ReadVector2();
-        }
+        CurrentChain = r.ReadUInt16();
         launchAngle = r.ReadSingle();
       }
     }
 
     protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
       if (InUse) {
-        if (Starting) {
-          packet.WriteVector2(startPos);
-        }
+        packet.Write(CurrentChain);
         packet.Write(launchAngle);
       }
     }
@@ -125,8 +120,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (CanUse && IsLocal && OriMod.BashKey.JustPressed) {
-        startPos = player.Center;
+      if (CanUse && input.bash.JustPressed) {
         if (CurrentChain == 0) {
           oPlayer.PlayNewSound("Ori/Bash/seinBashStartA", 0.5f, localOnly: true);
         }
@@ -144,13 +138,13 @@ namespace OriMod.Abilities {
           if (CurrentTime > MinLaunchDuration) {
             SetState(State.Active, preserveCurrentTime: true);
           }
-          else if (CurrentChain > 1 && !OriMod.BashKey.Current) {
+          else if (CurrentChain > 1 && !input.bash.Current) {
             SetState(State.Inactive);
           }
           return;
         }
         if (Active) {
-          if (CurrentTime > MaxLaunchDuration || IsLocal && !OriMod.BashKey.Current) {
+          if (CurrentTime > MaxLaunchDuration || !input.bash.Current) {
             SetState(State.Ending);
           }
           return;
@@ -160,8 +154,9 @@ namespace OriMod.Abilities {
             SetState(State.Inactive);
           }
           // Post-ending state depends on player input
+          // Maybe too sensitive to rely on input packet
           if (IsLocal && CurrentTime > EndDuration) {
-            if (CurrentChain < MaxChain && OriMod.BashKey.Current) {
+            if (CurrentChain < MaxChain && input.bash.Current) {
               CurrentChain++;
               SetState(State.Starting);
               oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.35f);

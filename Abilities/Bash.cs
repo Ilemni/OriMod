@@ -314,13 +314,15 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (CanUse && IsLocal && OriMod.BashKey.JustPressed) {
+      if (CanUse && input.bash.JustPressed) {
         bool didBash = Start();
         if (didBash) {
           SetState(State.Starting);
         }
         else {
-          oPlayer.PlayNewSound("Ori/Bash/bashNoTargetB", 0.35f, localOnly: true);
+          if (!abilities.launch.CanUse) {
+            oPlayer.PlayNewSound("Ori/Bash/bashNoTargetB", 0.35f, localOnly: true);
+          }
         }
         return;
       }
@@ -335,7 +337,7 @@ namespace OriMod.Abilities {
           if (CurrentTime == MinBashDuration + 4) {
             oPlayer.PlayNewSound("Ori/Bash/seinBashLoopA", 0.5f, localOnly: true);
           }
-          if (CurrentTime > MaxBashDuration || IsLocal && !OriMod.BashKey.Current || BashEntity is null || !BashEntity.active) {
+          if (CurrentTime > MaxBashDuration || !input.bash.Current || BashEntity is null || !BashEntity.active) {
             End();
             SetState(State.Inactive);
           }

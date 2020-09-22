@@ -32,10 +32,15 @@ namespace OriMod {
     internal AbilityManager abilities { get; private set; }
 
     /// <summary>
+    /// Net-synced controls of this player.
+    /// </summary>
+    internal OriInput input { get; private set; }
+
+    /// <summary>
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
     /// </summary>
     internal OriAnimationController animations => _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(player));
-    private OriAnimationController _anim;
+    
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
     /// </summary>
@@ -153,32 +158,6 @@ namespace OriMod {
     }
 
     /// <summary>
-    /// Synced input for pressing Jump.
-    /// </summary>
-    public bool justPressedJumped {
-      get => _justJumped;
-      set {
-        if (value != _justJumped) {
-          _justJumped = value;
-          netUpdate = true;
-        }
-      }
-    }
-
-    /// <summary>
-    /// Synced input for using <see cref="Glide"/>.
-    /// </summary>
-    public bool featherKeyDown {
-      get => _featherKeyDown;
-      set {
-        if (value != _featherKeyDown) {
-          _featherKeyDown = value;
-          netUpdate = true;
-        }
-      }
-    }
-
-    /// <summary>
     /// Info about if this player has a <see cref="Projectiles.Minions.Sein"/> minion summoned. Used to prevent having more than one Sein summoned per player.
     /// </summary>
     public bool SeinMinionActive {
@@ -275,6 +254,7 @@ namespace OriMod {
     #endregion
 
     #region Backing fields
+    private OriAnimationController _anim;
     private bool _isOri;
     private bool _unrestrictedMovement = false;
     private bool _seinMinionActive = false;
@@ -283,8 +263,6 @@ namespace OriMod {
     private bool _transforming = false;
     private Color _spriteColorPrimary = Color.LightCyan;
     private Color _spriteColorSecondary = Color.LightCyan;
-    private bool _justJumped;
-    private bool _featherKeyDown;
     #endregion
     #endregion
 
@@ -369,6 +347,7 @@ namespace OriMod {
 
     public override void Initialize() {
       abilities = new AbilityManager(this);
+      input = new OriInput();
 
       if (!Main.dedServ) {
         trail = new Trail(this, 26);
@@ -424,8 +403,11 @@ namespace OriMod {
     }
 
     public override void ProcessTriggers(TriggersSet triggersSet) {
-      justPressedJumped = PlayerInput.Triggers.JustPressed.Jump;
-      featherKeyDown = OriMod.FeatherKey.Current;
+      input.Update();
+      if (input.netUpdate) {
+        netUpdate = true;
+        input.netUpdate = false;
+      }
     }
 
     public override void PostUpdateMiscEffects() {
@@ -532,7 +514,7 @@ namespace OriMod {
       if (DoPlayerLight && !abilities.burrow.Active) {
         Lighting.AddLight(player.Center, LightColor.ToVector3());
       }
-      if (justPressedJumped && IsGrounded) {
+      if (input.jump.JustPressed && IsGrounded) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + randJump.NextNoRepeat(5), 0.6f);
       }
       bool oldGrounded = IsGrounded;

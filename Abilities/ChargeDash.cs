@@ -70,7 +70,7 @@ namespace OriMod.Abilities {
     protected override void TickCooldown() {
       if (!Refreshed || currentCooldown > 0) {
         currentCooldown--;
-        if (currentCooldown < 0 && !OriMod.ChargeKey.Current) {
+        if (currentCooldown < 0 && !input.charge.Current) {
           Refreshed = true;
         }
       }
@@ -142,7 +142,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (IsLocal && CanUse && OriMod.DashKey.JustPressed && OriMod.ChargeKey.Current) {
+      if (IsLocal && CanUse && input.dash.JustPressed && input.charge.Current) {
         if (player.CheckMana(ManaCost, true, true)) {
           SetState(State.Active);
           Start();

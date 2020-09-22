@@ -77,7 +77,7 @@ namespace OriMod.Abilities {
         SetState(State.Inactive);
         return;
       }
-      if (CanUse && OriMod.DashKey.JustPressed) {
+      if (CanUse && input.dash.JustPressed) {
         SetState(State.Active);
         StartDash();
         return;

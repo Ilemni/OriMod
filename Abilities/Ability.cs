@@ -34,6 +34,11 @@ namespace OriMod.Abilities {
     public AbilityManager abilities => oPlayer.abilities;
 
     /// <summary>
+    /// The current, net-synced inputs of this <see cref="OriPlayer"/>.
+    /// </summary>
+    public OriInput input => oPlayer.input;
+
+    /// <summary>
     /// <see langword="true"/> if this ability belongs to the local <see cref="OriPlayer"/> instance.
     /// </summary>
     public bool IsLocal => oPlayer.IsLocal;

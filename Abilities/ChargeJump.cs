@@ -20,7 +20,7 @@ namespace OriMod.Abilities {
     protected override int Cooldown => 120;
     protected override Color RefreshColor => Color.Blue;
 
-    internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && IsLocal && OriMod.ChargeKey.Current;
+    internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && IsLocal && input.charge.Current;
     private bool Charged => currentCharge >= MaxCharge;
 
     /// <summary>
@@ -93,7 +93,7 @@ namespace OriMod.Abilities {
           oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpChargeB", 0.6f, .2f);
         }
       }
-      if (CanUse && oPlayer.justPressedJumped) {
+      if (CanUse && input.jump.JustPressed) {
         StartChargeJump();
         SetState(State.Active);
       }

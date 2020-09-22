@@ -63,7 +63,7 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (!InUse && CanUse && !oPlayer.OnWall && oPlayer.featherKeyDown) {
+      if (!InUse && CanUse && !oPlayer.OnWall && input.glide.Current) {
         SetState(State.Starting);
         return;
       }
@@ -82,7 +82,7 @@ namespace OriMod.Abilities {
             SetState(State.Inactive);
           }
         }
-        else if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded || !oPlayer.featherKeyDown) {
+        else if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded || !input.glide.Current) {
           SetState(State.Ending);
         }
       }
