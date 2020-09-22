@@ -422,7 +422,7 @@ namespace OriMod.Projectiles.Minions {
       else {
         spiritFlame.ai[0] = 0;
         spiritFlame.ai[1] = npc.whoAmI;
-        spiritFlame.timeLeft = 70;
+        spiritFlame.timeLeft = 100;
       }
     }
 

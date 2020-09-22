@@ -56,7 +56,6 @@ namespace OriMod.Projectiles.Minions {
       projectile.minion = true;
       projectile.ignoreWater = true;
       projectile.tileCollide = false;
-      projectile.timeLeft = 70;
       dustType = ModContent.DustType<Dusts.SpiritFlameDustTrail>();
 
       data = SeinData.All[SpiritFlameType - 1];
@@ -79,7 +78,6 @@ namespace OriMod.Projectiles.Minions {
 
       dust.rotation = (float)(Math.Atan2(projectile.velocity.Y, projectile.velocity.X) - Math.PI / 180 * 270);
       dust.position = projectile.Center;
-      dust.noGravity = true;
     }
 
     /// <summary>
