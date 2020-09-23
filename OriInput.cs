@@ -17,6 +17,7 @@ namespace OriMod {
     public readonly Input stomp = new Input(() => PlayerInput.Triggers.Current.Down);
     public readonly Input charge = new Input(() => OriMod.ChargeKey.Current);
     public readonly Input burrow = new Input(() => OriMod.BurrowKey.Current);
+    public readonly Input leftClick = new Input(() => PlayerInput.Triggers.Current.MouseLeft);
 
     public bool netUpdate;
 
@@ -29,6 +30,7 @@ namespace OriMod {
       yield return stomp;
       yield return charge;
       yield return burrow;
+      yield return leftClick;
     }
 
     public void Update() {
