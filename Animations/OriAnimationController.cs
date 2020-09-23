@@ -53,7 +53,7 @@ namespace OriMod.Animations {
       // TODO: consider "switch (oPlayer.abilities.GetActiveAbility())
       // Requires ensuring only one ability can ever be active at once
       if (oPlayer.abilities.burrow) {
-        float rad = (float)Math.Atan2(abilities.burrow.velocity.X, -abilities.burrow.velocity.Y);
+        float rad = (float)Math.Atan2(abilities.burrow.velocity.X * player.direction, -abilities.burrow.velocity.Y);
         PlayTrack("Burrow", rotation: rad);
         return;
       }
