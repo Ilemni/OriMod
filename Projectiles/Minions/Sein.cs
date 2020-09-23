@@ -339,7 +339,7 @@ namespace OriMod.Projectiles.Minions {
         Cooldown++;
         if (Cooldown > CooldownLong) {
           Cooldown = 0;
-          currentShotsFired = 1;
+          currentShotsFired = 0;
         }
       }
     }
@@ -350,7 +350,7 @@ namespace OriMod.Projectiles.Minions {
     /// <param name="hasTarget"></param>
     private void Attack(bool hasTarget) {
       if (Cooldown > CooldownShort) {
-        currentShotsFired = 1;
+        currentShotsFired = 0;
       }
       else {
         currentShotsFired++;
