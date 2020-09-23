@@ -61,7 +61,7 @@ namespace OriMod {
     public DrawData GetDrawData() {
       var pos = position - Main.screenPosition;
       var spriteSize = PlayerAnim.Instance.spriteSize;
-      var rect = new Rectangle(tile.X * spriteSize.X, tile.Y & spriteSize.Y, spriteSize.X, spriteSize.Y);
+      var rect = new Rectangle(tile.X * spriteSize.X, tile.Y * spriteSize.Y, spriteSize.X, spriteSize.Y);
       var alpha = startAlpha * (time / 26f) - 0.1f * (26 - time);
       var color = oPlayer.SpriteColorPrimary * alpha;
       var origin = new Vector2(PlayerAnim.Instance.spriteSize.X / 2, PlayerAnim.Instance.spriteSize.Y / 2 + 6);
