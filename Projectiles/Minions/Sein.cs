@@ -450,8 +450,9 @@ namespace OriMod.Projectiles.Minions {
         return;
       }
 
+      var oPlayer = player.GetModPlayer<OriPlayer>();
       bool hasTarget = UpdateTargets();
-      bool attemptFire = AutoFire ? hasTarget : player.controlUseItem && !Main.LocalPlayer.mouseInterface;
+      bool attemptFire = AutoFire ? hasTarget : oPlayer.input.leftClick.JustPressed && !player.mouseInterface;
 
       if (attemptFire && (Cooldown == 0 || Cooldown > CooldownMin && currentShotsFired < data.bursts)) {
         Attack(hasTarget);
