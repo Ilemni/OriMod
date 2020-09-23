@@ -358,6 +358,14 @@ namespace OriMod {
           playerDustTimer--;
         }
       }
+      if (Transforming) {
+        immuneTimer = 2;
+      }
+      if (immuneTimer > 1) {
+        immuneTimer--;
+        player.immune = true;
+        player.immuneNoBlink = true;
+      }
     }
 
     /*public override void UpdateDead() {
@@ -471,12 +479,6 @@ namespace OriMod {
         }
         player.runAcceleration = 0;
         player.maxRunSpeed = 0;
-        player.immune = true;
-      }
-
-      if (immuneTimer > 0) {
-        immuneTimer--;
-        player.immune = true;
       }
     }
 

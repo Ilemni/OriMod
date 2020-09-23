@@ -17,19 +17,20 @@ namespace OriMod {
     /// Draws the Ori sprite.
     /// </summary>
     internal readonly PlayerLayer PlayerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
-      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
+      var player = drawInfo.drawPlayer;
+      var oPlayer = player.GetModPlayer<OriPlayer>();
       bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
       DrawData data = oPlayer.animations.playerAnim.GetDrawData(drawInfo);
-      data.color = oPlayer.player.immune
-          ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, oPlayer.player.immuneAlpha / 255f)
+      data.color = player.immune && oPlayer.immuneTimer == 0
+          ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, player.immuneAlpha / 255f)
           : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
 
       Main.playerDrawData.Add(data);
 
       if (oPlayer.IsOri) {
-        data.color = oPlayer.player.immune
-            ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, oPlayer.player.immuneAlpha / 255f)
+        data.color = player.immune && oPlayer.immuneTimer == 0
+            ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, player.immuneAlpha / 255f)
             : oPlayer.SpriteColorSecondary;
 
         data.texture = OriTextures.Instance.PlayerSecondary;
