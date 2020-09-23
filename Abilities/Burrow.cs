@@ -320,7 +320,7 @@ namespace OriMod.Abilities {
 
             autoBurrow = OriMod.ConfigClient.AutoBurrow && input.burrow.Current;
             // TODO: consider moving this write to an Update method
-            velocity = (autoBurrow ? player.velocity.Normalized() : Vector2.UnitY) * Speed;
+            velocity = (autoBurrow ? player.velocity.Normalized() : Vector2.UnitY * player.gravDir) * Speed;
             player.position += velocity;
           }
         }
