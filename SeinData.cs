@@ -60,11 +60,11 @@ namespace OriMod {
         value = 3000,
         color = new Color(108, 92, 172),
 
-        damage = 15,
+        damage = 24,
         targets = 1,
         bursts = 3,
-        projectileSpeedStart = 7f,
-        homingIncreaseRate = 0.045f,
+        projectileSpeedStart = 9f,
+        homingIncreaseRate = 0.05f,
         dustScale = 1.3f,
         lightStrength = 1.6f,
       });
@@ -77,13 +77,13 @@ namespace OriMod {
         value = 10000,
         color = new Color(240, 0, 0, 194),
 
-        damage = 21,
+        damage = 29,
         targets = 2,
         maxShotsAtOnce = 2,
         randDegrees = 100,
-        projectileSpeedStart = 10.5f,
-        projectileSpeedIncreaseRate = 0.65f,
-        projectileSpeedIncreaseDelay = 19,
+        projectileSpeedStart = 12.5f,
+        projectileSpeedIncreaseRate = 0.7f,
+        projectileSpeedIncreaseDelay = 10,
         targetMaxDist = 370f,
         dustScale = 1.55f,
         lightStrength = 1.275f,
@@ -97,12 +97,12 @@ namespace OriMod {
         value = 25000,
         color = new Color(185, 248, 248),
 
-        damage = 27,
+        damage = 33,
         shotsToPrimaryTarget = 2,
         maxShotsAtOnce = 3,
         randDegrees = 60,
-        projectileSpeedStart = 12.5f,
-        homingIncreaseRate = 0.05f,
+        projectileSpeedStart = 13.5f,
+        homingIncreaseRate = 0.06f,
         homingIncreaseDelay = 20,
         dustScale = 1.8f,
         lightStrength = 1.2f,
@@ -116,7 +116,7 @@ namespace OriMod {
         value = 50000,
         color = new Color(255, 228, 160),
 
-        damage = 33,
+        damage = 37,
         targets = 3,
         maxShotsAtOnce = 4,
         homingIncreaseDelay = 17,
@@ -133,17 +133,17 @@ namespace OriMod {
         value = 100000,
         color = new Color(0, 180, 174, 210),
 
-        damage = 39,
+        damage = 42,
         shotsToPrimaryTarget = 3,
         maxShotsAtOnce = 5,
-        cooldownMin = 10f,
-        cooldownShort = 34f,
+        cooldownMin = 12f,
+        cooldownShort = 20f,
         cooldownLong = 52f,
         targetThroughWallDist = 224f,
-        homingIncreaseRate = 0.0625f,
-        projectileSpeedStart = 14.5f,
-        projectileSpeedIncreaseRate = 0.825f,
-        projectileSpeedIncreaseDelay = 17,
+        homingIncreaseRate = 0.07f,
+        projectileSpeedStart = 15f,
+        projectileSpeedIncreaseRate = 0.85f,
+        projectileSpeedIncreaseDelay = 14,
         randDegrees = 70,
         dustScale = 2.6f,
         lightStrength = 2.25f,
@@ -187,8 +187,8 @@ namespace OriMod {
         homingStrengthStart = 0.05f,
         homingIncreaseDelay = 15,
         projectileSpeedStart = 20f,
-        projectileSpeedIncreaseRate = 1f,
-        projectileSpeedIncreaseDelay = 35,
+        projectileSpeedIncreaseRate = 1.25f,
+        projectileSpeedIncreaseDelay = 28,
         randDegrees = 180,
         targetMaxDist = 650f,
         targetThroughWallDist = 370f,
@@ -208,7 +208,7 @@ namespace OriMod {
     /// <summary>
     /// Damage of Spirit Flame.
     /// </summary>
-    public int damage = 12;
+    public int damage = 18;
 
     /// <summary>
     /// Number of NPCs that can be targeted at once.
@@ -238,17 +238,17 @@ namespace OriMod {
     /// <summary>
     /// Delay between each shot in <see cref="bursts"/>.
     /// </summary>
-    public float cooldownMin = 12f;
+    public float cooldownMin = 10f;
 
     /// <summary>
     /// Shortest time to wait during <see cref="bursts"/> to reset burst count.
     /// </summary>
-    public float cooldownShort = 24f;
+    public float cooldownShort = 15f;
 
     /// <summary>
     /// Delay between each series of shots, incurred when shots reaches <see cref="bursts"/>.
     /// </summary>
-    public float cooldownLong = 40f;
+    public float cooldownLong = 30f;
     #endregion
 
     /// <summary>
@@ -276,22 +276,22 @@ namespace OriMod {
     /// <summary>
     /// Starting homing strength of Spirit Flame.
     /// </summary>
-    internal float homingStrengthStart = 0.07f;
+    internal float homingStrengthStart = 0.08f;
 
     /// <summary>
     /// Rate to increase homing strength every frame after <see cref="homingIncreaseDelay"/>.
     /// </summary>
-    internal float homingIncreaseRate = 0.04f;
+    internal float homingIncreaseRate = 0.05f;
 
     /// <summary>
     /// Ticks to wait before increasing homing strength by <see cref="homingIncreaseRate"/>.
     /// </summary>
-    internal int homingIncreaseDelay = 16;
+    internal int homingIncreaseDelay = 12;
 
     /// <summary>
     /// Speed of Spirit Flame when it is fired.
     /// </summary>
-    internal float projectileSpeedStart = 5f;
+    internal float projectileSpeedStart = 7.5f;
 
     /// <summary>
     /// Acceleration of Spirit Flame after waiting for <see cref="projectileSpeedIncreaseDelay"/>.
@@ -301,7 +301,7 @@ namespace OriMod {
     /// <summary>
     /// Time to wait before increasing Spirit Flame speed by <see cref="projectileSpeedIncreaseRate"/>.
     /// </summary>
-    internal int projectileSpeedIncreaseDelay = 10;
+    internal int projectileSpeedIncreaseDelay = 8;
 
     internal int seinWidth = 10;
     internal int seinHeight = 11;
