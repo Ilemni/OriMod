@@ -81,6 +81,9 @@ namespace OriMod {
       if (lastTrailResetTime < Main.time - segments.Length) {
         lastTrailResetTime = Main.time - segments.Length;
       }
+      else if (lastTrailResetTime > Main.time) {
+        lastTrailResetTime = Main.time;
+      }
       while (lastTrailResetTime < Main.time) {
         lastTrailResetTime++;
         segments[NextIndex()].Reset();

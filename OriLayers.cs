@@ -42,7 +42,7 @@ namespace OriMod {
     internal readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
       Player player = drawInfo.drawPlayer;
       Trail trail = player.GetModPlayer<OriPlayer>().trail;
-      if (trail.lastTrailDrawTime >= Main.time) {
+      if (trail.lastTrailDrawTime == Main.time) {
         return;
       }
       trail.lastTrailDrawTime = Main.time;
