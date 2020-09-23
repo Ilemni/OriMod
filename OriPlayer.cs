@@ -426,7 +426,7 @@ namespace OriMod {
         player.runSlowdown = UnrestrictedMovement ? 0 : 1;
         #endregion
 
-        if (OriMod.ConfigClient.SmoothCamera) {
+        if (IsLocal && OriMod.ConfigClient.SmoothCamera) {
           // Smooth camera effect reduced while bosses are alive
           Main.SetCameraLerp(OriUtils.AnyBossAlive() ? 0.15f : 0.05f, 1);
         }
