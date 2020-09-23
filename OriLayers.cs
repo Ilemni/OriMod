@@ -21,12 +21,18 @@ namespace OriMod {
       bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
       DrawData data = oPlayer.animations.playerAnim.GetDrawData(drawInfo);
-      data.color = oPlayer.flashing ? Color.Red : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
+      data.color = oPlayer.player.immune
+          ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, oPlayer.player.immuneAlpha / 255f)
+          : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
+
       Main.playerDrawData.Add(data);
 
       if (oPlayer.IsOri) {
         data = oPlayer.animations.playerAnim.GetDrawData(drawInfo);
-        data.color = oPlayer.flashing ? Color.Red : oPlayer.SpriteColorSecondary;
+        data.color = oPlayer.player.immune
+            ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, oPlayer.player.immuneAlpha / 255f)
+            : oPlayer.SpriteColorSecondary;
+
         data.texture = OriTextures.Instance.PlayerSecondary;
         Main.playerDrawData.Add(data);
       }

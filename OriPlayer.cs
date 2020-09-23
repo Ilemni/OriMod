@@ -246,11 +246,6 @@ namespace OriMod {
     /// </summary>
     internal bool DoPlayerLight => (IsLocal || OriMod.ConfigClient.GlobalPlayerLight) ? OriMod.ConfigClient.PlayerLight : multiplayerPlayerLight;
     public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
-
-    /// <summary>
-    /// For making the player sprite appear red during hurt animations.
-    /// </summary>
-    internal bool flashing = false;
     #endregion
 
     #region Backing fields
@@ -582,7 +577,6 @@ namespace OriMod {
       if (player.velocity.LengthSquared() > 0.2f) {
         CreatePlayerDust();
       }
-      flashing = !player.immuneNoBlink && player.immuneTime % 12 > 6;
     }
 
     public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) {
