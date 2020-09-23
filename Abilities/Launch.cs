@@ -61,7 +61,9 @@ namespace OriMod.Abilities {
 
     protected override void UpdateUsing() {
       if (!Ending) {
-        launchAngle = player.AngleTo(Main.MouseWorld);
+        if (IsLocal) {
+          launchAngle = player.AngleTo(Main.MouseWorld);
+        }
         player.velocity *= 0.86f;
         player.gravity = 0;
         player.runSlowdown = 0;
