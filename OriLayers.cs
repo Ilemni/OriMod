@@ -28,7 +28,6 @@ namespace OriMod {
       Main.playerDrawData.Add(data);
 
       if (oPlayer.IsOri) {
-        data = oPlayer.animations.playerAnim.GetDrawData(drawInfo);
         data.color = oPlayer.player.immune
             ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, oPlayer.player.immuneAlpha / 255f)
             : oPlayer.SpriteColorSecondary;

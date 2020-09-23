@@ -113,24 +113,24 @@ namespace OriMod.Abilities {
         case 1: // Bottom
           if (!didY) {
             didY = true;
-            velocity.Y = -velocity.Y;
+            velocity.Y *= -1;
           }
           break;
         case 2: // Left
         case 3: // Right
           if (!didX) {
             didX = true;
-            velocity.X = -velocity.X;
+            velocity.X *= -1;
           }
           break;
         default: // Corners
           if (!didX) {
             didX = true;
-            velocity.X = -velocity.X;
+            velocity.X *= -1;
           }
           if (!didY) {
             didY = true;
-            velocity.Y = -velocity.Y;
+            velocity.Y *= -1;
           }
           break;
       }
