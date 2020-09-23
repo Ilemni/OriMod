@@ -21,6 +21,7 @@ namespace OriMod {
     private PointByte tile;
     private byte time;
     private float startAlpha = 1;
+    private float rotation;
     private SpriteEffects effect;
 
     /// <summary>
@@ -28,8 +29,11 @@ namespace OriMod {
     /// </summary>
     public void Reset() {
       var player = oPlayer.player;
+      var anim = oPlayer.animations;
+
       position = player.Center;
-      tile = oPlayer.animations.playerAnim.CurrentFrame.tile;
+      tile = anim.playerAnim.CurrentFrame.tile;
+      rotation = anim.SpriteRotation;
 
       startAlpha = player.velocity.LengthSquared() * 0.0008f; // 0.002f
       if (startAlpha > 0.16f) {
@@ -64,9 +68,11 @@ namespace OriMod {
       var rect = new Rectangle(tile.X * spriteSize.X, tile.Y * spriteSize.Y, spriteSize.X, spriteSize.Y);
       var alpha = startAlpha * (time / 26f) - 0.1f * (26 - time);
       var color = oPlayer.SpriteColorPrimary * alpha;
-      var origin = new Vector2(PlayerAnim.Instance.spriteSize.X / 2, PlayerAnim.Instance.spriteSize.Y / 2 + 6);
+      var origin = new Vector2(rect.Width / 2, rect.Height / 2 + 5 * oPlayer.player.gravDir);
 
-      return new DrawData(OriTextures.Instance.Trail, pos, rect, color, 0, origin, 1, effect, 0);
+      return new DrawData(OriTextures.Instance.Trail, pos, rect, color, rotation, origin, 1, effect, 0);
     }
+
+    public override string ToString() => $"Tile:{tile} rotation:{rotation} effect:{effect}";
   }
 }
