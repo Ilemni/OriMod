@@ -65,13 +65,14 @@ namespace OriMod {
         bursts = 3,
         projectileSpeedStart = 9f,
         homingIncreaseRate = 0.05f,
-        dustScale = 1.3f,
+        dustScale = 1.8f,
         lightStrength = 1.6f,
       });
 
       // Tier 3 (Hellstone)
       // 2 targets
       // Max damage per burst: 42
+      // For some sort of "rage" effect to pair with red theme, lower CD
       AddNewSein(new SeinData {
         rarity = ItemRarityID.Orange,
         value = 10000,
@@ -81,11 +82,14 @@ namespace OriMod {
         targets = 2,
         maxShotsAtOnce = 2,
         randDegrees = 100,
+        cooldownMin = 5,
+        cooldownShort = 16,
+        cooldownLong = 35,
         projectileSpeedStart = 12.5f,
         projectileSpeedIncreaseRate = 0.7f,
         projectileSpeedIncreaseDelay = 10,
         targetMaxDist = 370f,
-        dustScale = 1.55f,
+        dustScale = 2f,
         lightStrength = 1.275f,
       });
 
@@ -101,10 +105,11 @@ namespace OriMod {
         shotsToPrimaryTarget = 2,
         maxShotsAtOnce = 3,
         randDegrees = 60,
+        cooldownMin = 11,
         projectileSpeedStart = 13.5f,
         homingIncreaseRate = 0.06f,
         homingIncreaseDelay = 20,
-        dustScale = 1.8f,
+        dustScale = 2.2f,
         lightStrength = 1.2f,
       });
 
@@ -121,7 +126,7 @@ namespace OriMod {
         maxShotsAtOnce = 4,
         homingIncreaseDelay = 17,
         targetMaxDist = 440f,
-        dustScale = 2.2f,
+        dustScale = 2.4f,
         lightStrength = 1.4f,
       });
 
@@ -145,7 +150,7 @@ namespace OriMod {
         projectileSpeedIncreaseRate = 0.85f,
         projectileSpeedIncreaseDelay = 14,
         randDegrees = 70,
-        dustScale = 2.6f,
+        dustScale = 2.65f,
         lightStrength = 2.25f,
       });
 
@@ -311,7 +316,7 @@ namespace OriMod {
     /// <summary>
     /// The size of the dust trail emitted from Spirit Flame.
     /// </summary>
-    public float dustScale = 0.8f;
+    public float dustScale = 1.65f;
 
     /// <summary>
     /// Rarity of the Spirit Orb.
