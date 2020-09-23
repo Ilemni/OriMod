@@ -305,10 +305,16 @@ namespace OriMod.Abilities {
     /// <returns>A new <see cref="Projectile"/> with a <see cref="ModProjectile"/> of type <typeparamref name="T"/>.</returns>
     protected Projectile NewAbilityProjectile<T>(Vector2 offset = default, Vector2 velocity = default, int damage = 0) where T : AbilityProjectile => Projectile.NewProjectileDirect(player.Center + offset, velocity, ModContent.ProjectileType<T>(), damage, 0, player.whoAmI, Level);
 
+    /// <summary>
+    /// String representation of the ability. ID, name, level/max level, current time, and cooldown if applicible.
+    /// </summary>
+    /// <returns>String with ID, name, level and max level, current time, and cooldown if applicible.</returns>
     public override string ToString() {
-      return $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} " +
-        $"Level:{Level}{(this is ILevelable levelable ? $"/{levelable.MaxLevel}" : "")}" +
-        (Cooldown != 0 ? " Cooldown:{currentCooldown}/{Cooldown}" : "");
+      return $"Ability ID:{Id} Name:{GetType().Name} " +
+        $"(Level {Level}{(this is ILevelable levelable ? $"/{levelable.MaxLevel}" : string.Empty)}) " +
+        $"Player:{player.whoAmI} State:{AbilityState} " +
+        $"Time:{CurrentTime} " +
+        (Cooldown != 0 ? $" Cooldown:{currentCooldown}/{Cooldown}" : string.Empty);
     }
 
     /// <summary>
