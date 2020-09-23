@@ -413,6 +413,8 @@ namespace OriMod.Projectiles.Minions {
 
 
       Projectile spiritFlame = Projectile.NewProjectileDirect(projectile.Center, shootVel, spiritFlameType, dmg, projectile.knockBack, projectile.owner, 0, 0);
+      spiritFlame.netUpdate = true;
+      projectile.netUpdate = true;
       if (npc is null) {
         var pos = Utils.RotatedBy(new Vector2(projectile.position.X, projectile.position.Y + Main.rand.Next(8, 48)), Main.rand.NextFloat((float)Math.PI * 2));
         spiritFlame.ai[0] = pos.X != 0 ? pos.X : float.Epsilon;
