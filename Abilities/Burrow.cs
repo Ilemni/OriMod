@@ -156,6 +156,9 @@ namespace OriMod.Abilities {
         var newVel = Vector2.Zero;
         if (OriMod.ConfigClient.BurrowToMouse) {
           newVel = player.AngleTo(Main.MouseWorld).ToRotationVector2();
+          if (player.confused) {
+            newVel *= -1;
+          }
         }
         else {
           if (player.controlLeft) {
