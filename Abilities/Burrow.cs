@@ -272,7 +272,6 @@ namespace OriMod.Abilities {
         EnterHitbox.UpdateHitbox(player.Center);
         OuterHitbox.UpdateHitbox(player.Center);
         InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * 16);
-        abilities.glide.SetState(State.Inactive);
 
         if (Active) {
           bool canBurrow = false;
