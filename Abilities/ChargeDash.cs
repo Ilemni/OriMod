@@ -13,7 +13,8 @@ namespace OriMod.Abilities {
     static ChargeDash() => OriMod.OnUnload += Unload;
     internal ChargeDash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.ChargeDash;
-    public override byte Level => (byte)(abilities.dash.Level >= 2 ? 1 : 0);
+    public override byte Level => (byte)(levelableDependency.Level >= 2 ? 1 : 0);
+    public override ILevelable levelableDependency => abilities.dash;
 
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !abilities.stomp && !abilities.bash && !abilities.launch && !player.mount.Active;
     protected override int Cooldown => Level >= 3 ? 0 : 90;

@@ -61,6 +61,12 @@ namespace OriMod.Abilities {
     public abstract int Id { get; }
 
     /// <summary>
+    /// The ability whose level is responsible for this abilities's level. By default, this ability.
+    /// <para>This must be overwridden if this ability is not <see cref="ILevelable"/> (ex. <see cref="Launch"/> uses <see cref="ChargeJump"/>).</para>
+    /// </summary>
+    public virtual ILevelable levelableDependency => this as ILevelable;
+
+    /// <summary>
     /// Condition required for the player to activate this ability.
     /// </summary>
     internal virtual bool CanUse => Unlocked && Refreshed;
@@ -204,9 +210,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreReadPacket(BinaryReader r) {
       AbilityState = (State)r.ReadByte();
-      if (this is ILevelable levelable) {
-        levelable.Level = r.ReadByte();
-      }
+      levelableDependency.Level = r.ReadByte();
       CurrentTime = r.ReadInt32();
       ReadPacket(r);
     }
@@ -216,9 +220,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreWritePacket(ModPacket packet) {
       packet.Write((byte)AbilityState);
-      if (this is ILevelable levelable) {
-        packet.Write(levelable.Level);
-      }
+      packet.Write(levelableDependency.Level);
       packet.Write(CurrentTime);
       WritePacket(packet);
     }
@@ -321,7 +323,7 @@ namespace OriMod.Abilities {
     /// Whether or not the <see cref="Ability"/> is in use.
     /// </summary>
     /// <seealso cref="InUse"/>
-    public static implicit operator bool (Ability ability) => !(ability is null) && ability.InUse;
+    public static implicit operator bool(Ability ability) => !(ability is null) && ability.InUse;
 
     /// <summary>
     /// States that the <see cref="Ability"/> can be in. Determines update logic.

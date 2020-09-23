@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
@@ -18,7 +18,8 @@ namespace OriMod.Abilities {
   public sealed class Launch : Ability {
     internal Launch(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.Launch;
-    public override byte Level => (byte)Math.Max(0, abilities.chargeJump.Level - 2);
+    public override byte Level => (byte)Math.Max(0, levelableDependency.Level - 2);
+    public override ILevelable levelableDependency => abilities.chargeJump;
 
     /// <summary>
     /// Bash restrictions, plus in air and bash failed

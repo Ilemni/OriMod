@@ -14,7 +14,8 @@ namespace OriMod.Abilities {
     static WallChargeJump() => OriMod.OnUnload += Unload;
     internal WallChargeJump(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityID.WallChargeJump;
-    public override byte Level => (byte)(abilities.climb.Unlocked && abilities.chargeJump.Level >= 2 ? 1 : 0);
+    public override byte Level => (byte)(abilities.climb.Unlocked && levelableDependency.Level >= 2 ? 1 : 0);
+    public override ILevelable levelableDependency => abilities.chargeJump;
 
     internal override bool CanUse => base.CanUse && Charged && CanCharge;
 
