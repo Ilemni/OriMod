@@ -15,7 +15,6 @@ If you enjoy this mod, we strongly urge you purchase Ori and the Blind Forest, a
 - Proper multiplayer support.
 - Added Spirit Medallions.
     - These medallions will either unlock or upgrade various abilities, depending on the ones you craft.
-    - [ BETA NOTE: this is not yet implemented ]
 - Added time limit to Burrow.
     - Behaves like underwater breath.
 - Added config options for Burrow.
