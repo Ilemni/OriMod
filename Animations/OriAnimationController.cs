@@ -75,7 +75,7 @@ namespace OriMod.Animations {
         return;
       }
       if (abilities.launch) {
-        if (abilities.launch.Ending) {
+        if (abilities.launch.Active) {
           PlayTrack("ChargeJump", duration: 6, rotation: abilities.launch.launchAngle + (float)Math.PI / 2 * player.gravDir, loop: LoopMode.Always, direction: Direction.PingPong, effects:SpriteEffects.None);
         }
         else {

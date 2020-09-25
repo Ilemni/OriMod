@@ -15,7 +15,7 @@ namespace OriMod.Projectiles.Abilities {
     }
 
     public override void CheckAbilityActive() {
-      if (ability.Ending) {
+      if (ability.Active) {
         projectile.timeLeft = 10;
       }
     }

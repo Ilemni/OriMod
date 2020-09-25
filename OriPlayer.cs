@@ -672,8 +672,10 @@ namespace OriMod {
         if (animations.playerAnim.Valid && !abilities.burrow && !player.mount.Active) {
           layers.Insert(idx++, OriLayers.Instance.Trail);
         }
-        animations.glideAnim.TryAddToLayers(layers, OriLayers.Instance.FeatherSprite, idx++);
-        if (abilities.bash || (abilities.launch && !abilities.launch.Ending)) {
+        if (abilities.glide) {
+          layers.Insert(idx++, OriLayers.Instance.FeatherSprite);
+        }
+        if (abilities.bash || abilities.launch.Starting) {
           layers.Insert(idx++, OriLayers.Instance.BashArrow);
         }
       }

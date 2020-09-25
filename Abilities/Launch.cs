@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
@@ -107,7 +107,7 @@ namespace OriMod.Abilities {
       player.buffImmune[BuffID.WindPushed] = true;
     }
 
-    protected override void UpdateEnding() {
+    protected override void UpdateActive() {
       if (CurrentTime == 0) {
         NewAbilityProjectile<LaunchProjectile>(damage: 70);
       }
@@ -138,8 +138,8 @@ namespace OriMod.Abilities {
           return;
         }
         if (Starting) {
-          if (CurrentTime > MinLaunchDuration) {
-            SetState(State.Active, preserveCurrentTime: true);
+          if (CurrentTime > MaxLaunchDuration || CurrentTime > MinLaunchDuration && !input.bash.Current) {
+            SetState(State.Active);
           }
           else if (CurrentChain > 1 && !input.bash.Current) {
             SetState(State.Inactive);
@@ -147,12 +147,6 @@ namespace OriMod.Abilities {
           return;
         }
         if (Active) {
-          if (CurrentTime > MaxLaunchDuration || !input.bash.Current) {
-            SetState(State.Ending);
-          }
-          return;
-        }
-        if (Ending) {
           if (oPlayer.IsGrounded || oPlayer.OnWall) {
             SetState(State.Inactive);
           }
