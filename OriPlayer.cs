@@ -517,7 +517,7 @@ namespace OriMod {
       if (DoPlayerLight && !abilities.burrow.Active) {
         Lighting.AddLight(player.Center, LightColor.ToVector3());
       }
-      if (input.jump.JustPressed && IsGrounded) {
+      if (input.jump.JustPressed && IsGrounded && !abilities.burrow) {
         PlayNewSound("Ori/Jump/seinJumpsGrass" + randJump.NextNoRepeat(5), 0.6f);
       }
       bool oldGrounded = IsGrounded;
