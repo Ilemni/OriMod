@@ -49,7 +49,7 @@ namespace OriMod {
     /// <summary>
     /// Whether or not this <see cref="OriPlayer"/> instance should sync with multiplayer this frame.
     /// </summary>
-    internal bool netUpdate = false;
+    internal bool netUpdate = true;
 
     internal bool debugMode = false;
 
@@ -459,6 +459,10 @@ namespace OriMod {
 
       if (Transforming) {
         player.direction = transformDirection;
+        player.controlLeft = false;
+        player.controlRight = false;
+        player.controlUp = false;
+        player.controlDown = false;
         player.controlUseItem = false;
         if (transformTimer < TransformStartDuration - 10) {
           // Starting
