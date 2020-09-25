@@ -239,7 +239,7 @@ namespace OriMod.Abilities {
         // UI indication for breath
         Vector2 baseDrawPos = player.Right - Main.screenPosition;
         baseDrawPos.X += 48;
-        baseDrawPos.Y += player.gravDir >= 0 ? 16 : 32;
+        baseDrawPos.Y += player.gravDir >= 0 ? 16 : 112;
         var color = Color.White * (InUse ? 1 : 0.6f);
 
         Vector2 drawPos = baseDrawPos;
@@ -248,7 +248,7 @@ namespace OriMod.Abilities {
         for (int i = 0; i < uiCount; i++) {
           if (i % 10 == 0) {
             drawPos.X = baseDrawPos.X;
-            drawPos.Y += 40;
+            drawPos.Y += 40 * player.gravDir;
           }
           drawPos.X += 24;
           int frameY = 0;
@@ -297,20 +297,20 @@ namespace OriMod.Abilities {
         TickCooldown();
 
         if (CanUse && IsLocal && (input.burrow.JustPressed && abilities.crouch || autoBurrow)) {
-          EnterHitbox.UpdateHitbox(player.position);
+          EnterHitbox.UpdateHitbox(player.Center);
 
           // Check if player can enter Burrow
-          Vector2 vel = Vector2.Zero;
+          bool doBurrow = false;
           var enterPoints = EnterHitbox.Points;
           for (int i = 0, len = enterPoints.Length; i < len; i++) {
             Point p = enterPoints[i];
             Tile t = Main.tile[p.X, p.Y];
             if (CanBurrow(t)) {
-              vel += p.ToVector2().Normalized();
+              doBurrow = true;
             }
           }
 
-          if (vel != Vector2.Zero) {
+          if (doBurrow) {
             // Enter Burrow
             SetState(State.Active);
             currentCooldown = Cooldown;
