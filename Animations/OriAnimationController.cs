@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using AnimLib.Animations;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace OriMod.Animations {
   /// <summary>
@@ -53,12 +54,12 @@ namespace OriMod.Animations {
       // TODO: consider "switch (oPlayer.abilities.GetActiveAbility())
       // Requires ensuring only one ability can ever be active at once
       if (oPlayer.abilities.burrow) {
-        float rad = (float)Math.Atan2(abilities.burrow.velocity.X * player.direction, -abilities.burrow.velocity.Y);
-        PlayTrack("Burrow", rotation: rad);
+        float rad = (float)Math.Atan2(abilities.burrow.velocity.X, -abilities.burrow.velocity.Y * player.gravDir);
+        PlayTrack("Burrow", rotation: rad * player.gravDir);
         return;
       }
       if (abilities.wallChargeJump) {
-        PlayTrack("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle);
+        PlayTrack("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle * player.gravDir);
         return;
       }
       if (abilities.wallJump) {
@@ -66,7 +67,7 @@ namespace OriMod.Animations {
         return;
       }
       if (abilities.airJump) {
-        PlayTrack("AirJump", rotation: FrameTime * 0.6f);
+        PlayTrack("AirJump", rotation: FrameTime * 0.6f * player.gravDir * player.direction);
         return;
       }
       if (abilities.bash) {
@@ -75,13 +76,13 @@ namespace OriMod.Animations {
       }
       if (abilities.launch) {
         if (abilities.launch.Ending) {
-          PlayTrack("ChargeJump", duration: 6, rotation: (abilities.launch.launchAngle + (float)Math.PI / 2) * player.direction, loop: LoopMode.Always, direction: Direction.PingPong);
+          PlayTrack("ChargeJump", duration: 6, rotation: abilities.launch.launchAngle + (float)Math.PI / 2 * player.gravDir, loop: LoopMode.Always, direction: Direction.PingPong, effects:SpriteEffects.None);
         }
         else {
           var ct = abilities.launch.CurrentTime;
           var accel = ct * (ct < 5 ? 0.05f : ct < 20 ? 0.03f : 0.02f);
           // Somewhat accelerating speed of rotation
-          PlayTrack("AirJump", rotation: SpriteRotation + accel);
+          PlayTrack("AirJump", rotation: SpriteRotation + accel * player.direction);
         }
         return;
       }
