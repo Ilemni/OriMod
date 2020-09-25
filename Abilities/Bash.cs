@@ -249,7 +249,7 @@ namespace OriMod.Abilities {
         player.position.Y -= 1f;
       }
 
-      player.immuneTime = 5;
+      oPlayer.immuneTimer = 5;
 
       BashTarget.IsBashed = false;
       if (IsLocal && Level >= 2 && BashEntity is NPC npc) {
@@ -292,7 +292,7 @@ namespace OriMod.Abilities {
       player.controlTorch = false;
       player.controlUseItem = false;
       player.controlUseTile = false;
-      player.immune = true;
+      oPlayer.immuneTimer = 2;
       player.buffImmune[BuffID.CursedInferno] = true;
       player.buffImmune[BuffID.Dazed] = true;
       player.buffImmune[BuffID.Frozen] = true;

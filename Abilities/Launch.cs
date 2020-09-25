@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
@@ -112,8 +112,8 @@ namespace OriMod.Abilities {
         NewAbilityProjectile<LaunchProjectile>(damage: 70);
       }
       player.pulley = false;
-      player.immuneTime = 5;
       player.velocity = launchDirection * LaunchSpeed;
+      oPlayer.immuneTimer = 5;
     }
 
     private void End() {

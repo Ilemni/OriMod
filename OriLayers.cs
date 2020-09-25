@@ -22,14 +22,15 @@ namespace OriMod {
       bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
       DrawData data = oPlayer.animations.playerAnim.GetDrawData(drawInfo);
-      data.color = player.immune && oPlayer.immuneTimer == 0
+      bool doFlash = player.immune && oPlayer.immuneTimer == 0;
+      data.color = doFlash
           ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, player.immuneAlpha / 255f)
           : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
       data.origin.Y += 5 * player.gravDir;
       Main.playerDrawData.Add(data);
 
       if (oPlayer.IsOri) {
-        data.color = player.immune && oPlayer.immuneTimer == 0
+        data.color = doFlash
             ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, player.immuneAlpha / 255f)
             : oPlayer.SpriteColorSecondary;
 
