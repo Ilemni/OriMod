@@ -127,6 +127,20 @@ namespace OriMod.Utilities {
     }
     #endregion
 
+    internal static Vector2 GetMouseDirection(OriPlayer oPlayer, out float angle, Vector2? direction = null, float maxAngle = (float)Math.PI) {
+      var player = oPlayer.player;
+      var dir = direction ?? new Vector2(player.direction, player.gravDir);
+
+      Vector2 offset = Main.MouseWorld;
+      offset = (offset - player.Center) * dir + player.Center;
+
+      angle = Utils.Clamp(player.AngleTo(offset), -maxAngle, maxAngle);
+
+      var result = Vector2.UnitX.RotatedBy(angle);
+      result *= dir;
+      return result;
+    }
+
     /// <summary>
     /// Linear interpoation between two <paramref name="f1"/> and <paramref name="f2"/> by <paramref name="by"/>.
     /// </summary>

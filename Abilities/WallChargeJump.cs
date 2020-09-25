@@ -47,18 +47,6 @@ namespace OriMod.Abilities {
 
     private readonly RandomChar randChar = new RandomChar();
 
-    internal Vector2 GetMouseDirection(out float angle) {
-      Vector2 mouse = Main.MouseWorld - player.Center;
-      mouse.X *= -abilities.climb.wallDirection;
-      mouse.Y *= player.gravDir;
-      mouse += player.Center;
-      angle = Utils.Clamp(player.AngleTo(mouse), -MaxAngle, MaxAngle);
-      Vector2 dir = Vector2.UnitX.RotatedBy(angle);
-      dir.X *= -abilities.climb.wallDirection;
-      dir.Y *= player.gravDir;
-      return dir;
-    }
-
     private void Start() {
       oPlayer.PlayNewSound("Ori/ChargeJump/seinChargeJumpJump" + randChar.NextNoRepeat(3), 0.8f);
       currentCharge = 0;
@@ -118,7 +106,7 @@ namespace OriMod.Abilities {
       else if (Charged) {
         UpdateCharged();
         if (IsLocal) {
-          direction = GetMouseDirection(out float angle);
+          direction = OriUtils.GetMouseDirection(oPlayer, out float angle, new Vector2(-abilities.climb.wallDirection, player.gravDir), MaxAngle);
           Angle = angle;
           if (!CanCharge) {
             currentCharge = 0;

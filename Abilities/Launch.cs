@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
@@ -62,7 +62,8 @@ namespace OriMod.Abilities {
     protected override void UpdateUsing() {
       if (!Ending) {
         if (IsLocal) {
-          launchAngle = player.AngleTo(Main.MouseWorld);
+          OriUtils.GetMouseDirection(oPlayer, out var angle, Vector2.One);
+          launchAngle = angle;
         }
         player.velocity *= 0.86f;
         player.gravity = 0;
@@ -86,7 +87,6 @@ namespace OriMod.Abilities {
       player.controlTorch = false;
       player.controlUseItem = false;
       player.controlUseTile = false;
-      player.immune = true;
       player.buffImmune[BuffID.CursedInferno] = true;
       player.buffImmune[BuffID.Dazed] = true;
       player.buffImmune[BuffID.Frozen] = true;
@@ -178,7 +178,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void TickCooldown() {
-      if (oPlayer.IsGrounded || oPlayer.OnWall || abilities.bash) {
+      if (oPlayer.IsGrounded || abilities.bash) {
         Refreshed = true;
         CurrentChain = 0;
       }
