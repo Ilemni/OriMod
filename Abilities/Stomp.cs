@@ -141,7 +141,7 @@ namespace OriMod.Abilities {
         }
       }
       else if (Active) {
-        if (CurrentTime > MinDuration && !player.controlDown) {
+        if (CurrentTime > MinDuration && !player.controlDown || abilities.airJump) {
           SetState(State.Inactive);
         }
         if (oPlayer.IsGrounded) {
