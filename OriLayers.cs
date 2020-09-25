@@ -25,7 +25,7 @@ namespace OriMod {
       data.color = player.immune && oPlayer.immuneTimer == 0
           ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, player.immuneAlpha / 255f)
           : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
-
+      data.origin.Y += 5 * player.gravDir;
       Main.playerDrawData.Add(data);
 
       if (oPlayer.IsOri) {

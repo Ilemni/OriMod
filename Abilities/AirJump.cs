@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using OriMod.Utilities;
 using Terraria;
@@ -40,12 +41,10 @@ namespace OriMod.Abilities {
     private readonly RandomChar rand = new RandomChar();
 
     protected override void UpdateActive() {
-      float newVel = -JumpVelocity * ((EndDuration - CurrentTime) / EndDuration);
-      if (player.velocity.Y > newVel) {
+      float newVel = -JumpVelocity * ((EndDuration - CurrentTime) / EndDuration) * gravityDirection;
+      if (Math.Abs(player.velocity.Y) < Math.Abs(newVel)) {
         player.velocity.Y = newVel;
       }
-
-      player.velocity.Y *= gravityDirection;
     }
 
     internal override void Tick() {
@@ -69,7 +68,6 @@ namespace OriMod.Abilities {
         SetState(State.Inactive);
       }
       else if (Active) {
-        abilities.stomp.SetState(State.Inactive);
         SetState(State.Ending);
       }
       else if (Ending) {

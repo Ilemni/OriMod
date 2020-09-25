@@ -237,20 +237,17 @@ namespace OriMod.Abilities {
       if (breath < MaxDuration) {
 
         // UI indication for breath
-        Vector2 drawAnchor = player.BottomRight - Main.screenPosition;
-        drawAnchor.X += 48;
-        drawAnchor.Y += 16;
+        Vector2 baseDrawPos = player.Right - Main.screenPosition;
+        baseDrawPos.X += 48;
+        baseDrawPos.Y += player.gravDir >= 0 ? 16 : 32;
+        var color = Color.White * (InUse ? 1 : 0.6f);
 
-        var color = Color.White;
-        if (!InUse) {
-          color *= 0.6f;
-        }
-
-        Vector2 drawPos = drawAnchor;
+        Vector2 drawPos = baseDrawPos;
         int uiCount = (int)Math.Ceiling((double)breath / UiIncrement);
+        var effect = player.gravDir > 0 ? default : SpriteEffects.FlipVertically;
         for (int i = 0; i < uiCount; i++) {
           if (i % 10 == 0) {
-            drawPos.X = drawAnchor.X;
+            drawPos.X = baseDrawPos.X;
             drawPos.Y += 40;
           }
           drawPos.X += 24;
@@ -262,7 +259,7 @@ namespace OriMod.Abilities {
           }
 
           var tex = OriTextures.Instance.BurrowTimer.texture;
-          Main.playerDrawData.Add(new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, SpriteEffects.None, 0));
+          Main.playerDrawData.Add(new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0));
         }
       }
     }

@@ -172,7 +172,13 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Coordinates relative to the player's center.
     /// </summary>
-    private Vector2 PlayerSpace(Vector2 coords = default) => player.Center + coords;
+    private Vector2 PlayerSpace(Vector2 coords = default) {
+      var result = player.Center + coords * player.gravDir;
+      if (player.gravDir < 0) {
+        result.Y -= 20;
+      }
+      return result;
+    }
 
     /// <summary>
     /// Plays a Spirit Flame sound effect with the given <paramref name="path"/> and <paramref name="volume"/>.
