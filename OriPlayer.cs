@@ -366,6 +366,8 @@ namespace OriMod {
         player.immune = true;
         player.immuneNoBlink = true;
       }
+
+      trail.hasDrawnThisFrame = false;
     }
 
     /*public override void UpdateDead() {

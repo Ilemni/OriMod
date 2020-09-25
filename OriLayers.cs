@@ -48,10 +48,10 @@ namespace OriMod {
     internal readonly PlayerLayer Trail = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
       Player player = drawInfo.drawPlayer;
       Trail trail = player.GetModPlayer<OriPlayer>().trail;
-      if (trail.lastTrailDrawTime == Main.time) {
+      if (trail.hasDrawnThisFrame) {
         return;
       }
-      trail.lastTrailDrawTime = Main.time;
+      trail.hasDrawnThisFrame = true;
 
       if (!player.dead && !player.invis) {
         trail.ResetNextSegment();

@@ -49,9 +49,7 @@ namespace OriMod {
     /// </summary>
     private int index = 0;
 
-    private double lastTrailResetTime;
-
-    internal double lastTrailDrawTime;
+    internal bool hasDrawnThisFrame;
 
     /// <summary>
     /// Call <see cref="TrailSegment.Tick"/> on each <see cref="TrailSegment"/>.
@@ -78,16 +76,7 @@ namespace OriMod {
     /// Calls <see cref="TrailSegment.Reset"/> on the next segment.
     /// </summary>
     internal void ResetNextSegment() {
-      if (lastTrailResetTime < Main.time - segments.Length) {
-        lastTrailResetTime = Main.time - segments.Length;
-      }
-      else if (lastTrailResetTime > Main.time) {
-        lastTrailResetTime = Main.time;
-      }
-      while (lastTrailResetTime < Main.time) {
-        lastTrailResetTime++;
-        segments[NextIndex()].Reset();
-      }
+      segments[NextIndex()].Reset();
     }
   }
 }
