@@ -37,11 +37,6 @@ namespace OriMod {
     [DefaultValue(true)]
     public bool SmoothCamera;
 
-    // [Label("Auto Burrow"), Tooltip("After burrowing, if holding the Burrow key, automatically re-enter Burrow as soon as possible.\nDefault: false")]
-    // [DefaultValue(false)]
-    [JsonIgnore] // Buggy implementation
-    public bool AutoBurrow;
-
     [JsonIgnore]
     internal bool BurrowToMouse => BurrowControls == "Mouse";
 

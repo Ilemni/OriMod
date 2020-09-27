@@ -72,7 +72,6 @@ namespace OriMod.Abilities {
     internal bool CanBurrow(Tile t) => CanBurrowAny && IsSolid(t) || TileCollection.Instance.TilePickaxeMin[t.type] <= strength;
 
     internal Vector2 velocity;
-    internal bool autoBurrow;
 
     private static Point P(int x, int y) => new Point(x, y);
     internal static TileHitbox EnterHitbox => _eh ?? (_eh = new TileHitbox(
@@ -140,14 +139,12 @@ namespace OriMod.Abilities {
       player.position = r.ReadVector2();
       velocity = r.ReadVector2();
       breath = r.ReadSingle();
-      autoBurrow = r.ReadBoolean();
     }
 
     protected override void WritePacket(ModPacket packet) {
       packet.WriteVector2(player.position);
       packet.WriteVector2(velocity);
       packet.Write(breath);
-      packet.Write(autoBurrow);
     }
 
     protected override void UpdateActive() {
@@ -296,7 +293,7 @@ namespace OriMod.Abilities {
         // Not in use
         TickCooldown();
 
-        if (CanUse && IsLocal && (input.burrow.JustPressed && abilities.crouch || autoBurrow)) {
+        if (CanUse && IsLocal && input.burrow.JustPressed) {
           EnterHitbox.UpdateHitbox(player.Center);
 
           // Check if player can enter Burrow
@@ -315,9 +312,8 @@ namespace OriMod.Abilities {
             SetState(State.Active);
             currentCooldown = Cooldown;
 
-            autoBurrow = OriMod.ConfigClient.AutoBurrow && input.burrow.Current;
             // TODO: consider moving this write to an Update method
-            velocity = (autoBurrow ? player.velocity.Normalized() : Vector2.UnitY * player.gravDir) * Speed;
+            velocity = Vector2.UnitY * player.gravDir * Speed;
             player.position += velocity;
           }
         }
