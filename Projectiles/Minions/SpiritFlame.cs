@@ -35,7 +35,7 @@ namespace OriMod.Projectiles.Minions {
     /// Current speed of the projectile. Increases over time by <see cref="SeinData.projectileSpeedIncreaseRate"/>.
     /// </summary>
     private float speed;
-
+    private float speedSquared => speed * speed;
     /// <summary>
     /// Elapsed time for <see cref="SeinData.projectileSpeedIncreaseDelay"/>.
     /// </summary>
@@ -74,10 +74,12 @@ namespace OriMod.Projectiles.Minions {
     private void CreateDust() {
       Dust dust = Main.dust[Dust.NewDust(projectile.position, 10, 10, dustType)];
       dust.scale = data.dustScale;
-      dust.velocity = projectile.velocity * 0.05f;
+      dust.velocity = ((targetPosition - projectile.Center).LengthSquared() >= speedSquared) ? (projectile.velocity * 0.01f) : Vector2.Zero;
 
       dust.rotation = (float)(Math.Atan2(projectile.velocity.Y, projectile.velocity.X) - Math.PI / 180 * 270);
       dust.position = projectile.Center;
+      dust.color = Color.Lerp(data.color.Brightest(), Color.White, 0.85f);
+      dust.color.A = 230;
     }
 
     /// <summary>
@@ -130,8 +132,11 @@ namespace OriMod.Projectiles.Minions {
       UpdateTargetPosition();
 
       // Despawn when projectile reaches destination
-      float distance = Vector2.DistanceSquared(targetPosition, projectile.position);
-      if (distance < speed * speed) {
+      Vector2 offset = targetPosition - projectile.Center;
+      float distanceSquared = offset.LengthSquared();
+
+      if (distanceSquared < speedSquared) {
+        projectile.velocity = offset;
         if (projectile.timeLeft > 2) {
           projectile.timeLeft = 2;
         }
@@ -144,7 +149,7 @@ namespace OriMod.Projectiles.Minions {
       // Increase speed over time
       TickTimerOrValue(ref currentAccelerationDelay, data.projectileSpeedIncreaseDelay, ref speed, 30, data.projectileSpeedIncreaseRate);
 
-      projectile.velocity = Vector2.Lerp(projectile.velocity.Normalized(), (targetPosition - projectile.Center).Normalized(), lerp) * speed;
+      projectile.velocity = Vector2.Lerp(projectile.velocity.Normalized(), offset.Normalized(), lerp) * speed;
     }
 
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {

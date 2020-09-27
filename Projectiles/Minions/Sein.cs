@@ -47,10 +47,6 @@ namespace OriMod.Projectiles.Minions {
       var type = SeinType;
       data = SeinData.All[type - 1];
 
-      if (MaxDistFromPlayer < data.targetMaxDist * 0.8f) {
-        MaxDistFromPlayer = data.targetMaxDist * 0.8f;
-      }
-
       projectile.width = data.seinWidth;
       projectile.height = data.seinHeight;
 
@@ -100,7 +96,7 @@ namespace OriMod.Projectiles.Minions {
 
 
     /// <summary>
-    /// Positions that the minion idly moves towards. Positions are relative to <see cref="baseGoalPosition"/>
+    /// Positions that the minion idly moves towards. Positions are relative to <see cref="goalNPC"/> with a fixed offset, or the player if <see cref="goalNPC"/> is <see langword="null"/>.
     /// </summary>
     private static Vector2[] GoalPositions => _goalPositions ?? (_goalPositions = new Vector2[] {
       new Vector2(-32, 12),
@@ -111,10 +107,7 @@ namespace OriMod.Projectiles.Minions {
       new Vector2(32, -12),
     });
 
-    /// <summary>
-    /// General position that Sein hovers around. This is a general location, and not precisely where the minion moves.
-    /// </summary>
-    private Vector2 baseGoalPosition;
+    private NPC goalNPC;
 
     /// <summary>
     /// Current index of <see cref="GoalPositions"/> that is active.
@@ -126,9 +119,21 @@ namespace OriMod.Projectiles.Minions {
     }
 
     /// <summary>
-    /// Exact position that this minion is moving towards. This is set to be around <see cref="baseGoalPosition"/>.
+    /// Exact position that this minion is moving towards. This is set to be around <see cref="goalNPC"/>, or the player if <see cref="goalNPC"/> is <see langword="null"/>.
     /// </summary>
-    public Vector2 GoalPosition => baseGoalPosition + GoalPositions[goalPositionIdx];
+    public Vector2 GoalPosition {
+      get {
+        Vector2 result;
+        if (goalNPC is null) {
+          result = PlayerSpace(0, -56) + GoalPositions[goalPositionIdx];
+        }
+        else {
+          result = goalNPC.Top;
+          result.Y -= 56;
+        }
+        return result;
+      }
+    }
 
 
     /// <summary>
@@ -142,17 +147,7 @@ namespace OriMod.Projectiles.Minions {
     private static float TriggerGoalMove => 3f;
     private static float TriggerGoalMoveSquared => TriggerGoalMove * TriggerGoalMove;
 
-    /// <summary>
-    /// The closest <see cref="baseGoalPosition"/> must be to an NPC that it is moving towards.
-    /// </summary>
-    private static float MinDistFromNPC => 64f;
-    private static float MinDistFromNpcSquared => MinDistFromNPC * MinDistFromNPC;
-
-    /// <summary>
-    /// The furthest <see cref="baseGoalPosition"/> can be from the player. May be modified in <see cref="SetDefaults"/>.
-    /// </summary>
-    private float MaxDistFromPlayer = 200f;
-    private float MaxDistFromPlayerSquared => MaxDistFromPlayer * MaxDistFromPlayer;
+    private int timeSinceGoalChanged;
 
     /// <summary>
     /// List of NPCs last targeted by the minion.
@@ -200,18 +195,24 @@ namespace OriMod.Projectiles.Minions {
       }
     }
 
+
     /// <summary>
     /// This is the somewhat subtle swaying about Sein does at any given time in Blind Forest.
     /// </summary>
     private void SeinMovement() {
       Vector2 goalOffset = GoalPosition - projectile.position;
       Vector2 goalVelocity = goalOffset * 0.05f;
+      float targetSpeed = (goalNPC?.velocity ?? player.velocity).Length();
+      if (targetSpeed > 8) {
+        goalVelocity *= (targetSpeed * 0.125f);
+      }
+
       float goalSpeed = goalVelocity.Length();
       float speed = projectile.velocity.Length();
 
       // Limit acceleration
-      float newSpeed = MathHelper.Clamp(goalSpeed, speed * 0.95f, speed * 1.1f);
-      newSpeed = Math.Min(newSpeed, 10f);
+      float newSpeed = MathHelper.Clamp(goalSpeed, speed * 0.95f - 0.05f, speed * 1.1f + 0.05f);
+      newSpeed = Math.Min(newSpeed, 16f);
       projectile.velocity = goalVelocity.Normalized() * newSpeed;
     }
 
@@ -219,54 +220,51 @@ namespace OriMod.Projectiles.Minions {
     /// Updates where Sein should move towards.
     /// </summary>
     private void UpdateGoalPosition() {
-      if ((projectile.position - GoalPosition).LengthSquared() < TriggerGoalMoveSquared) {
+      timeSinceGoalChanged++;
+      if (goalNPC is null && (projectile.position - GoalPosition).LengthSquared() < TriggerGoalMoveSquared) {
         goalPositionIdx++;
       }
 
-      if (targetIDs.Count == 0 || !Main.npc[targetIDs[0]].active ||
-        (baseGoalPosition - player.Center).Length() > 1000) {
-        SetGoalToIdle();
+      if (!(goalNPC is null) && !goalNPC.active) {
+        goalNPC = null;
+      }
+      if (targetIDs.Count == 0 || !Main.npc[targetIDs[0]].active) {
+        goalNPC = null;
       }
       else {
-        SetGoalToNPC();
+        if (timeSinceGoalChanged > 20) {
+          SetGoalToNPC();
+        }
+        else {
+        }
       }
     }
-
-    /// <summary>
-    /// Moves the goal position to above the player's head.
-    /// </summary>
-    private void SetGoalToIdle() => baseGoalPosition = PlayerSpace(0, -56);
 
     /// <summary>
     /// Moves the goal position to the target NPC or nearest NPC.
     /// </summary>
     private void SetGoalToNPC() {
-      Vector2 target = Main.npc[targetIDs[0]].Top;
-      Vector2 offset = player.Center - target;
-
-      float distanceSquared = offset.LengthSquared();
-      var maxDistanceSquared = data.targetMaxDist * data.targetMaxDist;
+      NPC target = Main.npc[targetIDs[0]];
 
       //Cannot reach target NPC
-      if (distanceSquared > maxDistanceSquared) {
-        if (targetIDs.Count == 1 || player.HasMinionAttackTargetNPC) {
-          SetGoalToIdle();
-          return;
+      if ((player.Center - target.Center).LengthSquared() > data.targetMaxDistSquared) {
+        if (targetIDs.Count != 1) {
+          target = Main.npc[targetIDs[1]];
+          // Cannot reach closest NPC
+          if ((player.Center - target.Center).LengthSquared() > data.targetMaxDistSquared) {
+            goalNPC = null;
+            return;
+          }
         }
-        target = Main.npc[targetIDs[1]].Top;
-        offset = player.Center - target;
-        distanceSquared = offset.LengthSquared();
-        // Cannot reach closest NPC
-        if (distanceSquared > maxDistanceSquared) {
-          SetGoalToIdle();
+        else {
+          goalNPC = null;
           return;
         }
       }
-
-      bool inRange = distanceSquared + MinDistFromNpcSquared > MaxDistFromPlayerSquared;
-      baseGoalPosition = inRange
-          ? player.Center - offset.Normalized() * MaxDistFromPlayer
-          : target + offset.Normalized() * MinDistFromNPC;
+      if (target != goalNPC) {
+        goalNPC = target;
+        timeSinceGoalChanged = 0;
+      }
     }
 
     /// <summary>
@@ -430,7 +428,7 @@ namespace OriMod.Projectiles.Minions {
       else {
         spiritFlame.ai[0] = 0;
         spiritFlame.ai[1] = npc.whoAmI;
-        spiritFlame.timeLeft = 100;
+        spiritFlame.timeLeft = 300;
       }
     }
 
