@@ -188,6 +188,8 @@ namespace OriMod {
         targets = 6,
         shotsToPrimaryTarget = 4,
         maxShotsAtOnce = 10,
+        cooldownMin = 16f,
+        cooldownShort = 24f,
         cooldownLong = 55f,
         homingStrengthStart = 0.05f,
         homingIncreaseDelay = 15,
@@ -331,7 +333,7 @@ namespace OriMod {
     /// <summary>
     /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights.
     /// </summary>
-    internal Color color;
+    internal Color color = Color.White;
 
     /// <summary>
     /// Strength of the light emitted from Sein and Spirit Flame.
