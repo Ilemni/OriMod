@@ -353,14 +353,6 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <param name="hasTarget"></param>
     private void Attack(bool hasTarget) {
-      if (Cooldown > CooldownShort) {
-        currentShotsFired = 0;
-      }
-      else {
-        currentShotsFired++;
-      }
-      Cooldown = 1;
-
       PlaySpiritFlameSound("Throw" + spiritFlameSound + rand.NextNoRepeat(3), 0.6f);
 
       if (!hasTarget) {
@@ -459,6 +451,13 @@ namespace OriMod.Projectiles.Minions {
       bool attemptFire = AutoFire ? hasTarget : oPlayer.input.leftClick.JustPressed && !player.mouseInterface;
 
       if (attemptFire && (Cooldown == 0 || Cooldown > CooldownMin && currentShotsFired < data.bursts)) {
+        if (Cooldown > CooldownShort) {
+          currentShotsFired = 0;
+        }
+        else {
+          currentShotsFired++;
+        }
+        Cooldown = 1;
         Attack(hasTarget);
       }
     }

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using System.Reflection;
 using System.Collections.Generic;
 using Terraria.ID;
+using System;
 
 namespace OriMod {
   public sealed class SeinData {
@@ -29,7 +30,7 @@ namespace OriMod {
       var fields = typeof(SeinData).GetFields();
 
       var list = new List<SeinData>();
-      void AddNewSein(SeinData newSein) {
+      void AddNewSein(string tierName, SeinData newSein) {
         var lastSein = list.Count == 0 ?
           new SeinData() :
           list[list.Count - 1];
@@ -47,15 +48,16 @@ namespace OriMod {
           field.SetValue(newSein, newVal);
         }
         list.Add(newSein);
+        OriMod.Log.Info(newSein.CalculateStuff(tierName));
       }
 
       // Tier 1 (Silver)
-      AddNewSein(new SeinData());
+      AddNewSein("Silver/Tungsten", new SeinData());
 
       // Tier 2 (Demonite/Crimsane)
       // Increased shots per burst
       // Max damage per burst: 15
-      AddNewSein(new SeinData {
+      AddNewSein("Demonite/Crimsane", new SeinData {
         rarity = ItemRarityID.Green,
         value = 3000,
         color = new Color(108, 92, 172),
@@ -73,7 +75,7 @@ namespace OriMod {
       // 2 targets
       // Max damage per burst: 42
       // For some sort of "rage" effect to pair with red theme, lower CD
-      AddNewSein(new SeinData {
+      AddNewSein("Hellstone", new SeinData {
         rarity = ItemRarityID.Orange,
         value = 10000,
         color = new Color(240, 0, 0, 194),
@@ -96,7 +98,7 @@ namespace OriMod {
       // Tier 4 (Mythral/Orichalcum)
       // 2 targets, 2 shots to primary, 3 shots max (rather than 4)
       // Max damage per burst: 81
-      AddNewSein(new SeinData {
+      AddNewSein("Mythral/Orichalcum", new SeinData {
         rarity = ItemRarityID.LightRed,
         value = 25000,
         color = new Color(185, 248, 248),
@@ -106,6 +108,8 @@ namespace OriMod {
         maxShotsAtOnce = 3,
         randDegrees = 60,
         cooldownMin = 11,
+        cooldownShort = 25,
+        cooldownLong = 40,
         projectileSpeedStart = 13.5f,
         homingIncreaseRate = 0.06f,
         homingIncreaseDelay = 20,
@@ -116,7 +120,7 @@ namespace OriMod {
       // Tier 5 (Hallow)
       // 3 targets, 2 shots to primary, 4 shots max (rather than 5)
       // Max damage per burst: 132
-      AddNewSein(new SeinData {
+      AddNewSein("Hallow", new SeinData {
         rarity = ItemRarityID.Pink,
         value = 50000,
         color = new Color(255, 228, 160),
@@ -133,7 +137,7 @@ namespace OriMod {
       // Tier 6 (Spectral)
       // 3 targets, 3 shots to primary, 5 shots max
       // Max damage per burst: 195
-      AddNewSein(new SeinData {
+      AddNewSein("Spectral", new SeinData {
         rarity = ItemRarityID.Yellow,
         value = 100000,
         color = new Color(0, 180, 174, 210),
@@ -141,9 +145,9 @@ namespace OriMod {
         damage = 42,
         shotsToPrimaryTarget = 3,
         maxShotsAtOnce = 5,
-        cooldownMin = 12f,
-        cooldownShort = 20f,
-        cooldownLong = 52f,
+        cooldownMin = 12,
+        cooldownShort = 26,
+        cooldownLong = 52,
         targetThroughWallDist = 224f,
         homingIncreaseRate = 0.07f,
         projectileSpeedStart = 15f,
@@ -157,7 +161,7 @@ namespace OriMod {
       // Tier 7 (Lunar)
       // 4 targets, 3 shots to primary, 2 to others, 6 shots max (rather than 9)
       // Max damage per burst: 282
-      AddNewSein(new SeinData {
+      AddNewSein("Lunar Fragments", new SeinData {
         rarity = ItemRarityID.Cyan,
         value = 250000,
         color = new Color(78, 38, 102),
@@ -178,7 +182,7 @@ namespace OriMod {
       // Tier 8 (Lunar Bars)
       // 5 targets, 4 shots to primary, 2 shots to others, 10 shots max (rather than 12)
       // Max damage per burst: 530 (too high?)
-      AddNewSein(new SeinData {
+      AddNewSein("Lunar Bars", new SeinData {
         rarity = ItemRarityID.Red,
         value = 500000,
         color = new Color(220, 220, 220),
@@ -188,9 +192,9 @@ namespace OriMod {
         targets = 6,
         shotsToPrimaryTarget = 4,
         maxShotsAtOnce = 10,
-        cooldownMin = 16f,
-        cooldownShort = 24f,
-        cooldownLong = 55f,
+        cooldownMin = 16,
+        cooldownShort = 24,
+        cooldownLong = 55,
         homingStrengthStart = 0.05f,
         homingIncreaseDelay = 15,
         projectileSpeedStart = 20f,
@@ -245,17 +249,17 @@ namespace OriMod {
     /// <summary>
     /// Delay between each shot in <see cref="bursts"/>.
     /// </summary>
-    public float cooldownMin = 10f;
+    public int cooldownMin = 10;
 
     /// <summary>
     /// Shortest time to wait during <see cref="bursts"/> to reset burst count.
     /// </summary>
-    public float cooldownShort = 15f;
+    public int cooldownShort = 15;
 
     /// <summary>
     /// Delay between each series of shots, incurred when shots reaches <see cref="bursts"/>.
     /// </summary>
-    public float cooldownLong = 30f;
+    public int cooldownLong = 30;
     #endregion
 
     /// <summary>
@@ -339,6 +343,23 @@ namespace OriMod {
     /// Strength of the light emitted from Sein and Spirit Flame.
     /// </summary>
     internal float lightStrength;
+
+    internal string CalculateStuff(string tierName) {
+      int minShotsPerBurst = shotsToPrimaryTarget;
+      int minDmgPerBurst = damage * minShotsPerBurst;
+      int minDmgPerAllBursts = minDmgPerBurst * bursts;
+
+      int maxShotsPerBurst = Math.Min(shotsToPrimaryTarget + shotsPerTarget * (targets - 1), maxShotsAtOnce);
+      int maxDmgPerBurst = damage * maxShotsPerBurst;
+      int maxDmgPerAllBursts = maxDmgPerBurst * bursts;
+      
+      int minDPS = (int)(minDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong));
+      int maxDPS = (int)(maxDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong));
+
+      return minShotsPerBurst == maxShotsPerBurst ?
+        $"Sein ({tierName}): DPS:{minDPS}, Shots:{minShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}" :
+        $"Sein ({tierName}): DPS:{minDPS}-{maxDPS}, Shots:{minShotsPerBurst}-{maxShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}-{maxDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}-{maxDmgPerAllBursts}";
+    }
     #endregion
   }
 }
