@@ -17,7 +17,8 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 1;
 
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active && !abilities.wallChargeJump.Charged;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active &&
+      !abilities.wallChargeJump.Charged;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private static int EndTime => 12;

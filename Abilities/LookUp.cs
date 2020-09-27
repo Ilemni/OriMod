@@ -10,7 +10,8 @@ namespace OriMod.Abilities {
     public override int Id => AbilityID.LookUp;
     public override byte Level => 1;
 
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !abilities.crouch && !abilities.dash && !abilities.chargeDash;
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !player.mount.Active &&
+      !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.climb && !abilities.crouch && !abilities.dash;
 
     private static int StartDuration => 12;
     private static int EndDuration => 8;

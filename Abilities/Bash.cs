@@ -19,7 +19,9 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 3;
 
-    internal override bool CanUse => base.CanUse && Inactive && !abilities.stomp && !abilities.chargeJump && !abilities.launch && !abilities.climb;
+    internal override bool CanUse => base.CanUse && Inactive && !player.mount.Active &&
+      !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump && !abilities.climb && !abilities.dash &&
+      !abilities.launch && !abilities.stomp && !abilities.wallChargeJump;
     protected override Color RefreshColor => Color.LightYellow;
 
     public static List<short> CannotBashNPC => _cannotBashNPC ?? (_cannotBashNPC = new List<short> {

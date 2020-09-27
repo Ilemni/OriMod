@@ -16,7 +16,8 @@ namespace OriMod.Abilities {
     public override byte Level => (byte)(levelableDependency.Level >= 2 ? 1 : 0);
     public override ILevelable levelableDependency => abilities.dash;
 
-    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !abilities.stomp && !abilities.bash && !abilities.launch && !player.mount.Active;
+    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !player.mount.Active &&
+      !abilities.bash && !abilities.burrow && !abilities.launch && !abilities.lookUp && !abilities.stomp;
     protected override int Cooldown => Level >= 3 ? 0 : 90;
     protected override Color RefreshColor => Color.LightBlue;
 

@@ -15,7 +15,9 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     public byte MaxLevel => 4;
 
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !player.mount.Active && !abilities.bash && !abilities.launch && !abilities.wallChargeJump;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !player.mount.Active &&
+      !abilities.bash && !abilities.burrow && !abilities.climb && !abilities.chargeJump && !abilities.launch &&
+      !abilities.wallChargeJump;
 
     private static float JumpVelocity => 8.8f;
     private static int EndDuration => 32;

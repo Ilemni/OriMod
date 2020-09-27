@@ -16,10 +16,10 @@ namespace OriMod.Abilities {
     byte ILevelable.MaxLevel => 1;
 
     internal override bool CanUse =>
-      base.CanUse && !Ending &&
-      !abilities.airJump && !abilities.stomp && !abilities.dash && !abilities.chargeDash &&
-      !abilities.wallChargeJump && !abilities.burrow &&
-      player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active;
+      base.CanUse && !Ending && player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active &&
+      !abilities.airJump && !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump &&
+      !abilities.climb && !abilities.dash && !abilities.launch && !abilities.stomp && !abilities.wallChargeJump &&
+      !abilities.wallJump;
 
     private static float MaxFallSpeed => 2f;
     private static float RunSlowdown => 0.125f;

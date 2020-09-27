@@ -22,7 +22,7 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 3;
 
-    internal override bool CanUse => base.CanUse && !abilities.dash && !abilities.chargeDash && !InMenu;
+    internal override bool CanUse => base.CanUse && !player.mount.Active && !InMenu && abilities.crouch;
     protected override int Cooldown => 12;
     protected override Color RefreshColor => Color.SandyBrown;
 
@@ -293,7 +293,7 @@ namespace OriMod.Abilities {
         // Not in use
         TickCooldown();
 
-        if (CanUse && IsLocal && input.burrow.JustPressed) {
+        if (CanUse && input.burrow.JustPressed) {
           EnterHitbox.UpdateHitbox(player.Center);
 
           // Check if player can enter Burrow

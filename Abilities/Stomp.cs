@@ -17,7 +17,9 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 3;
 
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !abilities.dash && !abilities.chargeDash && !abilities.glide.Active && !abilities.climb && !abilities.stomp.Active && !player.mount.Active && player.grapCount == 0;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !player.mount.Active && player.grapCount == 0 &&
+      !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump && !abilities.climb &&
+      !abilities.dash && !abilities.glide.Active && !abilities.launch && !abilities.wallChargeJump;
     protected override int Cooldown => Math.Min(30 + Level * 30, 600);
     protected override Color RefreshColor => Color.Orange;
 

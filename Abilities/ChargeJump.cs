@@ -1,3 +1,4 @@
+using System.Runtime.Hosting;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
@@ -16,11 +17,14 @@ namespace OriMod.Abilities {
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 4;
 
-    internal override bool CanUse => base.CanUse && !InUse && Charged && !abilities.burrow && !abilities.climb;
+    internal override bool CanUse => base.CanUse && !InUse && Charged &&
+      !abilities.burrow && !abilities.chargeDash && !abilities.climb && !abilities.dash && !abilities.launch &&
+      !abilities.stomp && !abilities.wallChargeJump;
+    
     protected override int Cooldown => 120;
     protected override Color RefreshColor => Color.Blue;
 
-    internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && IsLocal && input.charge.Current;
+    internal bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && input.charge.Current;
     private bool Charged => currentCharge >= MaxCharge;
 
     /// <summary>

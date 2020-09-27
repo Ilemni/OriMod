@@ -7,7 +7,9 @@ namespace OriMod.Abilities {
     public override int Id => AbilityID.Crouch;
     public override byte Level => 1;
 
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !abilities.lookUp && !abilities.dash && !abilities.chargeDash && !Restricted;
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Restricted && !player.mount.Active &&
+      !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.dash && !abilities.launch &&
+      !abilities.lookUp && !abilities.stomp;
     private bool Restricted => OriMod.ConfigClient.SoftCrouch && (player.controlLeft || player.controlRight);
     private static int StartDuration => 10;
     private static int EndDuration => 4;
