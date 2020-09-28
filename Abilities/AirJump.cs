@@ -44,9 +44,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateActive() {
       float newVel = -JumpVelocity * ((EndDuration - CurrentTime) / EndDuration) * gravityDirection;
-      if (Math.Abs(player.velocity.Y) < Math.Abs(newVel)) {
-        player.velocity.Y = newVel;
-      }
+      player.velocity.Y = newVel;
     }
 
     internal override void Tick() {
@@ -55,7 +53,7 @@ namespace OriMod.Abilities {
           SetState(State.Active);
           currentCount++;
           gravityDirection = (sbyte)player.gravDir;
-          
+
           if (MaxJumps != 1 && currentCount == MaxJumps) {
             oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + rand.NextNoRepeat(5), 0.6f);
           }
