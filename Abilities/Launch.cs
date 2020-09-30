@@ -34,14 +34,28 @@ namespace OriMod.Abilities {
         switch (Level) {
           case 1: return 1;
           case 2: return 3;
-          default: return (ushort)(Level + 1);
+          case 3: return 7;
+          default: return (ushort)(Level * 3 + 1);
         }
       }
     }
-    private int MinLaunchDuration => CurrentChain == 1 ? 15 : 20;
-    private int MaxLaunchDuration => CurrentChain == 1 ? 45 : 30;
-    private int EndDuration => CurrentChain == 1 || CurrentChain == MaxChain ? 12 : 6;
-    private float LaunchSpeed => CurrentChain == 1 ? 25 : 40;
+    // Surely there's a better way to do this
+    private int MinLaunchDuration =>
+      Level == 3
+        ? CurrentChain == 1 ? 8 : 11
+        : CurrentChain == 1 ? 15 : 20;
+    private int MaxLaunchDuration =>
+      Level == 3
+        ? CurrentChain == 1 ? 20 : 15
+        : CurrentChain == 1 ? 45 : 30;
+    private int EndDuration =>
+      Level == 3
+        ? CurrentChain == 1 || CurrentChain == MaxChain ? 9 : 4
+        : CurrentChain == 1 || CurrentChain == MaxChain ? 12 : 6;
+    private float LaunchSpeed => 
+      Level == 3
+        ? CurrentChain == 1 ? 40 : 45
+        : CurrentChain == 1 ? 25 : 40;
 
     public float launchAngle { get; private set; }
     public Vector2 launchDirection => new Vector2((float)Math.Cos(launchAngle), (float)Math.Sin(launchAngle));
@@ -62,7 +76,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateUsing() {
-      if (!Ending) {
+      if (!Active) {
         if (IsLocal) {
           OriUtils.GetMouseDirection(oPlayer, out var angle, Vector2.One);
           launchAngle = angle;
@@ -158,7 +172,7 @@ namespace OriMod.Abilities {
             if (CurrentChain < MaxChain && input.bash.Current) {
               CurrentChain++;
               SetState(State.Starting);
-              oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), 0.35f);
+              oPlayer.PlayNewSound("Ori/Bash/seinBashEnd" + rand.NextNoRepeat(3), Level == 3 ? 0.15f : 0.35f);
             }
             else {
               End();
