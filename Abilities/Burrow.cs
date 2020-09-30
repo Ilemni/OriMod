@@ -29,8 +29,8 @@ namespace OriMod.Abilities {
     private int MaxDuration {
       get {
         switch (Level) {
-          case 1: return 240;
-          case 2: return 420;
+          case 1: return 300;
+          case 2: return 480;
           case 3: return 600;
           default: return 120 + Level * 120;
         }
@@ -49,7 +49,9 @@ namespace OriMod.Abilities {
     }
 
     private static int UiIncrement => 60;
-    private static float Speed => 8f;
+    public static float BaseSpeed => 6f;
+    public static float currentSpeed;
+    public static float FastSpeed => 12f;
     private static float SpeedExitMultiplier => 1.2f;
 
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
@@ -74,6 +76,9 @@ namespace OriMod.Abilities {
     internal Vector2 velocity;
 
     private static Point P(int x, int y) => new Point(x, y);
+    /// <summary>
+    /// Tile hitbox for determining if the player can enter Burrow state.
+    /// </summary>
     internal static TileHitbox EnterHitbox => _eh ?? (_eh = new TileHitbox(
       P(0, -1), P(0, 0), P(0, 1), // Center
       P(-1, -1), P(-1, 0), P(-1, 1), // Left
@@ -82,13 +87,9 @@ namespace OriMod.Abilities {
       P(0, 2), P(1, 2),  // Bottom
       P(2, 2), P(2, -2), P(-1, 2), P(-1, -2) // Corners
     ));
-    internal static TileHitbox OuterHitbox => _oh ?? (_oh = new TileHitbox(
-      P(-2, -2), P(-2, -1), P(-2, 0), P(-2, 1), P(-2, 2),  // Left
-      P(3, -2), P(3, -1), P(3, 0), P(3, 1), P(3, 2),   // Right
-      P(-1, -2), P(0, -2), P(1, -2), P(2, -2),  // Top
-      P(-1, 3), P(0, 3), P(1, 3), P(2, 3),   // Bottom
-      P(3, 3), P(3, -3), P(-2, 3), P(-2, -3) // Corners
-    ));
+    /// <summary>
+    /// Tile hitbox for determining collisions when in the Burrow state
+    /// </summary>
     internal static TileHitbox InnerHitbox => _ih ?? (_ih = new TileHitbox(
       P(0, -1), // Top
       P(0, 1),  // Bottom
@@ -96,7 +97,6 @@ namespace OriMod.Abilities {
       P(1, 0)  // Right
     ));
     private static TileHitbox _eh;
-    private static TileHitbox _oh;
     private static TileHitbox _ih;
 
     /// <summary>
@@ -148,6 +148,17 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
+      if (input.leftClick.Current) {
+        if (currentSpeed < FastSpeed) {
+          currentSpeed = OriUtils.Lerp(currentSpeed, FastSpeed, 0.09f);
+        }
+      }
+      else {
+        if (currentSpeed > BaseSpeed) {
+          currentSpeed = OriUtils.Lerp(currentSpeed, BaseSpeed, 0.875f);
+        }
+      }
+
       if (IsLocal) {
         // Get intended velocity based on input
         var newVel = Vector2.Zero;
@@ -173,7 +184,7 @@ namespace OriMod.Abilities {
         }
 
         if (newVel != Vector2.Zero) {
-          velocity = Vector2.Lerp(velocity.Normalized(), newVel.Normalized(), 0.1f) * Speed;
+          velocity = Vector2.Lerp(velocity.Normalized(), newVel.Normalized(), 0.1f) * currentSpeed;
         }
       }
 
@@ -198,7 +209,7 @@ namespace OriMod.Abilities {
 
       // Breath
       if (breath > 0) {
-        breath--;
+        breath -= input.leftClick.Current ? 2.2f : 1;
       }
     }
 
@@ -263,9 +274,7 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (InUse) {
-        EnterHitbox.UpdateHitbox(player.Center);
-        OuterHitbox.UpdateHitbox(player.Center);
-        InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * 16);
+        InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * (player.gravDir < 0 ? 48 : 32));
 
         if (Active) {
           bool canBurrow = false;
@@ -276,7 +285,7 @@ namespace OriMod.Abilities {
               break;
             }
           }
-          if (!canBurrow || player.dead) {
+          if (!canBurrow) {
             SetState(State.Ending);
           }
         }
@@ -313,7 +322,8 @@ namespace OriMod.Abilities {
             currentCooldown = Cooldown;
 
             // TODO: consider moving this write to an Update method
-            velocity = Vector2.UnitY * player.gravDir * Speed;
+            currentSpeed = FastSpeed;
+            velocity = Vector2.UnitY * player.gravDir * currentSpeed;
             player.position += velocity;
           }
         }
@@ -332,7 +342,6 @@ namespace OriMod.Abilities {
 
     private static void Unload() {
       _eh = null;
-      _oh = null;
       _ih = null;
     }
   }

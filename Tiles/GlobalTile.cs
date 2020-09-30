@@ -39,9 +39,6 @@ namespace OriMod.Tiles {
           else if (Burrow.EnterHitbox.Points.Contains(pos)) {
             drawColor = Color.LimeGreen;
           }
-          else if (Burrow.OuterHitbox.Points.Contains(pos)) {
-            drawColor = Color.Turquoise;
-          }
         }
       }
     }
