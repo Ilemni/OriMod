@@ -67,7 +67,7 @@ namespace OriMod.Abilities {
         SetState(State.Starting);
         return;
       }
-      if (abilities.dash || abilities.airJump || abilities.burrow) {
+      if (abilities.dash || abilities.airJump || abilities.burrow || abilities.launch) {
         SetState(State.Inactive);
         return;
       }
