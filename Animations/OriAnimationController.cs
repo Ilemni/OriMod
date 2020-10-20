@@ -167,6 +167,10 @@ namespace OriMod.Animations {
       }
 
       if (abilities.climb) {
+        if (abilities.climb.Ending) {
+          PlayTrack("Jump", frameIndex: 0);
+          return;
+        }
         if (!abilities.climb.IsCharging) {
           if (Math.Abs(player.velocity.Y) < 0.1f) {
             PlayTrack("ClimbIdle");

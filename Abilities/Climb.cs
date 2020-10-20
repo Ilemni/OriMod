@@ -28,6 +28,8 @@ namespace OriMod.Abilities {
     private bool _isCharging;
 
     internal sbyte wallDirection;
+    // Prevent flip gravity when climbing upwards
+    private bool disableUp;
 
     protected override void ReadPacket(BinaryReader r) {
       wallDirection = r.ReadSByte();
@@ -62,7 +64,27 @@ namespace OriMod.Abilities {
       player.velocity.X = 0;
       player.controlLeft = false;
       player.controlRight = false;
-      player.controlUp = false;
+      player.controlDown = false;
+    }
+
+    protected override void UpdateEnding() {
+      player.velocity.X = wallDirection * 5f;
+      player.velocity.Y = -player.gravDir * 4f;
+    }
+
+    protected override void UpdateUsing() {
+      if (player.controlUp) {
+        disableUp = true;
+      }
+    }
+
+    protected internal override void PostUpdate() {
+      if (disableUp) {
+        if (!player.controlUp) {
+          disableUp = false;
+        }
+        player.controlUp = false;
+      }
     }
 
     internal override void Tick() {
@@ -75,8 +97,18 @@ namespace OriMod.Abilities {
           wallDirection = (sbyte)player.direction;
         }
       }
-      else if (!CanUse || !input.climb.Current) {
+      else if (Ending) {
+        int maxTime = player.gravDir == 1 ? 7 : 9;
+        if (CurrentTime >= maxTime) {
+          SetState(State.Inactive);
+        }
+      }
+      else if (!input.climb.Current || !CanUse && !player.controlUp) {
         SetState(State.Inactive);
+      }
+      else if (!CanUse && player.controlUp) {
+        // Climb over top of things
+        SetState(State.Ending);
       }
       IsCharging = Active && abilities.wallChargeJump.Unlocked && (wallDirection == 1 ? player.controlLeft : player.controlRight);
     }
