@@ -345,7 +345,7 @@ namespace OriMod {
       input = new OriInput();
 
       if (!Main.dedServ) {
-        trail = new Trail(this, 26);
+        trail = new Trail(this);
       }
     }
 

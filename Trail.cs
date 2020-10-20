@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Terraria;
 using Terraria.DataStructures;
 
 namespace OriMod {
@@ -12,20 +11,15 @@ namespace OriMod {
     /// Create an instance of <see cref="Trail"/> that will belong to <paramref name="oPlayer"/>.
     /// </summary>
     /// <param name="oPlayer">The <see cref="OriPlayer"/> this <see cref="Trail"/> will belong to.</param>
-    /// <param name="segmentCount">Number of sprites to use for the trail.</param>
     /// <exception cref="ArgumentNullException"><paramref name="oPlayer"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Expected value of <see langword="1"/> or greater.</exception>
-    internal Trail(OriPlayer oPlayer, int segmentCount) {
+    internal Trail(OriPlayer oPlayer) {
       if (oPlayer is null) {
         throw new ArgumentNullException(nameof(oPlayer));
       }
-      if (segmentCount < 1) {
-        throw new ArgumentOutOfRangeException(nameof(segmentCount), "Expected value of 1 or greater.");
-      }
 
-      segments = new TrailSegment[segmentCount];
+      segments = new TrailSegment[Count];
       int i = 0;
-      while (i < segmentCount) {
+      while (i < Count) {
         segments[i++] = new TrailSegment(oPlayer);
       }
     }
@@ -50,6 +44,11 @@ namespace OriMod {
     private int index = 0;
 
     internal bool hasDrawnThisFrame;
+
+    /// <summary>
+    /// Number of segments in a trail.
+    /// </summary>
+    public static int Count => 26;
 
     /// <summary>
     /// Call <see cref="TrailSegment.Tick"/> on each <see cref="TrailSegment"/>.

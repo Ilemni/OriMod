@@ -39,7 +39,7 @@ namespace OriMod {
       if (startAlpha > 0.16f) {
         startAlpha = 0.16f;
       }
-      time = 26;
+      time = (byte)Trail.Count;
 
       effect = SpriteEffects.None;
       if (player.direction == -1) {
@@ -66,7 +66,7 @@ namespace OriMod {
       var pos = position - Main.screenPosition;
       var spriteSize = PlayerAnim.Instance.spriteSize;
       var rect = new Rectangle(tile.X * spriteSize.X, tile.Y * spriteSize.Y, spriteSize.X, spriteSize.Y);
-      var alpha = startAlpha * (time / 26f) - 0.1f * (26 - time);
+      var alpha = startAlpha * (time / Trail.Count) - 0.1f * (26 - time);
       var color = oPlayer.SpriteColorPrimary * alpha;
       var origin = new Vector2(rect.Width / 2, rect.Height / 2 + 5 * oPlayer.player.gravDir);
 
