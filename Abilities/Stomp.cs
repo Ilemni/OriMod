@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
-using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 
 namespace OriMod.Abilities {

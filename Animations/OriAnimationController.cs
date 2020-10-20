@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using AnimLib.Animations;
 using Microsoft.Xna.Framework.Graphics;

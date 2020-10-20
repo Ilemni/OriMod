@@ -1,4 +1,3 @@
-using System.Runtime.Hosting;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;

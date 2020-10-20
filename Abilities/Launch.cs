@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
-using Terraria;
 using Terraria.ID;
 
 namespace OriMod.Abilities {
