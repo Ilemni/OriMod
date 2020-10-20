@@ -65,7 +65,7 @@ namespace OriMod.Abilities {
       }
       if (oPlayer.IsGrounded || abilities.bash || abilities.launch || oPlayer.OnWall) {
         currentCount = 0;
-        if (oPlayer.IsGrounded || abilities.bash || abilities.launch) {
+        if (oPlayer.IsGrounded || abilities.bash || abilities.launch || abilities.climb) {
           SetState(State.Inactive);
         }
       }
