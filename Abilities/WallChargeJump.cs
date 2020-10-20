@@ -82,6 +82,8 @@ namespace OriMod.Abilities {
       player.direction = Math.Sign(player.velocity.X);
       player.maxFallSpeed = Math.Abs(player.velocity.Y);
       player.controlJump = false;
+      player.controlLeft = false;
+      player.controlRight = false;
     }
 
     internal override void Tick() {
