@@ -677,7 +677,7 @@ namespace OriMod {
       /*if (Abilities.soulLink.PlacedSoulLink) {
         layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
       }*/
-      int idx = layers.Contains(PlayerLayer.HeldItem) ? layers.IndexOf(PlayerLayer.HeldItem) : (layers.Count - 1);
+      int idx = layers.IndexOf(PlayerLayer.FaceAcc);
 
       if (IsOri) {
         if (animations.playerAnim.Valid && !abilities.burrow && !player.mount.Active) {
@@ -690,8 +690,8 @@ namespace OriMod {
           layers.Insert(idx++, OriLayers.Instance.BashArrow);
         }
       }
-      if (!player.dead && !player.invis) {
-        animations.playerAnim.TryAddToLayers(layers, OriLayers.Instance.PlayerSprite, idx++);
+      if (!player.dead && !player.invis && animations.playerAnim.Valid) {
+        layers.Insert(idx++, OriLayers.Instance.PlayerSprite);
       }
       player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
       OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow && !player.mount.Active;
