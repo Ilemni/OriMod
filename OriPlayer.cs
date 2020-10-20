@@ -444,13 +444,13 @@ namespace OriMod {
         // Reduce gravity when clinging on wall
         if (OnWall) {
           // Either grounded or falling, not climbing
-          if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !abilities.climb) {
+          if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !abilities.climb && !abilities.airJump) {
             player.gravity = 0.1f;
             player.maxFallSpeed = 6f;
             player.jumpSpeedBoost -= 6f;
           }
           // Sliding upward on wall, not stomping
-          else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !abilities.stomp) {
+          else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !abilities.stomp && !abilities.airJump) {
             player.gravity = 0.1f;
             player.maxFallSpeed = 6f;
           }
