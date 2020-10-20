@@ -292,6 +292,11 @@ namespace OriMod.Abilities {
     protected virtual void UpdateUsing() { }
 
     /// <summary>
+    /// Called after all Update methods across all abilities.
+    /// </summary>
+    internal protected virtual void PostUpdate() { }
+
+    /// <summary>
     /// Rudimentary implementation, for now manually called in <see cref="OriLayers"/>.
     /// </summary>
     internal virtual void DrawEffects() { }

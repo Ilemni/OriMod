@@ -193,6 +193,12 @@ namespace OriMod.Abilities {
           ability.Update();
         }
       }
+
+      foreach (var ability in this) {
+        if (ability.Unlocked) {
+          ability.PostUpdate();
+        }
+      }
     }
 
     /// <summary>
