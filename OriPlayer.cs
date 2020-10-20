@@ -328,6 +328,17 @@ namespace OriMod {
     }
 
     /// <summary>
+    /// Reduces the value of <see cref="Player.gravity"/> to the given <paramref name="value"/>.
+    /// If <see cref="Player.gravity"/> is lower than <paramref name="value"/>, the value is unchanged.
+    /// </summary>
+    /// <param name="value"></param>
+    public void LowerGravityTo(float value) {
+      if (value < player.gravity) {
+        player.gravity = value;
+      }
+    }
+
+    /// <summary>
     /// Resets the data of this <see cref="OriPlayer"/> instance.
     /// </summary>
     internal void ResetData() {
@@ -428,7 +439,7 @@ namespace OriMod {
         player.runAcceleration = 0.5f;
         player.maxRunSpeed += 2f;
         player.noFallDmg = true;
-        player.gravity = 0.35f;
+        LowerGravityTo(0.35f);
         player.jumpSpeedBoost += 2f;
         if (IsGrounded || player.controlLeft || player.controlRight) {
           UnrestrictedMovement = false;
@@ -445,13 +456,13 @@ namespace OriMod {
         if (OnWall) {
           // Either grounded or falling, not climbing
           if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !abilities.climb && !abilities.airJump) {
-            player.gravity = 0.1f;
+            LowerGravityTo(0.1f);
             player.maxFallSpeed = 6f;
             player.jumpSpeedBoost -= 6f;
           }
           // Sliding upward on wall, not stomping
           else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !abilities.stomp && !abilities.airJump) {
-            player.gravity = 0.1f;
+            LowerGravityTo(0.1f);
             player.maxFallSpeed = 6f;
           }
         }

@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using System;
 
@@ -21,7 +22,6 @@ namespace OriMod.Abilities {
       !abilities.climb && !abilities.dash && !abilities.launch && !abilities.stomp && !abilities.wallChargeJump &&
       !abilities.wallJump;
 
-    private static float MaxFallSpeed => 2f;
     private static float RunSlowdown => 0.125f;
     private static float RunAcceleration => 0.2f;
     private static int StartDuration => 8;
@@ -55,7 +55,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateUsing() {
-      player.maxFallSpeed = MaxFallSpeed;
+      player.maxFallSpeed = MathHelper.Clamp(player.gravity * 5, 1f, 2f);
       if (!oPlayer.UnrestrictedMovement) {
         player.runSlowdown = RunSlowdown;
         player.runAcceleration = RunAcceleration;
