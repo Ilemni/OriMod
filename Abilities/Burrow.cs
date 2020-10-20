@@ -73,6 +73,7 @@ namespace OriMod.Abilities {
 
     internal bool CanBurrow(Tile t) => CanBurrowAny && IsSolid(t) || TileCollection.Instance.TilePickaxeMin[t.type] <= strength;
 
+    internal Vector2 lastPosition;
     internal Vector2 velocity;
 
     private static Point P(int x, int y) => new Point(x, y);
@@ -136,13 +137,14 @@ namespace OriMod.Abilities {
     }
 
     protected override void ReadPacket(System.IO.BinaryReader r) {
-      player.position = r.ReadVector2();
+      lastPosition = r.ReadVector2();
+      player.position = lastPosition;
       velocity = r.ReadVector2();
       breath = r.ReadSingle();
     }
 
     protected override void WritePacket(ModPacket packet) {
-      packet.WriteVector2(player.position);
+      packet.WriteVector2(lastPosition);
       packet.WriteVector2(velocity);
       packet.Write(breath);
     }
@@ -203,7 +205,6 @@ namespace OriMod.Abilities {
       }
 
       // Apply changes
-      player.position += velocity;
       player.velocity = Vector2.Zero;
       oPlayer.CreatePlayerDust();
 
@@ -239,6 +240,13 @@ namespace OriMod.Abilities {
       player.controlUp = false;
       oPlayer.KillGrapples();
       player.grapCount = 0;
+    }
+
+    protected internal override void PostUpdate() {
+      if (InUse) {
+        player.position = lastPosition + velocity;
+        lastPosition = player.position;
+      }
     }
 
     internal override void DrawEffects() {
@@ -325,6 +333,7 @@ namespace OriMod.Abilities {
             currentSpeed = FastSpeed;
             velocity = Vector2.UnitY * player.gravDir * currentSpeed;
             player.position += velocity;
+            lastPosition = player.position;
           }
         }
 
