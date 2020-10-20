@@ -90,7 +90,7 @@ namespace OriMod.Animations {
         return;
       }
       if (abilities.wallChargeJump) {
-        PlayTrack("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle * player.gravDir);
+        PlayTrack("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle * player.gravDir * abilities.wallChargeJump.xDirection);
         return;
       }
 

@@ -44,6 +44,7 @@ namespace OriMod.Abilities {
     }
     private float _angle;
     private Vector2 direction;
+    public float xDirection => direction.X < 0 ? -1 : 1;
 
     private readonly RandomChar randChar = new RandomChar();
 
