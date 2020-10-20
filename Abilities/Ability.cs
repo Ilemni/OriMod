@@ -292,9 +292,14 @@ namespace OriMod.Abilities {
     protected virtual void UpdateUsing() { }
 
     /// <summary>
-    /// Called after all Update methods across all abilities.
+    /// Called after all other Abilities are updated. This is called regardless of current <see cref="AbilityState"/>.
     /// </summary>
-    internal protected virtual void PostUpdate() { }
+    protected internal virtual void PostUpdateAbilities() { }
+
+    /// <summary>
+    /// Called in <see cref="OriPlayer.PostUpdate"/>. This is called regardless of current <see cref="AbilityState"/>.
+    /// </summary>
+    protected internal virtual void PostUpdate() { }
 
     /// <summary>
     /// Rudimentary implementation, for now manually called in <see cref="OriLayers"/>.

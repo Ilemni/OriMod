@@ -78,7 +78,7 @@ namespace OriMod.Abilities {
       }
     }
 
-    protected internal override void PostUpdate() {
+    protected internal override void PostUpdateAbilities() {
       if (disableUp) {
         if (!player.controlUp) {
           disableUp = false;

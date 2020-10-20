@@ -196,6 +196,18 @@ namespace OriMod.Abilities {
 
       foreach (var ability in this) {
         if (ability.Unlocked) {
+          ability.PostUpdateAbilities();
+        }
+      }
+    }
+
+    internal void PostUpdate() {
+      if (!CanUseAnyAbilities()) {
+        return;
+      }
+
+      foreach (var ability in this) {
+        if (ability.Unlocked) {
           ability.PostUpdate();
         }
       }

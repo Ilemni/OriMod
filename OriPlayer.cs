@@ -525,6 +525,8 @@ namespace OriMod {
         return;
       }
 
+      abilities.PostUpdate();
+
       if (DoPlayerLight && !abilities.burrow.Active) {
         Lighting.AddLight(player.Center, LightColor.ToVector3());
       }
