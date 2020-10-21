@@ -27,6 +27,19 @@ namespace OriMod.Items {
     /// </summary>
     protected abstract int SeinType { get; }
 
+    public ModRecipe GetRecipe<T>() where T : ModItem {
+      var recipe = GetRecipe();
+      recipe.AddIngredient(ModContent.ItemType<T>(), 1);
+      return recipe;
+    }
+
+    public ModRecipe GetRecipe() {
+      var recipe = new ModRecipe(mod);
+      recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
+      recipe.SetResult(this, 1);
+      return recipe;
+    }
+
     public override void SetDefaults() {
       item.buffType = GetBuffType();
       item.shoot = GetShootType();
