@@ -17,7 +17,7 @@ namespace OriMod.Items {
       item.useStyle = ItemUseStyleID.SwingThrow;
       item.consumable = true;
       item.value = 150;
-      item.createTile = mod.TileType("SpiritSapling");
+      item.createTile = ModContent.TileType<Tiles.SpiritSapling>();
     }
 
     public override void AddRecipes() {

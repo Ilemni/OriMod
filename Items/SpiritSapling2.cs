@@ -22,12 +22,12 @@ namespace OriMod.Items {
       item.useStyle = ItemUseStyleID.SwingThrow;
       item.consumable = true;
       item.value = 150000;
-      item.createTile = mod.TileType("SpiritSapling2");
+      item.createTile = ModContent.TileType<Tiles.SpiritSapling>(); // TODO: Tiles.SpiritSapling2
     }
 
     public override void AddRecipes() {
       var recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.ItemType("SpiritSapling"), 1);
+      recipe.AddIngredient(ModContent.TileType<Tiles.SpiritSapling>(), 1);
       recipe.AddIngredient(ItemID.SoulofLight, 30);
     }
   }
