@@ -170,6 +170,9 @@ namespace OriMod {
     public static event Action OnUnload;
 
     public override void Unload() {
+      OnUnload?.Invoke();
+      OnUnload = null;
+      
       Instance = null;
 
       BashKey = null;
@@ -180,9 +183,6 @@ namespace OriMod {
       BurrowKey = null;
       //SoulLinkKey = null;
       ConfigClient = null;
-
-      OnUnload?.Invoke();
-      OnUnload = null;
     }
 
     public override void HandlePacket(BinaryReader reader, int fromWho) {

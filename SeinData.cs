@@ -6,8 +6,6 @@ using System;
 
 namespace OriMod {
   public sealed class SeinData {
-    static SeinData() => OriMod.OnUnload += Unload;
-
     private SeinData() { }
 
     /// <summary>
@@ -208,6 +206,7 @@ namespace OriMod {
       });
 
       All = list.ToArray();
+      OriMod.OnUnload += Unload;
     }
 
     private static void Unload() {

@@ -13,7 +13,7 @@ namespace OriMod.Utilities {
     /// <para>If this method returns <see langword="false"/>, this value is not modified.</para>
     /// </param>
     /// <param name="entity">Closest <see cref="Entity"/> in-range, -or- <see langword="null"/> if no entities are in range.</param>
-    /// <param name="distanceSquaredCheck">How the closest distance is checked. Defaults to `<see cref="DistanceBetweenTwoEntitiesSquared(Entity, Entity)"/>`, getting closest distance between two entities.</param>
+    /// <param name="distanceSquaredCheck">How the closest distance is checked. Defaults to `<see cref="OriUtils.DistanceBetweenTwoEntitiesSquared(Entity, Entity)"/>`, getting closest distance between two entities.</param>
     /// <param name="condition">Extra condition to filter out entities. If <paramref name="condition"/> returns false, the entity is skipped.</param>
     /// <typeparam name="T">Type of Entity (i.e. <see cref="Player"/>, <see cref="NPC"/>, <see cref="Projectile"/>).</typeparam>
     /// <returns><see langword="true"/> if there is an <see cref="Entity"/> closer than <paramref name="distance"/> (<paramref name="entity"/> is not <see langword="null"/>), otherwise <see langword="false"/>.</returns>
