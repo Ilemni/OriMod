@@ -14,7 +14,7 @@ namespace OriMod.Items {
       recipe.AddIngredient(ItemID.SilverBar, 8);
       recipe.AddRecipe();
 
-      recipe = new ModRecipe(mod);
+      recipe = GetRecipe();
       recipe.AddIngredient(ItemID.TungstenBar, 8);
       recipe.AddRecipe();
     }
