@@ -11,7 +11,7 @@ namespace OriMod {
     private SeinData() { }
 
     /// <summary>
-    /// List of all <see cref="SeinData"/>s in the mod.
+    /// Collection of all <see cref="SeinData"/>s in the mod.
     /// </summary>
     public static SeinData[] All { get; private set; }
 
