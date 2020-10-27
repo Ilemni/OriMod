@@ -85,7 +85,7 @@ namespace OriMod.Items {
     protected override int SeinType => 6;
 
     public override void AddRecipes() {
-      var recipe = GetRecipe<SpiritOrb6>();
+      var recipe = GetRecipe<SpiritOrb5>();
       recipe.AddIngredient(ItemID.SpectreBar, 12);
       recipe.AddIngredient(ItemID.SoulofLight, 15);
       recipe.AddRecipe();
