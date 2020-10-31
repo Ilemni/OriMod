@@ -46,7 +46,7 @@ namespace OriMod {
           field.SetValue(newSein, newVal);
         }
         list.Add(newSein);
-        OriMod.Log.Info(newSein.CalculateStuff(tierName));
+        //OriMod.Log.Debug(newSein.CalculateStuff(tierName));
       }
 
       // Tier 1 (Silver)
@@ -351,7 +351,7 @@ namespace OriMod {
       int maxShotsPerBurst = Math.Min(shotsToPrimaryTarget + shotsPerTarget * (targets - 1), maxShotsAtOnce);
       int maxDmgPerBurst = damage * maxShotsPerBurst;
       int maxDmgPerAllBursts = maxDmgPerBurst * bursts;
-      
+
       int minDPS = (int)(minDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong));
       int maxDPS = (int)(maxDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong));
 

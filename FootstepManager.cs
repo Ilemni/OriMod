@@ -127,6 +127,7 @@ namespace OriMod {
       });
 
       // Mod tiles
+      int missingSoundCount = 0;
       for (int i = TileID.Count; i < count; i++) {
         if (!Main.tileSolid[i] && !Main.tileSolidTop[i]) {
           TileFootstepSounds[i] = FootstepSound.None;
@@ -134,7 +135,18 @@ namespace OriMod {
         }
         var tileName = TileLoader.GetTile(i).Name;
         var name = tileName.Substring(tileName.LastIndexOf('.') + 1);
-        TileFootstepSounds[i] = SoundFromName(name);
+        var sound = SoundFromName(name);
+        TileFootstepSounds[i] = sound;
+
+        if (sound == FootstepSound.NoModTranslation) {
+          // Print in debug build only, or try implementing more catches for tile names to sounds
+          //OriMod.Log.Warn($"Could not get appropriate sound from mod tile name \"{name}\"");
+          missingSoundCount++;
+        }
+      }
+
+      if (missingSoundCount > 0) {
+        OriMod.Log.Debug($"Could not guess footstep sounds for {missingSoundCount} tiles.");
       }
     }
 
@@ -180,7 +192,6 @@ namespace OriMod {
         return FootstepSound.Wood;
       }
 
-      OriMod.Log.Warn($"Could not get appropriate sound from mod tile name \"{name}\"");
       return FootstepSound.NoModTranslation;
     }
 
@@ -209,7 +220,7 @@ namespace OriMod {
         case FootstepSound.Rock:
           return Footstep(5, 0.7f);
         case FootstepSound.Snow:
-        return Footstep(10, 0.45f);
+          return Footstep(10, 0.45f);
         case FootstepSound.LightDark:
           return Footstep(10, 0.3f);
         case FootstepSound.Wood:
