@@ -1,3 +1,27 @@
+# v3.0.0.3
+
+## Bug Fixes
+
+Fixed server errors that prevented some mod bosses from spawning.
+
+---
+
+# v3.0.0.2
+
+## Bug Fixes
+
+Fixed invalid Sein recipe.
+
+---
+
+# v3.0.0.1
+
+### Reupload to Mod Browser
+
+Some issues involving an outdated github repo used for mod browser uploads
+
+---
+
 # v3.0
 
 ## Updated to tML v0.11.7.7

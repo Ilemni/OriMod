@@ -1,5 +1,5 @@
 author = Fro Zen, TwiliChaos
-version = 3.0.0.2
+version = 3.0.0.3
 displayName = Arrival Of The Blind Forest
 homepage = https://forums.terraria.org/index.php?threads/arrival-of-the-blind-forest.72356/
 includePDB = true

@@ -1,9 +1,10 @@
 Ori and the Blind Forest / Ori and the Will of the Wisps
 crossover pack.
 
---- v3.0.0.2 --
+--- v3.0.0.3 --
 --- Bug Fixes ---
-- Fixed circular dependency in Spirit Orb recipe.
+- Fixed server errors that prevented some mod bosses from
+  spawning.
 
 --- v3.0 ---
 Updated to tML v0.11.7.7
