@@ -378,7 +378,9 @@ namespace OriMod {
         player.immuneNoBlink = true;
       }
 
-      trail.hasDrawnThisFrame = false;
+      if (Main.netMode != NetmodeID.Server) {
+        trail.hasDrawnThisFrame = false;
+      }
     }
 
     /*public override void UpdateDead() {
