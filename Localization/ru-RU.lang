@@ -57,7 +57,7 @@ ItemName.SpiritOrb8={$Mods.OriMod.Common.SpiritOrb} Большого Масте�
 BuffName.SeinBuff8={$Mods.OriMod.Common.Sein} (Большой Мастер)
 ItemTooltip.SpiritOrb8=Призывает всю мощь Древа Духов.
 BuffDescription.SeinBuff8="Максимальная мощь Древа Духов."
-ProjectileName.SpiritFlame1=Большое {$Mods.OriMod.Common.SF}
+ProjectileName.SpiritFlame1={$Mods.OriMod.Common.SF} Мастера
 
 --- Potions ---
 
@@ -77,21 +77,21 @@ ItemName.SpiritSapling2=Росток Древа Духов
 MapObject.SpiritSapling2=Росток Древа Духов
 ItemTooltip.SpiritSapling2=Юное Древо Духов всё еще растет.
 
-ItemName.SpiritSapling3=Spirit Tree
-MapObject.SpiritSapling3=Spirit Tree
+ItemName.SpiritSapling3=Древо Духов
+MapObject.SpiritSapling3=Древо Духов
 ItemTooltip.SpiritSapling3=Выросшее Древо Духов, чуть-чуть меньше Сильнейших.
 
 --- Abilities ---
 
-ItemName.AbilityMedallionEmpty=Образец {$Mods.OriMod.Common.Medal}
-ItemTooltip.AbilityMedallionEmpty=Используй, чтобы создать {$Mods.OriMod.Common.Medal} открыть или улучшить возможности.
+ItemName.AbilityMedallionEmpty=Образец Медальйона Духов
+ItemTooltip.AbilityMedallionEmpty=Используй, чтобы создать {$Mods.OriMod.Common.Medal} и открыть или улучшить возможности.
 
 ---
 
-ItemName.AirJumpLevel1=Двойной Прыжок {$Mods.OriMod.Common.Medal}
-ItemName.AirJumpLevel2=Тройной Прыжок {$Mods.OriMod.Common.Medal}
-ItemName.AirJumpLevel3=Четверократный Прыжок {$Mods.OriMod.Common.Medal}
-ItemName.AirJumpLevel4=Пятикратный Прыжок {$Mods.OriMod.Common.Medal}
+ItemName.AirJumpLevel1= Медальйон Двойного Прыжка
+ItemName.AirJumpLevel2=Медальйон Тройного Прыжка
+ItemName.AirJumpLevel3=Медальйон Четверократного Прыжка
+ItemName.AirJumpLevel4=Медальйон Пятикратного Прыжка
 
 ItemTooltip.AirJumpLevel1=Открывает навык "Прыжок в Воздухе"\nПозволяет прыгать в воздухе!
 ItemTooltip.AirJumpLevel2=Улучшает "Прыжок в Воздухе" до Второго Уровня\nПозволяет сделать второй прыжок в воздухе!
@@ -100,20 +100,20 @@ ItemTooltip.AirJumpLevel4=Улучшает "Прыжок в Воздухе" до
 
 ---
 
-ItemName.BashLevel1=Отталкивание {$Mods.OriMod.Common.Medal}
-ItemName.BashLevel2=Усиленное отталкивание {$Mods.OriMod.Common.Medal}
-ItemName.BashLevel3=Мощное отталкивание {$Mods.OriMod.Common.Medal}
+ItemName.BashLevel1=Медальйон Отталкивания
+ItemName.BashLevel2=Медальйон Усиленного Отталкивания
+ItemName.BashLevel3=Медальйон Мощного Отталкивания
 
-ItemTooltip.BashLevel1=Открывает навык "Отталкивание"\nПозволяет отскакивать от врагов, запуская себя или свою цель в\nпротивоположном направлении!
-ItemTooltip.BashLevel2=Улучшает "Отталкивание" до Второго Уровня\nПозволяет отскакивать от снарядов и наносить ими урон врагам!
-ItemTooltip.BashLevel3=Улучшает "Отталкивание" до Третьего Уровня\nХорошо усиляет Скорость, Дистанцию и Наносимый урон Рывка!
+ItemTooltip.BashLevel1=Открывает навык "Отталкивание"\nПозволяет отталкиваться от врагов, запуская себя или свою цель в\nпротивоположном направлении!
+ItemTooltip.BashLevel2=Улучшает "Отталкивание" до Второго Уровня\nПозволяет отталкиваться от снарядов и наносить ими урон врагам!
+ItemTooltip.BashLevel3=Улучшает "Отталкивание" до Третьего Уровня\nХорошо усиляет Скорость, Дистанцию и Наносимый урон Отталкивания!
 
 
 ---
 
-ItemName.BurrowLevel1=Бурение {$Mods.OriMod.Common.Medal}
-ItemName.BurrowLevel2=Усиленное Бурение {$Mods.OriMod.Common.Medal}
-ItemName.BurrowLevel3=Большое Бурение {$Mods.OriMod.Common.Medal}
+ItemName.BurrowLevel1=Медальйон Бурения
+ItemName.BurrowLevel2=Медальйон Усиленного Бурения
+ItemName.BurrowLevel3=Медальйон Мощного Бурения
 
 ItemTooltip.BurrowLevel1=Открывает "Бурение"\nПозволяет прорываться сквозь слой земли!
 ItemTooltip.BurrowLevel2=Улучшает "Бурение" до Второго Уровня\nПозволяет прорываться сквозь более толстый слой земли!
@@ -122,10 +122,10 @@ ItemTooltip.BurrowLevel3=Улучшает "Бурение" до Третьего
 
 ---
 
-ItemName.ChargeJumpLevel1=Мощный прыжок {$Mods.OriMod.Common.Medal}
-ItemName.ChargeJumpLevel2=Мощный прыжок от стены {$Mods.OriMod.Common.Medal}
-ItemName.ChargeJumpLevel3=Запуск {$Mods.OriMod.Common.Medal}
-ItemName.ChargeJumpLevel4=Ультра Запуск {$Mods.OriMod.Common.Medal}
+ItemName.ChargeJumpLevel1=Медальйон Мощного Прыжка
+ItemName.ChargeJumpLevel2=Медальйон Мощного Прыжка от стены
+ItemName.ChargeJumpLevel3=Медальйон Запуска
+ItemName.ChargeJumpLevel4=Медальйон Мощного Запуска
 
 ItemTooltip.ChargeJumpLevel1=Открывает навык "Мощный прыжок"\nПозволяет прыгать высоко в Воздух!
 ItemTooltip.ChargeJumpLevel2=Улучшает навык "Мощный прыжок" до Второго Уровня\nПозволяет делать Мощный Прыжок от стены!
@@ -135,14 +135,14 @@ ItemTooltip.ChargeJumpLevel4=Улучшает навык "Мощный прыж�
 
 ---
 
-ItemName.ClimbLevel1=Карабканье {$Mods.OriMod.Common.Medal}
-ItemTooltip.ClimbLevel1=Открывает Карабканье\nПозволяет держаться на стенах\nПозволяет взбираться по стенам!
+ItemName.ClimbLevel1={$Mods.OriMod.Common.Medal} Альпинизма
+ItemTooltip.ClimbLevel1=Открывает Альпинизм\nПозволяет держаться на стенах\nПозволяет взбираться по стенам!
 
 ---
 
-ItemName.DashLevel1=Рывок {$Mods.OriMod.Common.Medal}
-ItemName.DashLevel2=Рывок в воздухе {$Mods.OriMod.Common.Medal}
-ItemName.DashLevel3=Мощный рывок {$Mods.OriMod.Common.Medal}
+ItemName.DashLevel1=Медальйон Рывка
+ItemName.DashLevel2=Медальйон Рывка в Воздухе
+ItemName.DashLevel3=Медальйон Мощного Рывка
 
 ItemTooltip.DashLevel1=Открывает навык "Рывок"\nПозволяет делать высокоскоростной импульс!
 ItemTooltip.DashLevel2=Улучшает навык "Рывок" до Второго уровня\nПозволяет делать рывки в Воздухе!
@@ -151,50 +151,50 @@ ItemTooltip.DashLevel3=Улучшает навык "Рывок" до Треть�
 
 ---
 
-ItemName.GlideLevel1=Парение {$Mods.OriMod.Common.Medal}
+ItemName.GlideLevel1=Медальйон Парения
 ItemTooltip.GlideLevel1=Открывает навык "Парение"\nПозволяет парить в воздухе!
 
 ---
 
-ItemName.StompLevel1=Топот {$Mods.OriMod.Common.Medal}
-ItemName.StompLevel2=Усиленный топот {$Mods.OriMod.Common.Medal}
-ItemName.StompLevel3=Мощный топот {$Mods.OriMod.Common.Medal}
+ItemName.StompLevel1=Медальйон Топота
+ItemName.StompLevel2=Медальйон Усиленного Топота
+ItemName.StompLevel3=Медальйон Мощного Топота
 
 ItemTooltip.StompLevel1=Открывает навык "Топот"\nПозволяет ударить в землю, создавая волну,\nнаносящую урон находящимся поблизости врагам!
-ItemTooltip.StompLevel2=Улучшает навык "Топот" до Второго Уровня\nУсиляет "Топот" для нанесения ещё\nfбольшего количества урона, отталкивая врагов далеко назад!
+ItemTooltip.StompLevel2=Улучшает навык "Топот" до Второго Уровня\nУсиляет "Топот" для нанесения ещё\nбольшего количества урона, отталкивая врагов далеко назад!
 ItemTooltip.StompLevel3=Улучшает навык "Топот" до Третьего Уровня\nВаш топот становится ещё сильнее!
 
 
 ---
 
-ItemName.WallJumpLevel1=Прыжок от стены {$Mods.OriMod.Common.Medal}
+ItemName.WallJumpLevel1=Медальйон Прыжка от стены
 ItemTooltip.WallJumpLevel1=Открывает навык "Прыжок от стены"\nПозволяет сделать толчок от стены!
 
 --- Lores ---
 
-Lore.AirJump.1=Leru's gift, to cut through the air, proved instrumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
-Lore.AirJump.2={$Mods.OriMod.Common.LoreNibel}In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving her land.
-Lore.AirJump.3={$Mods.OriMod.Common.LoreNibel}Gumo had stolen the Water Vein from Leru. Without it, she could not enter the Ginso tree, the path to saving Nibel from Decay.
-Lore.AirJump.4={$Mods.OriMod.Common.LoreNibel}Leru had understood. Despite her determination, she simply lacked the strength to face Ginso's malaise. Even Reem, certainly more capable than Leru, has fallen to it already.
-Lore.Bash.1={$Mods.OriMod.Common.LoreNibel}Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise.
-Lore.Bash.2={$Mods.OriMod.Common.LoreNibel}When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind.
-Lore.Bash.3={$Mods.OriMod.Common.LoreNibel}Decay was a vicious force, Reem was forced to learn when he ascended the Ginso Tree. That knowledge was left to rot in his Ancestral Tree, deep within.
-Lore.Burrow.1={$Mods.OriMod.Common.LoreNiwen}Many are the nameless Spirits of Niwen that have fallen to the Decay when the Mother of Light passed.
-Lore.Burrow.2={$Mods.OriMod.Common.LoreNiwen}What is a name, after life? It is a way to be remembered. A name conjures to mind the personality and accomplishments of those before.
-Lore.Burrow.3={$Mods.OriMod.Common.LoreNiwen}The Mother of Light, the Spirit Willow, what was her name? Was it forgotten? Had her second death preceded her first?
-Lore.ChargeJump.1={$Mods.OriMod.Common.LoreNibel}Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful Spirit, the blinding of Nibel and loss of all her friends caused great despair. She remained in Sorrow Pass until her death.
-Lore.ChargeJump.2=A union of Nir's and Tatsu's gifts, this {$Mods.OriMod.Common.Medal} represents the final ability Ori used in their quest to save Nibel.
-Lore.ChargeJump.3={$Mods.OriMod.Common.LoreNiwen}A Spirit bearing a Spirit Tree's Light? A ridiculous idea; a Spirit carrying so much Light would surely burst and sink roots on the spot.
-Lore.ChargeJump.4={$Mods.OriMod.Common.LoreNiwen}Normally Spiritkind is prepared for the death of their Spirit Tree; an extinction as a result of such a death is a truly rare event. Yet perhaps the cause was due to the nature of the Spirit Tree: willow trees have an incredibly short lifespan, and Niwen's spirits may have failed to prepare in time.
-Lore.Climb.1={$Mods.OriMod.Common.LoreNibel}Tatsu and Atsu, brother and sister, often played in the Misty Woods, but when the Spirit Tree's Light faltered, Atsu's own light could not last. When Ori found Atsu, she was already an Ancestral Tree.
-Lore.Dash.1={$Mods.OriMod.Common.LoreNibel}Eki was known as the fastest of spirits. Though that doesn't mean he was in a league of his own, many are able to keep pace.
-Lore.Dash.2={$Mods.OriMod.Common.LoreNibel}Formidable rivals to Eki were well-known in Nibel's time. Among these were Amgis, Eatij, and Anoive.
-Lore.Dash.3={$Mods.OriMod.Common.LoreNibel}In time, the spirit Sudicul would prove to be faster than even Eki.
-Lore.Glide.1=This {$Mods.OriMod.Common.Medal} holds memories of a feather, one that Ori took when he tricked Kuro.
-Lore.Stomp.1=Despite being known as the strongest of Nibel's Spirits, Ilo was a gentle Spirit. Still, his strength knew no bounds. This {$Mods.OriMod.Common.Medal} was a manifestation of his power.
-Lore.Stomp.2={$Mods.OriMod.Common.LoreNibel}Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath...
-Lore.Stomp.3={$Mods.OriMod.Common.LoreNibel}Ori alone would prove that strength does not come from power alone, no matter how much of it one has.
-Lore.WallJump.Lv1=Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift.
+Lore.AirJump.1=Дар Леру, рассекать воздух, который помог Ори в их поисках. Этот {$Mods.OriMod.Common.Medal} был хорошим подарком.
+Lore.AirJump.2={$Mods.OriMod.Common.LoreNibel}Спустя долгих месяцев после Ослепления Нибель, Леру нашла ключ, запечатанный в Дереве Гинзо, а с ним, возможно, и путь к спасению ее земель.
+Lore.AirJump.3={$Mods.OriMod.Common.LoreNibel}Гумо украл Водяную Жилу у Леру. Без неё, она не могла войти в Дерево Гинзо, что было единственным способом спасти Лес от Порчи.
+Lore.AirJump.4={$Mods.OriMod.Common.LoreNibel}Леру поняла. Несмотря на всю её решимость, защитнице не хватало сил, чтобы сражаться с бедой Гинзо. Даже Рим, будучи сильнее Леру, пал.
+Lore.Bash.1={$Mods.OriMod.Common.LoreNibel}Рим быстро изучил все проблемы, пытающие Нибель, и возможные к этому решения. Он делал всё сам, стараясь излечить болезнь как можно быстрее. Как оказалось, это было совсем не мудро.
+Lore.Bash.2={$Mods.OriMod.Common.LoreNibel}Когда воды Дерева Гинзо были отравлены, Рим пытался помочь, но он и представить не мог, насколько сильной будет Порча после Ослепления Леса.
+Lore.Bash.3={$Mods.OriMod.Common.LoreNibel}Порча была коварной силой, которую пришлось узнать Риму, когда он взобрался на Дерево Гинзо. Эти знания остались глубоко в корнях Древа Предков.
+Lore.Burrow.1={$Mods.OriMod.Common.LoreNiwen}Когда мать Света Ушла, много Духов Нивена были поглощены Порчей.
+Lore.Burrow.2={$Mods.OriMod.Common.LoreNiwen}Какое имя у жизни?Имя, которое вызывает в памяти личности и достижения тех, кто был раньше?
+Lore.Burrow.3={$Mods.OriMod.Common.LoreNiwen}Мать Света, Дух Уиллоу, какое у неё было имя? Было ли забыто оно? Неужели вторая её смерть предшествовала первой?
+Lore.ChargeJump.1={$Mods.OriMod.Common.LoreNibel}Ори почуствовал непреодолимую печаль у Древа Предков Нир. Когда-то он был веселый, жизнерадостный Дух,но ослепление Нибеля и потеря всех ее друзей вызвали большое отчаяние. Она прожила с этим горем до самой смерти.
+Lore.ChargeJump.2=Как слияние даров Татсу и Нир, этот {$Mods.OriMod.Common.Medal} предоставил последнюю возможность, которую Ори использовал ради своей Миссии.
+Lore.ChargeJump.3={$Mods.OriMod.Common.LoreNiwen}Дух, несущий Свет Древа Духов? Какая смехотворная мысль! Ведь Дух, нёсший так много Света, мог запросто взорваться и откинуться на месте.
+Lore.ChargeJump.4={$Mods.OriMod.Common.LoreNiwen}Обычно Духи всегда готовы к смерти своего Древа, но вымирание в последствии такой смерти - действительно редкое событие. Конечно, причиной этому была природа Дерева Духов: ивы имели безумно короткую продолжительность жизни, а Духи Нивена, возможно, не успели подготовиться вовремя.
+Lore.Climb.1={$Mods.OriMod.Common.LoreNibel}Татсу и Атсу, брат и сестра, часто играли в Туманном Лесу, но когда Свет Древа Духов погас, Свет Атсу не смог держаться дольше. Когда Ори нашёл Атсу, она уже давно превратилась в Древо Предков.
+Lore.Dash.1={$Mods.OriMod.Common.LoreNibel}Эки был известен, как самый быстрый среди Духов. Пусть он и не был в своей лиге, он всегда старался идти в ногу со временем.
+Lore.Dash.2={$Mods.OriMod.Common.LoreNibel}Во времена Нибеля, Эки имел грозных соперников,среди которых были Амгис, Итий и Анойва.
+Lore.Dash.3={$Mods.OriMod.Common.LoreNibel}Со временем даже Судикул докажет то, что он быстрее Эки.
+Lore.Glide.1=Этот {$Mods.OriMod.Common.Medal} содержит воспоминания о том, как Ори подобрал перо обманутой им Куро.
+Lore.Stomp.1=Несмотря на то, что Ило был сильнейшим Духом Нибеля, он также был очень нежным Духом. Пусть его сила и не знала пределов. Этот {$Mods.OriMod.Common.Medal} был демонстрацией его силы.
+Lore.Stomp.2={$Mods.OriMod.Common.LoreNibel}Ило отдал все силы, чтобы защитить Нибель, но все равно ни один Дух не выжил после Гнева Куро...
+Lore.Stomp.3={$Mods.OriMod.Common.LoreNibel}Только Ори мог доказать, что сила не основана только от власти, пусть её будет много или совсем чуть-чуть...
+Lore.WallJump.Lv1=Фил был одним из первых, чей дар скоро должен быть оставлен Ори. Этот {$Mods.OriMod.Common.Medal} был демонстрацией его подарка.
 
 ---
 
