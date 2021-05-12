@@ -9,6 +9,46 @@ Common.Medal=Spirit Medallion
 Common.LoreNibel=Words of the Fallen Land of Nibel: 
 Common.LoreNiwen=Words of the Spirits of New Niwen: 
 
+--- Config ---
+
+Config.Label.Title=Client Config
+
+--
+Config.Header.Gameplay=Gameplay
+--
+
+Config.Label.PlayerLight=Player Light
+Config.Tooltip.PlayerLight=Determines if your player faintly glows.\nDefault: true
+
+Config.Label.PlayerLightGlobal=Global Player Light
+Config.Tooltip.PlayerLightGlobal=Determines if all other players glow based on your config or their config.\nDefault: false
+
+--
+Config.Header.Controls=Controls
+--
+
+Config.Label.StompDelay=Stomp Activation Delay
+Config.Tooltip.StompDelay=Duration the Stomp key must be held until activating Stomp.\nDefault: 0
+
+Config.Label.SoftCrouch=Soft Crouch
+Config.Tooltip.SoftCrouch=Allows moving while holding crouch.\nDefault: false
+
+Config.Label.SmoothCamera=Smooth Camera
+Config.Tooltip.SmoothCamera=Smooths the camera when it moves.\nDefault: true
+
+Config.Label.BurrowControls=Burrow Controls
+Config.Tooltip.BurrowControls=Determines which controls you use while burrowing.\nDefault: Mouse
+
+--
+Config.Header.Aesthetics=Aesthetics
+--
+
+Config.Label.Color1=Player Color
+Config.Tooltip.Color1=The color of your Spirit.\nDefault: 210, 255, 255
+
+Config.Label.Color2=Player Color (Secondary)
+Config.Tooltip.Color2=The secondary color of your Spirit.\nDefault: 0, 0, 0, 0
+
 --- Sein, Spirit Orbs, Spirit Flame ---
 
 ItemName.SpiritOrb1={$Mods.OriMod.Common.SpiritOrb}

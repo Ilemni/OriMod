@@ -9,48 +9,56 @@ namespace OriMod {
   /// <summary>
   /// Configurations for the player's own Ori settings.
   /// </summary>
-  [Label("Client Config")]
+  [LocalizedLabel("Title")]
   public class OriConfigClient1 : ModConfig {
     public override ConfigScope Mode => ConfigScope.ClientSide;
 
-    [Header("Gameplay")]
-
-    [Label("Player Light"), Tooltip("Determines if your player faintly glows.\nDefault: true")]
+    [Header("$Mods.OriMod.Config.Header.Gameplay")]
+    
+    [LocalizedLabel("PlayerLight")]
+    [LocalizedTooltip("PlayerLight")]
     [DefaultValue(true)]
     public bool playerLight;
 
-    [Label("Global Player Light"), Tooltip("Determines if all other players glow based on your config or their config.\nDefault: false")]
+    [LocalizedLabel("PlayerLightGlobal")]
+    [LocalizedTooltip("PlayerLightGlobal")]
     [DefaultValue(false)]
     public bool globalPlayerLight;
 
-    [Header("Controls")]
-
-    [Label("Stomp Activation Delay"), Tooltip("Duration the Stomp key must be held until activating Stomp.\nDefault: 0")]
+    [Header("$Mods.OriMod.Config.Header.Controls")]
+    
+    [LocalizedLabel("StompDelay")]
+    [LocalizedTooltip("StompDelay")]
     [DefaultValue(0)]
     public float stompHoldDownDelay;
 
-    [Label("Soft Crouch"), Tooltip("Allows moving while holding crouch.\nDefault: false")]
+    [LocalizedLabel("SoftCrouch")]
+    [LocalizedTooltip("SoftCrouch")]
     [DefaultValue(false)]
     public bool softCrouch;
 
-    [Label("Smooth Camera"), Tooltip("Smooths the camera when it moves.\nDefault: true")]
+    [LocalizedLabel("SmoothCamera")]
+    [LocalizedTooltip("SmoothCamera")]
     [DefaultValue(true)]
     public bool smoothCamera;
 
     [JsonIgnore]
-    internal bool BurrowToMouse => _burrowControls == "Mouse";
+    internal bool BurrowToMouse => burrowControls == "Mouse";
 
-    [Label("Burrow Control"), Tooltip("Determines which controls you use while burrowing.\nDefault: Mouse")]
+    [LocalizedLabel("BurrowControls")]
+    [LocalizedTooltip("BurrowControls")]
     [DefaultValue("Mouse"), OptionStrings(new[] { "WASD", "Mouse" })]
-    private string _burrowControls;
+    public string burrowControls;
 
-    [Header("Aesthetics")]
+    [Header("$Mods.OriMod.Config.Header.Aesthetics")]
 
-    [Label("Player Color"), Tooltip("The color of your Spirit.\nDefault: 210, 255, 255")]
+    [LocalizedLabel("Color1")]
+    [LocalizedTooltip("Color1")]
     [DefaultValue(typeof(Color), "210, 255, 255, 255"), ColorNoAlpha]
     public Color playerColor;
 
-    [Label("Player Color (Secondary)"), Tooltip("The secondary color of your Spirit.\nDefault: 0, 0, 0, 0")]
+    [LocalizedLabel("Color2")]
+    [LocalizedTooltip("Color2")]
     [DefaultValue(typeof(Color), "0, 0, 0, 0")]
     public Color playerColorSecondary;
 
@@ -73,5 +81,15 @@ namespace OriMod {
       oPlayer.SpriteColorPrimary = playerColor;
       oPlayer.SpriteColorSecondary = playerColorSecondary;
     }
+  }
+
+  // Shorthand [LocalizedLabel("MyKey")] vs [Label("$Mods.OriMod.Config.Label.MyKey")]
+  // Does not work with HeaderAttribute, since ModLoader.Config.UI.UIModConfig uses "obj.GetType() == typeof(HeaderAttribute)"
+  class LocalizedLabelAttribute : LabelAttribute {
+    public LocalizedLabelAttribute(string labelKey) : base($"$Mods.OriMod.Config.Label.{labelKey}") {
+    }
+  }
+  class LocalizedTooltipAttribute : TooltipAttribute {
+    public LocalizedTooltipAttribute(string tooltipKey) : base($"$Mods.OriMod.Config.Tooltip.{tooltipKey}") { }
   }
 }
