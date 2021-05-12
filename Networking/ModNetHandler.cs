@@ -11,12 +11,12 @@ namespace OriMod.Networking {
     /// <summary>
     /// Type for <see cref="OriPlayerPacketHandler"/>.
     /// </summary>
-    internal const byte OriState = 1;
+    private const byte OriState = 1;
 
     /// <summary>
     /// Type for <see cref="AbilityPacketHandler"/>.
     /// </summary>
-    internal const byte AbilityState = 2;
+    private const byte AbilityState = 2;
 
     /// <inheritdoc cref="OriPlayerPacketHandler"/>
     internal readonly OriPlayerPacketHandler oriPlayerHandler = new OriPlayerPacketHandler(OriState);

@@ -2,9 +2,18 @@
 **/.vscode/
 **/bin/
 **/obj/
+
+# Sounds are not to be included in this repository
 **/Sounds/
+
+# Source image files
 *.xcf
 *.pdn
 *.kra
 ori_sheet_*.png
+
+# Code documentation
 OriMod.xml
+
+# Jetbrain Rider Cache
+.idea/

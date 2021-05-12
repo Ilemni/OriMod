@@ -6,7 +6,7 @@ namespace OriMod.Projectiles.Abilities {
   /// <para>Ending stomp spawns a <see cref="StompEnd"/> projectile to deal damage.</para>
   /// </summary>
   public sealed class LaunchProjectile : AbilityProjectile {
-    public override byte abilityID => AbilityID.Launch;
+    public override byte Id => AbilityId.Launch;
 
     public override void SetDefaults() {
       base.SetDefaults();
@@ -14,7 +14,7 @@ namespace OriMod.Projectiles.Abilities {
       projectile.height = 56;
     }
 
-    public override void CheckAbilityActive() {
+    protected override void CheckAbilityActive() {
       if (ability.Active) {
         projectile.timeLeft = 10;
       }

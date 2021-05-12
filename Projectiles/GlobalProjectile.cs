@@ -21,6 +21,7 @@ namespace OriMod.Projectiles {
         proj.friendly = true;
         return false;
       }
+
       FramesSinceLastBash++;
       return true;
     }

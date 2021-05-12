@@ -7,8 +7,9 @@ namespace OriMod.Projectiles.Abilities {
   /// Projectile hitbox for when the player is in the stomping animation. Used to end <see cref="Stomp"/>.
   /// <para>Ending stomp spawns a <see cref="StompEnd"/> projectile to deal damage.</para>
   /// </summary>
+  // ReSharper disable once ClassNeverInstantiated.Global
   public sealed class StompProjectile : AbilityProjectile {
-    public override byte abilityID => AbilityID.Stomp;
+    public override byte Id => AbilityId.Stomp;
 
     public override void SetDefaults() {
       base.SetDefaults();
@@ -16,7 +17,7 @@ namespace OriMod.Projectiles.Abilities {
       projectile.height = 56;
     }
 
-    public override void Behavior() {
+    protected override void Behavior() {
       base.Behavior();
       // Height is stretched based on velocity.
       projectile.height = Math.Max(56, (int)(oPlayer.player.velocity.Y * 2));
@@ -24,7 +25,7 @@ namespace OriMod.Projectiles.Abilities {
     }
 
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-      var stomp = oPlayer.abilities.stomp;
+      Stomp stomp = oPlayer.abilities.stomp;
       if (target.life > 0 && stomp.InUse) {
         stomp.EndStomp();
       }

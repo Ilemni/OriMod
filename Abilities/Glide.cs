@@ -1,6 +1,6 @@
+using System;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
-using System;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -11,7 +11,7 @@ namespace OriMod.Abilities {
   /// </remarks>
   public sealed class Glide : Ability, ILevelable {
     internal Glide(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.Glide;
+    public override int Id => AbilityId.Glide;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 1;
@@ -27,39 +27,38 @@ namespace OriMod.Abilities {
     private static int StartDuration => 8;
     private static int EndDuration => 10;
 
-    private readonly RandomChar randStart = new RandomChar();
-    private readonly RandomChar randActive = new RandomChar();
-    private readonly RandomChar randEnd = new RandomChar();
+    private readonly RandomChar _randStart = new RandomChar();
+    private readonly RandomChar _randActive = new RandomChar();
+    private readonly RandomChar _randEnd = new RandomChar();
 
-    private bool oldLeft = false;
-    private bool oldRight = false;
+    private bool _oldLeft;
+    private bool _oldRight;
 
     protected override void UpdateStarting() {
       if (CurrentTime == 0) {
-        oPlayer.PlayNewSound("Ori/Glide/seinGlideStart" + randStart.NextNoRepeat(3), 0.8f);
+        oPlayer.PlaySound("Ori/Glide/seinGlideStart" + _randStart.NextNoRepeat(3), 0.8f);
       }
     }
 
     protected override void UpdateActive() {
-      if (player.controlLeft != oldLeft || player.controlRight != oldRight) {
-        oPlayer.PlayNewSound("Ori/Glide/seinGlideMoveLeftRight" + randActive.NextNoRepeat(5), 0.45f);
+      if (player.controlLeft != _oldLeft || player.controlRight != _oldRight) {
+        oPlayer.PlaySound("Ori/Glide/seinGlideMoveLeftRight" + _randActive.NextNoRepeat(5), 0.45f);
       }
-      oldLeft = player.controlLeft;
-      oldRight = player.controlRight;
+      _oldLeft = player.controlLeft;
+      _oldRight = player.controlRight;
     }
 
     protected override void UpdateEnding() {
       if (CurrentTime == 0) {
-        oPlayer.PlayNewSound("Ori/Glide/seinGlideEnd" + randEnd.NextNoRepeat(3), 0.8f);
+        oPlayer.PlaySound("Ori/Glide/seinGlideEnd" + _randEnd.NextNoRepeat(3), 0.8f);
       }
     }
 
     protected override void UpdateUsing() {
       player.maxFallSpeed = MathHelper.Clamp(player.gravity * 5, 1f, 2f);
-      if (!oPlayer.UnrestrictedMovement) {
-        player.runSlowdown = RunSlowdown;
-        player.runAcceleration = RunAcceleration;
-      }
+      if (oPlayer.UnrestrictedMovement) return;
+      player.runSlowdown = RunSlowdown;
+      player.runAcceleration = RunAcceleration;
     }
 
     internal override void Tick() {
@@ -71,20 +70,20 @@ namespace OriMod.Abilities {
         SetState(State.Inactive);
         return;
       }
-      if (InUse) {
-        if (Starting) {
-          if (CurrentTime > StartDuration) {
-            SetState(State.Active);
-          }
+      
+      if (!InUse) return;
+      if (Starting) {
+        if (CurrentTime > StartDuration) {
+          SetState(State.Active);
         }
-        else if (Ending) {
-          if (CurrentTime > EndDuration) {
-            SetState(State.Inactive);
-          }
+      }
+      else if (Ending) {
+        if (CurrentTime > EndDuration) {
+          SetState(State.Inactive);
         }
-        else if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded || !input.glide.Current) {
-          SetState(State.Ending);
-        }
+      }
+      else if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded || !input.glide.Current) {
+        SetState(State.Ending);
       }
     }
   }

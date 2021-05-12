@@ -5,6 +5,7 @@ using Terraria.Enums;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
+using Terraria.ID;
 
 namespace OriMod.Tiles {
   /// <summary>
@@ -17,7 +18,7 @@ namespace OriMod.Tiles {
       Main.tileLavaDeath[Type] = true;
       TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
       TileObjectData.newTile.Origin = new Point16(0, 1);
-      TileObjectData.newTile.CoordinateHeights = new int[] { 16, 18 };
+      TileObjectData.newTile.CoordinateHeights = new[] { 16, 18 };
       TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
       TileObjectData.newTile.StyleHorizontal = true;
       TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
@@ -42,18 +43,18 @@ namespace OriMod.Tiles {
       if (!oPlayer.IsOri) {
         oPlayer.BeginTransformation();
         if (!oPlayer.HasTransformedOnce) {
-          oPlayer.PlayNewSound("AbilityPedestal/abilityPedestalMusic", 0.25f);
+          oPlayer.PlaySound("AbilityPedestal/abilityPedestalMusic", 0.25f);
         }
       }
       else {
         oPlayer.IsOri = false;
-        oPlayer.PlayNewSound("SavePoints/checkpointSpawnSound");
+        oPlayer.PlaySound("SavePoints/checkpointSpawnSound");
       
         Vector2 pos = player.position;
         pos.Y += 4;
         pos.X -= 2;
         for (int m = 0; m < 100; m++) {
-          Dust dust = Main.dust[Dust.NewDust(pos, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
+          Dust dust = Dust.NewDustDirect(pos, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, new Color(255, 255, 255));
           dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
         }
       }

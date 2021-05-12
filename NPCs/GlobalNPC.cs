@@ -6,7 +6,7 @@ namespace OriMod.NPCs {
   /// <summary>
   /// <see cref="GlobalNPC"/> for handling <see cref="Abilities.Bash"/>
   /// </summary>
-  public class OriNPC : GlobalNPC, IBashable {
+  public class OriNpc : GlobalNPC, IBashable {
     public override bool InstancePerEntity => true;
     public OriPlayer BashPlayer { get; set; }
     public Vector2 BashPosition { get; set; }
@@ -24,10 +24,7 @@ namespace OriMod.NPCs {
     }
 
     public override bool CanHitPlayer(NPC npc, Player target, ref int cooldownSlot) {
-      if (IsBashed || FramesSinceLastBash < 15 && !(BashPlayer is null) && target.whoAmI == BashPlayer.player.whoAmI) {
-        return false;
-      }
-      return true;
+      return !IsBashed && (FramesSinceLastBash >= 15 || BashPlayer is null || target.whoAmI != BashPlayer.player.whoAmI);
     }
   }
 }

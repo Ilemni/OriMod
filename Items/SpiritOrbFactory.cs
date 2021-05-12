@@ -10,7 +10,7 @@ namespace OriMod.Items {
     protected override int SeinType => 1;
 
     public override void AddRecipes() {
-      var recipe = GetRecipe();
+      ModRecipe recipe = GetRecipe();
       recipe.AddIngredient(ItemID.SilverBar, 8);
       recipe.AddRecipe();
 
@@ -26,7 +26,7 @@ namespace OriMod.Items {
     protected override int SeinType => 2;
 
     public override void AddRecipes() {
-      var recipe = GetRecipe<SpiritOrb1>();
+      ModRecipe recipe = GetRecipe<SpiritOrb1>();
       recipe.AddIngredient(ItemID.DemoniteBar, 12);
       recipe.AddRecipe();
 
@@ -42,7 +42,7 @@ namespace OriMod.Items {
     protected override int SeinType => 3;
 
     public override void AddRecipes() {
-      var recipe = GetRecipe<SpiritOrb2>();
+      ModRecipe recipe = GetRecipe<SpiritOrb2>();
       recipe.AddIngredient(ItemID.HellstoneBar, 15);
       recipe.AddRecipe();
     }
@@ -54,7 +54,7 @@ namespace OriMod.Items {
     protected override int SeinType => 4;
 
     public override void AddRecipes() {
-      var recipe = GetRecipe<SpiritOrb3>();
+      ModRecipe recipe = GetRecipe<SpiritOrb3>();
       recipe.AddIngredient(ItemID.MythrilBar, 12);
       recipe.AddIngredient(ItemID.SoulofLight, 5);
       recipe.AddRecipe();
@@ -72,7 +72,7 @@ namespace OriMod.Items {
     protected override int SeinType => 5;
 
     public override void AddRecipes() {
-      var recipe = GetRecipe<SpiritOrb4>();
+      ModRecipe recipe = GetRecipe<SpiritOrb4>();
       recipe.AddIngredient(ItemID.HallowedBar, 15);
       recipe.AddIngredient(ItemID.SoulofLight, 10);
       recipe.AddRecipe();
@@ -85,7 +85,7 @@ namespace OriMod.Items {
     protected override int SeinType => 6;
 
     public override void AddRecipes() {
-      var recipe = GetRecipe<SpiritOrb5>();
+      ModRecipe recipe = GetRecipe<SpiritOrb5>();
       recipe.AddIngredient(ItemID.SpectreBar, 12);
       recipe.AddIngredient(ItemID.SoulofLight, 15);
       recipe.AddRecipe();
@@ -98,7 +98,7 @@ namespace OriMod.Items {
     protected override int SeinType => 7;
 
     public override void AddRecipes() {
-      var recipe = GetRecipe<SpiritOrb6>();
+      ModRecipe recipe = GetRecipe<SpiritOrb6>();
       recipe.AddIngredient(ItemID.FragmentSolar, 5);
       recipe.AddIngredient(ItemID.FragmentVortex, 5);
       recipe.AddIngredient(ItemID.FragmentNebula, 5);
@@ -114,7 +114,7 @@ namespace OriMod.Items {
     protected override int SeinType => 8;
 
     public override void AddRecipes() {
-      var recipe = GetRecipe<SpiritOrb7>();
+      ModRecipe recipe = GetRecipe<SpiritOrb7>();
       recipe.AddIngredient(ItemID.LunarBar, 12);
       recipe.AddIngredient(ItemID.FragmentSolar, 10);
       recipe.AddIngredient(ItemID.FragmentVortex, 10);

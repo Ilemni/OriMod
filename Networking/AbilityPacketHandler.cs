@@ -31,7 +31,7 @@ namespace OriMod.Networking {
     /// </summary>
     /// <param name="toWho">Who to send to. <see langword="255"/> for server, <see langword="-1"/> for all players.</param>
     /// <param name="fromWho">Sender, client to ignore.</param>
-    /// <param name="changes">List of <see cref="AbilityID"/>s for abilities that have changed.</param>
+    /// <param name="changes">List of <see cref="AbilityId"/>s for abilities that have changed.</param>
     internal void SendAbilityState(int toWho, int fromWho, List<byte> changes) {
       ModPacket packet = GetPacket(fromWho);
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();

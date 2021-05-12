@@ -17,42 +17,42 @@ namespace OriMod {
 
     [Label("Player Light"), Tooltip("Determines if your player faintly glows.\nDefault: true")]
     [DefaultValue(true)]
-    public bool PlayerLight;
+    public bool playerLight;
 
     [Label("Global Player Light"), Tooltip("Determines if all other players glow based on your config or their config.\nDefault: false")]
     [DefaultValue(false)]
-    public bool GlobalPlayerLight;
+    public bool globalPlayerLight;
 
     [Header("Controls")]
 
     [Label("Stomp Activation Delay"), Tooltip("Duration the Stomp key must be held until activating Stomp.\nDefault: 0")]
     [DefaultValue(0)]
-    public float StompHoldDownDelay = 0;
+    public float stompHoldDownDelay;
 
     [Label("Soft Crouch"), Tooltip("Allows moving while holding crouch.\nDefault: false")]
     [DefaultValue(false)]
-    public bool SoftCrouch;
+    public bool softCrouch;
 
     [Label("Smooth Camera"), Tooltip("Smooths the camera when it moves.\nDefault: true")]
     [DefaultValue(true)]
-    public bool SmoothCamera;
+    public bool smoothCamera;
 
     [JsonIgnore]
-    internal bool BurrowToMouse => BurrowControls == "Mouse";
+    internal bool BurrowToMouse => _burrowControls == "Mouse";
 
     [Label("Burrow Control"), Tooltip("Determines which controls you use while burrowing.\nDefault: Mouse")]
-    [DefaultValue("Mouse"), OptionStrings(new string[] { "WASD", "Mouse" })]
-    public string BurrowControls;
+    [DefaultValue("Mouse"), OptionStrings(new[] { "WASD", "Mouse" })]
+    private string _burrowControls;
 
     [Header("Aesthetics")]
 
     [Label("Player Color"), Tooltip("The color of your Spirit.\nDefault: 210, 255, 255")]
     [DefaultValue(typeof(Color), "210, 255, 255, 255"), ColorNoAlpha]
-    public Color PlayerColor;
+    public Color playerColor;
 
     [Label("Player Color (Secondary)"), Tooltip("The secondary color of your Spirit.\nDefault: 0, 0, 0, 0")]
     [DefaultValue(typeof(Color), "0, 0, 0, 0")]
-    public Color PlayerColorSecondary;
+    public Color playerColorSecondary;
 
     public override void OnLoaded() {
       OriMod.ConfigClient = this;
@@ -60,19 +60,18 @@ namespace OriMod {
 
     [OnDeserialized]
     public void OnDeserializedMethod(StreamingContext stream) {
-      PlayerColor.A = 255;
-      if (StompHoldDownDelay < 0) {
-        StompHoldDownDelay = 0;
+      playerColor.A = 255;
+      if (stompHoldDownDelay < 0) {
+        stompHoldDownDelay = 0;
       }
     }
 
     public override void OnChanged() {
-      var player = Main.LocalPlayer;
-      if (player.active) {
-        var oPlayer = player.GetModPlayer<OriPlayer>();
-        oPlayer.SpriteColorPrimary = PlayerColor;
-        oPlayer.SpriteColorSecondary = PlayerColorSecondary;
-      }
+      Player player = Main.LocalPlayer;
+      if (!player.active) return;
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+      oPlayer.SpriteColorPrimary = playerColor;
+      oPlayer.SpriteColorSecondary = playerColorSecondary;
     }
   }
 }

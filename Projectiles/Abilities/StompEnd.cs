@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using OriMod.Utilities;
 using Terraria;
@@ -7,10 +8,10 @@ namespace OriMod.Projectiles.Abilities {
   /// Projectile hitbox for the impact of a <see cref="Stomp"/>. Deals damage to NPCs.
   /// <para>As the number of targets to hit grows, the damage dealt to the next target is reduced.</para>
   /// </summary>
-  public sealed class StompEnd : AbilityProjectile {
-    public override byte abilityID => AbilityID.Stomp;
+    public sealed class StompEnd : AbilityProjectile {
+    public override byte Id => AbilityId.Stomp;
 
-    public float Knockback {
+    private float Knockback {
       get {
         switch (Level) {
           case 1: return 16;
@@ -20,7 +21,7 @@ namespace OriMod.Projectiles.Abilities {
       }
     }
 
-    public int MaxPenetrate {
+    private int MaxPenetrate {
       get {
         switch (Level) {
           case 1: return 8;
@@ -30,7 +31,7 @@ namespace OriMod.Projectiles.Abilities {
       }
     }
 
-    public int Width {
+    private int Width {
       get {
         switch (Level) {
           case 1: return 600;
@@ -40,7 +41,7 @@ namespace OriMod.Projectiles.Abilities {
       }
     }
 
-    public int Height {
+    private int Height {
       get {
         switch (Level) {
           case 1: return 320;
@@ -58,11 +59,10 @@ namespace OriMod.Projectiles.Abilities {
 
     public override bool PreAI() {
       // SetDefaults called before Projectile.NewProjectile(...) sets ai fields, so we need a later hook
-      if (projectile.maxPenetrate != MaxPenetrate) {
-        projectile.penetrate = projectile.maxPenetrate = MaxPenetrate;
-        projectile.width = Width;
-        projectile.height = Height;
-      }
+      if (projectile.maxPenetrate == MaxPenetrate) return false;
+      projectile.penetrate = projectile.maxPenetrate = MaxPenetrate;
+      projectile.width = Width;
+      projectile.height = Height;
       return false;
     }
 
@@ -70,15 +70,15 @@ namespace OriMod.Projectiles.Abilities {
       if (!crit && Main.rand.Next(5) == 1) {
         crit = true;
       }
-      var multiplier = projectile.penetrate / projectile.maxPenetrate;
-      damage = (int)(damage * 0.6f + (damage * 0.4f * multiplier));
-      var vect = target.Center - oPlayer.player.Center;
-      var dist = target.Distance(oPlayer.player.Center);
-      var kb = Knockback * (160 - dist) / 160;
+      int multiplier = projectile.penetrate / projectile.maxPenetrate;
+      damage = (int)(damage * 0.6f + damage * 0.4f * multiplier);
+      Vector2 vector = target.Center - oPlayer.player.Center;
+      float dist = target.Distance(oPlayer.player.Center);
+      float kb = Knockback * (160 - dist) / 160;
       if (kb < 6) {
         kb = 6;
       }
-      target.velocity += vect.Normalized() * kb;
+      target.velocity += vector.Normalized() * kb;
     }
 
     public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit) => ModifyHitAny(target, ref damage, ref crit);

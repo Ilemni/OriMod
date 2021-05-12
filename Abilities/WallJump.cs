@@ -12,7 +12,7 @@ namespace OriMod.Abilities {
   /// </remarks>
   public sealed class WallJump : Ability, ILevelable {
     internal WallJump(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.WallJump;
+    public override int Id => AbilityId.WallJump;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 1;
@@ -23,35 +23,35 @@ namespace OriMod.Abilities {
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
     private static int EndTime => 12;
 
-    private sbyte wallDirection;
-    private sbyte gravDirection;
+    private sbyte _wallDirection;
+    private sbyte _gravDirection;
 
-    private readonly RandomChar rand = new RandomChar();
+    private readonly RandomChar _rand = new RandomChar();
 
     protected override void ReadPacket(BinaryReader r) {
-      wallDirection = r.ReadSByte();
-      gravDirection = r.ReadSByte();
+      _wallDirection = r.ReadSByte();
+      _gravDirection = r.ReadSByte();
     }
 
     protected override void WritePacket(ModPacket packet) {
-      packet.Write(wallDirection);
-      packet.Write(gravDirection);
+      packet.Write(_wallDirection);
+      packet.Write(_gravDirection);
     }
 
     protected override void UpdateActive() {
-      player.velocity.Y = WallJumpVelocity.Y * gravDirection;
-      oPlayer.PlayNewSound("Ori/WallJump/seinWallJumps" + rand.NextNoRepeat(5), 0.75f);
+      player.velocity.Y = WallJumpVelocity.Y * _gravDirection;
+      oPlayer.PlaySound("Ori/WallJump/seinWallJumps" + _rand.NextNoRepeat(5), 0.75f);
     }
 
     protected override void UpdateEnding() {
       if (oPlayer.OnWall) {
-        player.velocity.Y -= gravDirection;
+        player.velocity.Y -= _gravDirection;
       }
     }
 
     protected override void UpdateUsing() {
-      player.velocity.X = WallJumpVelocity.X * -wallDirection;
-      player.direction = wallDirection;
+      player.velocity.X = WallJumpVelocity.X * -_wallDirection;
+      player.direction = _wallDirection;
       oPlayer.UnrestrictedMovement = true;
     }
 
@@ -59,8 +59,8 @@ namespace OriMod.Abilities {
       if (CanUse && input.jump.JustPressed) {
         SetState(State.Active);
         if (IsLocal) {
-          wallDirection = (sbyte)player.direction;
-          gravDirection = (sbyte)player.gravDir;
+          _wallDirection = (sbyte)player.direction;
+          _gravDirection = (sbyte)player.gravDir;
         }
         abilities.climb.SetState(State.Inactive);
       }

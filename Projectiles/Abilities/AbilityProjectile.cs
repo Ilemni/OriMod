@@ -8,12 +8,12 @@ namespace OriMod.Projectiles.Abilities {
   /// </summary>
   public abstract class AbilityProjectile : ModProjectile {
     /// <summary>
-    /// Correlates to a <see cref="AbilityID"/>.
+    /// Correlates to a <see cref="Id"/>.
     /// </summary>
-    public abstract byte abilityID { get; }
+    public abstract byte Id { get; }
 
     /// <summary>
-    /// The level of the <see cref="Ability"/> when this <see cref="AbilityProjectile"/> was created.
+    /// The level of the <see cref="OriMod.Abilities.Ability"/> when this <see cref="AbilityProjectile"/> was created.
     /// </summary>
     public int Level => (int)projectile.ai[0];
 
@@ -24,9 +24,9 @@ namespace OriMod.Projectiles.Abilities {
     private OriPlayer _oPlayer;
 
     /// <summary>
-    /// The <see cref="Ability"/> that this <see cref="AbilityProjectile"/> belongs to.
+    /// The <see cref="OriMod.Abilities.Ability"/> that this <see cref="AbilityProjectile"/> belongs to.
     /// </summary>
-    public Ability ability => oPlayer.abilities[abilityID];
+    public Ability ability => oPlayer.abilities[Id];
 
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
 
@@ -44,7 +44,7 @@ namespace OriMod.Projectiles.Abilities {
     }
 
     public override bool ShouldUpdatePosition() => false;
-    public override sealed void AI() {
+    public sealed override void AI() {
       CheckAbilityActive();
       Behavior();
     }
@@ -53,7 +53,7 @@ namespace OriMod.Projectiles.Abilities {
     /// Used to determine timeLeft or active state of the projectile.
     /// <para>Defaults to keeping timeLeft above 0 if ability is in use.</para>
     /// </summary>
-    public virtual void CheckAbilityActive() {
+    protected virtual void CheckAbilityActive() {
       if (ability.InUse) {
         projectile.timeLeft = 2;
       }
@@ -63,7 +63,7 @@ namespace OriMod.Projectiles.Abilities {
     /// How the projectile behaves.
     /// <para>Defaults to setting projectile center to player center.</para>
     /// </summary>
-    public virtual void Behavior() {
+    protected virtual void Behavior() {
       projectile.Center = oPlayer.player.Center;
     }
   }

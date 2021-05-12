@@ -14,39 +14,39 @@ namespace OriMod {
     /// Creates a <see cref="TrailSegment"/> that belongs to <paramref name="oPlayer"/>.
     /// </summary>
     /// <param name="oPlayer"><see cref="OriPlayer"/> this trail will belong to.</param>
-    internal TrailSegment(OriPlayer oPlayer) => this.oPlayer = oPlayer;
+    internal TrailSegment(OriPlayer oPlayer) => _oPlayer = oPlayer;
 
-    private readonly OriPlayer oPlayer;
-    private Vector2 position;
-    private PointByte tile;
-    private byte time;
-    private float startAlpha = 1;
-    private float rotation;
-    private SpriteEffects effect;
+    private readonly OriPlayer _oPlayer;
+    private Vector2 _position;
+    private PointByte _tile;
+    private byte _timeLeft;
+    private float _startAlpha = 1;
+    private float _rotation;
+    private SpriteEffects _effect;
 
     /// <summary>
     /// Resets various attributes to be based on the player's current attributes.
     /// </summary>
     public void Reset() {
-      var player = oPlayer.player;
-      var anim = oPlayer.animations;
+      Player player = _oPlayer.player;
+      OriAnimationController anim = _oPlayer.Animations;
 
-      position = player.Center;
-      tile = anim.playerAnim.CurrentFrame.tile;
-      rotation = anim.SpriteRotation;
+      _position = player.Center;
+      _tile = anim.playerAnim.CurrentFrame.tile;
+      _rotation = anim.SpriteRotation;
 
-      startAlpha = player.velocity.LengthSquared() * 0.0008f; // 0.002f
-      if (startAlpha > 0.16f) {
-        startAlpha = 0.16f;
+      _startAlpha = player.velocity.LengthSquared() * 0.005f;
+      if (_startAlpha > 0.16f) {
+        _startAlpha = 0.16f;
       }
-      time = (byte)Trail.Count;
+      _timeLeft = (byte)Trail.Count;
 
-      effect = SpriteEffects.None;
+      _effect = SpriteEffects.None;
       if (player.direction == -1) {
-        effect |= SpriteEffects.FlipHorizontally;
+        _effect |= SpriteEffects.FlipHorizontally;
       }
-      if (player.gravDir == -1) {
-        effect |= SpriteEffects.FlipVertically;
+      if (player.gravDir < 0) {
+        _effect |= SpriteEffects.FlipVertically;
       }
     }
 
@@ -54,8 +54,8 @@ namespace OriMod {
     /// Decreases Alpha by a fixed amount.
     /// </summary>
     public void Tick() {
-      if (time > 0) {
-        time--;
+      if (_timeLeft > 0) {
+        _timeLeft--;
       }
     }
 
@@ -63,16 +63,16 @@ namespace OriMod {
     /// Gets the Trail <see cref="DrawData"/> for this <see cref="OriPlayer"/>.
     /// </summary>
     public DrawData GetDrawData() {
-      var pos = position - Main.screenPosition;
-      var spriteSize = PlayerAnim.Instance.spriteSize;
-      var rect = new Rectangle(tile.X * spriteSize.X, tile.Y * spriteSize.Y, spriteSize.X, spriteSize.Y);
-      var alpha = startAlpha * (time / Trail.Count) - 0.1f * (26 - time);
-      var color = oPlayer.SpriteColorPrimary * alpha;
-      var origin = new Vector2(rect.Width / 2, rect.Height / 2 + 5 * oPlayer.player.gravDir);
+      Vector2 pos = _position - Main.screenPosition;
+      PointByte spriteSize = PlayerAnim.Instance.spriteSize;
+      Rectangle rect = new Rectangle(_tile.x * spriteSize.x, _tile.y * spriteSize.y, spriteSize.x, spriteSize.y);
+      float alpha = _startAlpha * _timeLeft / Trail.Count;
+      Color color = _oPlayer.SpriteColorPrimary * alpha;
+      Vector2 origin = new Vector2(rect.Width / 2f, rect.Height / 2f + 5 * _oPlayer.player.gravDir);
 
-      return new DrawData(OriTextures.Instance.Trail, pos, rect, color, rotation, origin, 1, effect, 0);
+      return new DrawData(OriTextures.Instance.trail, pos, rect, color, _rotation, origin, 1, _effect, 0);
     }
 
-    public override string ToString() => $"Tile:{tile} rotation:{rotation} effect:{effect}";
+    public override string ToString() => $"tile:{_tile}, rotation:{_rotation}, effect:{_effect}";
   }
 }
