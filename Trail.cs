@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Terraria.DataStructures;
 
 namespace OriMod {
@@ -17,31 +18,31 @@ namespace OriMod {
         throw new ArgumentNullException(nameof(oPlayer));
       }
 
-      segments = new TrailSegment[Count];
+      _segments = new TrailSegment[Count];
       int i = 0;
       while (i < Count) {
-        segments[i++] = new TrailSegment(oPlayer);
+        _segments[i++] = new TrailSegment(oPlayer);
       }
     }
 
     /// <summary>
-    /// Sets <see cref="index"/> to the next index in <see cref="segments"/>, and returns the value.
+    /// Sets <see cref="_index"/> to the next index in <see cref="_segments"/>, and returns the value.
     /// </summary>
-    /// <returns>The updated value of <see cref="index"/>.</returns>
+    /// <returns>The updated value of <see cref="_index"/>.</returns>
     private int NextIndex() {
-      index = (index + 1) % segments.Length;
-      return index;
+      _index = (_index + 1) % _segments.Length;
+      return _index;
     }
 
     /// <summary>
     /// All <see cref="TrailSegment"/>s in this <see cref="Trail"/>.
     /// </summary>
-    private readonly TrailSegment[] segments;
+    private readonly TrailSegment[] _segments;
 
     /// <summary>
-    /// Current <see cref="segments"/> index. Used for <see cref="TrailSegment.Reset"/>.
+    /// Current <see cref="_segments"/> index. Used for <see cref="TrailSegment.Reset"/>.
     /// </summary>
-    private int index = 0;
+    private int _index;
 
     internal bool hasDrawnThisFrame;
 
@@ -55,7 +56,7 @@ namespace OriMod {
     /// <para>This keeps the opacity of the trail appearing consistent.</para>
     /// </summary>
     public void UpdateSegments() {
-      foreach (var segment in segments) {
+      foreach (TrailSegment segment in _segments) {
         segment.Tick();
       }
     }
@@ -63,19 +64,13 @@ namespace OriMod {
     /// <summary>
     /// <see cref="IEnumerable{T}"/> of all <see cref="DrawData"/>s from this trail.
     /// </summary>
-    public IEnumerable<DrawData> TrailDrawDatas {
-      get {
-        foreach (var segment in segments) {
-          yield return segment.GetDrawData();
-        }
-      }
-    }
+    public IEnumerable<DrawData> TrailDrawDatas => _segments.Select(segment => segment.GetDrawData());
 
     /// <summary>
     /// Calls <see cref="TrailSegment.Reset"/> on the next segment.
     /// </summary>
     internal void ResetNextSegment() {
-      segments[NextIndex()].Reset();
+      _segments[NextIndex()].Reset();
     }
   }
 }

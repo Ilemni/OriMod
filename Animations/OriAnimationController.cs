@@ -1,7 +1,7 @@
 ﻿using System;
-using OriMod.Abilities;
 using AnimLib.Animations;
 using Microsoft.Xna.Framework.Graphics;
+using OriMod.Abilities;
 
 namespace OriMod.Animations {
   /// <summary>
@@ -34,8 +34,8 @@ namespace OriMod.Animations {
     /// Updates the player animation by one frame, and changes it depending on various conditions.
     /// </summary>
     public override void Update() {
-      var oPlayer = player.GetModPlayer<OriPlayer>();
-      var abilities = oPlayer.abilities;
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+      AbilityManager abilities = oPlayer.abilities;
 
       // Transformation
       if (oPlayer.Transforming) {
@@ -89,7 +89,7 @@ namespace OriMod.Animations {
         return;
       }
       if (abilities.wallChargeJump) {
-        PlayTrack("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle * player.gravDir * abilities.wallChargeJump.xDirection);
+        PlayTrack("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle * player.gravDir * abilities.wallChargeJump.XDirection);
         return;
       }
 
@@ -154,11 +154,11 @@ namespace OriMod.Animations {
         if (abilities.launch.Active) {
           // Launch angle needs to be offset by 90 degrees since it uses Stomp animation
           // Disable spriteeffects as launching should not be flipped
-          PlayTrack("ChargeJump", duration: 6, rotation: abilities.launch.launchAngle + (float)Math.PI / 2 * player.gravDir, loop: LoopMode.Always, direction: Direction.PingPong, effects: SpriteEffects.None);
+          PlayTrack("ChargeJump", duration: 6, rotation: abilities.launch.LaunchAngle + (float)Math.PI / 2 * player.gravDir, loop: LoopMode.Always, direction: Direction.PingPong, effects: SpriteEffects.None);
         }
         else {
-          var ct = abilities.launch.CurrentTime;
-          var accel = ct * (ct < 5 ? 0.05f : ct < 20 ? 0.03f : 0.02f);
+          int ct = abilities.launch.CurrentTime;
+          float accel = ct * (ct < 5 ? 0.05f : ct < 20 ? 0.03f : 0.02f);
           // Somewhat accelerating speed of rotation
           PlayTrack("AirJump", rotation: SpriteRotation + accel * player.direction);
         }
@@ -179,7 +179,8 @@ namespace OriMod.Animations {
           }
           return;
         }
-        else if (!abilities.wallChargeJump.Charged) {
+
+        if (!abilities.wallChargeJump.Charged) {
           PlayTrack("WallChargeJumpCharge", frameIndex: abilities.wallChargeJump.Refreshed ? null : (int?)0);
           return;
         }
@@ -222,7 +223,6 @@ namespace OriMod.Animations {
         return;
       }
       PlayTrack(oPlayer.OnWall ? "IdleAgainst" : "Idle");
-      return;
     }
   }
 }

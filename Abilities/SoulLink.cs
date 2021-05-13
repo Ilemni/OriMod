@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using OriMod.Dusts;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.ModLoader;
@@ -11,7 +12,7 @@ namespace OriMod.Abilities {
   [Obsolete]
   public sealed class SoulLink : Ability {
     internal SoulLink(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.SoulLink;
+    public override int Id => AbilityId.SoulLink;
     public override byte Level => 0;
 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && player.CheckMana(ManaCost, blockQuickMana: true);
@@ -25,20 +26,20 @@ namespace OriMod.Abilities {
     ));
     private static TileHitbox _b;
 
-    internal Point Center => placedSoulLink && Box.Points[4] != Point.Zero ? Box.Points[4] : player.Center.ToTileCoordinates();
-    internal Point SoulLinkLocation { get; private set; }
+    private Point Center => _placedSoulLink && Box.Points[4] != Point.Zero ? Box.Points[4] : player.Center.ToTileCoordinates();
+    private Point SoulLinkLocation { get; set; }
 
     private static float ChargeRate => 0.2f;
     private static float UnchargeRate => ChargeRate * 1.75f;
     private static int RespawnTime => 60;
     private static int ManaCost => 20;
 
-    private float currentCharge;
-    internal bool placedSoulLink;
-    internal bool obstructed;
-    private bool wasObstructed;
-    private bool anyBossAlive;
-    private bool wasDead;
+    private float _currentCharge;
+    private bool _placedSoulLink;
+    private bool _obstructed;
+    private bool _wasObstructed;
+    private bool _anyBossAlive;
+    private bool _wasDead;
 
     private void CheckValidPlacement(Point? check, out bool obstructed, bool force = false) {
       obstructed = false;
@@ -50,88 +51,85 @@ namespace OriMod.Abilities {
       var points = Box.Points;
       for (int i = 0, len = points.Length; i < len; i++) {
         Tile t = Main.tile[points[i].X, points[i].Y];
-        if (Burrow.IsSolid(t)) {
-          obstructed = true;
-          return;
-        }
+        if (!Burrow.IsSolid(t)) continue;
+        obstructed = true;
+        return;
       }
-      return;
     }
 
     internal void UpdateDead() {
-      if (!placedSoulLink) {
+      if (!_placedSoulLink) {
         return;
       }
 
       if (player.respawnTimer > RespawnTime) {
         player.respawnTimer = RespawnTime;
       }
-      wasDead = true;
+      _wasDead = true;
     }
 
     internal void OnRespawn() {
-      if (placedSoulLink && !obstructed) {
-        player.Center = SoulLinkLocation.ToWorldCoordinates();
-        placedSoulLink = false;
-      }
+      if (!_placedSoulLink || _obstructed) return;
+      player.Center = SoulLinkLocation.ToWorldCoordinates();
+      _placedSoulLink = false;
     }
 
     internal override void Tick() {
-      if (placedSoulLink && wasDead && !player.dead) {
-        wasDead = false;
+      if (_placedSoulLink && _wasDead && !player.dead) {
+        _wasDead = false;
         OnRespawn();
       }
 
-      if (placedSoulLink) {
-        CheckValidPlacement(Center, out obstructed);
-        if (obstructed) {
-          placedSoulLink = false;
+      if (_placedSoulLink) {
+        CheckValidPlacement(Center, out _obstructed);
+        if (_obstructed) {
+          _placedSoulLink = false;
           OriMod.Error("SoulLinkObstructed", log: false);
         }
       }
-      if (CanUse && OriMod.SoulLinkKey.Current) {
-        if (OriMod.SoulLinkKey.JustPressed) {
-          anyBossAlive = OriUtils.AnyBossAlive();
-          if (anyBossAlive) {
+      if (CanUse && OriMod.soulLinkKey.Current) {
+        if (OriMod.soulLinkKey.JustPressed) {
+          _anyBossAlive = OriUtils.IsAnyBossAlive();
+          if (_anyBossAlive) {
             OriMod.Error("SoulLinkBossActive", log: false);
             return;
           }
         }
         CheckValidPlacement(player.Center.ToTileCoordinates(), out bool tempObstructed, force: true);
         if (tempObstructed) {
-          if (!wasObstructed) {
+          if (!_wasObstructed) {
             OriMod.Error("SoulLinkCannotPlace", log: false);
           }
-          currentCharge -= UnchargeRate;
-          if (currentCharge < 0) {
-            currentCharge = 0;
+          _currentCharge -= UnchargeRate;
+          if (_currentCharge < 0) {
+            _currentCharge = 0;
           }
         }
         else {
-          currentCharge += ChargeRate;
-          if (currentCharge > 1) {
+          _currentCharge += ChargeRate;
+          if (_currentCharge > 1) {
             player.statMana -= ManaCost;
-            currentCharge = 0;
+            _currentCharge = 0;
             SetState(State.Active);
-            placedSoulLink = true;
+            _placedSoulLink = true;
             Box.UpdateHitbox(player.Center);
             SoulLinkLocation = Center;
             oPlayer.Debug("Placed a Soul Link!");
             PutOnCooldown(force: true);
           }
         }
-        wasObstructed = tempObstructed;
+        _wasObstructed = tempObstructed;
       }
-      else if (currentCharge > 0) {
-        currentCharge -= UnchargeRate;
-        if (currentCharge < 0) {
-          currentCharge = 0;
+      else if (_currentCharge > 0) {
+        _currentCharge -= UnchargeRate;
+        if (_currentCharge < 0) {
+          _currentCharge = 0;
         }
       }
-      if (currentCharge > 0 && currentCharge < 1) {
-        Dust dust = Main.dust[Dust.NewDust(player.Center, 12, 12, ModContent.DustType<Dusts.SoulLinkChargeDust>(), newColor: Color.DeepSkyBlue)];
+      if (_currentCharge > 0 && _currentCharge < 1) {
+        Dust dust = Dust.NewDustDirect(player.Center, 12, 12, ModContent.DustType<SoulLinkChargeDust>(), newColor: Color.DeepSkyBlue);
         dust.customData = player;
-        dust.position += -Vector2.UnitY.RotatedBy(currentCharge * 2 * Math.PI) * 56;
+        dust.position += -Vector2.UnitY.RotatedBy(_currentCharge * 2 * Math.PI) * 56;
       }
       TickCooldown();
     }

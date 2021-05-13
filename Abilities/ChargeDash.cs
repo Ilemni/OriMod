@@ -1,7 +1,8 @@
+using System;
+using System.IO;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
-using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -12,9 +13,9 @@ namespace OriMod.Abilities {
   public sealed class ChargeDash : Ability {
     static ChargeDash() => OriMod.OnUnload += Unload;
     internal ChargeDash(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.ChargeDash;
+    public override int Id => AbilityId.ChargeDash;
     public override byte Level => (byte)(levelableDependency.Level >= 2 ? 1 : 0);
-    public override ILevelable levelableDependency => abilities.dash;
+    protected override ILevelable levelableDependency => abilities.dash;
 
     internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !player.mount.Active &&
       !abilities.bash && !abilities.burrow && !abilities.launch && !abilities.lookUp && !abilities.stomp;
@@ -28,40 +29,32 @@ namespace OriMod.Abilities {
     });
     private static float[] _speeds;
 
-    private ushort npcID = ushort.MaxValue;
-    private sbyte direction;
+    private ushort _npcId = ushort.MaxValue;
+    private sbyte _direction;
 
     /// <summary>
     /// Check if <paramref name="npc"/> is <see cref="Target"/>.
     /// </summary>
     /// <param name="npc"><see cref="NPC"/> to check.</param>
     /// <returns><see langword="true"/> if <paramref name="npc"/> is <see cref="Target"/>, otherwise <see langword="false"/>.</returns>
-    public bool NpcIsTarget(NPC npc) => npc.whoAmI == npcID;
+    public bool NpcIsTarget(NPC npc) => npc.whoAmI == _npcId;
 
     /// <summary>
     /// Target of this Charge Dash. May be <see langword="null"/>.
     /// </summary>
     public NPC Target {
-      get => npcID < Main.npc.Length ? Main.npc[npcID] : null;
-      set => npcID = (ushort)(value?.whoAmI ?? ushort.MaxValue);
+      get => _npcId < Main.npc.Length ? Main.npc[_npcId] : null;
+      set => _npcId = (ushort)(value?.whoAmI ?? ushort.MaxValue);
     }
 
-    /// <summary>
-    /// Projectile created while Charge Dashing to damage enemies.
-    /// </summary>
-    /// <remarks>
-    /// This damage aspect is derived from the Ori games. May be unbalanced or unnecessary here.
-    /// </remarks>
-    public Projectile PlayerHitboxProjectile { get; private set; }
+    private readonly RandomChar _rand = new RandomChar();
 
-    private readonly RandomChar rand = new RandomChar();
-
-    protected override void ReadPacket(System.IO.BinaryReader r) {
-      npcID = r.ReadUInt16();
+    protected override void ReadPacket(BinaryReader r) {
+      _npcId = r.ReadUInt16();
     }
 
     protected override void WritePacket(ModPacket packet) {
-      packet.Write(npcID);
+      packet.Write(_npcId);
     }
 
     internal override void PutOnCooldown(bool force = false) {
@@ -70,11 +63,10 @@ namespace OriMod.Abilities {
     }
 
     protected override void TickCooldown() {
-      if (!Refreshed || currentCooldown > 0) {
-        currentCooldown--;
-        if (currentCooldown < 0 && !input.charge.Current) {
-          Refreshed = true;
-        }
+      if (Refreshed && currentCooldown <= 0) return;
+      currentCooldown--;
+      if (currentCooldown < 0 && !input.charge.Current) {
+        Refreshed = true;
       }
     }
 
@@ -87,15 +79,14 @@ namespace OriMod.Abilities {
         }
 
         float dist = (player.position - npc.position).LengthSquared();
-        if (dist < tempDist) {
-          tempDist = dist;
-          Target = npc;
-        }
+        if (dist >= tempDist) continue;
+        tempDist = dist;
+        Target = npc;
       }
-      direction = Target is null
+      _direction = Target is null
         ? (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction)
         : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
-      oPlayer.PlayNewSound("Ori/ChargeDash/seinChargeDash" + rand.NextNoRepeat(3), 0.5f);
+      oPlayer.PlaySound("Ori/ChargeDash/seinChargeDash" + _rand.NextNoRepeat(3), 0.5f);
       NewAbilityProjectile<ChargeDashProjectile>(damage: 50);
     }
 
@@ -106,7 +97,7 @@ namespace OriMod.Abilities {
     internal void End(bool byNpcContact = false) {
       SetState(State.Inactive);
       PutOnCooldown();
-      var target = Target;
+      NPC target = Target;
       if (byNpcContact) {
         // Force player position to same as target's, and reduce speed.
         player.position = target.position;
@@ -115,7 +106,7 @@ namespace OriMod.Abilities {
       }
       else if (Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
-        Vector2 newVel = target is null && !abilities.airJump ? new Vector2(direction, 0) : player.velocity;
+        Vector2 newVel = target is null && !abilities.airJump ? new Vector2(_direction, 0) : player.velocity;
         newVel = newVel.Normalized() * Speeds[Speeds.Length - 1];
         player.velocity = newVel;
       }
@@ -125,7 +116,7 @@ namespace OriMod.Abilities {
     protected override void UpdateUsing() {
       float speed = Speeds[CurrentTime];
       player.gravity = 0;
-      var target = Target;
+      NPC target = Target;
 
       if (target?.active ?? false) {
         player.maxFallSpeed = speed;
@@ -135,7 +126,7 @@ namespace OriMod.Abilities {
         player.velocity = dir * speed;
       }
       else {
-        player.velocity.X = speed * direction * 0.8f;
+        player.velocity.X = speed * _direction * 0.8f;
         player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrentTime + 1)) * player.gravDir;
       }
 
@@ -155,11 +146,10 @@ namespace OriMod.Abilities {
         return;
       }
       TickCooldown();
-      if (InUse) {
-        abilities.dash.Refreshed = false;
-        if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash || abilities.launch || player.controlJump) {
-          End();
-        }
+      if (!InUse) return;
+      abilities.dash.Refreshed = false;
+      if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash || abilities.launch || player.controlJump) {
+        End();
       }
     }
 

@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 
 namespace OriMod.Utilities {
   /// <summary>
@@ -36,15 +38,8 @@ namespace OriMod.Utilities {
     /// <summary>
     /// Checks if any active <see cref="NPC"/>s are bosses.
     /// </summary>
-    public static bool AnyBossAlive() {
-      for (int i = 0, len = Main.npc.Length; i < len; i++) {
-        var npc = Main.npc[i];
-        if (npc.active && (npc.boss || Terraria.ID.NPCID.Sets.TechnicallyABoss[npc.type])) {
-          return true;
-        }
-      }
-      return false;
-    }
+    public static bool IsAnyBossAlive()
+      => Main.npc.Any(npc => npc.active && (npc.boss || NPCID.Sets.TechnicallyABoss[npc.type]));
 
     #region Distance Checking
     /// <summary>
@@ -73,15 +68,15 @@ namespace OriMod.Utilities {
     #endregion
 
     internal static Vector2 GetMouseDirection(OriPlayer oPlayer, out float angle, Vector2? direction = null, float maxAngle = (float)Math.PI) {
-      var player = oPlayer.player;
-      var dir = direction ?? new Vector2(player.direction, player.gravDir);
+      Player player = oPlayer.player;
+      Vector2 dir = direction ?? new Vector2(player.direction, player.gravDir);
 
       Vector2 offset = Main.MouseWorld;
       offset = (offset - player.Center) * dir + player.Center;
 
       angle = Utils.Clamp(player.AngleTo(offset), -maxAngle, maxAngle);
 
-      var result = Vector2.UnitX.RotatedBy(angle);
+      Vector2 result = Vector2.UnitX.RotatedBy(angle);
       result *= dir;
       return result;
     }

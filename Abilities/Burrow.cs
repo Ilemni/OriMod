@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Utilities;
@@ -17,7 +19,7 @@ namespace OriMod.Abilities {
   public sealed class Burrow : Ability, ILevelable {
     static Burrow() => OriMod.OnUnload += Unload;
     internal Burrow(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.Burrow;
+    public override int Id => AbilityId.Burrow;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 3;
@@ -49,15 +51,15 @@ namespace OriMod.Abilities {
     }
 
     private static int UiIncrement => 60;
-    public static float BaseSpeed => 6f;
-    public static float currentSpeed;
-    public static float FastSpeed => 12f;
+    private static float BaseSpeed => 6f;
+    private float currentSpeed;
+    private static float FastSpeed => 12f;
     private static float SpeedExitMultiplier => 1.2f;
 
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
 
-    private float breath = float.MaxValue;
-    private int strength {
+    private float _breath = float.MaxValue;
+    private int Strength {
       get {
         switch (Level) {
           case 0: return 0;
@@ -68,12 +70,12 @@ namespace OriMod.Abilities {
       }
     }
 
-    internal bool CanBurrowAny => Level >= 3;
+    private bool CanBurrowAny => Level >= 3;
     internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
 
-    internal bool CanBurrow(Tile t) => CanBurrowAny && IsSolid(t) || TileCollection.Instance.TilePickaxeMin[t.type] <= strength;
+    internal bool CanBurrow(Tile t) => CanBurrowAny && IsSolid(t) || TileCollection.Instance.tilePickaxeMin[t.type] <= Strength;
 
-    internal Vector2 lastPosition;
+    private Vector2 _lastPosition;
     internal Vector2 velocity;
 
     private static Point P(int x, int y) => new Point(x, y);
@@ -136,17 +138,17 @@ namespace OriMod.Abilities {
       }
     }
 
-    protected override void ReadPacket(System.IO.BinaryReader r) {
-      lastPosition = r.ReadVector2();
-      player.position = lastPosition;
+    protected override void ReadPacket(BinaryReader r) {
+      _lastPosition = r.ReadVector2();
+      player.position = _lastPosition;
       velocity = r.ReadVector2();
-      breath = r.ReadSingle();
+      _breath = r.ReadSingle();
     }
 
     protected override void WritePacket(ModPacket packet) {
-      packet.WriteVector2(lastPosition);
+      packet.WriteVector2(_lastPosition);
       packet.WriteVector2(velocity);
-      packet.Write(breath);
+      packet.Write(_breath);
     }
 
     protected override void UpdateActive() {
@@ -163,7 +165,7 @@ namespace OriMod.Abilities {
 
       if (IsLocal) {
         // Get intended velocity based on input
-        var newVel = Vector2.Zero;
+        Vector2 newVel = Vector2.Zero;
         if (OriMod.ConfigClient.BurrowToMouse) {
           newVel = player.AngleTo(Main.MouseWorld).ToRotationVector2();
           if (player.confused) {
@@ -209,8 +211,8 @@ namespace OriMod.Abilities {
       oPlayer.CreatePlayerDust();
 
       // Breath
-      if (breath > 0) {
-        breath -= input.leftClick.Current ? 2.2f : 1;
+      if (_breath > 0) {
+        _breath -= input.leftClick.Current ? 2.2f : 1;
       }
     }
 
@@ -223,7 +225,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateUsing() {
       // Manage suffocation debuff
-      if (breath > 0) {
+      if (_breath > 0) {
         player.buffImmune[BuffID.Suffocation] = true;
       }
       else {
@@ -243,40 +245,37 @@ namespace OriMod.Abilities {
     }
 
     protected internal override void PostUpdate() {
-      if (InUse) {
-        player.position = lastPosition + velocity;
-        lastPosition = player.position;
-      }
+      if (!InUse) return;
+      player.position = _lastPosition + velocity;
+      _lastPosition = player.position;
     }
 
     internal override void DrawEffects() {
-      if (breath < MaxDuration) {
+      if (_breath >= MaxDuration) return;
+      // UI indication for breath
+      Vector2 baseDrawPos = player.Right - Main.screenPosition;
+      baseDrawPos.X += 48;
+      baseDrawPos.Y += player.gravDir >= 0 ? 16 : 112;
+      Color color = Color.White * (InUse ? 1 : 0.6f);
 
-        // UI indication for breath
-        Vector2 baseDrawPos = player.Right - Main.screenPosition;
-        baseDrawPos.X += 48;
-        baseDrawPos.Y += player.gravDir >= 0 ? 16 : 112;
-        var color = Color.White * (InUse ? 1 : 0.6f);
-
-        Vector2 drawPos = baseDrawPos;
-        int uiCount = (int)Math.Ceiling((double)breath / UiIncrement);
-        var effect = player.gravDir > 0 ? default : SpriteEffects.FlipVertically;
-        for (int i = 0; i < uiCount; i++) {
-          if (i % 10 == 0) {
-            drawPos.X = baseDrawPos.X;
-            drawPos.Y += 40 * player.gravDir;
-          }
-          drawPos.X += 24;
-          int frameY = 0;
-
-          // Different frameY if this represents a partially filled bar
-          if (i * UiIncrement + UiIncrement > breath) {
-            frameY = 4 - (int)breath % UiIncrement / (UiIncrement / 5);
-          }
-
-          var tex = OriTextures.Instance.BurrowTimer.texture;
-          Main.playerDrawData.Add(new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0));
+      Vector2 drawPos = baseDrawPos;
+      int uiCount = (int)Math.Ceiling((double)_breath / UiIncrement);
+      SpriteEffects effect = player.gravDir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+      for (int i = 0; i < uiCount; i++) {
+        if (i % 10 == 0) {
+          drawPos.X = baseDrawPos.X;
+          drawPos.Y += 40 * player.gravDir;
         }
+        drawPos.X += 24;
+        int frameY = 0;
+
+        // Different frameY if this represents a partially filled bar
+        if (i * UiIncrement + UiIncrement > _breath) {
+          frameY = 4 - (int)_breath % UiIncrement / (UiIncrement / 5);
+        }
+
+        Texture2D tex = OriTextures.Instance.burrowTimer.texture;
+        Main.playerDrawData.Add(new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0));
       }
     }
 
@@ -285,14 +284,7 @@ namespace OriMod.Abilities {
         InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * (player.gravDir < 0 ? 48 : 32));
 
         if (Active) {
-          bool canBurrow = false;
-          var points = InnerHitbox.Points;
-          foreach (Point p in points) {
-            if (IsSolid(Main.tile[p.X, p.Y])) {
-              canBurrow = true;
-              break;
-            }
-          }
+          bool canBurrow = InnerHitbox.Points.Any(p => IsSolid(Main.tile[p.X, p.Y]));
           if (!canBurrow) {
             SetState(State.Ending);
           }
@@ -333,18 +325,18 @@ namespace OriMod.Abilities {
             currentSpeed = FastSpeed;
             velocity = Vector2.UnitY * player.gravDir * currentSpeed;
             player.position += velocity;
-            lastPosition = player.position;
+            _lastPosition = player.position;
           }
         }
 
-        if (breath < MaxDuration) {
-          if (breath < 0) {
-            breath = 0;
+        if (_breath < MaxDuration) {
+          if (_breath < 0) {
+            _breath = 0;
           }
-          breath += RecoveryRate;
+          _breath += RecoveryRate;
         }
-        if (breath > MaxDuration) {
-          breath = MaxDuration;
+        if (_breath > MaxDuration) {
+          _breath = MaxDuration;
         }
       }
     }

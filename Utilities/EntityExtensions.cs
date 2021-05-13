@@ -39,10 +39,9 @@ namespace OriMod.Utilities {
         }
 
         float newDist = distanceSquaredCheck(me, e);
-        if (newDist < distance) {
-          distance = newDist;
-          id = e.whoAmI;
-        }
+        if (newDist >= distance) continue;
+        distance = newDist;
+        id = e.whoAmI;
       }
 
       if (id != -1) {
@@ -57,7 +56,5 @@ namespace OriMod.Utilities {
       entity = null;
       return false;
     }
-
-
   }
 }

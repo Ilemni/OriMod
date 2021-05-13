@@ -2,7 +2,7 @@
 using Terraria.ModLoader;
 
 namespace OriMod {
-  public sealed partial class OriMod : Mod {
+  public sealed partial class OriMod {
     /// <summary>
     /// Interact with <see cref="OriMod"/> using various inputs.
     /// <list type="table">
@@ -11,16 +11,16 @@ namespace OriMod {
     /// <description>Description</description>
     /// </listheader>
     /// <item>
-    /// <term>"ResetPlayerModData", <see cref="Player"/> -or- <see cref="ModPlayer"/></term>
+    /// <term>"ResetPlayerModData"</term>
     /// <description>
-    /// Resets the <see cref="OriPlayer"/> data on the given <see cref="Player"/>/<see cref="ModPlayer"/> (setonly) —
+    /// Arguments <see cref="Player"/> -or- <see cref="ModPlayer"/>, resets the <see cref="OriPlayer"/> data on the given <see cref="Player"/>/<see cref="ModPlayer"/> (set-only) —
     /// Returns <see langword="true"/> if arguments are valid; otherwise, <see langword="false"/>.
     /// </description>
     /// </item>
     /// <item>
-    /// <term>"IsOri", <see cref="Player"/> -or- <see cref="ModPlayer"/></term>
+    /// <term>"IsOri"</term>
     /// <description>
-    /// Checks if the player is in Ori state (readonly) —
+    /// Arguments <see cref="Player"/> -or- <see cref="ModPlayer"/>, checks if the player is in Ori state (readonly) —
     /// Returns <see langword="true"/> if the player is Ori or transforming into Ori; <see langword="false"/> if neither; or <see langword="null"/> if arguments are invalid.
     /// </description>
     /// </item>
@@ -28,33 +28,33 @@ namespace OriMod {
     /// </summary>
     public override object Call(params object[] args) {
       int len = args.Length;
-      if (len > 0 && args[0] is string cmd) {
-        OriPlayer oPlayer = null;
-        if (len >= 2) {
-          oPlayer = GetOriPlayer(args[1]);
-        }
+      if (len <= 0 || !(args[0] is string cmd)) return null;
+      
+      OriPlayer oPlayer = null;
+      if (len >= 2) {
+        oPlayer = GetOriPlayer(args[1]);
+      }
 
-        switch (cmd) {
-          case "ResetPlayerModData":
-            if (!(oPlayer is null)) {
-              oPlayer.ResetData();
-              return true;
-            }
-            Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type {typeof(Player)}, got {args[1].GetType()}");
-            return false;
-          case "IsOri":
-            if (!(oPlayer is null)) {
-              return oPlayer.IsOri || oPlayer.Transforming;
-            }
-            Log.Warn($"{this.Name}.Call() - Transforming - Expected type {typeof(Player)}, got {args[1].GetType()}");
-            return null;
-        }
+      switch (cmd) {
+        case "ResetPlayerModData":
+          if (!(oPlayer is null)) {
+            oPlayer.ResetData();
+            return true;
+          }
+          Log.Warn($"{Name}.Call() - ResetPlayerModData - Expected type {typeof(Player)}, got {args[1].GetType()}");
+          return false;
+        case "IsOri":
+          if (!(oPlayer is null)) {
+            return oPlayer.IsOri || oPlayer.Transforming;
+          }
+          Log.Warn($"{Name}.Call() - Transforming - Expected type {typeof(Player)}, got {args[1].GetType()}");
+          return null;
       }
       return null;
     }
 
-    private OriPlayer GetOriPlayer(object obj) {
-      var player = obj is Player p ? p : obj is ModPlayer modPlayer ? modPlayer.player : null;
+    private static OriPlayer GetOriPlayer(object obj) {
+      Player player = obj is Player p ? p : obj is ModPlayer modPlayer ? modPlayer.player : null;
       return player?.GetModPlayer<OriPlayer>();
     }
   }

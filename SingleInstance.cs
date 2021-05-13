@@ -7,7 +7,8 @@ namespace OriMod {
   /// </summary>
   /// <typeparam name="T">The type to make Singleton.</typeparam>
   public abstract class SingleInstance<T> where T : SingleInstance<T> {
-    private static readonly object _lock = new object();
+    // ReSharper disable once StaticMemberInGenericType
+    private static readonly object Lock = new object();
 
     /// <summary>
     /// The singleton instance of this type.
@@ -26,13 +27,11 @@ namespace OriMod {
     /// Creates a new instance of <typeparamref name="T"/> if it does not already exist.
     /// </summary>
     public static void Initialize() {
-      if (_instance is null) {
-        lock (_lock) {
-          if (_instance is null) {
-            _instance = (T)Activator.CreateInstance(typeof(T), true);
-            OriMod.OnUnload += Unload;
-          }
-        }
+      if (!(_instance is null)) return;
+      lock (Lock) {
+        if (!(_instance is null)) return;
+        _instance = (T)Activator.CreateInstance(typeof(T), true);
+        OriMod.OnUnload += Unload;
       }
     }
 
@@ -40,8 +39,9 @@ namespace OriMod {
     /// Sets the static reference of <see cref="SingleInstance{T}"/> to <see langword="null"/>. Calls <see cref="IDisposable.Dispose"/> first, if applicable.
     /// </summary>
     private static void Unload() {
-      if (_instance is IDisposable dispoable) {
-        dispoable.Dispose();
+      // ReSharper disable once SuspiciousTypeConversion.Global
+      if (_instance is IDisposable disposable) {
+        disposable.Dispose();
       }
       _instance = null;
     }

@@ -1,8 +1,8 @@
-using Microsoft.Xna.Framework;
-using System.Reflection;
-using System.Collections.Generic;
-using Terraria.ID;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Microsoft.Xna.Framework;
+using Terraria.ID;
 
 namespace OriMod {
   public sealed class SeinData {
@@ -21,22 +21,22 @@ namespace OriMod {
     /// <para>1. Memory is always only ever using 8 <see cref="SeinData"/>s, or however many is in <see cref="All"/>. Not too big a deal though.</para>
     /// <para>2. Readability. I feel that this is the best setup for a few reasons.</para>
     /// <para>2a. It's all in one file rather than multiple derived classes for easy comparison.</para>
-    /// <para>2b. Only the changes/upgrades are shown, rather than having redundant data. The same could be accomplished with inheritence, but I'd rather not have 8 levels of it.</para>
+    /// <para>2b. Only the changes/upgrades are shown, rather than having redundant data. The same could be accomplished with inheritance, but I'd rather not have 8 levels of it.</para>
     /// </remarks>
     internal static void Load() {
-      var defaultSein = new SeinData();
+      SeinData defaultSein = new SeinData();
       var fields = typeof(SeinData).GetFields();
 
       var list = new List<SeinData>();
-      void AddNewSein(string tierName, SeinData newSein) {
-        var lastSein = list.Count == 0 ?
+      void AddNewSein(SeinData newSein) {
+        SeinData lastSein = list.Count == 0 ?
           new SeinData() :
           list[list.Count - 1];
 
         foreach (FieldInfo field in fields) {
-          var defVal = field.GetValue(defaultSein);
-          var oldVal = field.GetValue(lastSein);
-          var newVal = field.GetValue(newSein);
+          object defVal = field.GetValue(defaultSein);
+          object oldVal = field.GetValue(lastSein);
+          object newVal = field.GetValue(newSein);
 
           // If value is specified in constructor, use it
           // If value is unspecified, use value of previous upgrade
@@ -50,12 +50,12 @@ namespace OriMod {
       }
 
       // Tier 1 (Silver)
-      AddNewSein("Silver/Tungsten", new SeinData());
+      AddNewSein(new SeinData());
 
-      // Tier 2 (Demonite/Crimsane)
+      // Tier 2 (Demonite/Crimtane)
       // Increased shots per burst
       // Max damage per burst: 15
-      AddNewSein("Demonite/Crimsane", new SeinData {
+      AddNewSein(new SeinData {
         rarity = ItemRarityID.Green,
         value = 3000,
         color = new Color(108, 92, 172),
@@ -73,7 +73,7 @@ namespace OriMod {
       // 2 targets
       // Max damage per burst: 42
       // For some sort of "rage" effect to pair with red theme, lower CD
-      AddNewSein("Hellstone", new SeinData {
+      AddNewSein(new SeinData {
         rarity = ItemRarityID.Orange,
         value = 10000,
         color = new Color(240, 0, 0, 194),
@@ -93,10 +93,10 @@ namespace OriMod {
         lightStrength = 1.275f,
       });
 
-      // Tier 4 (Mythral/Orichalcum)
+      // Tier 4 (Mythril/Orichalcum)
       // 2 targets, 2 shots to primary, 3 shots max (rather than 4)
       // Max damage per burst: 81
-      AddNewSein("Mythral/Orichalcum", new SeinData {
+      AddNewSein(new SeinData {
         rarity = ItemRarityID.LightRed,
         value = 25000,
         color = new Color(185, 248, 248),
@@ -118,7 +118,7 @@ namespace OriMod {
       // Tier 5 (Hallow)
       // 3 targets, 2 shots to primary, 4 shots max (rather than 5)
       // Max damage per burst: 132
-      AddNewSein("Hallow", new SeinData {
+      AddNewSein(new SeinData {
         rarity = ItemRarityID.Pink,
         value = 50000,
         color = new Color(255, 228, 160),
@@ -135,7 +135,7 @@ namespace OriMod {
       // Tier 6 (Spectral)
       // 3 targets, 3 shots to primary, 5 shots max
       // Max damage per burst: 195
-      AddNewSein("Spectral", new SeinData {
+      AddNewSein(new SeinData {
         rarity = ItemRarityID.Yellow,
         value = 100000,
         color = new Color(0, 180, 174, 210),
@@ -159,7 +159,7 @@ namespace OriMod {
       // Tier 7 (Lunar)
       // 4 targets, 3 shots to primary, 2 to others, 6 shots max (rather than 9)
       // Max damage per burst: 282
-      AddNewSein("Lunar Fragments", new SeinData {
+      AddNewSein(new SeinData {
         rarity = ItemRarityID.Cyan,
         value = 250000,
         color = new Color(78, 38, 102),
@@ -180,7 +180,7 @@ namespace OriMod {
       // Tier 8 (Lunar Bars)
       // 5 targets, 4 shots to primary, 2 shots to others, 10 shots max (rather than 12)
       // Max damage per burst: 530 (too high?)
-      AddNewSein("Lunar Bars", new SeinData {
+      AddNewSein(new SeinData {
         rarity = ItemRarityID.Red,
         value = 500000,
         color = new Color(220, 220, 220),
@@ -270,13 +270,13 @@ namespace OriMod {
     /// NPCs within this distance from the player can be targeted by the minion, if there is line of sight between it and the player.
     /// </summary>
     public float targetMaxDist = 240f;
-    public float targetMaxDistSquared => targetMaxDist * targetMaxDist;
+    public float TargetMaxDistSquared => targetMaxDist * targetMaxDist;
 
     /// <summary>
     /// NPCs within this distance from the player can be targeted by the minion, regardless of line of sight.
     /// </summary>
     public float targetThroughWallDist = 80f;
-    public float targetThroughWallDistSquared => targetThroughWallDist * targetThroughWallDist;
+    public float TargetThroughWallDistSquared => targetThroughWallDist * targetThroughWallDist;
 
     /// <summary>
     /// The knockback of Spirit Flame.
@@ -352,12 +352,12 @@ namespace OriMod {
       int maxDmgPerBurst = damage * maxShotsPerBurst;
       int maxDmgPerAllBursts = maxDmgPerBurst * bursts;
 
-      int minDPS = (int)(minDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong));
-      int maxDPS = (int)(maxDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong));
+      int minDps = minDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong);
+      int maxDps = maxDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong);
 
       return minShotsPerBurst == maxShotsPerBurst ?
-        $"Sein ({tierName}): DPS:{minDPS}, Shots:{minShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}" :
-        $"Sein ({tierName}): DPS:{minDPS}-{maxDPS}, Shots:{minShotsPerBurst}-{maxShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}-{maxDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}-{maxDmgPerAllBursts}";
+        $"Sein ({tierName}): DPS:{minDps}, Shots:{minShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}" :
+        $"Sein ({tierName}): DPS:{minDps}-{maxDps}, Shots:{minShotsPerBurst}-{maxShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}-{maxDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}-{maxDmgPerAllBursts}";
     }
     #endregion
   }

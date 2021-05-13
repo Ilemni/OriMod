@@ -37,13 +37,13 @@ namespace OriMod.Animations {
       ["Dash"] = Track.Range(
           F(2, 11, 36), F(2, 12, 12)
         ),
-      ["Bash"] = new Track(new Frame[] {
+      ["Bash"] = new Track(new[] {
           F(2, 13, 40), F(2, 12)
       }),
       ["AirJump"] = Track.Single(
           F(3, 0, 32)
         ),
-      ["Jump"] = new Track(new Frame[] {
+      ["Jump"] = new Track(new[] {
           F(3, 2, 14), F(3, 1)
         }),
       ["IntoJumpBall"] = Track.Range(LoopMode.None,
@@ -79,7 +79,7 @@ namespace OriMod.Animations {
       ["WallJump"] = Track.Single(
           F(5, 13, 12)
         ),
-      ["WallChargeJumpCharge"] = new Track(new Frame[] {
+      ["WallChargeJumpCharge"] = new Track(new[] {
           F(6, 0, 16), F(6, 1, 10), F(6, 2)
         }),
       ["WallChargeJumpAim"] = Track.Range(
@@ -99,7 +99,7 @@ namespace OriMod.Animations {
 
     private static PlayerAnim GetInstance() {
       OriMod.OnUnload += () => _instance = null;
-      return AnimLibMod.GetAnimationSource<PlayerAnim>(OriMod.Instance);
+      return AnimLibMod.GetAnimationSource<PlayerAnim>(OriMod.instance);
     }
   }
 

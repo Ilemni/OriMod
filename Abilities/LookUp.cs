@@ -7,7 +7,7 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class LookUp : Ability {
     internal LookUp(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.LookUp;
+    public override int Id => AbilityId.LookUp;
     public override byte Level => 1;
 
     internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !player.mount.Active &&
@@ -27,7 +27,6 @@ namespace OriMod.Abilities {
       }
       else if (!(player.controlUp || input.charge.Current) && !Ending) {
         SetState(Active ? State.Ending : State.Inactive);
-        return;
       }
       else if (Starting) {
         if (CurrentTime > StartDuration) {

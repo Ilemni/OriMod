@@ -8,7 +8,7 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class Climb : Ability, ILevelable {
     internal Climb(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.Climb;
+    public override int Id => AbilityId.Climb;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 1;
@@ -19,17 +19,16 @@ namespace OriMod.Abilities {
     internal bool IsCharging {
       get => _isCharging;
       private set {
-        if (value != _isCharging) {
-          _isCharging = value;
-          netUpdate = true;
-        }
+        if (value == _isCharging) return;
+        _isCharging = value;
+        netUpdate = true;
       }
     }
     private bool _isCharging;
 
     internal sbyte wallDirection;
     // Prevent flip gravity when climbing upwards
-    private bool disableUp;
+    private bool _disableUp;
 
     protected override void ReadPacket(BinaryReader r) {
       wallDirection = r.ReadSByte();
@@ -74,17 +73,16 @@ namespace OriMod.Abilities {
 
     protected override void UpdateUsing() {
       if (player.controlUp) {
-        disableUp = true;
+        _disableUp = true;
       }
     }
 
     protected internal override void PostUpdateAbilities() {
-      if (disableUp) {
-        if (!player.controlUp) {
-          disableUp = false;
-        }
-        player.controlUp = false;
+      if (!_disableUp) return;
+      if (!player.controlUp) {
+        _disableUp = false;
       }
+      player.controlUp = false;
     }
 
     internal override void Tick() {
@@ -98,7 +96,7 @@ namespace OriMod.Abilities {
         }
       }
       else if (Ending) {
-        int maxTime = player.gravDir == 1 ? 7 : 9;
+        int maxTime = player.gravDir >= 1 ? 7 : 9;
         if (CurrentTime >= maxTime) {
           SetState(State.Inactive);
         }

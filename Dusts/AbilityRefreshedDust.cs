@@ -8,8 +8,8 @@ namespace OriMod.Dusts {
   /// Dust used to display that a player's <see cref="Abilities.Ability"/> has just refreshed.
   /// </summary>
   public class AbilityRefreshedDust : ModDust {
-    private int alphaRate => 12;
-    private int speed => 3;
+    private static int alphaRate => 12;
+    private static int speed => 3;
 
     public override void OnSpawn(Dust dust) {
       dust.alpha = 0;
@@ -20,10 +20,9 @@ namespace OriMod.Dusts {
     public override bool Update(Dust dust) {
       dust.position += dust.velocity;
       dust.alpha += alphaRate;
-      if (dust.alpha > 255) {
-        dust.alpha = 255;
-        dust.active = false;
-      }
+      if (dust.alpha <= 255) return false;
+      dust.alpha = 255;
+      dust.active = false;
       return false;
     }
   }

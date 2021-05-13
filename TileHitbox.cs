@@ -33,7 +33,7 @@ namespace OriMod {
     /// <summary>
     /// Local position of points in the hitbox, in tile coordinates.
     /// </summary>
-    public Point[] Template { get; }
+    private Point[] Template { get; }
 
     /// <summary>
     /// Updates the position of the hitbox based on the given world position.

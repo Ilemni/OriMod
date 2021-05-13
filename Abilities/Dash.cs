@@ -1,5 +1,7 @@
+using System.IO;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -11,7 +13,7 @@ namespace OriMod.Abilities {
   public sealed class Dash : Ability, ILevelable {
     static Dash() => OriMod.OnUnload += Unload;
     internal Dash(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.Dash;
+    public override int Id => AbilityId.Dash;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 3;
@@ -28,22 +30,22 @@ namespace OriMod.Abilities {
     private static float[] _speeds;
     private static int Duration => Speeds.Length - 1;
 
-    private sbyte direction;
+    private sbyte _direction;
 
-    private readonly RandomChar rand = new RandomChar();
+    private readonly RandomChar _rand = new RandomChar();
 
     internal void StartDash() {
-      direction = (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction);
-      oPlayer.PlayNewSound("Ori/Dash/seinDash" + rand.NextNoRepeat(3), 0.2f);
+      _direction = (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction);
+      oPlayer.PlaySound("Ori/Dash/seinDash" + _rand.NextNoRepeat(3), 0.2f);
       player.pulley = false;
     }
 
-    protected override void ReadPacket(System.IO.BinaryReader r) {
-      direction = r.ReadSByte();
+    protected override void ReadPacket(BinaryReader r) {
+      _direction = r.ReadSByte();
     }
 
-    protected override void WritePacket(Terraria.ModLoader.ModPacket packet) {
-      packet.Write(direction);
+    protected override void WritePacket(ModPacket packet) {
+      packet.Write(_direction);
     }
 
     protected override void UpdateActive() {
@@ -52,7 +54,7 @@ namespace OriMod.Abilities {
         PutOnCooldown();
         return;
       }
-      player.velocity.X = Speeds[CurrentTime] * 0.5f * direction;
+      player.velocity.X = Speeds[CurrentTime] * 0.5f * _direction;
       player.velocity.Y = 0.25f * (CurrentTime + 1) * player.gravDir;
       if (CurrentTime > 20) {
         player.runSlowdown = 26f;
@@ -65,11 +67,10 @@ namespace OriMod.Abilities {
     }
 
     protected override void TickCooldown() {
-      if (currentCooldown > 0 || !Refreshed) {
-        currentCooldown--;
-        if (currentCooldown < 0 && (abilities.bash || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
-          Refreshed = true;
-        }
+      if (currentCooldown <= 0 && Refreshed) return;
+      currentCooldown--;
+      if (currentCooldown < 0 && (abilities.bash || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
+        Refreshed = true;
       }
     }
 
@@ -84,16 +85,15 @@ namespace OriMod.Abilities {
         return;
       }
       TickCooldown();
-      if (InUse) {
-        if (abilities.airJump) {
-          SetState(State.Inactive);
-          player.velocity.X = Speeds[24] * direction; // Rip hyperspeed dash-jump
-          PutOnCooldown(true);
-        }
-        else if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash) {
-          SetState(State.Inactive);
-          PutOnCooldown(true);
-        }
+      if (!InUse) return;
+      if (abilities.airJump) {
+        SetState(State.Inactive);
+        player.velocity.X = Speeds[24] * _direction; // Rip hyperspeed dash-jump
+        PutOnCooldown(true);
+      }
+      else if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash) {
+        SetState(State.Inactive);
+        PutOnCooldown(true);
       }
     }
 

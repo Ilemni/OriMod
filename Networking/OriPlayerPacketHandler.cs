@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.IO;
+using Microsoft.Xna.Framework;
 using OriMod.Utilities;
-using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -52,7 +52,7 @@ namespace OriMod.Networking {
       ModPacket packet = GetPacket(fromWho);
       OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
 
-      var flags = new BitsByte {
+      BitsByte flags = new BitsByte {
         [0] = fromPlayer.IsOri,
         [1] = fromPlayer.Transforming,
         [2] = fromPlayer.UnrestrictedMovement,

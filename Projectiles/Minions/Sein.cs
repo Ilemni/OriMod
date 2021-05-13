@@ -13,11 +13,11 @@ namespace OriMod.Projectiles.Minions {
   /// </summary>
   public abstract class Sein : Minion {
     static Sein() => OriMod.OnUnload += Unload;
-    public override sealed string Texture => "OriMod/Projectiles/Minions/Sein";
+    public sealed override string Texture => "OriMod/Projectiles/Minions/Sein";
 
-    public override sealed bool? CanCutTiles() => false;
+    public sealed override bool? CanCutTiles() => false;
 
-    public override sealed void SetStaticDefaults() {
+    public sealed override void SetStaticDefaults() {
       Main.projFrames[projectile.type] = 3;
       Main.projPet[projectile.type] = true;
       ProjectileID.Sets.MinionSacrificable[projectile.type] = true;
@@ -44,25 +44,25 @@ namespace OriMod.Projectiles.Minions {
       projectile.tileCollide = false;
       projectile.ignoreWater = true;
 
-      var type = SeinType;
-      data = SeinData.All[type - 1];
+      byte type = SeinType;
+      _data = SeinData.All[type - 1];
 
-      projectile.width = data.seinWidth;
-      projectile.height = data.seinHeight;
+      projectile.width = _data.seinWidth;
+      projectile.height = _data.seinHeight;
 
-      spiritFlameType = mod.ProjectileType("SpiritFlame" + type);
-      spiritFlameSound = type <= 2 ? "" : type <= 4 ? "LevelB" : type <= 6 ? "LevelC" : type <= 8 ? "LevelD" : "";
+      _spiritFlameType = mod.ProjectileType("SpiritFlame" + type);
+      _spiritFlameSound = type <= 2 ? "" : type <= 4 ? "LevelB" : type <= 6 ? "LevelC" : type <= 8 ? "LevelD" : "";
     }
 
-    private SeinData data;
+    private SeinData _data;
 
-    public Player player => _player ?? (_player = Main.player[projectile.owner]);
+    private Player Player => _player ?? (_player = Main.player[projectile.owner]);
 
     /// <summary>
     /// Whether the AI should automatically fire projectiles or not.
     /// </summary>
     /// <returns><see langword="true"/> if the held item is not the same type that spawned this projectile.</returns>
-    private bool AutoFire => player.HeldItem.shoot != projectile.type;
+    private bool AutoFire => Player.HeldItem.shoot != projectile.type;
 
     /// <summary>
     /// Current Cooldown of Spirit Flame.
@@ -73,21 +73,21 @@ namespace OriMod.Projectiles.Minions {
       set => projectile.ai[0] = value;
     }
 
-    private float CooldownMin => data.cooldownMin * (AutoFire ? 1.5f : 1);
-    private float CooldownShort => data.cooldownShort * (AutoFire ? 1.5f : 1);
-    private float CooldownLong => data.cooldownLong * (AutoFire ? 2f : 1);
+    private float CooldownMin => _data.cooldownMin * (AutoFire ? 1.5f : 1);
+    private float CooldownShort => _data.cooldownShort * (AutoFire ? 1.5f : 1);
+    private float CooldownLong => _data.cooldownLong * (AutoFire ? 2f : 1);
 
     /// <summary>
     /// ID of <see cref="SpiritFlame"/> to shoot. Assigned in <see cref="SetDefaults"/>
     /// </summary>
-    private int spiritFlameType;
+    private int _spiritFlameType;
 
     /// <summary>
     /// Sound that plays when firing. Assigned in <see cref="SetDefaults"/>
     /// </summary>
-    private string spiritFlameSound;
+    private string _spiritFlameSound;
 
-    private readonly RandomChar rand = new RandomChar();
+    private readonly RandomChar _rand = new RandomChar();
 
     /// <summary>
     /// Damage multiplier for when the player manually fires Spirit Flame.
@@ -96,9 +96,9 @@ namespace OriMod.Projectiles.Minions {
 
 
     /// <summary>
-    /// Positions that the minion idly moves towards. Positions are relative to <see cref="goalNPC"/> with a fixed offset, or the player if <see cref="goalNPC"/> is <see langword="null"/>.
+    /// Positions that the minion idly moves towards. Positions are relative to <see cref="_goalNpc"/> with a fixed offset, or the player if <see cref="_goalNpc"/> is <see langword="null"/>.
     /// </summary>
-    private static Vector2[] GoalPositions => _goalPositions ?? (_goalPositions = new Vector2[] {
+    private static Vector2[] GoalPositions => _goalPositions ?? (_goalPositions = new[] {
       new Vector2(-32, 12),
       new Vector2(32, -12),
       new Vector2(-32, -12),
@@ -107,28 +107,28 @@ namespace OriMod.Projectiles.Minions {
       new Vector2(32, -12),
     });
 
-    private NPC goalNPC;
+    private NPC _goalNpc;
 
     /// <summary>
     /// Current index of <see cref="GoalPositions"/> that is active.
     /// <para>This value automatically wraps to be in-bounds of <see cref="GoalPositions"/>.</para>
     /// </summary>
-    private int goalPositionIdx {
-      get => _hPI;
-      set => _hPI = value % GoalPositions.Length;
+    private int GoalPositionIdx {
+      get => _hPi;
+      set => _hPi = value % GoalPositions.Length;
     }
 
     /// <summary>
-    /// Exact position that this minion is moving towards. This is set to be around <see cref="goalNPC"/>, or the player if <see cref="goalNPC"/> is <see langword="null"/>.
+    /// Exact position that this minion is moving towards. This is set to be around <see cref="_goalNpc"/>, or the player if <see cref="_goalNpc"/> is <see langword="null"/>.
     /// </summary>
-    public Vector2 GoalPosition {
+    private Vector2 GoalPosition {
       get {
         Vector2 result;
-        if (goalNPC is null) {
-          result = PlayerSpace(0, -56) + GoalPositions[goalPositionIdx];
+        if (_goalNpc is null) {
+          result = PlayerSpace(0, -56) + GoalPositions[GoalPositionIdx];
         }
         else {
-          result = goalNPC.Top;
+          result = _goalNpc.Top;
           result.Y -= 56;
         }
         return result;
@@ -139,7 +139,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Targeted NPC using the minion targeting feature.
     /// </summary>
-    private NPC mainTargetNPC;
+    private NPC _mainTargetNpc;
 
     /// <summary>
     /// Distance this projectile is from the goal position to cycle the goal position.
@@ -147,17 +147,17 @@ namespace OriMod.Projectiles.Minions {
     private static float TriggerGoalMove => 3f;
     private static float TriggerGoalMoveSquared => TriggerGoalMove * TriggerGoalMove;
 
-    private int timeSinceGoalChanged;
+    private int _timeSinceGoalChanged;
 
     /// <summary>
     /// List of NPCs last targeted by the minion.
     /// </summary>
-    private readonly List<byte> targetIDs = new List<byte>();
+    private readonly List<byte> _targetIDs = new List<byte>();
 
     /// <summary>
     /// Current number of shots fired in rapid succession. Used to incur <see cref="SeinData.cooldownLong"/>.
     /// </summary>
-    private int currentShotsFired = 1;
+    private int _currentShotsFired = 1;
 
     /// <summary>
     /// Coordinates relative to the player's center.
@@ -168,8 +168,8 @@ namespace OriMod.Projectiles.Minions {
     /// Coordinates relative to the player's center.
     /// </summary>
     private Vector2 PlayerSpace(Vector2 coords = default) {
-      var result = player.Center + coords * player.gravDir;
-      if (player.gravDir < 0) {
+      Vector2 result = Player.Center + coords * Player.gravDir;
+      if (Player.gravDir < 0) {
         result.Y -= 20;
       }
       return result;
@@ -186,9 +186,9 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Ensures that the projectile position and velocity are valid.
     /// </summary>
-    private void VerifyNoNANs() {
-      if (projectile.position.HasNaNs() || (projectile.position - player.Center).Length() > 1000) {
-        projectile.position = player.Center;
+    private void VerifyNoNaNs() {
+      if (projectile.position.HasNaNs() || (projectile.position - Player.Center).Length() > 1000) {
+        projectile.position = Player.Center;
       }
       if (projectile.velocity.HasNaNs()) {
         projectile.velocity = new Vector2(0, -1);
@@ -202,9 +202,9 @@ namespace OriMod.Projectiles.Minions {
     private void SeinMovement() {
       Vector2 goalOffset = GoalPosition - projectile.position;
       Vector2 goalVelocity = goalOffset * 0.05f;
-      float targetSpeed = (goalNPC?.velocity ?? player.velocity).Length();
+      float targetSpeed = (_goalNpc?.velocity ?? Player.velocity).Length();
       if (targetSpeed > 8) {
-        goalVelocity *= (targetSpeed * 0.125f);
+        goalVelocity *= targetSpeed * 0.125f;
       }
 
       float goalSpeed = goalVelocity.Length();
@@ -220,22 +220,20 @@ namespace OriMod.Projectiles.Minions {
     /// Updates where Sein should move towards.
     /// </summary>
     private void UpdateGoalPosition() {
-      timeSinceGoalChanged++;
-      if (goalNPC is null && (projectile.position - GoalPosition).LengthSquared() < TriggerGoalMoveSquared) {
-        goalPositionIdx++;
+      _timeSinceGoalChanged++;
+      if (_goalNpc is null && (projectile.position - GoalPosition).LengthSquared() < TriggerGoalMoveSquared) {
+        GoalPositionIdx++;
       }
 
-      if (!(goalNPC is null) && !goalNPC.active) {
-        goalNPC = null;
+      if (!(_goalNpc is null) && !_goalNpc.active) {
+        _goalNpc = null;
       }
-      if (targetIDs.Count == 0 || !Main.npc[targetIDs[0]].active) {
-        goalNPC = null;
+      if (_targetIDs.Count == 0 || !Main.npc[_targetIDs[0]].active) {
+        _goalNpc = null;
       }
       else {
-        if (timeSinceGoalChanged > 20) {
-          SetGoalToNPC();
-        }
-        else {
+        if (_timeSinceGoalChanged > 20) {
+          SetGoalToNpc();
         }
       }
     }
@@ -243,28 +241,28 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Moves the goal position to the target NPC or nearest NPC.
     /// </summary>
-    private void SetGoalToNPC() {
-      NPC target = Main.npc[targetIDs[0]];
+    private void SetGoalToNpc() {
+      NPC target = Main.npc[_targetIDs[0]];
 
       //Cannot reach target NPC
-      if ((player.Center - target.Center).LengthSquared() > data.targetMaxDistSquared) {
-        if (targetIDs.Count != 1) {
-          target = Main.npc[targetIDs[1]];
+      if ((Player.Center - target.Center).LengthSquared() > _data.TargetMaxDistSquared) {
+        if (_targetIDs.Count != 1) {
+          target = Main.npc[_targetIDs[1]];
           // Cannot reach closest NPC
-          if ((player.Center - target.Center).LengthSquared() > data.targetMaxDistSquared) {
-            goalNPC = null;
+          if ((Player.Center - target.Center).LengthSquared() > _data.TargetMaxDistSquared) {
+            _goalNpc = null;
             return;
           }
         }
         else {
-          goalNPC = null;
+          _goalNpc = null;
           return;
         }
       }
-      if (target != goalNPC) {
-        goalNPC = target;
-        timeSinceGoalChanged = 0;
-      }
+
+      if (target == _goalNpc) return;
+      _goalNpc = target;
+      _timeSinceGoalChanged = 0;
     }
 
     /// <summary>
@@ -272,16 +270,16 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <returns><see langword="true"/> if there are any <see cref="NPC"/>s that <see cref="Sein"/> can attack; otherwise, <see langword="false"/></returns>
     private bool UpdateTargets() {
-      bool inSight(NPC npc) => Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height);
+      bool InSight(NPC npc) => Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height);
       int SortByDistanceClosest(byte id1, byte id2) {
-        var npc1 = Main.npc[id1];
-        var npc2 = Main.npc[id2];
-        if (!(mainTargetNPC is null)) {
-          if (npc1.whoAmI == mainTargetNPC.whoAmI) return -1;
-          if (npc2.whoAmI == mainTargetNPC.whoAmI) return 1;
+        NPC npc1 = Main.npc[id1];
+        NPC npc2 = Main.npc[id2];
+        if (!(_mainTargetNpc is null)) {
+          if (npc1.whoAmI == _mainTargetNpc.whoAmI) return -1;
+          if (npc2.whoAmI == _mainTargetNpc.whoAmI) return 1;
         }
 
-        Vector2 playerPos = player.Center;
+        Vector2 playerPos = Player.Center;
         float length1 = (npc1.position - playerPos).LengthSquared();
         float length2 = (npc2.position - playerPos).LengthSquared();
         return length1.CompareTo(length2);
@@ -291,61 +289,57 @@ namespace OriMod.Projectiles.Minions {
       var wormIDs = new List<byte>();
 
       // If player specifies target, add that target to selection
-      mainTargetNPC = null;
-      if (player.HasMinionAttackTargetNPC) {
-        NPC npc = Main.npc[player.MinionAttackTargetNPC];
+      _mainTargetNpc = null;
+      if (Player.HasMinionAttackTargetNPC) {
+        NPC npc = Main.npc[Player.MinionAttackTargetNPC];
         if (npc.CanBeChasedBy()) {
-          float dist = Vector2.Distance(player.Center, npc.Center);
-          if (dist < data.targetThroughWallDist || dist < data.targetMaxDist && inSight(npc)) {
+          float dist = Vector2.Distance(Player.Center, npc.Center);
+          if (dist < _data.targetThroughWallDist || dist < _data.targetMaxDist && InSight(npc)) {
             // Worms...
             if (npc.aiStyle == 6 || npc.aiStyle == 37) { // TODO: Sort targeted worm piece by closest rather than whoAmI
               wormIDs.Add((byte)npc.ai[3]);
             }
-            mainTargetNPC = npc;
+            _mainTargetNpc = npc;
             newTargetIDs.Add((byte)npc.whoAmI);
           }
         }
       }
 
       // Set target based on different enemies, if they can be hit
-      for (int i = 0; i < Main.npc.Length; i++) {
-        NPC npc = Main.npc[i];
-        if (npc.CanBeChasedBy()) {
-          float dist = Vector2.DistanceSquared(player.Center, npc.Center);
-          if (dist < data.targetThroughWallDistSquared || dist < data.targetMaxDistSquared && inSight(npc)) {
-            // Worms...
-            if (npc.aiStyle == 6 || npc.aiStyle == 37) { // TODO: Sort targeted worm piece by closest rather than whoAmI
-              if (wormIDs.Contains((byte)npc.ai[3])) {
-                continue;
-              }
-
-              wormIDs.Add((byte)npc.ai[3]);
-            }
-            newTargetIDs.Add((byte)npc.whoAmI);
+      foreach (NPC npc in Main.npc) {
+        if (!npc.CanBeChasedBy()) continue;
+        float dist = Vector2.DistanceSquared(Player.Center, npc.Center);
+        if (!(dist < _data.TargetThroughWallDistSquared) && 
+           (!(dist < _data.TargetMaxDistSquared) || !InSight(npc))) continue;
+        // Worms...
+        if (npc.aiStyle == 6 || npc.aiStyle == 37) { // TODO: Sort targeted worm piece by closest rather than whoAmI
+          if (wormIDs.Contains((byte)npc.ai[3])) {
+            continue;
           }
+
+          wormIDs.Add((byte)npc.ai[3]);
         }
+        newTargetIDs.Add((byte)npc.whoAmI);
       }
 
       if (newTargetIDs.Count > 1) {
         newTargetIDs.Sort(SortByDistanceClosest);
       }
-      targetIDs.Clear();
-      targetIDs.AddRange(newTargetIDs.GetRange(0, Math.Min(newTargetIDs.Count, data.targets)));
+      _targetIDs.Clear();
+      _targetIDs.AddRange(newTargetIDs.GetRange(0, Math.Min(newTargetIDs.Count, _data.targets)));
 
-      return !(mainTargetNPC is null) || newTargetIDs.Count > 0;
+      return !(_mainTargetNpc is null) || newTargetIDs.Count > 0;
     }
 
     /// <summary>
     /// Updates the cooldown.
     /// </summary>
     private void TickCooldown() {
-      if (Cooldown > 0) {
-        Cooldown++;
-        if (Cooldown > CooldownLong) {
-          Cooldown = 0;
-          currentShotsFired = 0;
-        }
-      }
+      if (Cooldown <= 0) return;
+      Cooldown++;
+      if (Cooldown <= CooldownLong) return;
+      Cooldown = 0;
+      _currentShotsFired = 0;
     }
 
     /// <summary>
@@ -353,11 +347,11 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <param name="hasTarget"></param>
     private void Attack(bool hasTarget) {
-      PlaySpiritFlameSound("Throw" + spiritFlameSound + rand.NextNoRepeat(3), 0.6f);
+      PlaySpiritFlameSound("Throw" + _spiritFlameSound + _rand.NextNoRepeat(3), 0.6f);
 
       if (!hasTarget) {
         // Fire at air - nothing to target
-        for (int i = 0; i < data.shotsToPrimaryTarget; i++) {
+        for (int i = 0; i < _data.shotsToPrimaryTarget; i++) {
           Shoot(null);
         }
         return;
@@ -365,15 +359,14 @@ namespace OriMod.Projectiles.Minions {
 
       int usedShots = 0;
       int loopCount = 0;
-      while (loopCount < data.shotsToPrimaryTarget) {
-        for (int t = 0; t < targetIDs.Count; t++) {
+      while (loopCount < _data.shotsToPrimaryTarget) {
+        for (int t = 0; t < _targetIDs.Count; t++) {
           bool isPrimary = t == 0;
-          int shots = isPrimary ? data.shotsToPrimaryTarget : data.shotsPerTarget;
-          if (loopCount < shots) {
-            Shoot(Main.npc[targetIDs[t]]);
-            if (++usedShots >= data.maxShotsAtOnce) {
-              break;
-            }
+          int shots = isPrimary ? _data.shotsToPrimaryTarget : _data.shotsPerTarget;
+          if (loopCount >= shots) continue;
+          Shoot(Main.npc[_targetIDs[t]]);
+          if (++usedShots >= _data.maxShotsAtOnce) {
+            break;
           }
         }
         loopCount++;
@@ -396,23 +389,23 @@ namespace OriMod.Projectiles.Minions {
       else {
         // Fire at enemy NPC
         shootVel = npc.position - projectile.Center;
-        rotation = Main.rand.Next(-data.randDegrees, data.randDegrees) / 180f * (float)Math.PI;
+        rotation = Main.rand.Next(-_data.randDegrees, _data.randDegrees) / 180f * (float)Math.PI;
       }
       if (shootVel == Vector2.Zero) {
         shootVel = Vector2.UnitY;
       }
-      shootVel = Utils.RotatedBy(shootVel * data.projectileSpeedStart, rotation);
+      shootVel = (shootVel * _data.projectileSpeedStart).RotatedBy(rotation);
       projectile.velocity += shootVel.Normalized() * -0.2f;
 
-      int dmg = (int)(projectile.damage * player.minionDamage *
+      int dmg = (int)(projectile.damage * Player.minionDamage *
         (!AutoFire ? ManualShootDamageMultiplier : 1));
 
 
-      Projectile spiritFlame = Projectile.NewProjectileDirect(projectile.Center, shootVel, spiritFlameType, dmg, projectile.knockBack, projectile.owner, 0, 0);
+      Projectile spiritFlame = Projectile.NewProjectileDirect(projectile.Center, shootVel, _spiritFlameType, dmg, projectile.knockBack, projectile.owner);
       spiritFlame.netUpdate = true;
       projectile.netUpdate = true;
       if (npc is null) {
-        var pos = Utils.RotatedBy(new Vector2(projectile.position.X, projectile.position.Y + Main.rand.Next(8, 48)), Main.rand.NextFloat((float)Math.PI * 2));
+        Vector2 pos = new Vector2(projectile.position.X, projectile.position.Y + Main.rand.Next(8, 48)).RotatedBy(Main.rand.NextFloat((float)Math.PI * 2));
         spiritFlame.ai[0] = pos.X != 0 ? pos.X : float.Epsilon;
         spiritFlame.ai[1] = pos.Y;
         spiritFlame.timeLeft = 20;
@@ -424,45 +417,46 @@ namespace OriMod.Projectiles.Minions {
       }
     }
 
-    internal override void CheckActive() {
-      var player = Main.player[projectile.owner];
-      var oPlayer = player.GetModPlayer<OriPlayer>();
+    protected override void CheckActive() {
+      Player player = Main.player[projectile.owner];
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       if (player.dead || !player.active) {
         oPlayer.RemoveSeinBuffs();
       }
-      else if (projectile.type == oPlayer.SeinMinionType && projectile.whoAmI == oPlayer.SeinMinionID && player.HasBuff(BuffType)) {
+      else if (projectile.type == oPlayer.SeinMinionType && projectile.whoAmI == oPlayer.SeinMinionId && player.HasBuff(BuffType)) {
         projectile.timeLeft = 2;
       }
     }
 
-    internal override void Behavior() {
+    protected override void Behavior() {
       SeinMovement();
       UpdateGoalPosition();
       TickCooldown();
-      VerifyNoNANs();
+      VerifyNoNaNs();
 
-      Lighting.AddLight(projectile.Center, data.color.ToVector3() * data.lightStrength);
-      if (player.whoAmI != Main.myPlayer) {
+      Lighting.AddLight(projectile.Center, _data.color.ToVector3() * _data.lightStrength);
+      if (Player.whoAmI != Main.myPlayer) {
         return;
       }
 
-      var oPlayer = player.GetModPlayer<OriPlayer>();
+      OriPlayer oPlayer = Player.GetModPlayer<OriPlayer>();
       bool hasTarget = UpdateTargets();
-      bool attemptFire = AutoFire ? hasTarget : oPlayer.input.leftClick.JustPressed && !player.mouseInterface;
+      bool attemptFire = AutoFire ? hasTarget : oPlayer.input.leftClick.JustPressed && !Player.mouseInterface;
 
-      if (attemptFire && (Cooldown == 0 || Cooldown > CooldownMin && currentShotsFired < data.bursts)) {
-        if (Cooldown > CooldownShort) {
-          currentShotsFired = 0;
-        }
-        else {
-          currentShotsFired++;
-        }
-        Cooldown = 1;
-        Attack(hasTarget);
+      if (!attemptFire || Cooldown != 0 && (!(Cooldown > CooldownMin) || _currentShotsFired >= _data.bursts)) return;
+      if (Cooldown > CooldownShort) {
+        _currentShotsFired = 0;
       }
+      else {
+        _currentShotsFired++;
+      }
+      Cooldown = 1;
+      Attack(hasTarget);
     }
 
+    // ReSharper disable RedundantAssignment
     public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough) {
+      // ReSharper restore RedundantAssignment
       fallThrough = true;
       width = 4;
       height = 4;
@@ -470,18 +464,18 @@ namespace OriMod.Projectiles.Minions {
     }
 
     public override void PostDraw(SpriteBatch spriteBatch, Color lightColor) {
-      var pos = projectile.BottomRight - Main.screenPosition;
-      var tex = OriTextures.Instance.Sein.texture;
-      var orig = new Vector2(tex.Width, tex.Width) * 0.5f;
+      Vector2 pos = projectile.BottomRight - Main.screenPosition;
+      Texture2D tex = OriTextures.Instance.sein.texture;
+      Vector2 orig = new Vector2(tex.Width, tex.Width) * 0.5f;
       for (int i = 0; i < 3; i++) {
-        var color = data.color;
+        Color color = _data.color;
         color.A = 255;
         if (color == Color.Black) {
           color = Color.White;
         }
 
         color.A = (byte)(i == 0 ? 255 : i == 1 ? 200 : 175);
-        var sourceRect = new Rectangle(0, i * tex.Height / 3, tex.Width, tex.Width);
+        Rectangle sourceRect = new Rectangle(0, i * tex.Height / 3, tex.Width, tex.Width);
         spriteBatch.Draw(tex, pos, sourceRect, color, projectile.rotation, orig, projectile.scale, SpriteEffects.None, 0f);
       }
     }
@@ -492,6 +486,6 @@ namespace OriMod.Projectiles.Minions {
 
     private static Vector2[] _goalPositions;
     private Player _player;
-    private int _hPI;
+    private int _hPi;
   }
 }

@@ -8,7 +8,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Write minion AI in <see cref="Behavior"/>.
     /// </summary>
-    public override sealed void AI() {
+    public sealed override void AI() {
       CheckActive();
       Behavior();
     }
@@ -16,11 +16,11 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Use this to keep the projectile alive depending on conditions.
     /// </summary>
-    internal abstract void CheckActive();
+    protected abstract void CheckActive();
 
     /// <summary>
     /// Behavior of the minion.
     /// </summary>
-    internal abstract void Behavior();
+    protected abstract void Behavior();
   }
 }

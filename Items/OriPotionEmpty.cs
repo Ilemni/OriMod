@@ -1,6 +1,6 @@
 using Terraria;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OriMod.Items {
   /// <summary>
@@ -20,7 +20,7 @@ namespace OriMod.Items {
 
     public override bool UseItem(Player player) {
       if (player.whoAmI == Main.myPlayer) {
-        player.GetModPlayer<OriPlayer>().PlayNewSound("SavePoints/checkpointCantPlaceSound");
+        player.GetModPlayer<OriPlayer>().PlaySound("SavePoints/checkpointCantPlaceSound");
       }
       return true;
     }
