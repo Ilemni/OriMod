@@ -27,7 +27,7 @@ namespace OriMod.Abilities {
     protected override Color RefreshColor => Color.LightYellow;
 
     private static List<short> CannotBashNpc => _cannotBashNpc ?? (_cannotBashNpc = new List<short> {
-      NPCID.BlazingWheel, NPCID.SpikeBall
+      NPCID.BlazingWheel, NPCID.SpikeBall, NPCID.DD2EterniaCrystal, NPCID.DD2LanePortal
     });
 
     private static List<short> CannotBashProj => _cannotBashProj ?? (_cannotBashProj = new List<short> {
