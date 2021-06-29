@@ -170,7 +170,7 @@ ItemName.ChargeJumpLevel4=Ultra Launch {$Mods.OriMod.Common.Medal}
 ItemTooltip.ChargeJumpLevel1=Unlocks Charge Jump\nAllows you to jump high into the air!
 ItemTooltip.ChargeJumpLevel2=Upgrades Charge Jump to Level 2\nAllows you to jump high from walls!
 ItemTooltip.ChargeJumpLevel3=Upgrades Charge Jump to Level 3\nAllows you to Launch yourself through the air!
-ItemTooltip.ChargeJumpLevel4=Upgrades Charge Jump to Level 4\mAllows for powerful chains of Launches in the air!
+ItemTooltip.ChargeJumpLevel4=Upgrades Charge Jump to Level 4\nAllows for powerful chains of Launches in the air!
 
 
 ---
