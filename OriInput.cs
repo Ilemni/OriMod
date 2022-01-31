@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 
 namespace OriMod {
   /// <summary>
-  /// Net-synced player input.
+  /// Net-synced player input, specific to this mod's controls.
   /// </summary>
   public sealed class OriInput : IEnumerable<Input> {
     public readonly Input jump = new Input(() => PlayerInput.Triggers.Current.Jump);
@@ -20,26 +21,35 @@ namespace OriMod {
     public readonly Input burrow = new Input(() => OriMod.burrowKey.Current);
     public readonly Input leftClick = new Input(() => PlayerInput.Triggers.Current.MouseLeft);
 
-    public bool netUpdate;
-
-    public void Update() {
+    /// <summary>
+    /// Read and updates the player's inputs.
+    /// </summary>
+    /// <param name="netUpdate"><see langword="true"/> if this would invoke a net update; otherwise, <see langword="false"/></param>
+    public void Update(out bool netUpdate) {
+      netUpdate = false;
       foreach (Input input in this) {
-        netUpdate |= input.Update();
+        input.Update(out bool hasChanged);
+        netUpdate |= hasChanged;
       }
     }
 
     public void ReadPacket(BinaryReader reader) {
+      BitVector32 value = new BitVector32(reader.ReadUInt16());
+      int i = 0;
       foreach (Input input in this) {
-        input.Write(reader.ReadByte());
+        input.SetInputValue(value[i++]);
       }
     }
 
     public void WritePacket(ModPacket packet) {
+      BitVector32 arr = new BitVector32();
+      int i = 0;
       foreach (Input input in this) {
-        packet.Write(input.Read());
+        arr[i++] = input.GetInputValue();
       }
+      packet.Write((ushort)arr.Data);
     }
-    
+
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public IEnumerator<Input> GetEnumerator() {
@@ -52,6 +62,12 @@ namespace OriMod {
       yield return charge;
       yield return burrow;
       yield return leftClick;
+    }
+
+    public void ResetInputChangedState() {
+      foreach (Input input in this) {
+        input.ResetChanged();
+      }
     }
   }
 
@@ -80,26 +96,29 @@ namespace OriMod {
     /// </summary>
     public bool JustReleased => !Current && _changed;
 
+    /// <summary>
+    /// Whether or not the value of <see cref="Current"/> during this frame is different from the previous frame.
+    /// </summary>
     private bool _changed;
 
     /// <summary>
-    /// Update the values of the give
+    /// Update the values of this input. Returns <see langword="true"/> if the values have changed.
     /// </summary>
-    public bool Update() {
-      bool old = Current;
-      bool oldChanged = _changed;
-      Current = _func();
-      _changed = old != Current;
-      return _changed || oldChanged;
+    public void Update(out bool hasChanged) {
+      SetInputValue(_func());
+      hasChanged = _changed;
     }
 
     private readonly Func<bool> _func;
 
-    internal byte Read() => (byte)((Current ? 1 : 0) | (_changed ? 2 : 0));
-
-    internal void Write(byte value) {
-      Current = (value & 1) == 1;
-      _changed = (value & 2) == 2;
+    internal void SetInputValue(bool value) {
+      bool oldCurrent = Current;
+      Current = value;
+      _changed = Current != oldCurrent;
     }
+
+    internal bool GetInputValue() => Current;
+
+    internal bool ResetChanged() => _changed = false;
   }
 }

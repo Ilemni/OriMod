@@ -438,10 +438,8 @@ namespace OriMod {
     }
 
     public override void ProcessTriggers(TriggersSet triggersSet) {
-      input.Update();
-      if (!input.netUpdate) return;
-      _netUpdate = true;
-      input.netUpdate = false;
+      input.Update(out bool doNetUpdate);
+      if (doNetUpdate) _netUpdate = true;
     }
 
     public override void PostUpdateMiscEffects() {
@@ -526,8 +524,6 @@ namespace OriMod {
         HasTransformedOnce = true;
       }
 
-      #region Check Sein Buffs
-
       if (SeinMinionActive) {
         if (!(
           player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
@@ -544,12 +540,7 @@ namespace OriMod {
         }
       }
 
-      #endregion
-
-      if (!IsOri) {
-        return;
-      }
-
+      if (IsOri) {
       abilities.PostUpdate();
 
       if (DoPlayerLight && !abilities.burrow.Active) {
@@ -576,7 +567,7 @@ namespace OriMod {
         FootstepManager.Instance.PlayFootstepFromPlayer(player);
       }
 
-      if (!doDust) return;
+      if (doDust) {
       Vector2 dustPos = player.Bottom + new Vector2(player.direction == -1 ? -4 : 2, -2);
       for (int i = 0; i < 4; i++) {
         Dust dust = Main.dust[
@@ -586,6 +577,12 @@ namespace OriMod {
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
         dust.shader.UseColor(Color.White);
         dust.fadeIn = 0.03947368f;
+          }
+        }
+      }
+
+      if (!IsLocal) {
+        input.ResetInputChangedState();
       }
     }
 
