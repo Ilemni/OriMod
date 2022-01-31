@@ -129,7 +129,7 @@ namespace OriMod {
         new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Basic Movement Accessories", ItemID.Aglet,
           ItemID.AnkletoftheWind, ItemID.RocketBoots, ItemID.HermesBoots, ItemID.CloudinaBottle, ItemID.FlurryBoots,
           ItemID.SailfishBoots, ItemID.SandstorminaBottle, ItemID.FartinaJar, ItemID.ShinyRedBalloon, ItemID.ShoeSpikes,
-          ItemID.ClimbingClaws));
+          ItemID.ClimbingClaws, ItemID.EoCShield));
 
       RecipeGroup.RegisterGroup("OriMod:IronBars",
         new RecipeGroup(() => "Iron/Lead Bars", ItemID.IronBar, ItemID.LeadBar));
