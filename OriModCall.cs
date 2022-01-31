@@ -2,7 +2,7 @@
 using Terraria.ModLoader;
 
 namespace OriMod {
-  public sealed partial class OriMod {
+  public static class OriModCall {
     /// <summary>
     /// Interact with <see cref="OriMod"/> using various inputs.
     /// <list type="table">
@@ -26,7 +26,7 @@ namespace OriMod {
     /// </item>
     /// </list>
     /// </summary>
-    public override object Call(params object[] args) {
+    public static object Call(params object[] args) {
       int len = args.Length;
       if (len <= 0 || !(args[0] is string cmd)) return null;
       
@@ -41,13 +41,13 @@ namespace OriMod {
             oPlayer.ResetData();
             return true;
           }
-          Log.Warn($"{Name}.Call() - ResetPlayerModData - Expected type {typeof(Player)}, got {args[1].GetType()}");
+          OriMod.Log.Warn($"{OriMod.instance.Name}.Call() - ResetPlayerModData - Expected type {typeof(Player)}, got {args[1].GetType()}");
           return false;
         case "IsOri":
           if (!(oPlayer is null)) {
             return oPlayer.IsOri || oPlayer.Transforming;
           }
-          Log.Warn($"{Name}.Call() - Transforming - Expected type {typeof(Player)}, got {args[1].GetType()}");
+          OriMod.Log.Warn($"{OriMod.instance.Name}.Call() - Transforming - Expected type {typeof(Player)}, got {args[1].GetType()}");
           return null;
       }
       return null;

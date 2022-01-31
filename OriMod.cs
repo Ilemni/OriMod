@@ -211,5 +211,7 @@ namespace OriMod {
 
       ModNetHandler.Instance.HandlePacket(reader, fromWho);
     }
+
+    public override object Call(params object[] args) => OriModCall.Call(args);
   }
 }
