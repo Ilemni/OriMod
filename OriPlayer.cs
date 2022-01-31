@@ -141,12 +141,13 @@ namespace OriMod {
 
     /// <summary>
     /// Represents whether a player is grappling onto a wall.
-    /// This will still return <see langword="false"/> if there are grapples in use that do not stick to walls.
+    /// This will also return <see langword="false"/> if there are active grapples that are not sticking to walls.
     /// </summary>
-    public bool IsGrappling { get; private set; }
+    // Consider getter-only rather than setting per update, or find better vanilla representation
+    internal bool IsGrappling { get; private set; }
 
     /// <summary>
-    /// When true, sets <see cref="Player.runSlowdown"/> to 0 every frame.
+    /// When true, the player will not be slowed down (sets <see cref="Player.runSlowdown"/> to 0 every frame).
     /// </summary>
     public bool UnrestrictedMovement {
       get => _unrestrictedMovement;
@@ -269,14 +270,12 @@ namespace OriMod {
     #region Internal Methods
 
     internal void PlaySound(string path, float volume = 1, float pitch = 0) {
-      SoundWrapper.PlaySound((int) SoundType.Custom, (int) player.Center.X, (int) player.Center.Y,
-        SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/" + path), volume, pitch);
+      SoundWrapper.PlaySound(player.Center, path, volume, pitch);
     }
 
     internal void PlayLocalSound(string path, float volume = 1, float pitch = 0) {
       if (IsLocal)
-        SoundWrapper.PlaySound((int) SoundType.Custom, (int) player.Center.X, (int) player.Center.Y,
-          SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/" + path), volume, pitch);
+        SoundWrapper.PlaySound(player.Center, path, volume, pitch);
     }
 
     /// <summary>
@@ -526,57 +525,57 @@ namespace OriMod {
 
       if (SeinMinionActive) {
         if (!(
-          player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff2>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff3>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff4>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff5>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff6>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff7>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff8>())
-        )) {
+              player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff2>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff3>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff4>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff5>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff6>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff7>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff8>())
+            )) {
           SeinMinionActive = false;
           SeinMinionType = 0;
         }
       }
 
       if (IsOri) {
-      abilities.PostUpdate();
+        abilities.PostUpdate();
 
-      if (DoPlayerLight && !abilities.burrow.Active) {
-        Lighting.AddLight(player.Center, _lightColor.ToVector3());
-      }
+        if (DoPlayerLight && !abilities.burrow.Active) {
+          Lighting.AddLight(player.Center, _lightColor.ToVector3());
+        }
 
-      if (input.jump.JustPressed && IsGrounded && !abilities.burrow) {
-        PlaySound("Ori/Jump/seinJumpsGrass" + _randJump.NextNoRepeat(5), 0.6f);
-      }
+        if (input.jump.JustPressed && IsGrounded && !abilities.burrow) {
+          PlaySound("Ori/Jump/seinJumpsGrass" + _randJump.NextNoRepeat(5), 0.6f);
+        }
 
-      bool oldGrounded = IsGrounded;
-      IsGrounded = CheckGrounded();
-      OnWall = CheckOnWall();
+        bool oldGrounded = IsGrounded;
+        IsGrounded = CheckGrounded();
+        OnWall = CheckOnWall();
 
-      // Footstep effects
-      if (Main.dedServ || !IsGrounded) return;
-      bool doDust = false;
-      if (!oldGrounded) {
-        doDust = true;
-        FootstepManager.Instance.PlayLandingFromPlayer(player);
-      }
-      else if (Animations.TrackName == "Running" && (Animations.FrameIndex == 4 || Animations.FrameIndex == 9)) {
-        doDust = true;
-        FootstepManager.Instance.PlayFootstepFromPlayer(player);
-      }
+        // Footstep effects
+        if (Main.dedServ || !IsGrounded) return;
+        bool doDust = false;
+        if (!oldGrounded) {
+          doDust = true;
+          FootstepManager.Instance.PlayLandingFromPlayer(player);
+        }
+        else if (Animations.TrackName == "Running" && (Animations.FrameIndex == 4 || Animations.FrameIndex == 9)) {
+          doDust = true;
+          FootstepManager.Instance.PlayFootstepFromPlayer(player);
+        }
 
-      if (doDust) {
-      Vector2 dustPos = player.Bottom + new Vector2(player.direction == -1 ? -4 : 2, -2);
-      for (int i = 0; i < 4; i++) {
-        Dust dust = Main.dust[
-          Dust.NewDust(dustPos, 2, 2, DustID.Clentaminator_Cyan, 0f, -2.7f, 0, new Color(255, 255, 255))];
-        dust.noGravity = true;
-        dust.scale = 0.75f;
-        dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
-        dust.shader.UseColor(Color.White);
-        dust.fadeIn = 0.03947368f;
+        if (doDust) {
+          Vector2 dustPos = player.Bottom + new Vector2(player.direction == -1 ? -4 : 2, -2);
+          for (int i = 0; i < 4; i++) {
+            Dust dust = Main.dust[
+              Dust.NewDust(dustPos, 2, 2, DustID.Clentaminator_Cyan, 0f, -2.7f, 0, new Color(255, 255, 255))];
+            dust.noGravity = true;
+            dust.scale = 0.75f;
+            dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
+            dust.shader.UseColor(Color.White);
+            dust.fadeIn = 0.03947368f;
           }
         }
       }

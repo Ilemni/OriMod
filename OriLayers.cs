@@ -29,6 +29,7 @@ namespace OriMod {
       data.origin.Y += 5 * player.gravDir;
       Main.playerDrawData.Add(data);
 
+      // Secondary color layer, only used when IsOri is true (i.e. not during transform start)
       if (oPlayer.IsOri) {
         data.color = doFlash
             ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, player.immuneAlpha / 255f)
