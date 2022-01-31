@@ -6,5 +6,5 @@ includePDB = true
 includeSource = true
 hideCode = false
 hideResources = true
-buildIgnore = build.txt, .gitattributes, .gitignore, .git/, .vs/, .vscode/, .idea/, bin/, obj/, Properties/, Thumbs.db, *.csproj, .sln, .xcf, .pdn, .xcf, .kra, ori_sheet_
+buildIgnore = build.txt, .gitattributes, .gitignore, .git/, .vs/, .vscode/, .idea/, bin/, obj/, lib/, Properties/, Thumbs.db, *.csproj, .sln, .xcf, .pdn, .xcf, .kra, ori_sheet_
 modReferences = AnimLib
