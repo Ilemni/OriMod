@@ -7,23 +7,14 @@
     <PlatformTarget>x86</PlatformTarget>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\zUndi\Documents\My Games\Terraria\ModLoader\Mod Sources\OriMod\OriMod.xml</DocumentationFile>
-  </PropertyGroup>
   <Target Name="BuildMod" AfterTargets="Build">
     <Exec Command="&quot;$(tMLBuildServerPath)&quot; -build $(ProjectDir) -eac $(TargetPath) -define &quot;$(DefineConstants)&quot; -unsafe $(AllowUnsafeBlocks)" />
   </Target>
   <ItemGroup>
     <PackageReference Include="tModLoader.CodeAssist" Version="0.1.*" />
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
     <Reference Include="AnimLib">
-      <HintPath>..\AnimLib\bin\Debug\net45\AnimLib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Update="Terraria">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\tModLoader\tModLoader.exe</HintPath>
+      <HintPath>lib\AnimLib.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

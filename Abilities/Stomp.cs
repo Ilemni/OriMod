@@ -4,6 +4,7 @@ using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.Graphics.Shaders;
+using Terraria.ID;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -11,16 +12,18 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class Stomp : Ability, ILevelable {
     internal Stomp(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.Stomp;
+    public override int Id => AbilityId.Stomp;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 3;
 
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !abilities.dash && !abilities.chargeDash && !abilities.glide.Active && !abilities.climb && !abilities.stomp.Active && !player.mount.Active && player.grapCount == 0;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !InUse && !player.mount.Active && player.grapCount == 0 &&
+      !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump && !abilities.climb &&
+      !abilities.dash && !abilities.glide.Active && !abilities.launch && !abilities.wallChargeJump;
     protected override int Cooldown => Math.Min(30 + Level * 30, 600);
     protected override Color RefreshColor => Color.Orange;
 
-    public int Damage => 30 + Level * 20;
+    private int Damage => 30 + Level * 20;
 
     private static float Gravity => 8f;
     private int StartDuration {
@@ -49,17 +52,17 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Minimum frames required to hold <see cref="Player.controlDown"/> before Stomp can start.
     /// </summary>
-    private static int HoldDownDelay => (int)(OriMod.ConfigClient.StompHoldDownDelay * 30);
+    private static int HoldDownDelay => (int)(OriMod.ConfigClient.stompHoldDownDelay * 30);
 
-    private int currentHoldDown;
+    private int _currentHoldDown;
 
-    private readonly RandomChar randStart = new RandomChar();
-    private readonly RandomChar randActive = new RandomChar();
-    private readonly RandomChar randEnd = new RandomChar();
+    private readonly RandomChar _randStart = new RandomChar();
+    private readonly RandomChar _randActive = new RandomChar();
+    private readonly RandomChar _randEnd = new RandomChar();
 
     protected override void UpdateStarting() {
       if (CurrentTime == 0) {
-        oPlayer.PlayNewSound("Ori/Stomp/seinStompStart" + randStart.NextNoRepeat(3), 0.8f, 0.2f);
+        oPlayer.PlaySound("Ori/Stomp/seinStompStart" + _randStart.NextNoRepeat(3), 0.8f, 0.2f);
       }
       player.velocity.X = 0;
       player.velocity.Y *= 0.9f;
@@ -68,7 +71,7 @@ namespace OriMod.Abilities {
 
     protected override void UpdateActive() {
       if (CurrentTime == 0) {
-        oPlayer.PlayNewSound("Ori/Stomp/seinStompFall" + randActive.NextNoRepeat(3), 0.8f);
+        oPlayer.PlaySound("Ori/Stomp/seinStompFall" + _randActive.NextNoRepeat(3), 0.8f);
         NewAbilityProjectile<StompProjectile>(damage: Damage * 2);
       }
       if (abilities.airJump.Active) {
@@ -83,12 +86,12 @@ namespace OriMod.Abilities {
     }
 
     internal void EndStomp() {
-      oPlayer.PlayNewSound("Ori/Stomp/seinStompImpact" + randEnd.NextNoRepeat(3), 0.9f);
+      oPlayer.PlaySound("Ori/Stomp/seinStompImpact" + _randEnd.NextNoRepeat(3), 0.9f);
       abilities.airJump.currentCount = 0;
       player.velocity = Vector2.Zero;
-      var position = new Vector2(player.position.X, player.position.Y + 32);
+      Vector2 position = new Vector2(player.position.X, player.position.Y + 32);
       for (int i = 0; i < 25; i++) {
-        Dust dust = Main.dust[Dust.NewDust(position, 30, 15, 111, 0f, 0f, 0, Color.White, 1f)];
+        Dust dust = Dust.NewDustDirect(position, 30, 15, DustID.Clentaminator_Cyan, 0f, 0f, 0, Color.White);
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
         dust.velocity *= new Vector2(6, 1.5f);
         dust.velocity.Y = -Math.Abs(dust.velocity.Y);
@@ -114,11 +117,24 @@ namespace OriMod.Abilities {
     }
 
     internal override void Tick() {
-      if (player.controlDown && CanUse) {
-        currentHoldDown++;
-        if (HoldDownDelay == 0 || currentHoldDown > HoldDownDelay) {
-          SetState(State.Starting);
-          currentHoldDown = 0;
+      if (Inactive) {
+        if (CanUse) {
+          if (input.stomp.JustPressed) {
+            _currentHoldDown = 1;
+          }
+          if (_currentHoldDown >= 1 && input.stomp.Current) {
+            _currentHoldDown++;
+            if (_currentHoldDown > HoldDownDelay) {
+              SetState(State.Starting);
+              _currentHoldDown = 0;
+            }
+          }
+        }
+        if (Starting) {
+          _currentHoldDown = 0;
+        }
+        else {
+          TickCooldown();
         }
       }
       else if (Starting) {
@@ -127,16 +143,12 @@ namespace OriMod.Abilities {
         }
       }
       else if (Active) {
-        if (CurrentTime > MinDuration && !player.controlDown) {
+        if (CurrentTime > MinDuration && !player.controlDown || abilities.airJump) {
           SetState(State.Inactive);
         }
         if (oPlayer.IsGrounded) {
           EndStomp();
         }
-      }
-      else {
-        currentHoldDown = 0;
-        TickCooldown();
       }
     }
   }

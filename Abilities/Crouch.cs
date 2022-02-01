@@ -4,27 +4,28 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class Crouch : Ability {
     internal Crouch(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.Crouch;
+    public override int Id => AbilityId.Crouch;
     public override byte Level => 1;
 
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !abilities.lookUp && !abilities.dash && !abilities.chargeDash && !Restricted;
-    private bool Restricted => OriMod.ConfigClient.SoftCrouch && (player.controlLeft || player.controlRight);
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Restricted && !player.mount.Active &&
+      !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.dash && !abilities.launch &&
+      !abilities.lookUp && !abilities.stomp;
+    private bool Restricted => OriMod.ConfigClient.softCrouch && (player.controlLeft || player.controlRight);
     private static int StartDuration => 10;
     private static int EndDuration => 4;
 
     protected override void UpdateUsing() {
-      if (!OriMod.ConfigClient.SoftCrouch) {
-        player.runAcceleration = 0;
-        player.maxRunSpeed = 0;
-        player.velocity.X = 0;
-        if (player.controlLeft) {
-          player.controlLeft = false;
-          player.direction = -1;
-        }
-        else if (player.controlRight) {
-          player.controlRight = false;
-          player.direction = 1;
-        }
+      if (OriMod.ConfigClient.softCrouch) return;
+      player.runAcceleration = 0;
+      player.maxRunSpeed = 0;
+      player.velocity.X = 0;
+      if (player.controlLeft) {
+        player.controlLeft = false;
+        player.direction = -1;
+      }
+      else if (player.controlRight) {
+        player.controlRight = false;
+        player.direction = 1;
       }
 
       // if (PlayerInput.Triggers.JustPressed.Jump) { // TODO: Backflip
@@ -48,7 +49,6 @@ namespace OriMod.Abilities {
       }
       else if (!player.controlDown && !Ending) {
         SetState(Active ? State.Ending : State.Inactive);
-        return;
       }
       else if (Starting) {
         if (CurrentTime > StartDuration) {

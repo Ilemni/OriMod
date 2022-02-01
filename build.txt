@@ -1,10 +1,10 @@
 author = Fro Zen, TwiliChaos
-version = 3.0
+version = 3.0.0.3
 displayName = Arrival Of The Blind Forest
 homepage = https://forums.terraria.org/index.php?threads/arrival-of-the-blind-forest.72356/
 includePDB = true
 includeSource = true
 hideCode = false
 hideResources = true
-buildIgnore = build.txt, .gitattributes, .gitignore, .git/, .vs/, .vscode/, .idea/, bin/, obj/, Properties/, Thumbs.db, *.csproj, .sln, .xcf, .pdn, .xcf, .kra, ori_sheet_
+buildIgnore = build.txt, .gitattributes, .gitignore, .git/, .vs/, .vscode/, .idea/, bin/, obj/, lib/, Properties/, Thumbs.db, *.csproj, .sln, .xcf, .pdn, .xcf, .kra, ori_sheet_
 modReferences = AnimLib

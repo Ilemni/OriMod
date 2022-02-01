@@ -28,28 +28,28 @@ namespace OriMod.Items {
       pos.Y += 4;
       pos.X -= 2;
       for (int m = 0; m < 100; m++) {
-        Dust dust = Main.dust[Dust.NewDust(pos, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
+        Dust dust = Dust.NewDustDirect(pos, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, new Color(255, 255, 255));
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
       }
-      oPlayer.PlayNewSound("SavePoints/checkpointSpawnSound");
+      oPlayer.PlaySound("SavePoints/checkpointSpawnSound");
       Item.NewItem(player.getRect(), ModContent.ItemType<OriPotionEmpty>(), noGrabDelay: true);
       return true;
     }
 
     public override void AddRecipes() {
-      var recipe = new ModRecipe(mod);
+      ModRecipe recipe = new ModRecipe(mod);
       recipe.AddIngredient(ItemID.Bottle);
       recipe.AddIngredient(ItemID.Moonglow);
       recipe.AddIngredient(ItemID.Shiverthorn);
       recipe.AddIngredient(ItemID.Fireblossom);
       recipe.AddTile(null, "SpiritSapling");
-      recipe.SetResult(this, 1);
+      recipe.SetResult(this);
       recipe.AddRecipe();
 
-      var recipe2 = new ModRecipe(mod);
-      recipe2.AddIngredient(null, "OriPotionEmpty", 1);
+      ModRecipe recipe2 = new ModRecipe(mod);
+      recipe2.AddIngredient(null, "OriPotionEmpty");
       recipe2.AddTile(null, "SpiritSapling");
-      recipe2.SetResult(this, 1);
+      recipe2.SetResult(this);
       recipe2.AddRecipe();
     }
   }

@@ -9,68 +9,66 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class AirJump : Ability, ILevelable {
     internal AirJump(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.AirJump;
+    public override int Id => AbilityId.AirJump;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
     public byte MaxLevel => 4;
 
-    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !player.mount.Active && !abilities.bash && !abilities.launch && !abilities.wallChargeJump;
+    internal override bool CanUse => base.CanUse && !oPlayer.IsGrounded && !oPlayer.OnWall && currentCount < MaxJumps && !player.mount.Active &&
+      !abilities.bash && !abilities.burrow && !abilities.climb && !abilities.chargeJump && !abilities.launch &&
+      !abilities.wallChargeJump;
 
     private static float JumpVelocity => 8.8f;
     private static int EndDuration => 32;
     private int MaxJumps => Level;
 
     internal ushort currentCount;
-    private sbyte gravityDirection;
+    private sbyte _gravityDirection;
 
     protected override void ReadPacket(BinaryReader r) {
       currentCooldown = r.ReadUInt16();
-      gravityDirection = r.ReadSByte();
+      _gravityDirection = r.ReadSByte();
       player.position = r.ReadVector2();
       player.velocity = r.ReadVector2();
     }
 
     protected override void WritePacket(ModPacket packet) {
       packet.Write(currentCount);
-      packet.Write(gravityDirection);
+      packet.Write(_gravityDirection);
       packet.WriteVector2(player.position);
       packet.WriteVector2(player.velocity);
     }
 
-    private readonly RandomChar rand = new RandomChar();
+    private readonly RandomChar _rand = new RandomChar();
 
     protected override void UpdateActive() {
-      if (CurrentTime == 0) {
-        if (MaxJumps != 1 && currentCount == MaxJumps) {
-          oPlayer.PlayNewSound("Ori/TripleJump/seinTripleJumps" + rand.NextNoRepeat(5), 0.6f);
-        }
-        else {
-          oPlayer.PlayNewSound("Ori/DoubleJump/seinDoubleJumps" + rand.NextNoRepeat(4), 0.5f);
-        }
-      }
-      float newVel = -JumpVelocity * ((EndDuration - CurrentTime) / EndDuration);
-      if (player.velocity.Y > newVel) {
-        player.velocity.Y = newVel;
-      }
-
-      player.velocity.Y *= gravityDirection;
+      float newVel = -JumpVelocity * ((float)(EndDuration - CurrentTime) / EndDuration) * _gravityDirection;
+      player.velocity.Y = newVel;
     }
 
     internal override void Tick() {
-      if (CanUse && oPlayer.justPressedJumped) {
-        if (!(player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm || player.mount.Active)) {
-          SetState(State.Active);
-          currentCount++;
-          gravityDirection = (sbyte)player.gravDir;
+      if (CanUse && input.jump.JustPressed) {
+        if (player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail ||
+            player.jumpAgainSandstorm || player.canCarpet || player.canRocket || player.mount.Active) return;
+        SetState(State.Active);
+        currentCount++;
+        _gravityDirection = (sbyte)player.gravDir;
+
+        if (MaxJumps != 1 && currentCount == MaxJumps) {
+          oPlayer.PlaySound("Ori/TripleJump/seinTripleJumps" + _rand.NextNoRepeat(5), 0.6f);
+        }
+        else {
+          oPlayer.PlaySound("Ori/DoubleJump/seinDoubleJumps" + _rand.NextNoRepeat(4), 0.5f);
         }
         return;
       }
       if (oPlayer.IsGrounded || abilities.bash || abilities.launch || oPlayer.OnWall) {
         currentCount = 0;
-        SetState(State.Inactive);
+        if (oPlayer.IsGrounded || abilities.bash || abilities.launch || abilities.climb) {
+          SetState(State.Inactive);
+        }
       }
-      else if (Active) {
-        abilities.stomp.SetState(State.Inactive);
+      if (Active) {
         SetState(State.Ending);
       }
       else if (Ending) {

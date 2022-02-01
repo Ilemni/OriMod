@@ -12,145 +12,57 @@ namespace OriMod {
   public sealed class FootstepManager : SingleInstance<FootstepManager> {
     private FootstepManager() {
       int count = TileLoader.TileCount;
-      TileFootstepSounds = new FootstepSound[count];
+      _tileFootstepSounds = new FootstepSound[count];
 
       // Vanilla tiles
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.None, new int[] {
-        TileID.Plants, TileID.Torches, TileID.Trees, TileID.ClosedDoor, TileID.OpenDoor, TileID.Heart, TileID.Bottles, TileID.Saplings,
-        TileID.Chairs, TileID.Furnaces, TileID.Containers, TileID.CorruptPlants, TileID.DemonAltar, TileID.Sunflower, TileID.Pots, TileID.PiggyBank, TileID.ShadowOrbs,
-        TileID.CorruptThorns, TileID.Candles, TileID.Chandeliers, TileID.Jackolanterns, TileID.Presents,
-        TileID.HangingLanterns, TileID.WaterCandle, TileID.Books, TileID.Cobweb, TileID.Vines, TileID.Signs,
-        TileID.JunglePlants, TileID.JungleVines, TileID.JungleThorns, TileID.MushroomPlants, TileID.MushroomTrees, TileID.Plants2,
-        TileID.JunglePlants2, TileID.Hellforge, TileID.ClayPot, TileID.Beds, TileID.Cactus, TileID.Coral, TileID.ImmatureHerbs,
-        TileID.MatureHerbs, TileID.BloomingHerbs, TileID.Tombstones, TileID.Loom, TileID.Bathtubs, TileID.Banners, TileID.Benches,
-        TileID.Lampposts, TileID.Lampposts, TileID.Kegs, TileID.ChineseLanterns, TileID.CookingPots, TileID.Safes,
-        TileID.SkullLanterns, TileID.TrashCan, TileID.Candelabras, TileID.Thrones, TileID.Bowls,
-        TileID.GrandfatherClocks, TileID.Statues, TileID.Sawmill, TileID.HallowedPlants, TileID.HallowedPlants2,
-        TileID.HallowedVines, TileID.WoodenBeam, TileID.CrystalBall, TileID.DiscoBall,
-        TileID.Mannequin, TileID.Crystals, TileID.InactiveStoneBlock, TileID.Lever, TileID.AdamantiteForge, TileID.PressurePlates, TileID.Switches,
-        TileID.MusicBoxes, TileID.Explosives, TileID.InletPump, TileID.OutletPump, TileID.Timers,
-        TileID.HolidayLights, TileID.Stalactite, TileID.ChristmasTree, TileID.Sinks, TileID.PlatinumCandelabra, TileID.PlatinumCandle,
-        TileID.ExposedGems, TileID.GreenMoss, TileID.BrownMoss, TileID.RedMoss, TileID.BlueMoss, TileID.PurpleMoss,
-        TileID.LongMoss, TileID.SmallPiles, TileID.LargePiles, TileID.LargePiles2, TileID.FleshWeeds,
-        TileID.CrimsonVines, TileID.WaterFountain, TileID.Cannon, TileID.LandMine, TileID.SnowballLauncher,
-        TileID.Rope, TileID.Chain, TileID.Campfire, TileID.Firework, TileID.Blendomatic, TileID.MeatGrinder,
-        TileID.Extractinator, TileID.Solidifier, TileID.DyePlants, TileID.DyeVat, TileID.Larva, TileID.PlantDetritus,
-        TileID.LifeFruit, TileID.LihzahrdAltar, TileID.PlanteraBulb, TileID.Painting3X3,
-        TileID.Painting4X3, TileID.Painting6X4, TileID.ImbuingStation, TileID.BubbleMachine, TileID.Painting2X3,
-        TileID.Painting3X2, TileID.Autohammer, TileID.Pumpkins, TileID.Womannequin, TileID.FireflyinaBottle,
-        TileID.LightningBuginaBottle, TileID.BunnyCage, TileID.SquirrelCage, TileID.MallardDuckCage, TileID.DuckCage,
-        TileID.BirdCage, TileID.BlueJay, TileID.CardinalCage, TileID.FishBowl, TileID.HeavyWorkBench,
-        TileID.SnailCage, TileID.GlowingSnailCage, TileID.AmmoBox, TileID.MonarchButterflyJar,
-        TileID.PurpleEmperorButterflyJar, TileID.RedAdmiralButterflyJar, TileID.UlyssesButterflyJar,
-        TileID.SulphurButterflyJar, TileID.TreeNymphButterflyJar, TileID.ZebraSwallowtailButterflyJar,
-        TileID.JuliaButterflyJar, TileID.ScorpionCage, TileID.BlackScorpionCage, TileID.FrogCage, TileID.MouseCage,
-        TileID.BoneWelder, TileID.FleshCloningVat, TileID.GlassKiln, TileID.LihzahrdFurnace, TileID.LivingLoom,
-        TileID.SkyMill, TileID.IceMachine, TileID.SteampunkBoiler, TileID.HoneyDispenser, TileID.PenguinCage,
-        TileID.WormCage, TileID.MinecartTrack, TileID.BlueJellyfishBowl, TileID.GreenJellyfishBowl,
-        TileID.PinkJellyfishBowl, TileID.ShipInABottle, TileID.SeaweedPlanter, TileID.PalmTree, TileID.BeachPiles,
-        TileID.CopperCoinPile, TileID.SilverCoinPile, TileID.GoldCoinPile, TileID.PlatinumCoinPile,
-        TileID.WeaponsRack, TileID.FireworksBox, TileID.LivingFire, TileID.AlphabetStatues, TileID.FireworkFountain,
-        TileID.GrasshopperCage, TileID.LivingCursedFire, TileID.LivingDemonFire, TileID.LivingFrostFire, TileID.LivingIchor,
-        TileID.LivingUltrabrightFire, TileID.MushroomStatue, TileID.ChimneySmoke, TileID.CrimtaneThorns, TileID.VineRope,
-        TileID.BewitchingTable, TileID.AlchemyTable, TileID.Sundial, TileID.GoldBirdCage, TileID.GoldBunnyCage,
-        TileID.GoldButterflyCage, TileID.GoldFrogCage, TileID.GoldGrasshopperCage, TileID.GoldMouseCage, TileID.GoldWormCage,
-        TileID.SilkRope, TileID.WebRope, TileID.PeaceCandle, TileID.WaterDrip, TileID.LavaDrip, TileID.HoneyDrip,
-        TileID.SharpeningStation, TileID.TargetDummy, TileID.Bubble, TileID.PlanterBox, TileID.VineFlowers,
-        TileID.TrapdoorOpen, TileID.TallGateClosed, TileID.TallGateOpen, TileID.LavaLamp, TileID.CageEnchantedNightcrawler,
-        TileID.CageBuggy, TileID.CageGrubby, TileID.CageSluggy, TileID.ItemFrame, TileID.Chimney, TileID.LunarMonolith,
-        TileID.Detonator, TileID.LunarCraftingStation, TileID.SquirrelOrangeCage, TileID.SquirrelGoldCage, TileID.LogicGateLamp,
-        TileID.LogicGate, TileID.LogicSensor, TileID.WirePipe, TileID.AnnouncementBox, TileID.WeightedPressurePlate,
-        TileID.WireBulb, TileID.GemLocks, TileID.FakeContainers, TileID.ProjectilePressurePad, TileID.GeyserTrap, TileID.BeeHive,
-        TileID.PixelBox, TileID.SillyStreamerBlue, TileID.SillyStreamerGreen, TileID.SillyStreamerPink,
-        TileID.SillyBalloonMachine, TileID.Pigronata, TileID.PartyMonolith, TileID.PartyBundleOfBalloonTile, TileID.PartyPresent,
-        TileID.SandDrip, TileID.DjinnLamp, TileID.DefendersForge, TileID.WarTable, TileID.WarTableBanner,
-        TileID.ElderCrystalStand, TileID.Containers2, TileID.FakeContainers2, TileID.Tables2
-      });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Grass, new int[] {
-        TileID.Dirt, TileID.Grass, TileID.CorruptGrass, TileID.ClayBlock, TileID.Mud, TileID.JungleGrass, TileID.MushroomGrass,
-        TileID.HallowedGrass, TileID.PineTree, TileID.LeafBlock, TileID.FleshGrass, TileID.HayBlock, TileID.LavaMoss,
-        TileID.LivingMahoganyLeaves
-      });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Rock, new int[] {
-        TileID.Stone, TileID.Iron, TileID.Copper, TileID.Gold, TileID.Silver, TileID.Demonite, TileID.Ebonstone,
-        TileID.Meteorite, TileID.Obsidian, TileID.Hellstone, TileID.Sapphire, TileID.Ruby, TileID.Emerald, TileID.Topaz,
-        TileID.Amethyst, TileID.Diamond, TileID.Cobalt, TileID.Mythril, TileID.Adamantite, TileID.Pearlstone,
-        TileID.ActiveStoneBlock, TileID.Boulder, TileID.IceBlock, TileID.BreakableIce, TileID.CorruptIce, TileID.HallowedIce,
-        TileID.Tin, TileID.Lead, TileID.Tungsten, TileID.Platinum, TileID.BoneBlock, TileID.FleshBlock, TileID.Asphalt,
-        TileID.FleshIce, TileID.Crimstone, TileID.Crimtane, TileID.Chlorophyte, TileID.Palladium, TileID.Orichalcum,
-        TileID.Titanium, TileID.MetalBars, TileID.Cog, TileID.Marble, TileID.Granite, TileID.Sandstone, TileID.HardenedSand,
-        TileID.CorruptHardenedSand, TileID.CrimsonHardenedSand, TileID.CorruptSandstone, TileID.CrimsonSandstone,
-        TileID.HallowHardenedSand, TileID.HallowSandstone, TileID.DesertFossil, TileID.FossilOre, TileID.LunarOre,
-        TileID.LunarBlockSolar, TileID.LunarBlockVortex, TileID.LunarBlockNebula, TileID.LunarBlockStardust
-      });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Wood, new int[] {
-        TileID.Tables, TileID.WorkBenches, TileID.Platforms, TileID.WoodBlock, TileID.Pianos, TileID.Dressers, TileID.Bookcases,
-        TileID.TinkerersWorkbench, TileID.Ebonwood, TileID.RichMahogany, TileID.Pearlwood, TileID.Shadewood, TileID.WoodenSpikes, TileID.SpookyWood,
-        TileID.DynastyWood, TileID.RedDynastyShingles, TileID.BlueDynastyShingles, TileID.BorealWood, TileID.PalmWood, TileID.FishingCrate, TileID.TrapdoorClosed
-      });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Sand, new int[] {
-        TileID.Sand, TileID.Ash, TileID.Ebonsand, TileID.Pearlsand, TileID.Silt, TileID.Hive, TileID.CrispyHoneyBlock, TileID.Crimsand
-      });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Snow, new int[] {
-        TileID.SnowBlock, TileID.RedStucco, TileID.YellowStucco, TileID.GreenStucco, TileID.GrayStucco,
-        TileID.Cloud, TileID.RainCloud, TileID.Slush, TileID.HoneyBlock, TileID.SnowCloud
-      });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.Mushroom, new int[] {
-        TileID.CandyCaneBlock, TileID.GreenCandyCaneBlock, TileID.CactusBlock, TileID.MushroomBlock, TileID.SlimeBlock,
-        TileID.FrozenSlimeBlock, TileID.BubblegumBlock, TileID.PumpkinBlock, TileID.Coralstone, TileID.PinkSlimeBlock,
-        TileID.SillyBalloonPink, TileID.SillyBalloonPurple, TileID.SillyBalloonGreen, TileID.SillyBalloonTile
-      });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.LightDark, new int[] {
-        TileID.Glass, TileID.MagicalIceBlock, TileID.Sunplate, TileID.Teleporter, TileID.AmethystGemsparkOff, TileID.TopazGemsparkOff,
-        TileID.SapphireGemsparkOff, TileID.EmeraldGemsparkOff, TileID.RubyGemsparkOff, TileID.DiamondGemsparkOff,
-        TileID.AmberGemsparkOff, TileID.AmethystGemspark, TileID.TopazGemspark, TileID.SapphireGemspark,
-        TileID.EmeraldGemspark, TileID.RubyGemspark, TileID.DiamondGemspark, TileID.AmberGemspark, TileID.Waterfall,
-        TileID.Lavafall, TileID.Confetti, TileID.ConfettiBlack, TileID.Honeyfall, TileID.CrystalBlock, TileID.LunarBrick,
-        TileID.TeamBlockRed, TileID.TeamBlockRedPlatform, TileID.TeamBlockGreen, TileID.TeamBlockBlue, TileID.TeamBlockYellow,
-        TileID.TeamBlockPink, TileID.TeamBlockWhite, TileID.TeamBlockGreenPlatform, TileID.TeamBlockBluePlatform,
-        TileID.TeamBlockYellowPlatform, TileID.TeamBlockPinkPlatform, TileID.TeamBlockWhitePlatform, TileID.SandFallBlock,
-        TileID.SnowFallBlock
-      });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.SpiritTreeRock, new int[] {
-        TileID.Anvils, TileID.GrayBrick, TileID.RedBrick, TileID.BlueDungeonBrick, TileID.GreenDungeonBrick,
-        TileID.PinkDungeonBrick, TileID.GoldBrick, TileID.SilverBrick, TileID.CopperBrick, TileID.Spikes, TileID.ObsidianBrick,
-        TileID.HellstoneBrick, TileID.PearlstoneBrick, TileID.IridescentBrick, TileID.Mudstone, TileID.CobaltBrick,
-        TileID.MythrilBrick, TileID.MythrilAnvil, TileID.Traps, TileID.DemoniteBrick,  TileID.SnowBrick, TileID.AdamantiteBeam,
-        TileID.SandstoneBrick, TileID.EbonstoneBrick, TileID.RainbowBrick, TileID.TinBrick, TileID.TungstenBrick,
-        TileID.PlatinumBrick, TileID.IceBrick, TileID.LihzahrdBrick, TileID.PalladiumColumn, TileID.Titanstone, TileID.StoneSlab,
-        TileID.SandStoneSlab, TileID.CopperPlating, TileID.TinPlating, TileID.ChlorophyteBrick, TileID.CrimtaneBrick,
-        TileID.ShroomitePlating, TileID.MartianConduitPlating, TileID.MarbleBlock, TileID.GraniteBlock, TileID.MeteoriteBrick,
-        TileID.Fireplace, TileID.ConveyorBeltLeft, TileID.ConveyorBeltRight
-      });
-      OriUtils.AssignValueToKeys(TileFootstepSounds, FootstepSound.SpiritTreeWood, new int[] {
-        TileID.LivingWood, TileID.LivingMahogany
-      });
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.None, TileID.Plants, TileID.Torches, TileID.Trees, TileID.ClosedDoor, TileID.OpenDoor, TileID.Heart, TileID.Bottles, TileID.Saplings, TileID.Chairs, TileID.Furnaces, TileID.Containers, TileID.CorruptPlants, TileID.DemonAltar, TileID.Sunflower, TileID.Pots, TileID.PiggyBank, TileID.ShadowOrbs, TileID.CorruptThorns, TileID.Candles, TileID.Chandeliers, TileID.Jackolanterns, TileID.Presents, TileID.HangingLanterns, TileID.WaterCandle, TileID.Books, TileID.Cobweb, TileID.Vines, TileID.Signs, TileID.JunglePlants, TileID.JungleVines, TileID.JungleThorns, TileID.MushroomPlants, TileID.MushroomTrees, TileID.Plants2, TileID.JunglePlants2, TileID.Hellforge, TileID.ClayPot, TileID.Beds, TileID.Cactus, TileID.Coral, TileID.ImmatureHerbs, TileID.MatureHerbs, TileID.BloomingHerbs, TileID.Tombstones, TileID.Loom, TileID.Bathtubs, TileID.Banners, TileID.Benches, TileID.Lampposts, TileID.Lampposts, TileID.Kegs, TileID.ChineseLanterns, TileID.CookingPots, TileID.Safes, TileID.SkullLanterns, TileID.TrashCan, TileID.Candelabras, TileID.Thrones, TileID.Bowls, TileID.GrandfatherClocks, TileID.Statues, TileID.Sawmill, TileID.HallowedPlants, TileID.HallowedPlants2, TileID.HallowedVines, TileID.WoodenBeam, TileID.CrystalBall, TileID.DiscoBall, TileID.Mannequin, TileID.Crystals, TileID.InactiveStoneBlock, TileID.Lever, TileID.AdamantiteForge, TileID.PressurePlates, TileID.Switches, TileID.MusicBoxes, TileID.Explosives, TileID.InletPump, TileID.OutletPump, TileID.Timers, TileID.HolidayLights, TileID.Stalactite, TileID.ChristmasTree, TileID.Sinks, TileID.PlatinumCandelabra, TileID.PlatinumCandle, TileID.ExposedGems, TileID.GreenMoss, TileID.BrownMoss, TileID.RedMoss, TileID.BlueMoss, TileID.PurpleMoss, TileID.LongMoss, TileID.SmallPiles, TileID.LargePiles, TileID.LargePiles2, TileID.FleshWeeds, TileID.CrimsonVines, TileID.WaterFountain, TileID.Cannon, TileID.LandMine, TileID.SnowballLauncher, TileID.Rope, TileID.Chain, TileID.Campfire, TileID.Firework, TileID.Blendomatic, TileID.MeatGrinder, TileID.Extractinator, TileID.Solidifier, TileID.DyePlants, TileID.DyeVat, TileID.Larva, TileID.PlantDetritus, TileID.LifeFruit, TileID.LihzahrdAltar, TileID.PlanteraBulb, TileID.Painting3X3, TileID.Painting4X3, TileID.Painting6X4, TileID.ImbuingStation, TileID.BubbleMachine, TileID.Painting2X3, TileID.Painting3X2, TileID.Autohammer, TileID.Pumpkins, TileID.Womannequin, TileID.FireflyinaBottle, TileID.LightningBuginaBottle, TileID.BunnyCage, TileID.SquirrelCage, TileID.MallardDuckCage, TileID.DuckCage, TileID.BirdCage, TileID.BlueJay, TileID.CardinalCage, TileID.FishBowl, TileID.HeavyWorkBench, TileID.SnailCage, TileID.GlowingSnailCage, TileID.AmmoBox, TileID.MonarchButterflyJar, TileID.PurpleEmperorButterflyJar, TileID.RedAdmiralButterflyJar, TileID.UlyssesButterflyJar, TileID.SulphurButterflyJar, TileID.TreeNymphButterflyJar, TileID.ZebraSwallowtailButterflyJar, TileID.JuliaButterflyJar, TileID.ScorpionCage, TileID.BlackScorpionCage, TileID.FrogCage, TileID.MouseCage, TileID.BoneWelder, TileID.FleshCloningVat, TileID.GlassKiln, TileID.LihzahrdFurnace, TileID.LivingLoom, TileID.SkyMill, TileID.IceMachine, TileID.SteampunkBoiler, TileID.HoneyDispenser, TileID.PenguinCage, TileID.WormCage, TileID.MinecartTrack, TileID.BlueJellyfishBowl, TileID.GreenJellyfishBowl, TileID.PinkJellyfishBowl, TileID.ShipInABottle, TileID.SeaweedPlanter, TileID.PalmTree, TileID.BeachPiles, TileID.CopperCoinPile, TileID.SilverCoinPile, TileID.GoldCoinPile, TileID.PlatinumCoinPile, TileID.WeaponsRack, TileID.FireworksBox, TileID.LivingFire, TileID.AlphabetStatues, TileID.FireworkFountain, TileID.GrasshopperCage, TileID.LivingCursedFire, TileID.LivingDemonFire, TileID.LivingFrostFire, TileID.LivingIchor, TileID.LivingUltrabrightFire, TileID.MushroomStatue, TileID.ChimneySmoke, TileID.CrimtaneThorns, TileID.VineRope, TileID.BewitchingTable, TileID.AlchemyTable, TileID.Sundial, TileID.GoldBirdCage, TileID.GoldBunnyCage, TileID.GoldButterflyCage, TileID.GoldFrogCage, TileID.GoldGrasshopperCage, TileID.GoldMouseCage, TileID.GoldWormCage, TileID.SilkRope, TileID.WebRope, TileID.PeaceCandle, TileID.WaterDrip, TileID.LavaDrip, TileID.HoneyDrip, TileID.SharpeningStation, TileID.TargetDummy, TileID.Bubble, TileID.PlanterBox, TileID.VineFlowers, TileID.TrapdoorOpen, TileID.TallGateClosed, TileID.TallGateOpen, TileID.LavaLamp, TileID.CageEnchantedNightcrawler, TileID.CageBuggy, TileID.CageGrubby, TileID.CageSluggy, TileID.ItemFrame, TileID.Chimney, TileID.LunarMonolith, TileID.Detonator, TileID.LunarCraftingStation, TileID.SquirrelOrangeCage, TileID.SquirrelGoldCage, TileID.LogicGateLamp, TileID.LogicGate, TileID.LogicSensor, TileID.WirePipe, TileID.AnnouncementBox, TileID.WeightedPressurePlate, TileID.WireBulb, TileID.GemLocks, TileID.FakeContainers, TileID.ProjectilePressurePad, TileID.GeyserTrap, TileID.BeeHive, TileID.PixelBox, TileID.SillyStreamerBlue, TileID.SillyStreamerGreen, TileID.SillyStreamerPink, TileID.SillyBalloonMachine, TileID.Pigronata, TileID.PartyMonolith, TileID.PartyBundleOfBalloonTile, TileID.PartyPresent, TileID.SandDrip, TileID.DjinnLamp, TileID.DefendersForge, TileID.WarTable, TileID.WarTableBanner, TileID.ElderCrystalStand, TileID.Containers2, TileID.FakeContainers2, TileID.Tables2);
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.Grass, TileID.Dirt, TileID.Grass, TileID.CorruptGrass, TileID.ClayBlock, TileID.Mud, TileID.JungleGrass, TileID.MushroomGrass, TileID.HallowedGrass, TileID.PineTree, TileID.LeafBlock, TileID.FleshGrass, TileID.HayBlock, TileID.LavaMoss, TileID.LivingMahoganyLeaves);
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.Rock, TileID.Stone, TileID.Iron, TileID.Copper, TileID.Gold, TileID.Silver, TileID.Demonite, TileID.Ebonstone, TileID.Meteorite, TileID.Obsidian, TileID.Hellstone, TileID.Sapphire, TileID.Ruby, TileID.Emerald, TileID.Topaz, TileID.Amethyst, TileID.Diamond, TileID.Cobalt, TileID.Mythril, TileID.Adamantite, TileID.Pearlstone, TileID.ActiveStoneBlock, TileID.Boulder, TileID.IceBlock, TileID.BreakableIce, TileID.CorruptIce, TileID.HallowedIce, TileID.Tin, TileID.Lead, TileID.Tungsten, TileID.Platinum, TileID.BoneBlock, TileID.FleshBlock, TileID.Asphalt, TileID.FleshIce, TileID.Crimstone, TileID.Crimtane, TileID.Chlorophyte, TileID.Palladium, TileID.Orichalcum, TileID.Titanium, TileID.MetalBars, TileID.Cog, TileID.Marble, TileID.Granite, TileID.Sandstone, TileID.HardenedSand, TileID.CorruptHardenedSand, TileID.CrimsonHardenedSand, TileID.CorruptSandstone, TileID.CrimsonSandstone, TileID.HallowHardenedSand, TileID.HallowSandstone, TileID.DesertFossil, TileID.FossilOre, TileID.LunarOre, TileID.LunarBlockSolar, TileID.LunarBlockVortex, TileID.LunarBlockNebula, TileID.LunarBlockStardust);
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.Wood, TileID.Tables, TileID.WorkBenches, TileID.Platforms, TileID.WoodBlock, TileID.Pianos, TileID.Dressers, TileID.Bookcases, TileID.TinkerersWorkbench, TileID.Ebonwood, TileID.RichMahogany, TileID.Pearlwood, TileID.Shadewood, TileID.WoodenSpikes, TileID.SpookyWood, TileID.DynastyWood, TileID.RedDynastyShingles, TileID.BlueDynastyShingles, TileID.BorealWood, TileID.PalmWood, TileID.FishingCrate, TileID.TrapdoorClosed);
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.Sand, TileID.Sand, TileID.Ash, TileID.Ebonsand, TileID.Pearlsand, TileID.Silt, TileID.Hive, TileID.CrispyHoneyBlock, TileID.Crimsand);
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.Snow, TileID.SnowBlock, TileID.RedStucco, TileID.YellowStucco, TileID.GreenStucco, TileID.GrayStucco, TileID.Cloud, TileID.RainCloud, TileID.Slush, TileID.HoneyBlock, TileID.SnowCloud);
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.Mushroom, TileID.CandyCaneBlock, TileID.GreenCandyCaneBlock, TileID.CactusBlock, TileID.MushroomBlock, TileID.SlimeBlock, TileID.FrozenSlimeBlock, TileID.BubblegumBlock, TileID.PumpkinBlock, TileID.Coralstone, TileID.PinkSlimeBlock, TileID.SillyBalloonPink, TileID.SillyBalloonPurple, TileID.SillyBalloonGreen, TileID.SillyBalloonTile);
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.LightDark, TileID.Glass, TileID.MagicalIceBlock, TileID.Sunplate, TileID.Teleporter, TileID.AmethystGemsparkOff, TileID.TopazGemsparkOff, TileID.SapphireGemsparkOff, TileID.EmeraldGemsparkOff, TileID.RubyGemsparkOff, TileID.DiamondGemsparkOff, TileID.AmberGemsparkOff, TileID.AmethystGemspark, TileID.TopazGemspark, TileID.SapphireGemspark, TileID.EmeraldGemspark, TileID.RubyGemspark, TileID.DiamondGemspark, TileID.AmberGemspark, TileID.Waterfall, TileID.Lavafall, TileID.Confetti, TileID.ConfettiBlack, TileID.Honeyfall, TileID.CrystalBlock, TileID.LunarBrick, TileID.TeamBlockRed, TileID.TeamBlockRedPlatform, TileID.TeamBlockGreen, TileID.TeamBlockBlue, TileID.TeamBlockYellow, TileID.TeamBlockPink, TileID.TeamBlockWhite, TileID.TeamBlockGreenPlatform, TileID.TeamBlockBluePlatform, TileID.TeamBlockYellowPlatform, TileID.TeamBlockPinkPlatform, TileID.TeamBlockWhitePlatform, TileID.SandFallBlock, TileID.SnowFallBlock);
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeRock, TileID.Anvils, TileID.GrayBrick, TileID.RedBrick, TileID.BlueDungeonBrick, TileID.GreenDungeonBrick, TileID.PinkDungeonBrick, TileID.GoldBrick, TileID.SilverBrick, TileID.CopperBrick, TileID.Spikes, TileID.ObsidianBrick, TileID.HellstoneBrick, TileID.PearlstoneBrick, TileID.IridescentBrick, TileID.Mudstone, TileID.CobaltBrick, TileID.MythrilBrick, TileID.MythrilAnvil, TileID.Traps, TileID.DemoniteBrick, TileID.SnowBrick, TileID.AdamantiteBeam, TileID.SandstoneBrick, TileID.EbonstoneBrick, TileID.RainbowBrick, TileID.TinBrick, TileID.TungstenBrick, TileID.PlatinumBrick, TileID.IceBrick, TileID.LihzahrdBrick, TileID.PalladiumColumn, TileID.Titanstone, TileID.StoneSlab, TileID.SandStoneSlab, TileID.CopperPlating, TileID.TinPlating, TileID.ChlorophyteBrick, TileID.CrimtaneBrick, TileID.ShroomitePlating, TileID.MartianConduitPlating, TileID.MarbleBlock, TileID.GraniteBlock, TileID.MeteoriteBrick, TileID.Fireplace, TileID.ConveyorBeltLeft, TileID.ConveyorBeltRight);
+      _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeWood, TileID.LivingWood, TileID.LivingMahogany);
 
       // Mod tiles
+      int missingSoundCount = 0;
       for (int i = TileID.Count; i < count; i++) {
         if (!Main.tileSolid[i] && !Main.tileSolidTop[i]) {
-          TileFootstepSounds[i] = FootstepSound.None;
+          _tileFootstepSounds[i] = FootstepSound.None;
           continue;
         }
-        var tileName = TileLoader.GetTile(i).Name;
-        var name = tileName.Substring(tileName.LastIndexOf('.') + 1);
-        TileFootstepSounds[i] = SoundFromName(name);
+        string tileName = TileLoader.GetTile(i).Name;
+        string name = tileName.Substring(tileName.LastIndexOf('.') + 1);
+        FootstepSound sound = SoundFromName(name);
+        _tileFootstepSounds[i] = sound;
+
+        if (sound == FootstepSound.NoModTranslation) {
+          // Print in debug build only, or try implementing more catches for tile names to sounds
+          //OriMod.Log.Warn($"Could not get appropriate sound from mod tile name \"{name}\"");
+          missingSoundCount++;
+        }
+      }
+
+      if (missingSoundCount > 0) {
+        OriMod.Log.Debug($"Could not guess footstep sounds for {missingSoundCount} tiles.");
       }
     }
 
     /// <summary>
     /// Array of footstep sounds for a given <see cref="Tile"/>, where the index corresponds to a <see cref="Tile.type"/>
     /// </summary>
-    public readonly FootstepSound[] TileFootstepSounds;
+    private readonly FootstepSound[] _tileFootstepSounds;
 
-    private readonly RandomChar rand = new RandomChar();
+    private readonly RandomChar _rand = new RandomChar();
 
     /// <summary>
     /// For external mods, attempts to get a sound based on their name.
     /// </summary>
     /// <param name="name">Name of the mod tile.</param>
     /// <returns>A <see cref="FootstepSound"/> that best represents the sound from the name, -or- <see cref="FootstepSound.NoModTranslation"/> if none could be found.</returns>
-    private FootstepSound SoundFromName(string name) {
+    private static FootstepSound SoundFromName(string name) {
       name = name.ToLower();
       if (name == "mysterytile" || name == "pendingmysterytile") {
         return FootstepSound.None;
@@ -180,7 +92,6 @@ namespace OriMod {
         return FootstepSound.Wood;
       }
 
-      OriMod.Log.Warn($"Could not get appropriate sound from mod tile name \"{name}\"");
       return FootstepSound.NoModTranslation;
     }
 
@@ -191,12 +102,12 @@ namespace OriMod {
     /// <param name="player">Player to play sound effect from.</param>
     /// <returns><see cref="SoundEffectInstance"/> representing the sound that is played.</returns>
     public SoundEffectInstance PlayFootstepFromPlayer(Player player) {
-      var sound = GetSoundFromPlayerPosition(player);
+      FootstepSound sound = GetSoundFromPlayerPosition(player);
       string mat = sound.ToString();
       int x = (int)player.Bottom.X, y = (int)player.Bottom.Y;
 
       SoundEffectInstance Footstep(int randLength, float volume)
-        => PlayFootstep($"{mat}/{mat}{rand.NextNoRepeat(randLength)}", x, y, volume);
+        => PlayFootstep($"{mat}/{mat}{_rand.NextNoRepeat(randLength)}", x, y, volume);
 
       switch (sound) {
         case FootstepSound.Grass:
@@ -209,7 +120,7 @@ namespace OriMod {
         case FootstepSound.Rock:
           return Footstep(5, 0.7f);
         case FootstepSound.Snow:
-        return Footstep(10, 0.45f);
+          return Footstep(10, 0.45f);
         case FootstepSound.LightDark:
           return Footstep(10, 0.3f);
         case FootstepSound.Wood:
@@ -230,12 +141,12 @@ namespace OriMod {
     /// <param name="player">Player to play sound effect from.</param>
     /// <returns><see cref="SoundEffectInstance"/> representing the sound that is played.</returns>
     public SoundEffectInstance PlayLandingFromPlayer(Player player) {
-      var sound = GetSoundFromPlayerPosition(player);
+      FootstepSound sound = GetSoundFromPlayerPosition(player);
       string mat = sound.ToString();
       int x = (int)player.Bottom.X, y = (int)player.Bottom.Y;
 
       SoundEffectInstance Landing(int randLength, float volume)
-        => PlayLanding($"{mat}/seinLands{mat}{rand.NextNoRepeat(randLength)}", x, y, volume);
+        => PlayLanding($"{mat}/seinLands{mat}{_rand.NextNoRepeat(randLength)}", x, y, volume);
 
       switch (sound) {
         case FootstepSound.Grass:
@@ -263,7 +174,7 @@ namespace OriMod {
     /// <param name="player"><see cref="Player"/> to get footstep sound from.</param>
     /// <returns>A <see cref="FootstepSound"/> based on <paramref name="player"/> position.</returns>
     private FootstepSound GetSoundFromPlayerPosition(Player player) {
-      var testPos = player.Bottom + new Vector2(-12, 4);
+      Vector2 testPos = player.Bottom + new Vector2(-12, 4);
       Tile tile = GetTile(testPos);
 
       // Test for water
@@ -280,16 +191,11 @@ namespace OriMod {
       testPos.Y += 12;
       tile = GetTile(testPos);
       if (tile.active()) {
-        return TileFootstepSounds[tile.type];
+        return _tileFootstepSounds[tile.type];
       }
       testPos.Y += 16;
       tile = GetTile(testPos);
-      if (tile.active()) {
-        return TileFootstepSounds[tile.type];
-      }
-
-      // Nothing
-      return FootstepSound.None;
+      return tile.active() ? _tileFootstepSounds[tile.type] : FootstepSound.None;
     }
 
     /// <summary>
@@ -297,36 +203,32 @@ namespace OriMod {
     /// </summary>
     /// <param name="point">Position of the tile.</param>
     /// <returns>A <see cref="Tile"/> at the provided position.</returns>
-    private Tile GetTile(Point point) => Main.tile[point.X, point.Y];
+    private static Tile GetTile(Point point) => Main.tile[point.X, point.Y];
 
     /// <summary>
-    /// Get a <see cref="Tile"/> at <paramref name="vector"/>. <paramref name="vector"/> is coverted to tile coordinates.
+    /// Get a <see cref="Tile"/> at <paramref name="vector"/>. <paramref name="vector"/> is converted to tile coordinates.
     /// </summary>
     /// <param name="vector">World-space position of the tile.</param>
     /// <returns>A <see cref="Tile"/> at the provided position.</returns>
-    private Tile GetTile(Vector2 vector) => GetTile(vector.ToTileCoordinates());
+    private static Tile GetTile(Vector2 vector) => GetTile(vector.ToTileCoordinates());
 
     /// <summary>
     /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for footstep sounds.
     /// </summary>
-    private SoundEffectInstance PlayFootstep(string path, int x, int y, float volume)
-      => Main.PlaySound((int)SoundType.Custom, x, y, SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/Ori/Footsteps/" + path), volume);
+    private static SoundEffectInstance PlayFootstep(string path, int x, int y, float volume)
+      => SoundWrapper.PlaySound(x, y, "OriMod/Sounds/Custom/NewSFX/Ori/Footsteps/" + path, volume);
 
     /// <summary>
     /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for landing sounds.
     /// </summary>
-    private SoundEffectInstance PlayLanding(string path, int x, int y, float volume)
-      => Main.PlaySound((int)SoundType.Custom, x, y, SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/Ori/Land/" + path), volume, 0.1f);
+    private static SoundEffectInstance PlayLanding(string path, int x, int y, float volume)
+      => SoundWrapper.PlaySound(x, y, "OriMod/Sounds/Custom/NewSFX/Ori/Land/" + path, volume, 0.1f);
     #endregion
 
     /// <summary>
     /// Enum to represent footstep sounds.
     /// </summary>
-    public enum FootstepSound : byte {
-      /// <summary>
-      /// TileIDs pending assignment.
-      /// </summary>
-      Unassigned = 0,
+    private enum FootstepSound : byte {
       /// <summary>
       /// Footsteps on grassy terrain.
       /// </summary>

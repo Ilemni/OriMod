@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Text.RegularExpressions;
+using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
 using Terraria.ID;
@@ -11,12 +12,12 @@ namespace OriMod.Items.Abilities {
   /// </summary>
   public abstract class AbilityMedallionBase : ModItem {
     /// <summary>
-    /// <see cref="AbilityID"/> of the <see cref="Ability"/> to unlock.
+    /// <see cref="AbilityId"/> of the <see cref="Ability"/> to unlock.
     /// </summary>
-    public abstract byte ID { get; }
+    public abstract byte Id { get; }
 
     /// <summary>
-    /// Level that the <see cref="Ability"/> with <see cref="ID"/> will be set to when this item is used.
+    /// Level that the <see cref="Ability"/> with <see cref="Id"/> will be set to when this item is used.
     /// </summary>
     public virtual byte Level => 1;
 
@@ -33,8 +34,8 @@ namespace OriMod.Items.Abilities {
     /// <returns><see langword="true"/> if the player does not have the <see cref="Ability"/> at this <see cref="Level"/>; otherwise, <see langword="false"/>.</returns>
     public override bool CanUseItem(Player player) {
       // Can only use the item if the ability to be unlocked has not been unlocked
-      var oPlayer = player.GetModPlayer<OriPlayer>();
-      return oPlayer.abilities[ID].Level < Level;
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+      return oPlayer.abilities[Id].Level < Level;
     }
 
     /// <summary>
@@ -44,33 +45,29 @@ namespace OriMod.Items.Abilities {
     /// <param name="player">The player using the item.</param>
     /// <returns><see langword="true"/> if the ability can be leveled. If this returns <see langword="false"/>, this <see cref="AbilityMedallionBase"/> or the <see cref="Ability"/> must be fixed.</returns>
     public override bool UseItem(Player player) {
-      var oPlayer = player.GetModPlayer<OriPlayer>();
-      var ability = oPlayer.abilities[ID];
+      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+      Ability ability = oPlayer.abilities[Id];
       if (ability is ILevelable levelable) {
         levelable.Level++;
         if (player.whoAmI == Main.myPlayer) {
-          var key = $"Mods.OriMod.Lore.{ability.GetType().Name}.{levelable.Level}";
+          string key = $"Mods.OriMod.Lore.{ability.GetType().Name}.{levelable.Level}";
           if (Language.Exists(key)) {
-            var txt = Language.GetText(key);
-            Main.NewText($"Spirit Lore: {txt}", Color.LightCyan);
+            Main.NewText(Language.GetText(key), Color.LightCyan);
           }
         }
-        var strStart = player.whoAmI == Main.myPlayer ? "You" : $"{player.name} has";
-        if (levelable.Level == 1) {
-          Main.NewText($"{strStart} unlocked {NiceName(ability)}!", Color.LightGreen);
-        }
-        else {
-          Main.NewText($"{strStart} upgraded {NiceName(ability)} to Level {levelable.Level}!", Color.LightGreen);
-        }
+        string strStart = player.whoAmI == Main.myPlayer ? "You" : $"{player.name} has";
+        Main.NewText(
+          levelable.Level == 1
+            ? $"{strStart} unlocked {NiceName(ability)}!"
+            : $"{strStart} upgraded {NiceName(ability)} to Level {levelable.Level}!", Color.LightGreen);
         return true;
       }
-      else {
-        Main.NewText($"OriMod dev bug: Ability {ability.GetType().Name} cannot be leveled.", Color.Red);
-        return false;
-      }
+
+      Main.NewText($"OriMod dev bug: Ability {ability.GetType().Name} cannot be leveled.", Color.Red);
+      return false;
     }
 
-    private string NiceName(Ability ability) => System.Text.RegularExpressions.Regex.Replace(ability.GetType().Name, "(\\B[A-Z])", " $1");
+    private static string NiceName(Ability ability) => Regex.Replace(ability.GetType().Name, "(\\B[A-Z])", " $1");
 
     public abstract override void AddRecipes();
 
@@ -87,7 +84,7 @@ namespace OriMod.Items.Abilities {
     /// </summary>
     /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
     protected ModRecipe GetAbilityRecipe<T>() where T : ModItem {
-      var recipe = new ModRecipe(mod);
+      ModRecipe recipe = new ModRecipe(mod);
       recipe.AddIngredient(ModContent.ItemType<T>());
       recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
       recipe.SetResult(this);

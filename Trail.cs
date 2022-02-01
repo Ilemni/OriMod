@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Terraria;
+using System.Linq;
 using Terraria.DataStructures;
 
 namespace OriMod {
@@ -12,53 +12,51 @@ namespace OriMod {
     /// Create an instance of <see cref="Trail"/> that will belong to <paramref name="oPlayer"/>.
     /// </summary>
     /// <param name="oPlayer">The <see cref="OriPlayer"/> this <see cref="Trail"/> will belong to.</param>
-    /// <param name="segmentCount">Number of sprites to use for the trail.</param>
     /// <exception cref="ArgumentNullException"><paramref name="oPlayer"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Expected value of <see langword="1"/> or greater.</exception>
-    internal Trail(OriPlayer oPlayer, int segmentCount) {
+    internal Trail(OriPlayer oPlayer) {
       if (oPlayer is null) {
         throw new ArgumentNullException(nameof(oPlayer));
       }
-      if (segmentCount < 1) {
-        throw new ArgumentOutOfRangeException(nameof(segmentCount), "Expected value of 1 or greater.");
-      }
 
-      segments = new TrailSegment[segmentCount];
+      _segments = new TrailSegment[Count];
       int i = 0;
-      while (i < segmentCount) {
-        segments[i++] = new TrailSegment(oPlayer);
+      while (i < Count) {
+        _segments[i++] = new TrailSegment(oPlayer);
       }
     }
 
     /// <summary>
-    /// Sets <see cref="index"/> to the next index in <see cref="segments"/>, and returns the value.
+    /// Sets <see cref="_index"/> to the next index in <see cref="_segments"/>, and returns the value.
     /// </summary>
-    /// <returns>The updated value of <see cref="index"/>.</returns>
+    /// <returns>The updated value of <see cref="_index"/>.</returns>
     private int NextIndex() {
-      index = (index + 1) % segments.Length;
-      return index;
+      _index = (_index + 1) % _segments.Length;
+      return _index;
     }
 
     /// <summary>
     /// All <see cref="TrailSegment"/>s in this <see cref="Trail"/>.
     /// </summary>
-    private readonly TrailSegment[] segments;
+    private readonly TrailSegment[] _segments;
 
     /// <summary>
-    /// Current <see cref="segments"/> index. Used for <see cref="TrailSegment.Reset"/>.
+    /// Current <see cref="_segments"/> index. Used for <see cref="TrailSegment.Reset"/>.
     /// </summary>
-    private int index = 0;
+    private int _index;
 
-    private double lastTrailResetTime;
+    internal bool hasDrawnThisFrame;
 
-    internal double lastTrailDrawTime;
+    /// <summary>
+    /// Number of segments in a trail.
+    /// </summary>
+    public static int Count => 26;
 
     /// <summary>
     /// Call <see cref="TrailSegment.Tick"/> on each <see cref="TrailSegment"/>.
     /// <para>This keeps the opacity of the trail appearing consistent.</para>
     /// </summary>
     public void UpdateSegments() {
-      foreach (var segment in segments) {
+      foreach (TrailSegment segment in _segments) {
         segment.Tick();
       }
     }
@@ -66,25 +64,13 @@ namespace OriMod {
     /// <summary>
     /// <see cref="IEnumerable{T}"/> of all <see cref="DrawData"/>s from this trail.
     /// </summary>
-    public IEnumerable<DrawData> TrailDrawDatas {
-      get {
-        foreach (var segment in segments) {
-          yield return segment.GetDrawData();
-        }
-      }
-    }
+    public IEnumerable<DrawData> TrailDrawDatas => _segments.Select(segment => segment.GetDrawData());
 
     /// <summary>
     /// Calls <see cref="TrailSegment.Reset"/> on the next segment.
     /// </summary>
     internal void ResetNextSegment() {
-      if (lastTrailResetTime < Main.time - segments.Length) {
-        lastTrailResetTime = Main.time - segments.Length;
-      }
-      while (lastTrailResetTime < Main.time) {
-        lastTrailResetTime++;
-        segments[NextIndex()].Reset();
-      }
+      _segments[NextIndex()].Reset();
     }
   }
 }

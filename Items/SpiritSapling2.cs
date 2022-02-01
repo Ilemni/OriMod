@@ -1,3 +1,4 @@
+using System;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -5,7 +6,7 @@ namespace OriMod.Items {
   /// <summary>
   /// <see cref="SpiritSapling"/> was intended to be multi-tiered for an Upgrade System.
   /// </summary>
-  [System.Obsolete]
+  [Obsolete]
   public class SpiritSapling2 : ModItem {
     public override bool Autoload(ref string name) => false;
     
@@ -22,12 +23,12 @@ namespace OriMod.Items {
       item.useStyle = ItemUseStyleID.SwingThrow;
       item.consumable = true;
       item.value = 150000;
-      item.createTile = mod.TileType("SpiritSapling2");
+      item.createTile = ModContent.TileType<Tiles.SpiritSapling>(); // TODO: Tiles.SpiritSapling2
     }
 
     public override void AddRecipes() {
-      var recipe = new ModRecipe(mod);
-      recipe.AddIngredient(mod.ItemType("SpiritSapling"), 1);
+      ModRecipe recipe = new ModRecipe(mod);
+      recipe.AddIngredient(ModContent.TileType<Tiles.SpiritSapling>());
       recipe.AddIngredient(ItemID.SoulofLight, 30);
     }
   }

@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 
 namespace OriMod.Utilities {
   /// <summary>
@@ -36,72 +38,10 @@ namespace OriMod.Utilities {
     /// <summary>
     /// Checks if any active <see cref="NPC"/>s are bosses.
     /// </summary>
-    public static bool AnyBossAlive() {
-      for (int i = 0, len = Main.npc.Length; i < len; i++) {
-        var npc = Main.npc[i];
-        if (npc.active && (npc.boss || Terraria.ID.NPCID.Sets.TechnicallyABoss[npc.type])) {
-          return true;
-        }
-      }
-      return false;
-    }
+    public static bool IsAnyBossAlive()
+      => Main.npc.Any(npc => npc.active && (npc.boss || NPCID.Sets.TechnicallyABoss[npc.type]));
 
     #region Distance Checking
-    /// <summary>
-    /// Gets the closest <see cref="Entity"/>. Returns true if any are in range, the closest <see cref="Entity"/> passed out as <paramref name="entity"/>.
-    /// </summary>
-    /// <param name="me">Y'know...</param>
-    /// <param name="arr">Array of entities, such as <see cref="Main.player"/>, <see cref="Main.npc"/>, <see cref="Main.projectile"/>. These are the candidates for <paramref name="entity"/>.</param>
-    /// <param name="distance">Maximum distance to be considered in-range, -or- 0 or negative for infinite range.
-    /// <para>If this method returns <see langword="true"/>, this value is the distance to <paramref name="entity"/>.</para>
-    /// <para>If this method returns <see langword="false"/>, this value is not modified.</para>
-    /// </param>
-    /// <param name="entity">Closest <see cref="Entity"/> in-range, -or- <see langword="null"/> if no entities are in range.</param>
-    /// <param name="distanceSquaredCheck">How the closest distance is checked. Defaults to `<see cref="DistanceBetweenTwoEntitiesSquared(Entity, Entity)"/>`, getting closest distance between two entities.</param>
-    /// <param name="condition">Extra condition to filter out entities. If <paramref name="condition"/> returns false, the entity is skipped.</param>
-    /// <typeparam name="T">Type of Entity (i.e. <see cref="Player"/>, <see cref="NPC"/>, <see cref="Projectile"/>).</typeparam>
-    /// <returns><see langword="true"/> if there is an <see cref="Entity"/> closer than <paramref name="distance"/> (<paramref name="entity"/> is not <see langword="null"/>), otherwise <see langword="false"/>.</returns>
-    internal static bool GetClosestEntity<T>(this Entity me, T[] arr, ref float distance, out T entity, Func<Entity, T, float> distanceSquaredCheck = null, Func<T, bool> condition = null) where T : Entity {
-      // Setup method
-      float startDistance = distance;
-      if (distance <= 0) {
-        distance = float.MaxValue; // Infinite range detect
-      }
-      else {
-        distance *= distance; // Squared for DistanceSquared
-      }
-      if (distanceSquaredCheck is null) {
-        distanceSquaredCheck = (e1, e2) => DistanceBetweenTwoEntitiesSquared(e1, e2);
-      }
-
-      // Search for closest entity
-      int id = -1;
-      for (int i = 0, len = arr.Length; i < len; i++) {
-        T e = arr[i];
-        if (e is null || !e.active || ReferenceEquals(e, me) || condition?.Invoke(e) == false) {
-          continue;
-        }
-
-        float newDist = distanceSquaredCheck(me, e);
-        if (newDist < distance) {
-          distance = newDist;
-          id = e.whoAmI;
-        }
-      }
-
-      if (id != -1) {
-        // Entity found
-        distance = (float)Math.Sqrt(distance);
-        entity = arr[id];
-        return true;
-      }
-
-      // No entity found
-      distance = startDistance;
-      entity = null;
-      return false;
-    }
-
     /// <summary>
     /// Distance between the hitboxes of two entities. If the entity hitboxes overlap, this will return <see langword="0"/>.
     /// </summary>
@@ -127,6 +67,20 @@ namespace OriMod.Utilities {
     }
     #endregion
 
+    internal static Vector2 GetMouseDirection(OriPlayer oPlayer, out float angle, Vector2? direction = null, float maxAngle = (float)Math.PI) {
+      Player player = oPlayer.player;
+      Vector2 dir = direction ?? new Vector2(player.direction, player.gravDir);
+
+      Vector2 offset = Main.MouseWorld;
+      offset = (offset - player.Center) * dir + player.Center;
+
+      angle = Utils.Clamp(player.AngleTo(offset), -maxAngle, maxAngle);
+
+      Vector2 result = Vector2.UnitX.RotatedBy(angle);
+      result *= dir;
+      return result;
+    }
+
     /// <summary>
     /// Linear interpoation between two <paramref name="f1"/> and <paramref name="f2"/> by <paramref name="by"/>.
     /// </summary>
@@ -136,16 +90,6 @@ namespace OriMod.Utilities {
     /// <returns>A value between <paramref name="f1"/> and <paramref name="f2"/>.</returns>
     internal static float Lerp(float f1, float f2, float by) => f1 * (1 - by) + f2 * by;
 
-    /// <summary>
-    /// Assigns multiple indexes of an array to <paramref name="value"/>.
-    /// </summary>
-    /// <param name="arr">The array to assign values to.</param>
-    /// <param name="value">The value to assign to.</param>
-    /// <param name="keys">Indices of the array to assign to.</param>
-    internal static void AssignValueToKeys<T>(this T[] arr, T value, params int[] keys) {
-      for (int i = 0, len = keys.Length; i < len; i++) {
-        arr[keys[i]] = value;
-      }
-    }
+    
   }
 }

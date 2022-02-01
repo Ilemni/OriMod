@@ -1,6 +1,6 @@
+using OriMod.Utilities;
 using Terraria.ID;
 using Terraria.ModLoader;
-using OriMod.Utilities;
 
 namespace OriMod {
   /// <summary>
@@ -8,40 +8,40 @@ namespace OriMod {
   /// </summary>
   internal class TileCollection : SingleInstance<TileCollection> {
     private TileCollection() {
-      TilePickaxeMin = new ushort[TileLoader.TileCount];
+      tilePickaxeMin = new ushort[TileLoader.TileCount];
 
       // Assign vanilla tiles to 2 (Sand-like is 0, Dirt-like is 1)
       int i;
       for (i = 0; i < TileID.Count; i++) {
-        TilePickaxeMin[i] = 2;
+        tilePickaxeMin[i] = 2;
       }
 
-      TilePickaxeMin.AssignValueToKeys<ushort>(0, TileID.Sand, TileID.Slush, TileID.Silt);
-      TilePickaxeMin.AssignValueToKeys<ushort>(1,
+      tilePickaxeMin.AssignValueToKeys<ushort>(0, TileID.Sand, TileID.Slush, TileID.Silt);
+      tilePickaxeMin.AssignValueToKeys<ushort>(1,
         TileID.Dirt, TileID.Mud, TileID.ClayBlock, TileID.SnowBlock,
         TileID.Grass, TileID.CorruptGrass, TileID.FleshGrass, TileID.HallowedGrass, TileID.JungleGrass, TileID.MushroomGrass
       );
-      TilePickaxeMin.AssignValueToKeys<ushort>(50, TileID.Meteorite);
-      TilePickaxeMin.AssignValueToKeys<ushort>(55, TileID.Demonite, TileID.Crimtane);
-      TilePickaxeMin.AssignValueToKeys<ushort>(65,
+      tilePickaxeMin.AssignValueToKeys<ushort>(50, TileID.Meteorite);
+      tilePickaxeMin.AssignValueToKeys<ushort>(55, TileID.Demonite, TileID.Crimtane);
+      tilePickaxeMin.AssignValueToKeys<ushort>(65,
         TileID.Ebonstone, TileID.Crimstone, TileID.Pearlstone, TileID.Hellstone, TileID.Obsidian, TileID.DesertFossil,
         TileID.BlueDungeonBrick, TileID.GreenDungeonBrick, TileID.PinkDungeonBrick
       );
-      TilePickaxeMin.AssignValueToKeys<ushort>(100, TileID.Cobalt, TileID.Palladium);
-      TilePickaxeMin.AssignValueToKeys<ushort>(110, TileID.Mythril, TileID.Orichalcum);
-      TilePickaxeMin.AssignValueToKeys<ushort>(150, TileID.Adamantite, TileID.Titanium);
-      TilePickaxeMin.AssignValueToKeys<ushort>(200, TileID.Chlorophyte);
-      TilePickaxeMin.AssignValueToKeys<ushort>(210, TileID.LihzahrdBrick, TileID.LihzahrdAltar);
+      tilePickaxeMin.AssignValueToKeys<ushort>(100, TileID.Cobalt, TileID.Palladium);
+      tilePickaxeMin.AssignValueToKeys<ushort>(110, TileID.Mythril, TileID.Orichalcum);
+      tilePickaxeMin.AssignValueToKeys<ushort>(150, TileID.Adamantite, TileID.Titanium);
+      tilePickaxeMin.AssignValueToKeys<ushort>(200, TileID.Chlorophyte);
+      tilePickaxeMin.AssignValueToKeys<ushort>(210, TileID.LihzahrdBrick, TileID.LihzahrdAltar);
 
       for (i = TileID.Count; i < TileLoader.TileCount; i++) {
-        var modTile = TileLoader.GetTile(i);
-        TilePickaxeMin[i] = (ushort)modTile.minPick;
+        ModTile modTile = TileLoader.GetTile(i);
+        tilePickaxeMin[i] = (ushort)modTile.minPick;
       }
     }
 
     /// <summary>
     /// Array of pickaxe power for a given <see cref="Terraria.Tile"/>, where the index corresponds to a <see cref="Terraria.Tile.type"/>
     /// </summary>
-    internal readonly ushort[] TilePickaxeMin;
+    internal readonly ushort[] tilePickaxeMin;
   }
 }

@@ -7,26 +7,26 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class LookUp : Ability {
     internal LookUp(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.LookUp;
+    public override int Id => AbilityId.LookUp;
     public override byte Level => 1;
 
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !abilities.crouch && !abilities.dash && !abilities.chargeDash;
+    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !player.mount.Active &&
+      !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.climb && !abilities.crouch && !abilities.dash;
 
     private static int StartDuration => 12;
     private static int EndDuration => 8;
 
     internal override void Tick() {
       if (!InUse) {
-        if (CanUse && (player.controlUp || IsLocal && OriMod.ChargeKey.Current)) {
+        if (CanUse && (player.controlUp || input.charge.Current)) {
           SetState(State.Starting);
         }
       }
       else if (!CanUse) {
         SetState(State.Inactive);
       }
-      else if (!(player.controlUp || IsLocal && OriMod.ChargeKey.Current) && !Ending) {
+      else if (!(player.controlUp || input.charge.Current) && !Ending) {
         SetState(Active ? State.Ending : State.Inactive);
-        return;
       }
       else if (Starting) {
         if (CurrentTime > StartDuration) {

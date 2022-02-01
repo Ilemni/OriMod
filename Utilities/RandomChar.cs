@@ -6,22 +6,9 @@ namespace OriMod.Utilities {
   /// Class to get randomized <see cref="char"/>s between A and Z. Chars are capitalized.
   /// </summary>
   internal class RandomChar {
-    static RandomChar() {
-      OriMod.OnUnload += Unload;
-    }
-
-    private byte nextExclude = byte.MaxValue; // Start as max value to avoid excludes on first use
+    private byte _nextExclude = byte.MaxValue; // Start as max value to avoid excludes on first use
 
     private const byte RandMaxValue = 25;
-
-    private static char[] alphabet => _alphabet ?? (_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray());
-    private static char[] _alphabet;
-
-    /// <summary>
-    /// Gets a random <see cref="char"/> between A and Z.
-    /// </summary>
-    /// <returns>A <see cref="char"/> between A and Z.</returns>
-    public static char Next() => Next(RandMaxValue);
 
     /// <summary>
     /// Gets a random <see cref="char"/> between A and alphabet[<paramref name="length"/>].
@@ -30,18 +17,14 @@ namespace OriMod.Utilities {
     /// <returns>A <see cref="char"/> between A and alphabet[<paramref name="length"/>].</returns>
     /// <exception cref="ArgumentOutOfRangeException">Value must be between 1 and <see cref="RandMaxValue"/>.</exception>
     public static char Next(int length) {
-      if (length < 1 || length > RandMaxValue) {
+      if (length < 0 || length > RandMaxValue) {
         throw new ArgumentOutOfRangeException(nameof(length), "Value must be between 1 and " + RandMaxValue);
       }
 
-      return alphabet[Main.rand.Next(length)];
+      if (length == 0) return 'A';
+      
+      return (char) ('A' + Main.rand.Next(length));
     }
-
-    /// <summary>
-    /// Gets a random <see cref="char"/> between A and Z, without repeating the previous result of this method.
-    /// </summary>
-    /// <returns>A <see cref="char"/> between A and Z, different from the previous result.</returns>
-    public char NextNoRepeat() => NextNoRepeat(RandMaxValue);
 
     /// <summary>
     /// Gets a random <see cref="char"/> between A and alphabet[<paramref name="length"/>], without repeating the previous result of this method.
@@ -49,26 +32,27 @@ namespace OriMod.Utilities {
     /// <param name="length">Range of letters from "A" that may be returned. Must be at least 1.</param>
     /// <returns>A <see cref="char"/> between A and alphabet[<paramref name="length"/>], different from the previous result.</returns>
     public char NextNoRepeat(int length) {
-      if (length < 1 || length > RandMaxValue) {
+      if (length < 0 || length > RandMaxValue) {
         throw new ArgumentOutOfRangeException(nameof(length), "Value must be between 1 and " + RandMaxValue);
       }
 
+      if (length == 0) {
+        _nextExclude = 0;
+        return 'A';
+      }
       byte rand;
-      if (nextExclude == byte.MaxValue) {
-        rand = (byte)Main.rand.Next(length);
+      if (_nextExclude == byte.MaxValue) {
+        rand = (byte) Main.rand.Next(length);
       }
       else {
-        rand = (byte)Main.rand.Next(length - 1);
-        if (rand >= nextExclude) {
+        rand = (byte) Main.rand.Next(length - 1);
+        if (rand >= _nextExclude) {
           rand++;
         }
       }
-      nextExclude = rand;
-      return alphabet[rand];
-    }
 
-    private static void Unload() {
-      _alphabet = null;
+      _nextExclude = rand;
+      return (char) ('A' + rand);
     }
   }
 }

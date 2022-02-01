@@ -1,12 +1,14 @@
+using System;
 using System.Collections.Generic;
 using OriMod.Networking;
+using Terraria;
 using Terraria.ModLoader.IO;
 
 namespace OriMod {
   /// <summary>
   /// IDs for each <see cref="Abilities.Ability"/>.
   /// </summary>
-  public static class AbilityID {
+  public static class AbilityId {
     /// <summary>
     /// ID for <see cref="Abilities.SoulLink"/>.
     /// </summary>
@@ -104,7 +106,7 @@ namespace OriMod.Abilities {
     /// </summary>
     public readonly OriPlayer oPlayer;
 
-    [System.Obsolete] public readonly SoulLink soulLink;
+    //[Obsolete] public readonly SoulLink soulLink;
 
     public readonly WallJump wallJump;
     public readonly AirJump airJump;
@@ -140,30 +142,30 @@ namespace OriMod.Abilities {
     }
 
     /// <summary>
-    /// Get the <see cref="Ability"/> with the matching <see cref="AbilityID"/>.
+    /// Get the <see cref="Ability"/> with the matching <see cref="AbilityId"/>.
     /// </summary>
-    /// <param name="index">Index that corresponds to an <see cref="AbilityID"/>.</param>
-    /// <exception cref="System.ArgumentOutOfRangeException">The value does not match any <see cref="AbilityID"/>.</exception>
-    /// <returns>An <see cref="Ability"/> with the matching <see cref="AbilityID"/>.</returns>
+    /// <param name="index">Index that corresponds to an <see cref="AbilityId"/>.</param>
+    /// <exception cref="System.ArgumentOutOfRangeException">The value does not match any <see cref="AbilityId"/>.</exception>
+    /// <returns>An <see cref="Ability"/> with the matching <see cref="AbilityId"/>.</returns>
     public Ability this[int index] {
       get {
         switch (index) {
           //case AbilityID.SoulLink: return soulLink;
-          case AbilityID.WallJump: return wallJump;
-          case AbilityID.AirJump: return airJump;
-          case AbilityID.Bash: return bash;
-          case AbilityID.Stomp: return stomp;
-          case AbilityID.Glide: return glide;
-          case AbilityID.Climb: return climb;
-          case AbilityID.ChargeJump: return chargeJump;
-          case AbilityID.WallChargeJump: return wallChargeJump;
-          case AbilityID.Dash: return dash;
-          case AbilityID.ChargeDash: return chargeDash;
-          case AbilityID.LookUp: return lookUp;
-          case AbilityID.Crouch: return crouch;
-          case AbilityID.Burrow: return burrow;
-          case AbilityID.Launch: return launch;
-          default: throw new System.ArgumentOutOfRangeException(nameof(index), $"The value {index} does not match any AbilityID.");
+          case AbilityId.WallJump: return wallJump;
+          case AbilityId.AirJump: return airJump;
+          case AbilityId.Bash: return bash;
+          case AbilityId.Stomp: return stomp;
+          case AbilityId.Glide: return glide;
+          case AbilityId.Climb: return climb;
+          case AbilityId.ChargeJump: return chargeJump;
+          case AbilityId.WallChargeJump: return wallChargeJump;
+          case AbilityId.Dash: return dash;
+          case AbilityId.ChargeDash: return chargeDash;
+          case AbilityId.LookUp: return lookUp;
+          case AbilityId.Crouch: return crouch;
+          case AbilityId.Burrow: return burrow;
+          case AbilityId.Launch: return launch;
+          default: throw new ArgumentOutOfRangeException(nameof(index), $"The value {index} does not match any AbilityID.");
         }
       }
     }
@@ -180,17 +182,34 @@ namespace OriMod.Abilities {
       }
 
       // Tick
-      foreach (var ability in this) {
-        if (ability.Unlocked) {
-          ability.CurrentTime++;
-          ability.Tick();
-        }
+      foreach (Ability ability in this) {
+        if (!ability.Unlocked) continue;
+        ability.CurrentTime++;
+        ability.Tick();
       }
 
       // Update
-      foreach (var ability in this) {
+      foreach (Ability ability in this) {
         if (ability.Unlocked) {
           ability.Update();
+        }
+      }
+
+      foreach (Ability ability in this) {
+        if (ability.Unlocked) {
+          ability.PostUpdateAbilities();
+        }
+      }
+    }
+
+    internal void PostUpdate() {
+      if (!CanUseAnyAbilities()) {
+        return;
+      }
+
+      foreach (Ability ability in this) {
+        if (ability.Unlocked) {
+          ability.PostUpdate();
         }
       }
     }
@@ -200,23 +219,19 @@ namespace OriMod.Abilities {
     /// <para>Used to disable all abilities.</para>
     /// </summary>
     /// <returns><see langword="true"/> if any ability can be used; otherwise, <see langword="false"/>.</returns>
-    public bool CanUseAnyAbilities() {
-      var player = oPlayer.player;
+    private bool CanUseAnyAbilities() {
+      Player player = oPlayer.player;
       if (player.dead) {
         return false;
       }
-      if (player.mount?.Active ?? false) {
-        return false;
-      }
-
-      return true;
+      return !(player.mount?.Active ?? false);
     }
 
     /// <summary>
     /// Deactivates all abilities.
     /// </summary>
     public void DisableAllAbilities() {
-      foreach (var ability in this) {
+      foreach (Ability ability in this) {
         ability.SetState(Ability.State.Inactive);
       }
     }
@@ -225,7 +240,7 @@ namespace OriMod.Abilities {
     /// Sets the level of all Levelable Abilities to their max level.
     /// </summary>
     public void UnlockAllAbilities() {
-      foreach (var ability in this) {
+      foreach (Ability ability in this) {
         if (ability is ILevelable levelable) {
           levelable.Level = levelable.MaxLevel;
         }
@@ -237,7 +252,7 @@ namespace OriMod.Abilities {
     /// Sets the level of all Levelable Abilities to 0.
     /// </summary>
     public void ResetAllAbilities() {
-      foreach (var ability in this) {
+      foreach (Ability ability in this) {
         if (ability is ILevelable levelable) {
           levelable.Level = 0;
         }
@@ -249,8 +264,8 @@ namespace OriMod.Abilities {
     /// </summary>
     /// <param name="tag"><see cref="TagCompound"/> to save abilities to.</param>
     public void Save(TagCompound tag) {
-      var arr = new byte[AbilityID.Count];
-      foreach (var ability in this) {
+      byte[] arr = new byte[AbilityId.Count];
+      foreach (Ability ability in this) {
         // Non-ILevelable abilities saved anyways
         arr[ability.Id] = ability.Level;
       }
@@ -265,8 +280,8 @@ namespace OriMod.Abilities {
       if (!tag.ContainsKey(AbilityTagKey)) {
         return;
       }
-      var arr = tag.GetByteArray(AbilityTagKey);
-      foreach (var ability in this) {
+      byte[] arr = tag.GetByteArray(AbilityTagKey);
+      foreach (Ability ability in this) {
         if (ability is ILevelable levelable) {
           levelable.Level = arr[ability.Id];
         }
@@ -275,11 +290,10 @@ namespace OriMod.Abilities {
 
     internal void SendClientChanges() {
       var changes = new List<byte>();
-      foreach (var ability in this) {
-        if (ability.netUpdate) {
-          ability.netUpdate = false;
-          changes.Add((byte)ability.Id);
-        }
+      foreach (Ability ability in this) {
+        if (!ability.netUpdate) continue;
+        ability.netUpdate = false;
+        changes.Add((byte)ability.Id);
       }
       if (changes.Count > 0) {
         ModNetHandler.Instance.abilityPacketHandler.SendAbilityState(255, oPlayer.player.whoAmI, changes);

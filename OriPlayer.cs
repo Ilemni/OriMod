@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using AnimLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using OriMod.Abilities;
 using OriMod.Animations;
 using OriMod.Buffs;
@@ -23,6 +22,7 @@ namespace OriMod {
   /// </summary>
   public sealed class OriPlayer : ModPlayer {
     #region Variables
+
     /// <summary>
     /// Local instance of this OriPlayer.
     /// </summary>
@@ -34,10 +34,16 @@ namespace OriMod {
     internal AbilityManager abilities { get; private set; }
 
     /// <summary>
+    /// Net-synced controls of this player.
+    /// </summary>
+    internal OriInput input { get; private set; }
+
+    /// <summary>
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
     /// </summary>
-    internal OriAnimationController animations => _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(player));
-    private OriAnimationController _anim;
+    internal OriAnimationController Animations =>
+      _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(player));
+
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
     /// </summary>
@@ -46,14 +52,14 @@ namespace OriMod {
     /// <summary>
     /// Whether or not this <see cref="OriPlayer"/> instance should sync with multiplayer this frame.
     /// </summary>
-    internal bool netUpdate = false;
+    private bool _netUpdate = true;
 
-    internal bool debugMode = false;
+    internal bool debugMode;
 
     /// <summary>
     /// Stored between <see cref="PreHurt(bool, bool, ref int, ref int, ref bool, ref bool, ref bool, ref bool, ref PlayerDeathReason)"/> and <see cref="PostHurt(bool, bool, double, int, bool)"/>, determines if custom hurt sounds are played.
     /// </summary>
-    private bool useCustomHurtSound = false;
+    private bool _useCustomHurtSound;
 
     /// <summary>
     /// When set to true, uses custom movement and player sprites.
@@ -62,10 +68,9 @@ namespace OriMod {
     public bool IsOri {
       get => _isOri;
       set {
-        if (value != _isOri) {
-          netUpdate = true;
-          _isOri = value;
-        }
+        if (value == _isOri) return;
+        _netUpdate = true;
+        _isOri = value;
       }
     }
 
@@ -75,6 +80,7 @@ namespace OriMod {
     public bool IsLocal { get; private set; }
 
     #region Transformation
+
     /// <summary>
     /// Represents if the player is currently transforming into Ori.
     /// </summary>
@@ -82,17 +88,16 @@ namespace OriMod {
     public bool Transforming {
       get => _transforming;
       internal set {
-        if (value != _transforming) {
-          netUpdate = true;
-          _transforming = value;
-        }
+        if (value == _transforming) return;
+        _netUpdate = true;
+        _transforming = value;
       }
     }
 
     /// <summary>
     /// Frames since a transformation began.
     /// </summary>
-    internal float transformTimer = 0;
+    internal float transformTimer;
 
     /// <summary>
     /// Whether the player has been Ori before during this session. Used to hasten subsequent transformations.
@@ -107,22 +112,23 @@ namespace OriMod {
     /// <summary>
     /// Direction a transformation began at. Facing direction is locked until the transformation ends.
     /// </summary>
-    private sbyte transformDirection = 0;
+    private sbyte _transformDirection;
 
     /// <summary>
     /// Duration of Transformation where <see cref="IsOri"/> stays false.
     /// </summary>
-    private int TransformStartDuration => 392;
+    private static int TransformStartDuration => 392;
 
     /// <summary>
     /// Total duration of Transformation before <see cref="Transforming"/> ends.
     /// </summary>
-    private int TransformEndDuration => TransformStartDuration + 225;
+    private static int TransformEndDuration => TransformStartDuration + 225;
 
     /// <summary>
     /// Shorter duration of Transformation, for cancelling the animation early on subsequent transformations.
     /// </summary>
-    private int TransformEndEarlyDuration => TransformStartDuration + 68;
+    private static int TransformEndEarlyDuration => TransformStartDuration + 68;
+
     #endregion
 
     /// <summary>
@@ -136,41 +142,21 @@ namespace OriMod {
     public bool OnWall { get; private set; }
 
     /// <summary>
-    /// When true, sets <see cref="Player.runSlowdown"/> to 0 every frame.
+    /// Represents whether a player is grappling onto a wall.
+    /// This will also return <see langword="false"/> if there are active grapples that are not sticking to walls.
+    /// </summary>
+    // Consider getter-only rather than setting per update, or find better vanilla representation
+    internal bool IsGrappling { get; private set; }
+
+    /// <summary>
+    /// When true, the player will not be slowed down (sets <see cref="Player.runSlowdown"/> to 0 every frame).
     /// </summary>
     public bool UnrestrictedMovement {
       get => _unrestrictedMovement;
       set {
-        if (value != _unrestrictedMovement) {
-          netUpdate = true;
-          _unrestrictedMovement = value;
-        }
-      }
-    }
-
-    /// <summary>
-    /// Synced input for pressing Jump.
-    /// </summary>
-    public bool justPressedJumped {
-      get => _justJumped;
-      set {
-        if (value != _justJumped) {
-          _justJumped = value;
-          netUpdate = true;
-        }
-      }
-    }
-
-    /// <summary>
-    /// Synced input for using <see cref="Glide"/>.
-    /// </summary>
-    public bool featherKeyDown {
-      get => _featherKeyDown;
-      set {
-        if (value != _featherKeyDown) {
-          _featherKeyDown = value;
-          netUpdate = true;
-        }
+        if (value == _unrestrictedMovement) return;
+        _netUpdate = true;
+        _unrestrictedMovement = value;
       }
     }
 
@@ -179,24 +165,22 @@ namespace OriMod {
     /// </summary>
     public bool SeinMinionActive {
       get => _seinMinionActive;
-      internal set {
-        if (value != _seinMinionActive) {
-          netUpdate = true;
-          _seinMinionActive = value;
-        }
+      set {
+        if (value == _seinMinionActive) return;
+        _netUpdate = true;
+        _seinMinionActive = value;
       }
     }
 
     /// <summary>
     /// The ID of the <see cref="Projectiles.Minions.Sein"/> that is summoned. This is the <see cref="Entity.whoAmI"/> of the Sein projectile.
     /// </summary>
-    public int SeinMinionID {
-      get => _seinMinionID;
+    public int SeinMinionId {
+      get => _seinMinionId;
       internal set {
-        if (value != _seinMinionID) {
-          netUpdate = true;
-          _seinMinionID = value;
-        }
+        if (value == _seinMinionId) return;
+        _netUpdate = true;
+        _seinMinionId = value;
       }
     }
 
@@ -206,27 +190,27 @@ namespace OriMod {
     public int SeinMinionType {
       get => _seinMinionType;
       internal set {
-        if (value != _seinMinionType) {
-          netUpdate = true;
-          _seinMinionType = value;
-        }
+        if (value == _seinMinionType) return;
+        _netUpdate = true;
+        _seinMinionType = value;
       }
     }
 
     /// <summary>
     /// Used for <see cref="CreatePlayerDust"/>.
     /// </summary>
-    private int playerDustTimer = 0;
+    private int _playerDustTimer;
 
     /// <summary>
     /// When greater than 0, sets <see cref="Player.immune"/> to true.
     /// </summary>
-    internal int immuneTimer = 0;
+    internal int immuneTimer;
 
-    private readonly RandomChar randJump = new RandomChar();
-    private readonly RandomChar randHurt = new RandomChar();
+    private readonly RandomChar _randJump = new RandomChar();
+    private readonly RandomChar _randHurt = new RandomChar();
 
     #region Aesthetics
+
     /// <summary>
     /// Primary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
     /// </summary>
@@ -235,7 +219,7 @@ namespace OriMod {
       set {
         _spriteColorPrimary = value;
         if (IsLocal) {
-          OriMod.ConfigClient.PlayerColor = value;
+          OriMod.ConfigClient.playerColor = value;
         }
       }
     }
@@ -248,7 +232,7 @@ namespace OriMod {
       set {
         _spriteColorSecondary = value;
         if (IsLocal) {
-          OriMod.ConfigClient.PlayerColorSecondary = value;
+          OriMod.ConfigClient.playerColorSecondary = value;
         }
       }
     }
@@ -261,35 +245,39 @@ namespace OriMod {
     /// <summary>
     /// Whether or not this <see cref="OriPlayer"/> instance uses light.
     /// </summary>
-    internal bool DoPlayerLight => (IsLocal || OriMod.ConfigClient.GlobalPlayerLight) ? OriMod.ConfigClient.PlayerLight : multiplayerPlayerLight;
-    public Color LightColor = new Color(0.2f, 0.4f, 0.4f);
+    private bool DoPlayerLight => IsLocal || OriMod.ConfigClient.globalPlayerLight
+      ? OriMod.ConfigClient.playerLight
+      : multiplayerPlayerLight;
 
-    /// <summary>
-    /// For making the player sprite appear red during hurt animations.
-    /// </summary>
-    internal bool flashing = false;
+    private Color _lightColor = new Color(0.2f, 0.4f, 0.4f);
+
     #endregion
 
     #region Backing fields
+
+    private OriAnimationController _anim;
     private bool _isOri;
-    private bool _unrestrictedMovement = false;
-    private bool _seinMinionActive = false;
-    private int _seinMinionID;
-    private int _seinMinionType = 0;
-    private bool _transforming = false;
+    private bool _unrestrictedMovement;
+    private bool _seinMinionActive;
+    private int _seinMinionId;
+    private int _seinMinionType;
+    private bool _transforming;
     private Color _spriteColorPrimary = Color.LightCyan;
     private Color _spriteColorSecondary = Color.LightCyan;
-    private bool _justJumped;
-    private bool _featherKeyDown;
+
     #endregion
+
     #endregion
 
     #region Internal Methods
-    internal SoundEffectInstance PlayNewSound(string Path, float Volume = 1, float Pitch = 0, bool localOnly = false) {
-      if (localOnly && !IsLocal) {
-        return null;
-      }
-      return Main.PlaySound((int)SoundType.Custom, (int)player.Center.X, (int)player.Center.Y, SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/" + Path), Volume, Pitch);
+
+    internal void PlaySound(string path, float volume = 1, float pitch = 0) {
+      SoundWrapper.PlaySound(player.Center, path, volume, pitch);
+    }
+
+    internal void PlayLocalSound(string path, float volume = 1, float pitch = 0) {
+      if (IsLocal)
+        SoundWrapper.PlaySound(player.Center, path, volume, pitch);
     }
 
     /// <summary>
@@ -307,7 +295,7 @@ namespace OriMod {
     /// </summary>
     internal void BeginTransformation() {
       Transforming = true;
-      transformDirection = (sbyte)player.direction;
+      _transformDirection = (sbyte) player.direction;
       transformTimer = 0;
     }
 
@@ -336,18 +324,30 @@ namespace OriMod {
     /// Emits a white dust speck from the player.
     /// </summary>
     internal void CreatePlayerDust() {
-      if (playerDustTimer > 0) {
+      if (_playerDustTimer > 0) {
         return;
       }
 
-      Dust dust = Main.dust[Dust.NewDust(player.position, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
+      Dust dust = Main.dust[
+        Dust.NewDust(player.position, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, new Color(255, 255, 255))];
       dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
       dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
       dust.noGravity = false;
-      playerDustTimer = Transforming ? Main.rand.Next(3, 8)
+      _playerDustTimer = Transforming ? Main.rand.Next(3, 8)
         : abilities.dash || abilities.chargeDash ? Main.rand.Next(2, 4)
         : abilities.burrow ? Main.rand.Next(6, 10)
         : Main.rand.Next(10, 15);
+    }
+
+    /// <summary>
+    /// Reduces the value of <see cref="Player.gravity"/> to the given <paramref name="value"/>.
+    /// If <see cref="Player.gravity"/> is lower than <paramref name="value"/>, the value is unchanged.
+    /// </summary>
+    /// <param name="value"></param>
+    private void LowerGravityTo(float value) {
+      if (value < player.gravity) {
+        player.gravity = value;
+      }
     }
 
     /// <summary>
@@ -359,14 +359,17 @@ namespace OriMod {
       UnrestrictedMovement = false;
       SeinMinionActive = false;
       SeinMinionType = 0;
+      abilities.ResetAllAbilities();
     }
+
     #endregion
 
     public override void Initialize() {
       abilities = new AbilityManager(this);
+      input = new OriInput();
 
       if (!Main.dedServ) {
-        trail = new Trail(this, 26);
+        trail = new Trail(this);
       }
     }
 
@@ -374,10 +377,25 @@ namespace OriMod {
       if (Transforming) {
         transformTimer += HasTransformedOnce ? RepeatedTransformRate : 1;
       }
+
       if (IsOri) {
-        if (playerDustTimer > 0) {
-          playerDustTimer--;
+        if (_playerDustTimer > 0) {
+          _playerDustTimer--;
         }
+      }
+
+      if (Transforming) {
+        immuneTimer = 2;
+      }
+
+      if (immuneTimer > 1) {
+        immuneTimer--;
+        player.immune = true;
+        player.immuneNoBlink = true;
+      }
+
+      if (Main.netMode != NetmodeID.Server) {
+        trail.hasDrawnThisFrame = false;
       }
     }
 
@@ -386,15 +404,16 @@ namespace OriMod {
     }*/
 
     public override void SendClientChanges(ModPlayer clientPlayer) {
-      if (netUpdate) {
+      if (_netUpdate) {
         ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, player.whoAmI);
-        netUpdate = false;
+        _netUpdate = false;
       }
+
       abilities.SendClientChanges();
     }
 
     public override TagCompound Save() {
-      var tag = new TagCompound {
+      TagCompound tag = new TagCompound {
         ["OriSet"] = IsOri,
         ["Debug"] = debugMode,
         ["Color1"] = SpriteColorPrimary,
@@ -412,19 +431,21 @@ namespace OriMod {
         SpriteColorSecondary = tag.Get<Color>("Color2");
       }
       else {
-        _spriteColorPrimary = OriMod.ConfigClient.PlayerColor;
-        _spriteColorSecondary = OriMod.ConfigClient.PlayerColorSecondary;
+        _spriteColorPrimary = OriMod.ConfigClient.playerColor;
+        _spriteColorSecondary = OriMod.ConfigClient.playerColorSecondary;
       }
+
       abilities.Load(tag);
     }
 
     public override void ProcessTriggers(TriggersSet triggersSet) {
-      justPressedJumped = PlayerInput.Triggers.JustPressed.Jump;
-      featherKeyDown = OriMod.FeatherKey.Current;
+      input.Update(out bool doNetUpdate);
+      if (doNetUpdate) _netUpdate = true;
     }
 
     public override void PostUpdateMiscEffects() {
-      if (player.HasBuff(BuffID.TheTongue)) {
+      IsGrappling = player.grappling[0] > -1;
+      if (player.HasBuff(BuffID.TheTongue) || IsGrappling) {
         abilities.DisableAllAbilities();
       }
     }
@@ -432,33 +453,36 @@ namespace OriMod {
     public override void PostUpdateRunSpeeds() {
       if (IsOri && !Transforming) {
         #region Default Spirit Run Speeds
+
         player.runAcceleration = 0.5f;
         player.maxRunSpeed += 2f;
         player.noFallDmg = true;
-        player.gravity = 0.35f;
+        LowerGravityTo(0.35f);
         player.jumpSpeedBoost += 2f;
         if (IsGrounded || player.controlLeft || player.controlRight) {
           UnrestrictedMovement = false;
         }
+
         player.runSlowdown = UnrestrictedMovement ? 0 : 1;
+
         #endregion
 
-        if (OriMod.ConfigClient.SmoothCamera) {
+        if (IsLocal && OriMod.ConfigClient.smoothCamera) {
           // Smooth camera effect reduced while bosses are alive
-          Main.SetCameraLerp(OriUtils.AnyBossAlive() ? 0.15f : 0.05f, 1);
+          Main.SetCameraLerp(OriUtils.IsAnyBossAlive() ? 0.15f : 0.05f, 1);
         }
 
         // Reduce gravity when clinging on wall
         if (OnWall) {
           // Either grounded or falling, not climbing
-          if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !abilities.climb) {
-            player.gravity = 0.1f;
+          if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !abilities.climb && !abilities.airJump) {
+            LowerGravityTo(0.1f);
             player.maxFallSpeed = 6f;
             player.jumpSpeedBoost -= 6f;
           }
           // Sliding upward on wall, not stomping
-          else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !abilities.stomp) {
-            player.gravity = 0.1f;
+          else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !abilities.stomp && !abilities.airJump) {
+            LowerGravityTo(0.1f);
             player.maxFallSpeed = 6f;
           }
         }
@@ -466,35 +490,34 @@ namespace OriMod {
         abilities.Update();
       }
 
-      if (Transforming) {
-        player.direction = transformDirection;
-        player.controlUseItem = false;
-        if (transformTimer < TransformStartDuration - 10) {
-          // Starting
-          player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - transformTimer));
-          player.gravity = 0;
-          CreatePlayerDust();
-        }
-        else if (transformTimer < TransformStartDuration) {
-          // Near end of start
-          player.gravity = 9f;
-          IsOri = true;
-        }
-        else if (transformTimer >= TransformEndDuration || HasTransformedOnce && transformTimer > TransformEndEarlyDuration) {
-          // End transformation
-          transformTimer = 0;
-          Transforming = false;
-          IsOri = true;
-        }
-        player.runAcceleration = 0;
-        player.maxRunSpeed = 0;
-        player.immune = true;
+      if (!Transforming) return;
+      player.direction = _transformDirection;
+      player.controlLeft = false;
+      player.controlRight = false;
+      player.controlUp = false;
+      player.controlDown = false;
+      player.controlUseItem = false;
+      if (transformTimer < TransformStartDuration - 10) {
+        // Starting
+        player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - transformTimer));
+        player.gravity = 0;
+        CreatePlayerDust();
+      }
+      else if (transformTimer < TransformStartDuration) {
+        // Near end of start
+        player.gravity = 9f;
+        IsOri = true;
+      }
+      else if (transformTimer >= TransformEndDuration ||
+               HasTransformedOnce && transformTimer > TransformEndEarlyDuration) {
+        // End transformation
+        transformTimer = 0;
+        Transforming = false;
+        IsOri = true;
       }
 
-      if (immuneTimer > 0) {
-        immuneTimer--;
-        player.immune = true;
-      }
+      player.runAcceleration = 0;
+      player.maxRunSpeed = 0;
     }
 
     internal static bool __dorotate;
@@ -514,54 +537,55 @@ namespace OriMod {
       if (IsOri && !Transforming) {
         HasTransformedOnce = true;
       }
-      #region Check Sein Buffs
+
       if (SeinMinionActive) {
         if (!(
-          player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff2>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff3>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff4>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff5>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff6>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff7>()) ||
-          player.HasBuff(ModContent.BuffType<SeinBuff8>())
-        )) {
+              player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff2>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff3>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff4>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff5>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff6>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff7>()) ||
+              player.HasBuff(ModContent.BuffType<SeinBuff8>())
+            )) {
           SeinMinionActive = false;
           SeinMinionType = 0;
         }
       }
-      #endregion
 
-      if (!IsOri) {
-        return;
-      }
+      if (IsOri) {
+        abilities.PostUpdate();
 
-      if (DoPlayerLight && !abilities.burrow.Active) {
-        Lighting.AddLight(player.Center, LightColor.ToVector3());
-      }
-      if (justPressedJumped && IsGrounded) {
-        PlayNewSound("Ori/Jump/seinJumpsGrass" + randJump.NextNoRepeat(5), 0.6f);
-      }
-      bool oldGrounded = IsGrounded;
-      IsGrounded = CheckGrounded();
-      OnWall = CheckOnWall();
+        if (DoPlayerLight && !abilities.burrow.Active) {
+          Lighting.AddLight(player.Center, _lightColor.ToVector3());
+        }
 
-      // Footstep effects
-      if (!Main.dedServ && IsGrounded) {
+        if (input.jump.JustPressed && IsGrounded && !abilities.burrow) {
+          PlaySound("Ori/Jump/seinJumpsGrass" + _randJump.NextNoRepeat(5), 0.6f);
+        }
+
+        bool oldGrounded = IsGrounded;
+        IsGrounded = CheckGrounded();
+        OnWall = CheckOnWall();
+
+        // Footstep effects
+        if (Main.dedServ || !IsGrounded) return;
         bool doDust = false;
         if (!oldGrounded) {
           doDust = true;
           FootstepManager.Instance.PlayLandingFromPlayer(player);
         }
-        else if (animations.TrackName == "Running" && (animations.FrameIndex == 4 || animations.FrameIndex == 9)) {
+        else if (Animations.TrackName == "Running" && (Animations.FrameIndex == 4 || Animations.FrameIndex == 9)) {
           doDust = true;
           FootstepManager.Instance.PlayFootstepFromPlayer(player);
         }
 
         if (doDust) {
-          var dustPos = player.Bottom + new Vector2(player.direction == -1 ? -4 : 2, -2);
+          Vector2 dustPos = player.Bottom + new Vector2(player.direction == -1 ? -4 : 2, -2);
           for (int i = 0; i < 4; i++) {
-            Dust dust = Main.dust[Dust.NewDust(dustPos, 2, 2, 111, 0f, -2.7f, 0, new Color(255, 255, 255), 1f)];
+            Dust dust = Main.dust[
+              Dust.NewDust(dustPos, 2, 2, DustID.Clentaminator_Cyan, 0f, -2.7f, 0, new Color(255, 255, 255))];
             dust.noGravity = true;
             dust.scale = 0.75f;
             dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
@@ -569,6 +593,10 @@ namespace OriMod {
             dust.fadeIn = 0.03947368f;
           }
         }
+      }
+
+      if (!IsLocal) {
+        input.ResetInputChangedState();
       }
     }
 
@@ -578,17 +606,20 @@ namespace OriMod {
         return false;
       }
 
-      Vector2 feetVect = player.gravDir > 0 ? player.Bottom : player.Top;
-      feetVect.Y += 1f / 255f * player.gravDir;
-      Point pos = feetVect.ToTileCoordinates();
+      Vector2 feetPosition = player.gravDir > 0 ? player.Bottom : player.Top;
+      feetPosition.Y += 1f / 255f * player.gravDir;
+      Point pos = feetPosition.ToTileCoordinates();
+      // ReSharper disable once InvertIf
       if (player.fireWalk || player.waterWalk || player.waterWalk2) {
         Tile tile = Main.tile[pos.X, pos.Y];
-        bool testblock = tile.liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
-        if (testblock && tile.lava() ? player.fireWalk : (player.waterWalk || player.waterWalk2)) {
+        bool testBlock = tile.liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
+        if (testBlock && tile.lava() ? player.fireWalk : player.waterWalk || player.waterWalk2) {
           return true;
         }
       }
-      return !Collision.IsClearSpotTest(player.position + new Vector2(0, 8 * player.gravDir), 16f, player.width, player.height, false, false, (int)player.gravDir, true, true);
+
+      return !Collision.IsClearSpotTest(player.position + new Vector2(0, 8 * player.gravDir), 16f, player.width,
+        player.height, false, false, (int) player.gravDir, true, true);
     }
 
     private bool CheckOnWall() {
@@ -607,10 +638,10 @@ namespace OriMod {
       if (player.velocity.LengthSquared() > 0.2f) {
         CreatePlayerDust();
       }
-      flashing = !player.immuneNoBlink && player.immuneTime % 12 > 6;
     }
 
-    public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit, ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) {
+    public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit,
+      ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) {
       if (!IsOri) {
         return true;
       }
@@ -619,45 +650,47 @@ namespace OriMod {
       if (abilities.stomp || abilities.chargeDash || abilities.chargeJump) {
         return false;
       }
-      if (playSound) {
-        playSound = false;
-        useCustomHurtSound = true;
-        UnrestrictedMovement = true;
-      }
+
+      if (!playSound) return true;
+      playSound = false;
+      _useCustomHurtSound = true;
+      UnrestrictedMovement = true;
       return true;
     }
 
     public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit) {
-      if (useCustomHurtSound) {
-        useCustomHurtSound = false;
-        PlayNewSound("Ori/Hurt/seinHurtRegular" + randHurt.NextNoRepeat(4), 0.75f);
-      }
+      if (!_useCustomHurtSound) return;
+      _useCustomHurtSound = false;
+      PlaySound("Ori/Hurt/seinHurtRegular" + _randHurt.NextNoRepeat(4), 0.75f);
     }
 
-    public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) { // similar to prehurt, but for death
-      if (IsOri) {
-        if (playSound) {
-          playSound = false;
-          switch (damageSource.SourceOtherIndex) {
-            case 1:
-              PlayNewSound("Ori/Death/seinSwimmingDrowningDeath" + RandomChar.Next(3));
-              break;
-            case 2:
-              PlayNewSound("Ori/Death/seinDeathLava" + RandomChar.Next(5));
-              break;
-            default:
-              PlayNewSound("Ori/Death/seinDeathRegular" + RandomChar.Next(5));
-              break;
-          }
-        }
-        if (genGore) {
-          genGore = false;
-          for (int i = 0; i < 15; i++) {
-            Dust dust = Main.dust[Dust.NewDust(player.position, 30, 30, 111, 0f, 0f, 0, new Color(255, 255, 255), 1f)];
-            dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
-          }
+    public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genGore,
+      ref PlayerDeathReason damageSource) {
+      // similar to prehurt, but for death
+      if (!IsOri) return true;
+      if (playSound) {
+        playSound = false;
+        switch (damageSource.SourceOtherIndex) {
+          case 1:
+            PlaySound("Ori/Death/seinSwimmingDrowningDeath" + RandomChar.Next(3));
+            break;
+          case 2:
+            PlaySound("Ori/Death/seinDeathLava" + RandomChar.Next(5));
+            break;
+          default:
+            PlaySound("Ori/Death/seinDeathRegular" + RandomChar.Next(5));
+            break;
         }
       }
+
+      if (!genGore) return true;
+      genGore = false;
+      for (int i = 0; i < 15; i++) {
+        Dust dust = Dust.NewDustDirect(player.position, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0,
+          new Color(255, 255, 255));
+        dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
+      }
+
       return true;
     }
 
@@ -667,6 +700,7 @@ namespace OriMod {
       }
 
       #region Disable vanilla layers
+
       PlayerLayer.Skin.visible = false;
       PlayerLayer.Arms.visible = false;
       PlayerLayer.Body.visible = false;
@@ -681,42 +715,55 @@ namespace OriMod {
       PlayerLayer.ShoeAcc.visible = false;
       PlayerLayer.HandOnAcc.visible = false;
       PlayerLayer.HandOffAcc.visible = false;
-      if (OnWall || Transforming || abilities.stomp || abilities.airJump || abilities.burrow || abilities.chargeJump || abilities.wallChargeJump) {
+      if (OnWall || Transforming || abilities.stomp || abilities.airJump || abilities.burrow || abilities.chargeJump ||
+          abilities.wallChargeJump) {
         PlayerLayer.Wings.visible = false;
       }
+
       #endregion
 
       /*if (Abilities.soulLink.PlacedSoulLink) {
         layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
       }*/
-      int idx = layers.Contains(PlayerLayer.HeldItem) ? layers.IndexOf(PlayerLayer.HeldItem) : (layers.Count - 1);
+      int idx = layers.IndexOf(PlayerLayer.FaceAcc);
 
       if (IsOri) {
-        if (animations.playerAnim.Valid && !abilities.burrow && !player.mount.Active) {
-          layers.Insert(idx++, OriLayers.Instance.Trail);
+        if (Animations.playerAnim.Valid && !abilities.burrow && !player.mount.Active) {
+          layers.Insert(idx++, OriLayers.Instance.trailLayer);
         }
-        animations.glideAnim.TryAddToLayers(layers, OriLayers.Instance.FeatherSprite, idx++);
-        if (abilities.bash || (abilities.launch && !abilities.launch.Ending)) {
-          layers.Insert(idx++, OriLayers.Instance.BashArrow);
+
+        if (abilities.glide) {
+          layers.Insert(idx++, OriLayers.Instance.featherSprite);
+        }
+
+        if (abilities.bash || abilities.launch.Starting) {
+          layers.Insert(idx++, OriLayers.Instance.bashArrow);
         }
       }
-      if (!player.dead && !player.invis) {
-        animations.playerAnim.TryAddToLayers(layers, OriLayers.Instance.PlayerSprite, idx++);
+
+      if (!player.dead && !player.invis && Animations.playerAnim.Valid) {
+        layers.Insert(idx, OriLayers.Instance.playerSprite);
       }
+
       player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
-      OriLayers.Instance.Trail.visible = OriLayers.Instance.PlayerSprite.visible && !abilities.burrow && !player.mount.Active;
+      OriLayers.Instance.trailLayer.visible =
+        OriLayers.Instance.playerSprite.visible && !abilities.burrow && !player.mount.Active;
     }
 
-    public override void OnEnterWorld(Player player) {
-      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+    public override void OnEnterWorld(Player p) {
+      // ...can't we just use implicit "this"? Is GetModPlayer necessary here?
+      // *checks decompiler*
+      // "player.modPlayers[index].OnEnterWorld(player);"
+      // ...completely unnecessary. Player p == this.player;
+      OriPlayer oPlayer = p.GetModPlayer<OriPlayer>();
       oPlayer.IsLocal = true;
       oPlayer.SeinMinionActive = false;
       oPlayer.SeinMinionType = 0;
-      OriMod.ConfigClient.PlayerColor = oPlayer.SpriteColorPrimary;
-      OriMod.ConfigClient.PlayerColorSecondary = oPlayer.SpriteColorSecondary;
+      OriMod.ConfigClient.playerColor = oPlayer.SpriteColorPrimary;
+      OriMod.ConfigClient.playerColorSecondary = oPlayer.SpriteColorSecondary;
     }
 
-    public override void OnRespawn(Player player) {
+    public override void OnRespawn(Player p) {
       abilities.DisableAllAbilities();
     }
   }

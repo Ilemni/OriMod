@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using log4net;
 using Microsoft.Xna.Framework;
 using OriMod.Networking;
 using Terraria;
@@ -11,20 +12,20 @@ namespace OriMod {
   /// <summary>
   /// The mod of this assembly.
   /// </summary>
-  public sealed class OriMod : Mod {
+  public sealed partial class OriMod : Mod {
     public OriMod() {
-      Properties = new ModProperties() {
+      Properties = new ModProperties {
         Autoload = true,
         AutoloadGores = true,
         AutoloadSounds = true
       };
-      Instance = this;
+      instance = this;
     }
 
     /// <summary>
     /// Singleton instance of this mod.
     /// </summary>
-    public static OriMod Instance;
+    public static OriMod instance;
 
     /// <summary>
     /// <inheritdoc cref="OriConfigClient1"/>
@@ -43,19 +44,19 @@ namespace OriMod {
 
     #region Logging Shortcuts
 
-    internal static log4net.ILog Log => Instance.Logger;
+    internal static ILog Log => instance.Logger;
 
     /// <summary>
-    /// Gets localiced text with key <c>Mods.OriMod.<paramref name="key"/></c>.
+    /// Gets localized text with key <c>Mods.OriMod.<paramref name="key"/></c>.
     /// </summary>
     /// <param name="key">Key in lang file.</param>
     internal static LocalizedText GetText(string key) => Language.GetText($"Mods.OriMod.{key}");
 
     /// <summary>
-    /// Gets localiced text with key <c>Mods.OriMod.Error.<paramref name="key"/></c>.
+    /// Gets localized text with key <c>Mods.OriMod.Error.<paramref name="key"/></c>.
     /// </summary>
     /// <param name="key">Key in lang file, that would start with <c>Error.</c></param>
-    internal static LocalizedText GetErrorText(string key) => Language.GetText($"Mods.OriMod.Error.{key}");
+    private static LocalizedText GetErrorText(string key) => Language.GetText($"Mods.OriMod.Error.{key}");
 
     /// <summary>
     /// Shows an error in chat and in the logger, with key <c>Mods.OriMod.Error.<paramref name="key"/></c>.
@@ -68,90 +69,104 @@ namespace OriMod {
     /// <param name="key">Key in lang file, that would start with <c>Error.</c></param>
     /// <param name="log">Whether or not to write to logger.</param>
     /// <param name="args">Formatting args.</param>
-    internal static void Error(string key, bool log = true, params object[] args) => PrintError(GetErrorText(key).Format(args), log);
+    internal static void Error(string key, bool log = true, params object[] args) =>
+      PrintError(GetErrorText(key).Format(args), log);
 
     /// <summary> Shows an error in chat and in the logger, using a string literal.</summary>
     /// <param name="text">String literal to print.</param>
     /// <param name="log">Whether or not to write to logger.</param>
-    internal static void PrintError(string text, bool log = true) {
+    private static void PrintError(string text, bool log = true) {
       if (log) {
         Log.Error(text);
       }
+
       Main.NewText(text, Color.Red);
     }
+
     #endregion
 
     /// <summary>
     /// Key used for controlling <see cref="Abilities.SoulLink"/>.
     /// </summary>
-    [Obsolete] public static ModHotKey SoulLinkKey; // Unused
+    // ReSharper disable once UnassignedField.Global
+    [Obsolete] public static ModHotKey soulLinkKey;
+
     /// <summary>
     /// Key used for controlling <see cref="Abilities.Bash"/>.
     /// </summary>
-    public static ModHotKey BashKey;
+    public static ModHotKey bashKey;
+
     /// <summary>
     /// Key used for activating <see cref="Abilities.Dash"/> and <see cref="Abilities.ChargeDash"/>.
     /// </summary>
-    public static ModHotKey DashKey;
+    public static ModHotKey dashKey;
+
     /// <summary>
     /// Key used for controlling <see cref="Abilities.Climb"/>.
     /// </summary>
-    public static ModHotKey ClimbKey;
+    public static ModHotKey climbKey;
+
     /// <summary>
     /// Key used for controlling <see cref="Abilities.Glide"/>.
     /// </summary>
-    public static ModHotKey FeatherKey;
+    public static ModHotKey featherKey;
+
     /// <summary>
     /// Key used for the charging of <see cref="Abilities.ChargeDash"/> and <see cref="Abilities.ChargeJump"/>.
     /// </summary>
-    public static ModHotKey ChargeKey;
+    public static ModHotKey chargeKey;
+
     /// <summary>
     /// Key used for activating <see cref="Abilities.Burrow"/>.
     /// </summary>
-    public static ModHotKey BurrowKey;
+    public static ModHotKey burrowKey;
 
     public override void AddRecipeGroups() {
-      RecipeGroup.RegisterGroup("OriMod:EnchantedItems", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Enchanted Items", new int[] {
-        ItemID.EnchantedSword,
-        ItemID.EnchantedBoomerang,
-        ItemID.Arkhalis
-      }));
-      RecipeGroup.RegisterGroup("OriMod:MovementAccessories", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Basic Movement Accessories", new int[] {
-        ItemID.Aglet,
-        ItemID.AnkletoftheWind,
-        ItemID.RocketBoots,
-        ItemID.HermesBoots,
-        ItemID.CloudinaBottle,
-        ItemID.FlurryBoots,
-        ItemID.SailfishBoots,
-        ItemID.SandstorminaBottle,
-        ItemID.FartinaJar,
-        ItemID.ShinyRedBalloon,
-        ItemID.ShoeSpikes,
-        ItemID.ClimbingClaws
-      }));
+      RecipeGroup.RegisterGroup("OriMod:EnchantedItems",
+        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Enchanted Items", ItemID.EnchantedSword,
+          ItemID.EnchantedBoomerang, ItemID.Arkhalis));
+      RecipeGroup.RegisterGroup("OriMod:MovementAccessories",
+        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Basic Movement Accessories", ItemID.Aglet,
+          ItemID.AnkletoftheWind, ItemID.RocketBoots, ItemID.HermesBoots, ItemID.CloudinaBottle, ItemID.FlurryBoots,
+          ItemID.SailfishBoots, ItemID.SandstorminaBottle, ItemID.FartinaJar, ItemID.ShinyRedBalloon, ItemID.ShoeSpikes,
+          ItemID.ClimbingClaws, ItemID.EoCShield));
 
-      RecipeGroup.RegisterGroup("OriMod:IronBars", new RecipeGroup(() => "Iron/Lead Bars", new int[] { ItemID.IronBar, ItemID.LeadBar }));
-      RecipeGroup.RegisterGroup("OriMod:GoldBars", new RecipeGroup(() => "Gold/Platinum Bars", new int[] { ItemID.GoldBar, ItemID.PlatinumBar }));
-      RecipeGroup.RegisterGroup("OriMod:DarkBars", new RecipeGroup(() => "Demonite/Crimtane Bars", new int[] { ItemID.DemoniteBar, ItemID.CrimtaneBar }));
-      RecipeGroup.RegisterGroup("OriMod:HardmodeBars1", new RecipeGroup(() => "Cobalt/Palladium Bars", new int[] { ItemID.CobaltBar, ItemID.PalladiumBar }));
-      RecipeGroup.RegisterGroup("OriMod:HardmodeBars2", new RecipeGroup(() => "Mythril/Orichalcum Bars", new int[] { ItemID.MythrilBar, ItemID.OrichalcumBar }));
-      RecipeGroup.RegisterGroup("OriMod:HardmodeBars3", new RecipeGroup(() => "Adamantite/Titanium Bars", new int[] { ItemID.AdamantiteBar, ItemID.TitaniumBar }));
-      RecipeGroup.RegisterGroup("OriMod:LunarFragments", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Lunar Fragments", new int[] { ItemID.FragmentNebula, ItemID.FragmentSolar, ItemID.FragmentStardust, ItemID.FragmentVortex }));
+      RecipeGroup.RegisterGroup("OriMod:IronBars",
+        new RecipeGroup(() => "Iron/Lead Bars", ItemID.IronBar, ItemID.LeadBar));
+      RecipeGroup.RegisterGroup("OriMod:GoldBars",
+        new RecipeGroup(() => "Gold/Platinum Bars", ItemID.GoldBar, ItemID.PlatinumBar));
+      RecipeGroup.RegisterGroup("OriMod:DarkBars",
+        new RecipeGroup(() => "Demonite/Crimtane Bars", ItemID.DemoniteBar, ItemID.CrimtaneBar));
+      RecipeGroup.RegisterGroup("OriMod:HardmodeBars1",
+        new RecipeGroup(() => "Cobalt/Palladium Bars", ItemID.CobaltBar, ItemID.PalladiumBar));
+      RecipeGroup.RegisterGroup("OriMod:HardmodeBars2",
+        new RecipeGroup(() => "Mythril/Orichalcum Bars", ItemID.MythrilBar, ItemID.OrichalcumBar));
+      RecipeGroup.RegisterGroup("OriMod:HardmodeBars3",
+        new RecipeGroup(() => "Adamantite/Titanium Bars", ItemID.AdamantiteBar, ItemID.TitaniumBar));
+      RecipeGroup.RegisterGroup("OriMod:LunarFragments",
+        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Lunar Fragments", ItemID.FragmentNebula,
+          ItemID.FragmentSolar, ItemID.FragmentStardust, ItemID.FragmentVortex));
 
-      RecipeGroup.RegisterGroup("OriMod:WallJumpGear", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Wall Jump Gear", new int[] { ItemID.ClimbingClaws, ItemID.ShoeSpikes }));
-      RecipeGroup.RegisterGroup("OriMod:JumpBottles", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Bottles", new int[] { ItemID.CloudinaBottle, ItemID.BlizzardinaBottle, ItemID.SandstorminaBottle, ItemID.TsunamiInABottle, ItemID.FartinaJar }));
-      RecipeGroup.RegisterGroup("OriMod:JumpBalloons", new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Balloons", new int[] { ItemID.CloudinaBalloon, ItemID.BlizzardinaBalloon, ItemID.SandstorminaBalloon, ItemID.SharkronBalloon, ItemID.FartInABalloon }));
+      RecipeGroup.RegisterGroup("OriMod:WallJumpGear",
+        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Wall Jump Gear", ItemID.ClimbingClaws,
+          ItemID.ShoeSpikes));
+      RecipeGroup.RegisterGroup("OriMod:JumpBottles",
+        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Bottles", ItemID.CloudinaBottle,
+          ItemID.BlizzardinaBottle, ItemID.SandstorminaBottle, ItemID.TsunamiInABottle, ItemID.FartinaJar));
+      RecipeGroup.RegisterGroup("OriMod:JumpBalloons",
+        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Balloons",
+          ItemID.CloudinaBalloon, ItemID.BlizzardinaBalloon, ItemID.SandstorminaBalloon, ItemID.SharkronBalloon,
+          ItemID.FartInABalloon));
     }
 
     public override void Load() {
       //SoulLinkKey = RegisterHotKey("SoulLink", "E");
-      BashKey = RegisterHotKey("Bash", "Mouse2");
-      DashKey = RegisterHotKey("Dash", "LeftControl");
-      ClimbKey = RegisterHotKey("Climbing", "LeftShift");
-      FeatherKey = RegisterHotKey("Feather", "LeftShift");
-      ChargeKey = RegisterHotKey("Charge", "W");
-      BurrowKey = RegisterHotKey("Burrow", "LeftControl");
+      bashKey = RegisterHotKey("Bash", "Mouse2");
+      dashKey = RegisterHotKey("Dash", "LeftControl");
+      climbKey = RegisterHotKey("Climbing", "LeftShift");
+      featherKey = RegisterHotKey("Feather", "LeftShift");
+      chargeKey = RegisterHotKey("Charge", "W");
+      burrowKey = RegisterHotKey("Burrow", "LeftControl");
       if (!Main.dedServ) {
         AddEquipTexture(null, EquipType.Head, "OriHead", "OriMod/PlayerEffects/OriHead");
       }
@@ -170,19 +185,19 @@ namespace OriMod {
     public static event Action OnUnload;
 
     public override void Unload() {
-      Instance = null;
-
-      BashKey = null;
-      DashKey = null;
-      ClimbKey = null;
-      FeatherKey = null;
-      ChargeKey = null;
-      BurrowKey = null;
-      //SoulLinkKey = null;
-      ConfigClient = null;
-
       OnUnload?.Invoke();
       OnUnload = null;
+
+      instance = null;
+
+      bashKey = null;
+      dashKey = null;
+      climbKey = null;
+      featherKey = null;
+      chargeKey = null;
+      burrowKey = null;
+      //SoulLinkKey = null;
+      ConfigClient = null;
     }
 
     public override void HandlePacket(BinaryReader reader, int fromWho) {
@@ -193,47 +208,10 @@ namespace OriMod {
         // Now in either case of this being server or player, the fromWho is the player.
         fromWho = reader.ReadUInt16();
       }
+
       ModNetHandler.Instance.HandlePacket(reader, fromWho);
     }
 
-    /// <summary>
-    /// Interact with <see cref="OriMod"/> using various inputs.
-    /// <list type="table">
-    /// <listheader>
-    /// <term>Command/Parameters</term>
-    /// <description>Description</description>
-    /// </listheader>
-    /// <item>
-    /// <term>"ResetPlayerModData", <see cref="Player"/> -or- <see cref="ModPlayer"/></term>
-    /// <description>
-    /// Resets the <see cref="OriPlayer"/> data on the given <see cref="Player"/>/<see cref="ModPlayer"/> —
-    /// Returns <see langword="true"/> if arguments are valid; otherwise, <see langword="false"/>.
-    /// </description>
-    /// </item>
-    /// </list>
-    /// </summary>
-    public override object Call(params object[] args) {
-      int len = args.Length;
-      if (len > 0 && args[0] is string cmd) {
-        switch (cmd) {
-          case "ResetPlayerModData": {
-              if (len >= 2) {
-                object obj = args[1];
-                Player player =
-                  obj is Player p ? p :
-                  obj is ModPlayer modPlayer ? modPlayer.player : null;
-                if (player is null) {
-                  Log.Warn($"{this.Name}.Call() - ResetPlayerModData - Expected type {typeof(Player)}, got {obj.GetType()}");
-                  return false;
-                }
-                player.GetModPlayer<OriPlayer>().ResetData();
-                return true;
-              }
-              return false;
-            }
-        }
-      }
-      return null;
-    }
+    public override object Call(params object[] args) => OriModCall.Call(args);
   }
 }

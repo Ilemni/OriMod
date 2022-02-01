@@ -1,6 +1,7 @@
-using Microsoft.Xna.Framework;
-using OriMod.Utilities;
 using System;
+using Microsoft.Xna.Framework;
+using OriMod.Dusts;
+using OriMod.Utilities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,35 +14,35 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Current position the projectile is moving towards.
     /// </summary>
-    private Vector2 targetPosition;
+    private Vector2 _targetPosition;
 
     /// <summary>
     /// Stats for speed, damage, etc. Assigned in <see cref="SetDefaults"/>.
     /// </summary>
-    private SeinData data;
+    private SeinData _data;
 
     /// <summary>
     /// Current homing strength of the projectile. Increases over time by <see cref="SeinData.homingIncreaseRate"/>.
     /// <para>0 = no homing; 1 = full homing.</para>
     /// </summary>
-    private float lerp;
+    private float _lerp;
 
     /// <summary>
     /// Elapsed time for <see cref="SeinData.homingIncreaseDelay"/>.
     /// </summary>
-    private int currentLerpDelay;
+    private int _currentLerpDelay;
 
     /// <summary>
     /// Current speed of the projectile. Increases over time by <see cref="SeinData.projectileSpeedIncreaseRate"/>.
     /// </summary>
-    private float speed;
-
+    private float _speed;
+    private float SpeedSquared => _speed * _speed;
     /// <summary>
     /// Elapsed time for <see cref="SeinData.projectileSpeedIncreaseDelay"/>.
     /// </summary>
-    private int currentAccelerationDelay;
+    private int _currentAccelerationDelay;
 
-    private int dustType;
+    private int _dustType;
 
     public override string Texture => "OriMod/Projectiles/Minions/SpiritFlame";
 
@@ -56,15 +57,14 @@ namespace OriMod.Projectiles.Minions {
       projectile.minion = true;
       projectile.ignoreWater = true;
       projectile.tileCollide = false;
-      projectile.timeLeft = 70;
-      dustType = ModContent.DustType<Dusts.SpiritFlameDustTrail>();
+      _dustType = ModContent.DustType<SpiritFlameDustTrail>();
 
-      data = SeinData.All[SpiritFlameType - 1];
-      projectile.knockBack = data.knockback;
-      projectile.width = data.spiritFlameWidth;
-      projectile.height = data.spiritFlameHeight;
-      lerp = data.homingStrengthStart;
-      speed = data.projectileSpeedStart;
+      _data = SeinData.All[SpiritFlameType - 1];
+      projectile.knockBack = _data.knockback;
+      projectile.width = _data.spiritFlameWidth;
+      projectile.height = _data.spiritFlameHeight;
+      _lerp = _data.homingStrengthStart;
+      _speed = _data.projectileSpeedStart;
     }
 
     /// <summary>
@@ -73,18 +73,14 @@ namespace OriMod.Projectiles.Minions {
     protected abstract byte SpiritFlameType { get; }
 
     private void CreateDust() {
-      Dust dust = Main.dust[Dust.NewDust(projectile.position, 10, 10, dustType)];
-      dust.scale = data.dustScale;
-      if (projectile.velocity == Vector2.Zero) {
-        dust.velocity.Y -= 1f;
-      }
-      else {
-        dust.velocity = projectile.velocity * 0.05f;
-      }
+      Dust dust = Dust.NewDustDirect(projectile.position, 10, 10, _dustType);
+      dust.scale = _data.dustScale;
+      dust.velocity = (_targetPosition - projectile.Center).LengthSquared() >= SpeedSquared ? projectile.velocity * 0.01f : Vector2.Zero;
 
       dust.rotation = (float)(Math.Atan2(projectile.velocity.Y, projectile.velocity.X) - Math.PI / 180 * 270);
       dust.position = projectile.Center;
-      dust.noGravity = true;
+      dust.color = Color.Lerp(_data.color.Brightened(), Color.White, 0.85f);
+      dust.color.A = 230;
     }
 
     /// <summary>
@@ -117,19 +113,19 @@ namespace OriMod.Projectiles.Minions {
     /// </remarks>
     private void UpdateTargetPosition() {
       if (projectile.ai[0] == 0) {
-        var npc = Main.npc[(int)projectile.ai[1]];
+        NPC npc = Main.npc[(int)projectile.ai[1]];
         if (npc.active) {
-          targetPosition = npc.Center;
+          _targetPosition = npc.Center;
         }
       }
       else {
-        targetPosition.X = projectile.ai[0];
-        targetPosition.Y = projectile.ai[1];
+        _targetPosition.X = projectile.ai[0];
+        _targetPosition.Y = projectile.ai[1];
       }
     }
 
     public override void AI() {
-      Lighting.AddLight(projectile.Center, data.color.ToVector3() * data.lightStrength);
+      Lighting.AddLight(projectile.Center, _data.color.ToVector3() * _data.lightStrength);
       CreateDust();
 
       // Update target position until it dies
@@ -137,8 +133,11 @@ namespace OriMod.Projectiles.Minions {
       UpdateTargetPosition();
 
       // Despawn when projectile reaches destination
-      float distance = Vector2.DistanceSquared(targetPosition, projectile.position);
-      if (distance < speed * speed) {
+      Vector2 offset = _targetPosition - projectile.Center;
+      float distanceSquared = offset.LengthSquared();
+
+      if (distanceSquared < SpeedSquared) {
+        projectile.velocity = offset;
         if (projectile.timeLeft > 2) {
           projectile.timeLeft = 2;
         }
@@ -146,12 +145,12 @@ namespace OriMod.Projectiles.Minions {
       }
 
       // Increase homing strength over time
-      TickTimerOrValue(ref currentLerpDelay, data.homingIncreaseDelay, ref lerp, 1, data.homingIncreaseRate);
+      TickTimerOrValue(ref _currentLerpDelay, _data.homingIncreaseDelay, ref _lerp, 1, _data.homingIncreaseRate);
 
       // Increase speed over time
-      TickTimerOrValue(ref currentAccelerationDelay, data.projectileSpeedIncreaseDelay, ref speed, 30, data.projectileSpeedIncreaseRate);
+      TickTimerOrValue(ref _currentAccelerationDelay, _data.projectileSpeedIncreaseDelay, ref _speed, 30, _data.projectileSpeedIncreaseRate);
 
-      projectile.velocity = Vector2.Lerp(projectile.velocity.Normalized(), (targetPosition - projectile.Center).Normalized(), lerp) * speed;
+      projectile.velocity = Vector2.Lerp(projectile.velocity.Normalized(), offset.Normalized(), _lerp) * _speed;
     }
 
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {

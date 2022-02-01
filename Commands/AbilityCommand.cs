@@ -16,7 +16,7 @@ namespace OriMod.Commands {
     public override void Action(CommandCaller caller, string input, string[] args) {
       OriPlayer oPlayer = caller.Player.GetModPlayer<OriPlayer>();
       if (!oPlayer.debugMode) {
-        Main.NewText($"This command cannot be used outside of debug mode.", Color.Red);
+        Main.NewText("This command cannot be used outside of debug mode.", Color.Red);
         return;
       }
 
@@ -25,16 +25,15 @@ namespace OriMod.Commands {
         return;
       }
 
-      if (args[0] == "unlockall") {
-        oPlayer.abilities.UnlockAllAbilities();
-        Main.NewText($"Unlocked all abilities.", Color.LightGreen);
-        return;
-      }
-
-      if (args[0] == "resetall") {
-        oPlayer.abilities.ResetAllAbilities();
-        Main.NewText($"Reset all abilities.", Color.LightGreen);
-        return;
+      switch (args[0]) {
+        case "unlockall":
+          oPlayer.abilities.UnlockAllAbilities();
+          Main.NewText("Unlocked all abilities.", Color.LightGreen);
+          return;
+        case "resetall":
+          oPlayer.abilities.ResetAllAbilities();
+          Main.NewText("Reset all abilities.", Color.LightGreen);
+          return;
       }
 
       Ability ability = AbilityFromObject(args[0], oPlayer);
@@ -79,22 +78,19 @@ namespace OriMod.Commands {
 
     private static Ability AbilityFromObject(string str, OriPlayer oPlayer) {
       if (int.TryParse(str, out int id)) {
-        if (id < 0 || id > AbilityID.Count) {
-          Main.NewText($"\"{id}\" does not map to a valid AbilityID.", Color.Red);
-          return null;
-        }
-        return oPlayer.abilities[id];
-      }
-      else {
-        var testName = str.ToLower();
-        foreach (var ab in oPlayer.abilities) {
-          if (ab.GetType().Name.ToLower() == testName) {
-            return ab;
-          }
-        }
-        Main.NewText($"\"{str}\" is not a valid Ability.", Color.Red);
+        if (id >= 0 && id <= AbilityId.Count) return oPlayer.abilities[id];
+        Main.NewText($"\"{id}\" does not map to a valid AbilityID.", Color.Red);
         return null;
       }
+
+      string testName = str.ToLower();
+      foreach (Ability ab in oPlayer.abilities) {
+        if (ab.GetType().Name.ToLower() == testName) {
+          return ab;
+        }
+      }
+      Main.NewText($"\"{str}\" is not a valid Ability.", Color.Red);
+      return null;
     }
   }
 }

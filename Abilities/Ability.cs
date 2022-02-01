@@ -1,5 +1,6 @@
 using System.IO;
 using Microsoft.Xna.Framework;
+using OriMod.Dusts;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
@@ -34,6 +35,11 @@ namespace OriMod.Abilities {
     public AbilityManager abilities => oPlayer.abilities;
 
     /// <summary>
+    /// The current, net-synced inputs of this <see cref="OriPlayer"/>.
+    /// </summary>
+    public OriInput input => oPlayer.input;
+
+    /// <summary>
     /// <see langword="true"/> if this ability belongs to the local <see cref="OriPlayer"/> instance.
     /// </summary>
     public bool IsLocal => oPlayer.IsLocal;
@@ -50,10 +56,16 @@ namespace OriMod.Abilities {
 
     #region General Properties
     /// <summary>
-    /// Unique ID of this ability. Corresponds with an <see cref="AbilityID"/>.
+    /// Unique ID of this ability. Corresponds with an <see cref="AbilityId"/>.
     /// </summary>
-    /// <completionlist cref="AbilityID"/>
+    /// <completionlist cref="AbilityId"/>
     public abstract int Id { get; }
+
+    /// <summary>
+    /// The ability whose level is responsible for this abilities' level. By default, this ability.
+    /// <para>This must be overwridden if this ability is not <see cref="ILevelable"/> (ex. <see cref="Launch"/> uses <see cref="ChargeJump"/>).</para>
+    /// </summary>
+    protected virtual ILevelable levelableDependency => this as ILevelable;
 
     /// <summary>
     /// Condition required for the player to activate this ability.
@@ -63,7 +75,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Cooldown of the ability.
     /// </summary>
-    protected virtual int Cooldown { get; }
+    protected virtual int Cooldown => 0;
 
     /// <summary>
     /// Determines if the ability only goes on cooldown if a boss is active.
@@ -93,12 +105,11 @@ namespace OriMod.Abilities {
     /// <param name="state">State to set <see cref="AbilityState"/> to.</param>
     /// <param name="preserveCurrentTime">Whether to preserve or reset <see cref="CurrentTime"/>. Resets by default.</param>
     public void SetState(State state, bool preserveCurrentTime = false) {
-      if (state != AbilityState) {
-        netUpdate = true;
-        AbilityState = state;
-        if (!preserveCurrentTime) {
-          CurrentTime = 0;
-        }
+      if (state == AbilityState) return;
+      netUpdate = true;
+      AbilityState = state;
+      if (!preserveCurrentTime) {
+        CurrentTime = 0;
       }
     }
 
@@ -139,6 +150,10 @@ namespace OriMod.Abilities {
     /// Time the ability was in the current State.
     /// <para>This is automatically incremented every frame, and is reset to 0 from <see cref="SetState(State, bool)"/>.</para>
     /// </summary>
+    /// <remarks>
+    /// This value is incremented prior to calling <see cref="Tick"/>, so if the state is changed in <see cref="Tick"/>,
+    /// this value will start at 0 for any UpdateX() calls.
+    /// </remarks>
     public int CurrentTime { get; internal set; }
 
     /// <summary>
@@ -160,7 +175,7 @@ namespace OriMod.Abilities {
     /// </summary>
     protected virtual void OnRefreshed() {
       for (int i = 0; i < 10; i++) {
-        Dust.NewDust(player.Center, 12, 12, ModContent.DustType<Dusts.AbilityRefreshedDust>(), newColor: RefreshColor);
+        Dust.NewDust(player.Center, 12, 12, ModContent.DustType<AbilityRefreshedDust>(), newColor: RefreshColor);
       }
     }
 
@@ -169,21 +184,19 @@ namespace OriMod.Abilities {
     /// </summary>
     /// <param name="force">If <see langword="true"/>, puts this on cooldown, ignoring config options that may otherwise prevent cooldown.</param>
     internal virtual void PutOnCooldown(bool force = false) {
-      if (force || !CooldownOnlyOnBoss || OriUtils.AnyBossAlive()) {
-        currentCooldown = Cooldown;
-        Refreshed = false;
-      }
+      if (!force && CooldownOnlyOnBoss && !OriUtils.IsAnyBossAlive()) return;
+      currentCooldown = Cooldown;
+      Refreshed = false;
     }
 
     /// <summary>
     /// Simple cooldown ticking. Can be overridden.
     /// </summary>
     protected virtual void TickCooldown() {
-      if (currentCooldown > 0 || !Refreshed) {
-        currentCooldown--;
-        if (currentCooldown < 0) {
-          Refreshed = true;
-        }
+      if (currentCooldown <= 0 && Refreshed) return;
+      currentCooldown--;
+      if (currentCooldown < 0) {
+        Refreshed = true;
       }
     }
     #endregion
@@ -192,15 +205,15 @@ namespace OriMod.Abilities {
     /// <summary>
     /// If true, the ability will be put into the next ability packet.
     /// </summary>
-    internal bool netUpdate = false;
+    internal bool netUpdate;
 
     /// <summary>
     /// For <see cref="Networking.AbilityPacketHandler"/>.
     /// </summary>
     internal void PreReadPacket(BinaryReader r) {
       AbilityState = (State)r.ReadByte();
-      if (this is ILevelable levelable) {
-        levelable.Level = r.ReadByte();
+      if (!(levelableDependency is null)) {
+        levelableDependency.Level = r.ReadByte();
       }
       CurrentTime = r.ReadInt32();
       ReadPacket(r);
@@ -211,8 +224,8 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreWritePacket(ModPacket packet) {
       packet.Write((byte)AbilityState);
-      if (this is ILevelable levelable) {
-        packet.Write(levelable.Level);
+      if (!(levelableDependency is null)) {
+        packet.Write(levelableDependency.Level);
       }
       packet.Write(CurrentTime);
       WritePacket(packet);
@@ -235,7 +248,7 @@ namespace OriMod.Abilities {
     /// Always called, this should be used primarily for managing <see cref="AbilityState"/>.
     /// </summary>
     /// <remarks>
-    /// As some changes are only possible to make on the local client (i.e. Glide due to dependence on <see cref="OriMod.FeatherKey"/>), the only changes should be to state.
+    /// As some changes are only possible to make on the local client (i.e. Glide due to dependence on <see cref="OriMod.featherKey"/>), the only changes should be to state.
     /// If some other changes must be made here and not in any Update methods (i.e. Bash targeting), they must be synced in <see cref="ReadPacket(BinaryReader)"/> and <see cref="WritePacket(ModPacket)"/>.
     /// </remarks>
     internal abstract void Tick();
@@ -285,6 +298,16 @@ namespace OriMod.Abilities {
     protected virtual void UpdateUsing() { }
 
     /// <summary>
+    /// Called after all other Abilities are updated. This is called regardless of current <see cref="AbilityState"/>.
+    /// </summary>
+    protected internal virtual void PostUpdateAbilities() { }
+
+    /// <summary>
+    /// Called in <see cref="OriPlayer.PostUpdate"/>. This is called regardless of current <see cref="AbilityState"/>.
+    /// </summary>
+    protected internal virtual void PostUpdate() { }
+
+    /// <summary>
     /// Rudimentary implementation, for now manually called in <see cref="OriLayers"/>.
     /// </summary>
     internal virtual void DrawEffects() { }
@@ -300,17 +323,23 @@ namespace OriMod.Abilities {
     /// <returns>A new <see cref="Projectile"/> with a <see cref="ModProjectile"/> of type <typeparamref name="T"/>.</returns>
     protected Projectile NewAbilityProjectile<T>(Vector2 offset = default, Vector2 velocity = default, int damage = 0) where T : AbilityProjectile => Projectile.NewProjectileDirect(player.Center + offset, velocity, ModContent.ProjectileType<T>(), damage, 0, player.whoAmI, Level);
 
+    /// <summary>
+    /// String representation of the ability. ID, name, level/max level, current time, and cooldown if applicable.
+    /// </summary>
+    /// <returns>String with ID, name, level and max level, current time, and cooldown if applicable.</returns>
     public override string ToString() {
-      return $"Ability ID:{Id} Player:{player.whoAmI} State:{AbilityState} " +
-        $"Level:{Level}{(this is ILevelable levelable ? $"/{levelable.MaxLevel}" : "")}" +
-        (Cooldown != 0 ? " Cooldown:{currentCooldown}/{Cooldown}" : "");
+      return $"Ability ID:{Id} Name:{GetType().Name} " +
+        $"(Level {Level}{(this is ILevelable levelable ? $"/{levelable.MaxLevel}" : string.Empty)}) " +
+        $"Player:{player.whoAmI} State:{AbilityState} " +
+        $"Time:{CurrentTime} " +
+        (Cooldown != 0 ? $" Cooldown:{currentCooldown}/{Cooldown}" : string.Empty);
     }
 
     /// <summary>
     /// Whether or not the <see cref="Ability"/> is in use.
     /// </summary>
     /// <seealso cref="InUse"/>
-    public static implicit operator bool (Ability ability) => !(ability is null) && ability.InUse;
+    public static implicit operator bool(Ability ability) => !(ability is null) && ability.InUse;
 
     /// <summary>
     /// States that the <see cref="Ability"/> can be in. Determines update logic.

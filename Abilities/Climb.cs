@@ -8,25 +8,27 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class Climb : Ability, ILevelable {
     internal Climb(AbilityManager manager) : base(manager) { }
-    public override int Id => AbilityID.Climb;
+    public override int Id => AbilityId.Climb;
     public override byte Level => (this as ILevelable).Level;
     byte ILevelable.Level { get; set; }
     byte ILevelable.MaxLevel => 1;
 
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active && !abilities.wallJump && !abilities.wallChargeJump;
+    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active &&
+      !abilities.bash && !abilities.burrow && !abilities.launch && !abilities.stomp && !abilities.wallChargeJump && !abilities.wallJump;
 
     internal bool IsCharging {
       get => _isCharging;
       private set {
-        if (value != _isCharging) {
-          _isCharging = value;
-          netUpdate = true;
-        }
+        if (value == _isCharging) return;
+        _isCharging = value;
+        netUpdate = true;
       }
     }
     private bool _isCharging;
 
     internal sbyte wallDirection;
+    // Prevent flip gravity when climbing upwards
+    private bool _disableUp;
 
     protected override void ReadPacket(BinaryReader r) {
       wallDirection = r.ReadSByte();
@@ -61,6 +63,25 @@ namespace OriMod.Abilities {
       player.velocity.X = 0;
       player.controlLeft = false;
       player.controlRight = false;
+      player.controlDown = false;
+    }
+
+    protected override void UpdateEnding() {
+      player.velocity.X = wallDirection * 5f;
+      player.velocity.Y = -player.gravDir * 4f;
+    }
+
+    protected override void UpdateUsing() {
+      if (player.controlUp) {
+        _disableUp = true;
+      }
+    }
+
+    protected internal override void PostUpdateAbilities() {
+      if (!_disableUp) return;
+      if (!player.controlUp) {
+        _disableUp = false;
+      }
       player.controlUp = false;
     }
 
@@ -69,13 +90,23 @@ namespace OriMod.Abilities {
         return;
       }
       if (!InUse) {
-        if (CanUse && OriMod.ClimbKey.Current) {
+        if (CanUse && input.climb.Current) {
           SetState(State.Active);
           wallDirection = (sbyte)player.direction;
         }
       }
-      else if (!CanUse || !OriMod.ClimbKey.Current) {
+      else if (Ending) {
+        int maxTime = player.gravDir >= 1 ? 7 : 9;
+        if (CurrentTime >= maxTime) {
+          SetState(State.Inactive);
+        }
+      }
+      else if (!input.climb.Current || !CanUse && !player.controlUp) {
         SetState(State.Inactive);
+      }
+      else if (!CanUse && player.controlUp) {
+        // Climb over top of things
+        SetState(State.Ending);
       }
       IsCharging = Active && abilities.wallChargeJump.Unlocked && (wallDirection == 1 ? player.controlLeft : player.controlRight);
     }

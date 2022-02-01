@@ -17,7 +17,7 @@ namespace OriMod {
         throw new ArgumentNullException(nameof(template));
       }
       if (template.Length == 0) {
-        throw new ArgumentException("Template must not have a length of 0", nameof(template));
+        throw new ArgumentException("Template must have at least one item.", nameof(template));
       }
 
       Template = template;
@@ -33,7 +33,7 @@ namespace OriMod {
     /// <summary>
     /// Local position of points in the hitbox, in tile coordinates.
     /// </summary>
-    public Point[] Template { get; }
+    private Point[] Template { get; }
 
     /// <summary>
     /// Updates the position of the hitbox based on the given world position.

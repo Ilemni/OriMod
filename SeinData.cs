@@ -1,16 +1,15 @@
-using Microsoft.Xna.Framework;
-using System.Reflection;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using Microsoft.Xna.Framework;
 using Terraria.ID;
 
 namespace OriMod {
   public sealed class SeinData {
-    static SeinData() => OriMod.OnUnload += Unload;
-
     private SeinData() { }
 
     /// <summary>
-    /// List of all <see cref="SeinData"/>s in the mod.
+    /// Collection of all <see cref="SeinData"/>s in the mod.
     /// </summary>
     public static SeinData[] All { get; private set; }
 
@@ -22,22 +21,22 @@ namespace OriMod {
     /// <para>1. Memory is always only ever using 8 <see cref="SeinData"/>s, or however many is in <see cref="All"/>. Not too big a deal though.</para>
     /// <para>2. Readability. I feel that this is the best setup for a few reasons.</para>
     /// <para>2a. It's all in one file rather than multiple derived classes for easy comparison.</para>
-    /// <para>2b. Only the changes/upgrades are shown, rather than having redundant data. The same could be accomplished with inheritence, but I'd rather not have 8 levels of it.</para>
+    /// <para>2b. Only the changes/upgrades are shown, rather than having redundant data. The same could be accomplished with inheritance, but I'd rather not have 8 levels of it.</para>
     /// </remarks>
     internal static void Load() {
-      var defaultSein = new SeinData();
+      SeinData defaultSein = new SeinData();
       var fields = typeof(SeinData).GetFields();
 
       var list = new List<SeinData>();
       void AddNewSein(SeinData newSein) {
-        var lastSein = list.Count == 0 ?
+        SeinData lastSein = list.Count == 0 ?
           new SeinData() :
           list[list.Count - 1];
 
         foreach (FieldInfo field in fields) {
-          var defVal = field.GetValue(defaultSein);
-          var oldVal = field.GetValue(lastSein);
-          var newVal = field.GetValue(newSein);
+          object defVal = field.GetValue(defaultSein);
+          object oldVal = field.GetValue(lastSein);
+          object newVal = field.GetValue(newSein);
 
           // If value is specified in constructor, use it
           // If value is unspecified, use value of previous upgrade
@@ -47,12 +46,13 @@ namespace OriMod {
           field.SetValue(newSein, newVal);
         }
         list.Add(newSein);
+        //OriMod.Log.Debug(newSein.CalculateStuff(tierName));
       }
 
       // Tier 1 (Silver)
       AddNewSein(new SeinData());
 
-      // Tier 2 (Demonite/Crimsane)
+      // Tier 2 (Demonite/Crimtane)
       // Increased shots per burst
       // Max damage per burst: 15
       AddNewSein(new SeinData {
@@ -60,36 +60,40 @@ namespace OriMod {
         value = 3000,
         color = new Color(108, 92, 172),
 
-        damage = 15,
+        damage = 24,
         targets = 1,
         bursts = 3,
-        projectileSpeedStart = 7f,
-        homingIncreaseRate = 0.045f,
-        dustScale = 1.3f,
+        projectileSpeedStart = 9f,
+        homingIncreaseRate = 0.05f,
+        dustScale = 1.8f,
         lightStrength = 1.6f,
       });
 
       // Tier 3 (Hellstone)
       // 2 targets
       // Max damage per burst: 42
+      // For some sort of "rage" effect to pair with red theme, lower CD
       AddNewSein(new SeinData {
         rarity = ItemRarityID.Orange,
         value = 10000,
         color = new Color(240, 0, 0, 194),
 
-        damage = 21,
+        damage = 29,
         targets = 2,
         maxShotsAtOnce = 2,
         randDegrees = 100,
-        projectileSpeedStart = 10.5f,
-        projectileSpeedIncreaseRate = 0.65f,
-        projectileSpeedIncreaseDelay = 19,
+        cooldownMin = 5,
+        cooldownShort = 16,
+        cooldownLong = 35,
+        projectileSpeedStart = 12.5f,
+        projectileSpeedIncreaseRate = 0.7f,
+        projectileSpeedIncreaseDelay = 10,
         targetMaxDist = 370f,
-        dustScale = 1.55f,
+        dustScale = 2f,
         lightStrength = 1.275f,
       });
 
-      // Tier 4 (Mythral/Orichalcum)
+      // Tier 4 (Mythril/Orichalcum)
       // 2 targets, 2 shots to primary, 3 shots max (rather than 4)
       // Max damage per burst: 81
       AddNewSein(new SeinData {
@@ -97,14 +101,17 @@ namespace OriMod {
         value = 25000,
         color = new Color(185, 248, 248),
 
-        damage = 27,
+        damage = 33,
         shotsToPrimaryTarget = 2,
         maxShotsAtOnce = 3,
         randDegrees = 60,
-        projectileSpeedStart = 12.5f,
-        homingIncreaseRate = 0.05f,
+        cooldownMin = 11,
+        cooldownShort = 25,
+        cooldownLong = 40,
+        projectileSpeedStart = 13.5f,
+        homingIncreaseRate = 0.06f,
         homingIncreaseDelay = 20,
-        dustScale = 1.8f,
+        dustScale = 2.2f,
         lightStrength = 1.2f,
       });
 
@@ -116,12 +123,12 @@ namespace OriMod {
         value = 50000,
         color = new Color(255, 228, 160),
 
-        damage = 33,
+        damage = 37,
         targets = 3,
         maxShotsAtOnce = 4,
         homingIncreaseDelay = 17,
         targetMaxDist = 440f,
-        dustScale = 2.2f,
+        dustScale = 2.4f,
         lightStrength = 1.4f,
       });
 
@@ -133,19 +140,19 @@ namespace OriMod {
         value = 100000,
         color = new Color(0, 180, 174, 210),
 
-        damage = 39,
+        damage = 42,
         shotsToPrimaryTarget = 3,
         maxShotsAtOnce = 5,
-        cooldownMin = 10f,
-        cooldownShort = 34f,
-        cooldownLong = 52f,
+        cooldownMin = 12,
+        cooldownShort = 26,
+        cooldownLong = 52,
         targetThroughWallDist = 224f,
-        homingIncreaseRate = 0.0625f,
-        projectileSpeedStart = 14.5f,
-        projectileSpeedIncreaseRate = 0.825f,
-        projectileSpeedIncreaseDelay = 17,
+        homingIncreaseRate = 0.07f,
+        projectileSpeedStart = 15f,
+        projectileSpeedIncreaseRate = 0.85f,
+        projectileSpeedIncreaseDelay = 14,
         randDegrees = 70,
-        dustScale = 2.6f,
+        dustScale = 2.65f,
         lightStrength = 2.25f,
       });
 
@@ -183,12 +190,14 @@ namespace OriMod {
         targets = 6,
         shotsToPrimaryTarget = 4,
         maxShotsAtOnce = 10,
-        cooldownLong = 55f,
+        cooldownMin = 16,
+        cooldownShort = 24,
+        cooldownLong = 55,
         homingStrengthStart = 0.05f,
         homingIncreaseDelay = 15,
         projectileSpeedStart = 20f,
-        projectileSpeedIncreaseRate = 1f,
-        projectileSpeedIncreaseDelay = 35,
+        projectileSpeedIncreaseRate = 1.25f,
+        projectileSpeedIncreaseDelay = 28,
         randDegrees = 180,
         targetMaxDist = 650f,
         targetThroughWallDist = 370f,
@@ -197,6 +206,7 @@ namespace OriMod {
       });
 
       All = list.ToArray();
+      OriMod.OnUnload += Unload;
     }
 
     private static void Unload() {
@@ -208,7 +218,7 @@ namespace OriMod {
     /// <summary>
     /// Damage of Spirit Flame.
     /// </summary>
-    public int damage = 12;
+    public int damage = 18;
 
     /// <summary>
     /// Number of NPCs that can be targeted at once.
@@ -238,17 +248,17 @@ namespace OriMod {
     /// <summary>
     /// Delay between each shot in <see cref="bursts"/>.
     /// </summary>
-    public float cooldownMin = 12f;
+    public int cooldownMin = 10;
 
     /// <summary>
     /// Shortest time to wait during <see cref="bursts"/> to reset burst count.
     /// </summary>
-    public float cooldownShort = 24f;
+    public int cooldownShort = 15;
 
     /// <summary>
     /// Delay between each series of shots, incurred when shots reaches <see cref="bursts"/>.
     /// </summary>
-    public float cooldownLong = 40f;
+    public int cooldownLong = 30;
     #endregion
 
     /// <summary>
@@ -260,13 +270,13 @@ namespace OriMod {
     /// NPCs within this distance from the player can be targeted by the minion, if there is line of sight between it and the player.
     /// </summary>
     public float targetMaxDist = 240f;
-    public float targetMaxDistSquared => targetMaxDist * targetMaxDist;
+    public float TargetMaxDistSquared => targetMaxDist * targetMaxDist;
 
     /// <summary>
     /// NPCs within this distance from the player can be targeted by the minion, regardless of line of sight.
     /// </summary>
     public float targetThroughWallDist = 80f;
-    public float targetThroughWallDistSquared => targetThroughWallDist * targetThroughWallDist;
+    public float TargetThroughWallDistSquared => targetThroughWallDist * targetThroughWallDist;
 
     /// <summary>
     /// The knockback of Spirit Flame.
@@ -276,22 +286,22 @@ namespace OriMod {
     /// <summary>
     /// Starting homing strength of Spirit Flame.
     /// </summary>
-    internal float homingStrengthStart = 0.07f;
+    internal float homingStrengthStart = 0.08f;
 
     /// <summary>
     /// Rate to increase homing strength every frame after <see cref="homingIncreaseDelay"/>.
     /// </summary>
-    internal float homingIncreaseRate = 0.04f;
+    internal float homingIncreaseRate = 0.05f;
 
     /// <summary>
     /// Ticks to wait before increasing homing strength by <see cref="homingIncreaseRate"/>.
     /// </summary>
-    internal int homingIncreaseDelay = 16;
+    internal int homingIncreaseDelay = 12;
 
     /// <summary>
     /// Speed of Spirit Flame when it is fired.
     /// </summary>
-    internal float projectileSpeedStart = 5f;
+    internal float projectileSpeedStart = 7.5f;
 
     /// <summary>
     /// Acceleration of Spirit Flame after waiting for <see cref="projectileSpeedIncreaseDelay"/>.
@@ -301,7 +311,7 @@ namespace OriMod {
     /// <summary>
     /// Time to wait before increasing Spirit Flame speed by <see cref="projectileSpeedIncreaseRate"/>.
     /// </summary>
-    internal int projectileSpeedIncreaseDelay = 10;
+    internal int projectileSpeedIncreaseDelay = 8;
 
     internal int seinWidth = 10;
     internal int seinHeight = 11;
@@ -311,7 +321,7 @@ namespace OriMod {
     /// <summary>
     /// The size of the dust trail emitted from Spirit Flame.
     /// </summary>
-    public float dustScale = 0.8f;
+    public float dustScale = 1.65f;
 
     /// <summary>
     /// Rarity of the Spirit Orb.
@@ -326,12 +336,29 @@ namespace OriMod {
     /// <summary>
     /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights.
     /// </summary>
-    internal Color color;
+    internal Color color = Color.White;
 
     /// <summary>
     /// Strength of the light emitted from Sein and Spirit Flame.
     /// </summary>
     internal float lightStrength;
+
+    internal string CalculateStuff(string tierName) {
+      int minShotsPerBurst = shotsToPrimaryTarget;
+      int minDmgPerBurst = damage * minShotsPerBurst;
+      int minDmgPerAllBursts = minDmgPerBurst * bursts;
+
+      int maxShotsPerBurst = Math.Min(shotsToPrimaryTarget + shotsPerTarget * (targets - 1), maxShotsAtOnce);
+      int maxDmgPerBurst = damage * maxShotsPerBurst;
+      int maxDmgPerAllBursts = maxDmgPerBurst * bursts;
+
+      int minDps = minDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong);
+      int maxDps = maxDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong);
+
+      return minShotsPerBurst == maxShotsPerBurst ?
+        $"Sein ({tierName}): DPS:{minDps}, Shots:{minShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}" :
+        $"Sein ({tierName}): DPS:{minDps}-{maxDps}, Shots:{minShotsPerBurst}-{maxShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}-{maxDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}-{maxDmgPerAllBursts}";
+    }
     #endregion
   }
 }
