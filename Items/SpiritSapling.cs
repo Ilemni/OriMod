@@ -7,31 +7,28 @@ namespace OriMod.Items {
   /// </summary>
   public class SpiritSapling : ModItem {
     public override void SetDefaults() {
-      item.width = 12;
-      item.height = 30;
-      item.maxStack = 1;
-      item.useTurn = true;
-      item.autoReuse = true;
-      item.useAnimation = 15;
-      item.useTime = 10;
-      item.useStyle = ItemUseStyleID.SwingThrow;
-      item.consumable = true;
-      item.value = 150;
-      item.createTile = ModContent.TileType<Tiles.SpiritSapling>();
+      Item.width = 12;
+      Item.height = 30;
+      Item.maxStack = 1;
+      Item.useTurn = true;
+      Item.autoReuse = true;
+      Item.useAnimation = 15;
+      Item.useTime = 10;
+      Item.useStyle = ItemUseStyleID.Swing;
+      Item.consumable = true;
+      Item.value = 150;
+      Item.createTile = ModContent.TileType<Tiles.SpiritSapling>();
     }
 
     public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(ItemID.Wood, 10);
-      recipe.AddRecipeGroup("OriMod:EnchantedItems");
-      recipe.SetResult(this);
-      recipe.AddRecipe();
-
-      ModRecipe recipe2 = new ModRecipe(mod);
-      recipe2.AddIngredient(ItemID.Wood, 10);
-      recipe2.AddRecipeGroup("OriMod:MovementAccessories", 3);
-      recipe2.SetResult(this);
-      recipe2.AddRecipe();
+      CreateRecipe()
+        .AddIngredient(ItemID.Wood, 10)
+        .AddRecipeGroup("OriMod:EnchantedItems")
+        .Register();
+      CreateRecipe()
+        .AddIngredient(ItemID.Wood, 10)
+        .AddRecipeGroup("OriMod:MovementAccessories", 3)
+        .Register();
     }
   }
 }

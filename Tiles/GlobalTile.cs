@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Abilities;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OriMod.Tiles {
@@ -23,17 +24,17 @@ namespace OriMod.Tiles {
       drawColor.A = orig.A;
     }
 
-    public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref Color drawColor, ref int nextSpecialDrawIndex) {
+    public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref TileDrawInfo drawInfo) {
       OriPlayer oPlayer = OriPlayer.Local;
       if (!oPlayer.abilities.burrow) return;
-      BurrowEffects(i, j, ref drawColor, oPlayer);
+      BurrowEffects(i, j, ref drawInfo.finalColor, oPlayer);
       if (!oPlayer.debugMode) return;
-      Point pos = new Point(i, j);
+      Point pos = new(i, j);
       if (Burrow.InnerHitbox.Points.Contains(pos)) {
-        drawColor = Color.Red;
+        drawInfo.finalColor = Color.Red;
       }
       else if (Burrow.EnterHitbox.Points.Contains(pos)) {
-        drawColor = Color.LimeGreen;
+        drawInfo.finalColor = Color.LimeGreen;
       }
     }
   }

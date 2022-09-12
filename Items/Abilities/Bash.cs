@@ -1,6 +1,5 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -10,10 +9,10 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.Bash;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe();
-      recipe.AddRecipeGroup("OriMod:HardmodeBars1", 16);
-      recipe.AddIngredient(ItemID.SoulofLight, 30); // Bleh, Souls the best I can come up with???
-      recipe.AddRecipe();
+      GetAbilityRecipe()
+        .AddRecipeGroup("OriMod:HardmodeBars1", 16)
+        .AddIngredient(ItemID.SoulofLight, 30)
+        .Register();
     }
   }
 
@@ -25,10 +24,10 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 2;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<BashLevel1>();
-      recipe.AddIngredient(ItemID.SpectreBar, 10);
-      recipe.AddIngredient(ItemID.SoulofLight, 25);
-      recipe.AddRecipe();
+      GetAbilityRecipe<BashLevel1>()
+        .AddIngredient(ItemID.SpectreBar, 10)
+        .AddIngredient(ItemID.SoulofLight, 25)
+        .Register();
     }
   }
 
@@ -40,10 +39,10 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 3;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<BashLevel2>();
-      recipe.AddRecipeGroup("OriMod:LunarFragments", 20);
-      recipe.AddIngredient(ItemID.SoulofLight, 40);
-      recipe.AddRecipe();
+      GetAbilityRecipe<BashLevel2>()
+        .AddRecipeGroup("OriMod:LunarFragments", 20)
+        .AddIngredient(ItemID.SoulofLight, 40)
+        .Register();
     }
   }
 }

@@ -8,17 +8,17 @@ namespace OriMod.Items {
   /// </summary>
   public class OriPotionEmpty : ModItem {
     public override void SetDefaults() {
-      item.width = 24;
-      item.height = 26;
-      item.maxStack = 1;
-      item.rare = ItemRarityID.Blue;
-      item.useAnimation = 10;
-      item.useTime = 10;
-      item.useStyle = ItemUseStyleID.Stabbing;
-      item.consumable = false;
+      Item.width = 24;
+      Item.height = 26;
+      Item.maxStack = 1;
+      Item.rare = ItemRarityID.Blue;
+      Item.useAnimation = 10;
+      Item.useTime = 10;
+      Item.useStyle = ItemUseStyleID.Thrust;
+      Item.consumable = false;
     }
 
-    public override bool UseItem(Player player) {
+    public override bool? UseItem(Player player) {
       if (player.whoAmI == Main.myPlayer) {
         player.GetModPlayer<OriPlayer>().PlaySound("SavePoints/checkpointCantPlaceSound");
       }

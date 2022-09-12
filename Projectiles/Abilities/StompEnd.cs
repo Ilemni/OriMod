@@ -53,16 +53,16 @@ namespace OriMod.Projectiles.Abilities {
 
     public override void SetDefaults() {
       base.SetDefaults();
-      projectile.width = 600;
-      projectile.height = 320;
+      Projectile.width = 600;
+      Projectile.height = 320;
     }
 
     public override bool PreAI() {
       // SetDefaults called before Projectile.NewProjectile(...) sets ai fields, so we need a later hook
-      if (projectile.maxPenetrate == MaxPenetrate) return false;
-      projectile.penetrate = projectile.maxPenetrate = MaxPenetrate;
-      projectile.width = Width;
-      projectile.height = Height;
+      if (Projectile.maxPenetrate == MaxPenetrate) return false;
+      Projectile.penetrate = Projectile.maxPenetrate = MaxPenetrate;
+      Projectile.width = Width;
+      Projectile.height = Height;
       return false;
     }
 
@@ -70,10 +70,10 @@ namespace OriMod.Projectiles.Abilities {
       if (!crit && Main.rand.Next(5) == 1) {
         crit = true;
       }
-      int multiplier = projectile.penetrate / projectile.maxPenetrate;
+      int multiplier = Projectile.penetrate / Projectile.maxPenetrate;
       damage = (int)(damage * 0.6f + damage * 0.4f * multiplier);
-      Vector2 vector = target.Center - oPlayer.player.Center;
-      float dist = target.Distance(oPlayer.player.Center);
+      Vector2 vector = target.Center - oPlayer.Player.Center;
+      float dist = target.Distance(oPlayer.Player.Center);
       float kb = Knockback * (160 - dist) / 160;
       if (kb < 6) {
         kb = 6;

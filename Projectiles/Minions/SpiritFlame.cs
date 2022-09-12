@@ -47,22 +47,22 @@ namespace OriMod.Projectiles.Minions {
     public override string Texture => "OriMod/Projectiles/Minions/SpiritFlame";
 
     public override void SetStaticDefaults() {
-      ProjectileID.Sets.CanDistortWater[projectile.type] = true;
-      ProjectileID.Sets.MinionShot[projectile.type] = true;
+      ProjectileID.Sets.CanDistortWater[Projectile.type] = true;
+      ProjectileID.Sets.MinionShot[Projectile.type] = true;
     }
 
     public override void SetDefaults() {
-      projectile.alpha = 32;
-      projectile.friendly = true;
-      projectile.minion = true;
-      projectile.ignoreWater = true;
-      projectile.tileCollide = false;
+      Projectile.alpha = 32;
+      Projectile.friendly = true;
+      Projectile.minion = true;
+      Projectile.ignoreWater = true;
+      Projectile.tileCollide = false;
       _dustType = ModContent.DustType<SpiritFlameDustTrail>();
 
       _data = SeinData.All[SpiritFlameType - 1];
-      projectile.knockBack = _data.knockback;
-      projectile.width = _data.spiritFlameWidth;
-      projectile.height = _data.spiritFlameHeight;
+      Projectile.knockBack = _data.knockback;
+      Projectile.width = _data.spiritFlameWidth;
+      Projectile.height = _data.spiritFlameHeight;
       _lerp = _data.homingStrengthStart;
       _speed = _data.projectileSpeedStart;
     }
@@ -73,12 +73,12 @@ namespace OriMod.Projectiles.Minions {
     protected abstract byte SpiritFlameType { get; }
 
     private void CreateDust() {
-      Dust dust = Dust.NewDustDirect(projectile.position, 10, 10, _dustType);
+      Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, _dustType);
       dust.scale = _data.dustScale;
-      dust.velocity = (_targetPosition - projectile.Center).LengthSquared() >= SpeedSquared ? projectile.velocity * 0.01f : Vector2.Zero;
+      dust.velocity = (_targetPosition - Projectile.Center).LengthSquared() >= SpeedSquared ? Projectile.velocity * 0.01f : Vector2.Zero;
 
-      dust.rotation = (float)(Math.Atan2(projectile.velocity.Y, projectile.velocity.X) - Math.PI / 180 * 270);
-      dust.position = projectile.Center;
+      dust.rotation = (float)(Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) - Math.PI / 180 * 270);
+      dust.position = Projectile.Center;
       dust.color = Color.Lerp(_data.color.Brightened(), Color.White, 0.85f);
       dust.color.A = 230;
     }
@@ -112,20 +112,20 @@ namespace OriMod.Projectiles.Minions {
     /// <para>If ai[0] is non-zero, we are not targeting an NPC, so ai fields are a Vector2 for where to land.</para>
     /// </remarks>
     private void UpdateTargetPosition() {
-      if (projectile.ai[0] == 0) {
-        NPC npc = Main.npc[(int)projectile.ai[1]];
+      if (Projectile.ai[0] == 0) {
+        NPC npc = Main.npc[(int)Projectile.ai[1]];
         if (npc.active) {
           _targetPosition = npc.Center;
         }
       }
       else {
-        _targetPosition.X = projectile.ai[0];
-        _targetPosition.Y = projectile.ai[1];
+        _targetPosition.X = Projectile.ai[0];
+        _targetPosition.Y = Projectile.ai[1];
       }
     }
 
     public override void AI() {
-      Lighting.AddLight(projectile.Center, _data.color.ToVector3() * _data.lightStrength);
+      Lighting.AddLight(Projectile.Center, _data.color.ToVector3() * _data.lightStrength);
       CreateDust();
 
       // Update target position until it dies
@@ -133,13 +133,13 @@ namespace OriMod.Projectiles.Minions {
       UpdateTargetPosition();
 
       // Despawn when projectile reaches destination
-      Vector2 offset = _targetPosition - projectile.Center;
+      Vector2 offset = _targetPosition - Projectile.Center;
       float distanceSquared = offset.LengthSquared();
 
       if (distanceSquared < SpeedSquared) {
-        projectile.velocity = offset;
-        if (projectile.timeLeft > 2) {
-          projectile.timeLeft = 2;
+        Projectile.velocity = offset;
+        if (Projectile.timeLeft > 2) {
+          Projectile.timeLeft = 2;
         }
         return;
       }
@@ -150,11 +150,11 @@ namespace OriMod.Projectiles.Minions {
       // Increase speed over time
       TickTimerOrValue(ref _currentAccelerationDelay, _data.projectileSpeedIncreaseDelay, ref _speed, 30, _data.projectileSpeedIncreaseRate);
 
-      projectile.velocity = Vector2.Lerp(projectile.velocity.Normalized(), offset.Normalized(), _lerp) * _speed;
+      Projectile.velocity = Vector2.Lerp(Projectile.velocity.Normalized(), offset.Normalized(), _lerp) * _speed;
     }
 
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-      projectile.active = false;
+      Projectile.active = false;
     }
   }
 }

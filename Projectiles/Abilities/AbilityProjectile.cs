@@ -15,12 +15,12 @@ namespace OriMod.Projectiles.Abilities {
     /// <summary>
     /// The level of the <see cref="OriMod.Abilities.Ability"/> when this <see cref="AbilityProjectile"/> was created.
     /// </summary>
-    public int Level => (int)projectile.ai[0];
+    public int Level => (int)Projectile.ai[0];
 
     /// <summary>
     /// THe <see cref="OriPlayer"/> that this <see cref="AbilityProjectile"/> belongs to.
     /// </summary>
-    public OriPlayer oPlayer => _oPlayer ?? (_oPlayer = Main.player[projectile.owner].GetModPlayer<OriPlayer>());
+    public OriPlayer oPlayer => _oPlayer ?? (_oPlayer = Main.player[Projectile.owner].GetModPlayer<OriPlayer>());
     private OriPlayer _oPlayer;
 
     /// <summary>
@@ -35,12 +35,12 @@ namespace OriMod.Projectiles.Abilities {
     /// <inheritdoc/>
     /// </summary>
     public override void SetDefaults() {
-      projectile.timeLeft = 2;
-      projectile.penetrate = int.MaxValue;
-      projectile.magic = true;
-      projectile.tileCollide = false;
-      projectile.ignoreWater = true;
-      projectile.friendly = true;
+      Projectile.timeLeft = 2;
+      Projectile.penetrate = int.MaxValue;
+      Projectile.DamageType = DamageClass.Magic;
+      Projectile.tileCollide = false;
+      Projectile.ignoreWater = true;
+      Projectile.friendly = true;
     }
 
     public override bool ShouldUpdatePosition() => false;
@@ -55,7 +55,7 @@ namespace OriMod.Projectiles.Abilities {
     /// </summary>
     protected virtual void CheckAbilityActive() {
       if (ability.InUse) {
-        projectile.timeLeft = 2;
+        Projectile.timeLeft = 2;
       }
     }
 
@@ -64,7 +64,7 @@ namespace OriMod.Projectiles.Abilities {
     /// <para>Defaults to setting projectile center to player center.</para>
     /// </summary>
     protected virtual void Behavior() {
-      projectile.Center = oPlayer.player.Center;
+      Projectile.Center = oPlayer.Player.Center;
     }
   }
 }

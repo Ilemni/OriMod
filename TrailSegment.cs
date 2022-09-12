@@ -28,7 +28,7 @@ namespace OriMod {
     /// Resets various attributes to be based on the player's current attributes.
     /// </summary>
     public void Reset() {
-      Player player = _oPlayer.player;
+      Player player = _oPlayer.Player;
       OriAnimationController anim = _oPlayer.Animations;
 
       _position = player.Center;
@@ -68,7 +68,7 @@ namespace OriMod {
       Rectangle rect = new Rectangle(_tile.x * spriteSize.x, _tile.y * spriteSize.y, spriteSize.x, spriteSize.y);
       float alpha = _startAlpha * _timeLeft / Trail.Count;
       Color color = _oPlayer.SpriteColorPrimary * alpha;
-      Vector2 origin = new Vector2(rect.Width / 2f, rect.Height / 2f + 5 * _oPlayer.player.gravDir);
+      Vector2 origin = new Vector2(rect.Width / 2f, rect.Height / 2f + 5 * _oPlayer.Player.gravDir);
 
       return new DrawData(OriTextures.Instance.trail, pos, rect, color, _rotation, origin, 1, _effect, 0);
     }

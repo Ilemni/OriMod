@@ -1,6 +1,5 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -10,11 +9,11 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.ChargeJump;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe();
-      recipe.AddIngredient(ItemID.HallowedBar, 18);
-      recipe.AddIngredient(ItemID.FrogLeg);
-      recipe.AddRecipeGroup("OriMod:JumpBalloons");
-      recipe.AddRecipe();
+      GetAbilityRecipe()
+        .AddIngredient(ItemID.HallowedBar, 18)
+        .AddIngredient(ItemID.FrogLeg)
+        .AddRecipeGroup("OriMod:JumpBalloons")
+        .Register();
     }
   }
 
@@ -26,10 +25,10 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 2;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<ChargeJumpLevel1>();
-      recipe.AddIngredient(ItemID.ChlorophyteBar, 12);
-      recipe.AddIngredient(ItemID.SoulofFlight, 15);
-      recipe.AddRecipe();
+      GetAbilityRecipe<ChargeJumpLevel1>()
+        .AddIngredient(ItemID.ChlorophyteBar, 12)
+        .AddIngredient(ItemID.SoulofFlight, 15)
+        .Register();
     }
   }
 
@@ -41,11 +40,11 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 3;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<ChargeJumpLevel2>();
-      recipe.AddRecipeGroup("OriMod:LunarFragments", 30);
-      recipe.AddIngredient(ItemID.SoulofFlight, 25);
-      recipe.AddIngredient(ItemID.SoulofLight, 30);
-      recipe.AddRecipe();
+      GetAbilityRecipe<ChargeJumpLevel2>()
+        .AddRecipeGroup("OriMod:LunarFragments", 30)
+        .AddIngredient(ItemID.SoulofFlight, 25)
+        .AddIngredient(ItemID.SoulofLight, 30)
+        .Register();
     }
   }
 
@@ -57,11 +56,11 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 4;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<ChargeJumpLevel3>();
-      recipe.AddIngredient(ItemID.LunarBar, 24);
-      recipe.AddIngredient(ItemID.SoulofFlight, 35);
-      recipe.AddIngredient(ItemID.SoulofLight, 50);
-      recipe.AddRecipe();
+      GetAbilityRecipe<ChargeJumpLevel3>()
+        .AddIngredient(ItemID.LunarBar, 24)
+        .AddIngredient(ItemID.SoulofFlight, 35)
+        .AddIngredient(ItemID.SoulofLight, 50)
+        .Register();
     }
   }
 }

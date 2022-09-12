@@ -1,6 +1,5 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -10,9 +9,9 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.Stomp;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe();
-      recipe.AddRecipeGroup("OriMod:HardmodeBars3", 18);
-      recipe.AddRecipe();
+      GetAbilityRecipe()
+        .AddRecipeGroup("OriMod:HardmodeBars3", 18)
+        .Register();
     }
   }
 
@@ -24,10 +23,10 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 2;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<StompLevel1>();
-      recipe.AddIngredient(ItemID.ShroomiteBar, 12);
-      recipe.AddIngredient(ItemID.SoulofMight, 18);
-      recipe.AddRecipe();
+      GetAbilityRecipe<StompLevel1>()
+        .AddIngredient(ItemID.ShroomiteBar, 12)
+        .AddIngredient(ItemID.SoulofMight, 18)
+        .Register();
     }
   }
 
@@ -39,10 +38,10 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 3;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<StompLevel2>();
-      recipe.AddRecipeGroup("OriMod:LunarFragments", 24);
-      recipe.AddIngredient(ItemID.SoulofMight, 22);
-      recipe.AddRecipe();
+      GetAbilityRecipe<StompLevel2>()
+        .AddRecipeGroup("OriMod:LunarFragments", 24)
+        .AddIngredient(ItemID.SoulofMight, 22)
+        .Register();
     }
   }
 }

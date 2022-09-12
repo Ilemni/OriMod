@@ -8,10 +8,7 @@ namespace OriMod.Dusts {
   public class SpiritFlameDustTrail : ModDust {
     private int AlphaRate => 1;
 
-    public override bool Autoload(ref string name, ref string texture) {
-      texture = "OriMod/Dusts/SFDust1";
-      return base.Autoload(ref name, ref texture);
-    }
+    public override string Texture => @"OriMod/Dusts/SFDust1";
 
     public override void OnSpawn(Dust dust) {
       dust.alpha = 0;

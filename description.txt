@@ -1,6 +1,9 @@
 Ori and the Blind Forest / Ori and the Will of the Wisps
 crossover pack.
 
+--- v3.1 ---
+Updated to terraria 1.4
+
 --- v3.0.0.3 --
 --- Bug Fixes ---
 - Fixed server errors that prevented some mod bosses from

@@ -54,7 +54,7 @@ namespace OriMod {
     }
 
     private static OriPlayer GetOriPlayer(object obj) {
-      Player player = obj is Player p ? p : obj is ModPlayer modPlayer ? modPlayer.player : null;
+      Player player = obj is Player p ? p : obj is ModPlayer modPlayer ? modPlayer.Player : null;
       return player?.GetModPlayer<OriPlayer>();
     }
   }

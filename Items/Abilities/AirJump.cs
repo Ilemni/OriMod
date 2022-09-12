@@ -1,6 +1,5 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -10,10 +9,10 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.AirJump;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe();
-      recipe.AddRecipeGroup("OriMod:DarkBars", 12);
-      recipe.AddRecipeGroup("OriMod:JumpBottles");
-      recipe.AddRecipe();
+      GetAbilityRecipe()
+        .AddRecipeGroup("OriMod:DarkBars", 12)
+        .AddRecipeGroup("OriMod:JumpBottles")
+        .Register();
     }
   }
 
@@ -25,10 +24,10 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 2;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<AirJumpLevel1>();
-      recipe.AddRecipeGroup("OriMod:HardmodeBars2", 12);
-      recipe.AddRecipeGroup("OriMod:JumpBalloons");
-      recipe.AddRecipe();
+      GetAbilityRecipe<AirJumpLevel1>()
+        .AddRecipeGroup("OriMod:HardmodeBars2", 12)
+        .AddRecipeGroup("OriMod:JumpBalloons")
+        .Register();
     }
   }
 
@@ -40,10 +39,10 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 3;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<AirJumpLevel2>();
-      recipe.AddIngredient(ItemID.HallowedBar, 16);
-      recipe.AddIngredient(ItemID.BundleofBalloons);
-      recipe.AddRecipe();
+      GetAbilityRecipe<AirJumpLevel2>()
+        .AddIngredient(ItemID.HallowedBar, 16)
+        .AddIngredient(ItemID.BundleofBalloons)
+        .Register();
     }
   }
 
@@ -54,11 +53,11 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.AirJump;
     public override byte Level => 4;
 
-    public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<AirJumpLevel3>();
-      recipe.AddIngredient(ItemID.ShroomiteBar, 8);
-      recipe.AddIngredient(ItemID.BundleofBalloons);
-      recipe.AddRecipe();
+    public override void AddRecipes() {      
+      GetAbilityRecipe<AirJumpLevel3>()
+        .AddIngredient(ItemID.ShroomiteBar, 8)
+        .AddIngredient(ItemID.BundleofBalloons)
+        .Register();
     }
   }
 }

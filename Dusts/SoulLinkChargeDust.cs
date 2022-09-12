@@ -12,11 +12,7 @@ namespace OriMod.Dusts {
   public class SoulLinkChargeDust : ModDust {
     private static int AlphaRate => 16;
     // ReSharper disable once RedundantAssignment
-    public override bool Autoload(ref string name, ref string texture) {
-      texture = "OriMod/Dusts/AbilityRefreshedDust";
-      //return base.Autoload(ref name, ref texture);
-      return false;
-    }
+    public override string Texture => @"OriMod/Dusts/AbilityRefreshedDust";
 
     public override void OnSpawn(Dust dust) {
       dust.alpha = 0;

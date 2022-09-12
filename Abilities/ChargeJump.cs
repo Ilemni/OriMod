@@ -1,3 +1,4 @@
+//using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
 using OriMod.Projectiles.Abilities;
@@ -54,7 +55,7 @@ namespace OriMod.Abilities {
     private void StartChargeJump() {
       oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _rand.NextNoRepeat(3));
       _currentCharge = 0;
-      Projectile.NewProjectileDirect(player.Center, Vector2.Zero,
+      Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero,
         ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1);
       PutOnCooldown();
       abilities.climb.SetState(State.Inactive);

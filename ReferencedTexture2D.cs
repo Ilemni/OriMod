@@ -30,11 +30,11 @@ namespace OriMod {
         throw new ArgumentException($"{nameof(texturePath)} cannot be empty.", nameof(texturePath));
       }
 
-      if (OriMod.instance.TextureExists(texturePath)) {
-        texture = OriMod.instance.GetTexture(texturePath);
+      if (OriMod.instance.HasAsset(texturePath)) {
+        texture = OriMod.instance.Assets.Request<Texture2D>(texturePath).Value;
       }
-      else if (ModContent.TextureExists(texturePath)) {
-        texture = ModContent.GetTexture(texturePath);
+      else if (ModContent.HasAsset(texturePath)) {
+        texture = ModContent.Request<Texture2D>(texturePath).Value;
       }
       else {
         throw new ArgumentException($"{texturePath} is not a valid texture path.", nameof(texturePath));

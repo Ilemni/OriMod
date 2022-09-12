@@ -1,3 +1,4 @@
+//using AnimLib.Abilities;
 using System.IO;
 using OriMod.Utilities;
 using Terraria;
@@ -48,8 +49,8 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (CanUse && input.jump.JustPressed) {
-        if (player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail ||
-            player.jumpAgainSandstorm || player.canCarpet || player.canRocket || player.mount.Active) return;
+        if (player.canJumpAgain_Blizzard || player.canJumpAgain_Cloud || player.canJumpAgain_Fart || player.canJumpAgain_Sail ||
+            player.canJumpAgain_Sandstorm || player.canCarpet || player.canRocket || player.mount.Active) return;
         SetState(State.Active);
         currentCount++;
         _gravityDirection = (sbyte)player.gravDir;

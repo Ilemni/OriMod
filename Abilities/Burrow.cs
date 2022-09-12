@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+//using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Utilities;
@@ -71,9 +72,9 @@ namespace OriMod.Abilities {
     }
 
     private bool CanBurrowAny => Level >= 3;
-    internal static bool IsSolid(Tile tile) => tile.active() && !tile.inActive() && tile.nactive() && Main.tileSolid[tile.type];
+    internal static bool IsSolid(Tile tile) => tile.HasTile && !tile.IsActuated && tile.HasUnactuatedTile && Main.tileSolid[tile.TileType];
 
-    internal bool CanBurrow(Tile t) => CanBurrowAny && IsSolid(t) || TileCollection.Instance.tilePickaxeMin[t.type] <= Strength;
+    internal bool CanBurrow(Tile t) => CanBurrowAny && IsSolid(t) || TileCollection.Instance.tilePickaxeMin[t.TileType] <= Strength;
 
     private Vector2 _lastPosition;
     internal Vector2 velocity;
@@ -250,7 +251,7 @@ namespace OriMod.Abilities {
       _lastPosition = player.position;
     }
 
-    internal override void DrawEffects() {
+    internal override void DrawEffects(ref PlayerDrawSet drawInfo) {
       if (_breath >= MaxDuration) return;
       // UI indication for breath
       Vector2 baseDrawPos = player.Right - Main.screenPosition;
@@ -275,7 +276,7 @@ namespace OriMod.Abilities {
         }
 
         Texture2D tex = OriTextures.Instance.burrowTimer.texture;
-        Main.playerDrawData.Add(new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0));
+        drawInfo.DrawDataCache.Add(new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0));
       }
     }
 

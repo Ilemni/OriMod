@@ -1,3 +1,4 @@
+//using AnimLib.Abilities;
 using System;
 using System.Collections.Generic;
 using OriMod.Networking;
@@ -220,7 +221,7 @@ namespace OriMod.Abilities {
     /// </summary>
     /// <returns><see langword="true"/> if any ability can be used; otherwise, <see langword="false"/>.</returns>
     private bool CanUseAnyAbilities() {
-      Player player = oPlayer.player;
+      Player player = oPlayer.Player;
       if (player.dead) {
         return false;
       }
@@ -296,7 +297,7 @@ namespace OriMod.Abilities {
         changes.Add((byte)ability.Id);
       }
       if (changes.Count > 0) {
-        ModNetHandler.Instance.abilityPacketHandler.SendAbilityState(255, oPlayer.player.whoAmI, changes);
+        ModNetHandler.Instance.abilityPacketHandler.SendAbilityState(255, oPlayer.Player.whoAmI, changes);
       }
     }
 

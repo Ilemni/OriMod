@@ -10,13 +10,13 @@ namespace OriMod.Projectiles.Abilities {
 
     public override void SetDefaults() {
       base.SetDefaults();
-      projectile.width = 56;
-      projectile.height = 56;
+      Projectile.width = 56;
+      Projectile.height = 56;
     }
 
     protected override void CheckAbilityActive() {
       if (ability.Active) {
-        projectile.timeLeft = 10;
+        Projectile.timeLeft = 10;
       }
     }
   }

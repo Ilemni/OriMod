@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Terraria;
-using Terraria.ModLoader;
+using Terraria.Audio;
+using ReLogic.Utilities;
 
 namespace OriMod {
   public static class SoundWrapper {
@@ -13,21 +12,24 @@ namespace OriMod {
 
     private static bool _checkedCanPlaySounds;
 
-    public static SoundEffectInstance PlaySound(Vector2 position, string soundPath, float volumeScale = 1f, float pitchOffset = 0.0f)
-      => PlaySound((int) position.X, (int) position.Y, "OriMod/Sounds/Custom/NewSFX/" + soundPath,
-        volumeScale, pitchOffset);
+    public static SlotId PlaySound(Vector2 position, string soundPath, out SoundStyle style, float volumeScale = 1f, float pitchOffset = 0.0f)
+      => PlaySound((int) position.X, (int) position.Y, soundPath, out style, volumeScale, pitchOffset);
 
-    public static SoundEffectInstance PlaySound(int x, int y, string soundPath, float volumeScale = 1f, float pitchOffset = 0.0f) {
-      int style = SoundLoader.GetSoundSlot(SoundType.Custom, "OriMod/Sounds/Custom/NewSFX/" + soundPath);
+    public static SlotId PlaySound(int x, int y, string soundPath, out SoundStyle style, float volumeScale = 1f, float pitchOffset = 0.0f) {
+      style = new("OriMod/Sounds/Custom/NewSFX/" + soundPath) {
+        Pitch = pitchOffset,
+        Volume = volumeScale,
+      };
+      Vector2 pos = new(x, y);
       if (_checkedCanPlaySounds)
-        return !_canPlaySounds ? null : Main.PlaySound((int) SoundType.Custom, x, y, style, volumeScale, pitchOffset);
+        return !_canPlaySounds ? SlotId.Invalid : SoundEngine.PlaySound(in style, pos);
 
       // Check if we can play sounds
-      if (OriMod.instance is null) return null;
+      if (OriMod.instance is null) return SlotId.Invalid;
       _checkedCanPlaySounds = true;
-      _canPlaySounds = OriMod.instance.SoundExists("Sounds/Custom/NewSFX/Ori/Dash/seinDashA");
+      _canPlaySounds = OriMod.instance.HasAsset("Sounds/Custom/NewSFX/Ori/Dash/seinDashA");
 
-      return !_canPlaySounds ? null : Main.PlaySound((int) SoundType.Custom, x, y, style, volumeScale, pitchOffset);
+      return !_canPlaySounds ? SlotId.Invalid : SoundEngine.PlaySound(in style, pos);
     }
   }
 }
