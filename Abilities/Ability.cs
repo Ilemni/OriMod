@@ -1,4 +1,3 @@
-//using AnimLib.Abilities;
 using System.IO;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
@@ -214,7 +213,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreReadPacket(BinaryReader r) {
       AbilityState = (State)r.ReadByte();
-      if (!(levelableDependency is null)) {
+      if (levelableDependency is not null) {
         levelableDependency.Level = r.ReadByte();
       }
       CurrentTime = r.ReadInt32();
@@ -226,7 +225,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreWritePacket(ModPacket packet) {
       packet.Write((byte)AbilityState);
-      if (!(levelableDependency is null)) {
+      if (levelableDependency is not null) {
         packet.Write(levelableDependency.Level);
       }
       packet.Write(CurrentTime);
@@ -341,7 +340,7 @@ namespace OriMod.Abilities {
     /// Whether or not the <see cref="Ability"/> is in use.
     /// </summary>
     /// <seealso cref="InUse"/>
-    public static implicit operator bool(Ability ability) => !(ability is null) && ability.InUse;
+    public static implicit operator bool(Ability ability) => ability is not null && ability.InUse;
 
     /// <summary>
     /// States that the <see cref="Ability"/> can be in. Determines update logic.

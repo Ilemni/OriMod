@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-//using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Utilities;

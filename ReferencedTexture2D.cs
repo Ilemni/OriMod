@@ -43,6 +43,10 @@ namespace OriMod {
     }
         
     private readonly Asset<Texture2D> _texture;
+
+    /// <summary>
+    /// Texture loading is async so you can check if it is loaded, it is not required
+    /// </summary>
     public bool ready => _texture.IsLoaded;
 
     /// <summary>

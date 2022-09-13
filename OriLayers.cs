@@ -26,7 +26,7 @@ namespace OriMod {
         OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
         bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
-        DrawData data = oPlayer.Animations_fromThis.playerAnim.GetDrawData(drawInfo);
+        DrawData data = oPlayer.Animations.playerAnim.GetDrawData(drawInfo);
         bool doFlash = player.immune && oPlayer.immuneTimer == 0;
         data.color = doFlash
             ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, player.immuneAlpha / 255f)
@@ -89,7 +89,7 @@ namespace OriMod {
       }
       protected override void Draw(ref PlayerDrawSet drawInfo) {
         OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-        drawInfo.DrawDataCache.Add(oPlayer.Animations_fromThis.glideAnim.GetDrawData(drawInfo));
+        drawInfo.DrawDataCache.Add(oPlayer.Animations.glideAnim.GetDrawData(drawInfo));
       }
       public override Position GetDefaultPosition() => 
         new Between(ModContent.GetInstance<OriTrailLayer>(), ModContent.GetInstance<OriBashArrowLayer>());
@@ -106,7 +106,7 @@ namespace OriMod {
       }
       protected override void Draw(ref PlayerDrawSet drawInfo) {
         OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-        Animation anim = oPlayer.Animations_fromThis.bashAnim;
+        Animation anim = oPlayer.Animations.bashAnim;
         AbilityManager abilities = oPlayer.abilities;
 
         Vector2 pos;

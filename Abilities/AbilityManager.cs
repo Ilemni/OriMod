@@ -1,4 +1,3 @@
-//using AnimLib.Abilities;
 using System;
 using System.Collections.Generic;
 using OriMod.Networking;

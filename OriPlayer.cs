@@ -41,9 +41,7 @@ namespace OriMod {
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
     /// </summary>
     internal OriAnimationController Animations =>
-      _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(Local));
-    internal OriAnimationController Animations_fromThis =>
-      _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(this));
+      _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(Main.gameMenu ? this : Local));
 
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
@@ -496,6 +494,7 @@ namespace OriMod {
       }
 
       if (!Transforming) return;
+      Local.Animations.Update();
       Player.direction = _transformDirection;
       Player.controlLeft = false;
       Player.controlRight = false;
@@ -634,7 +633,7 @@ namespace OriMod {
     }
 
     public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit,
-      ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) {
+      ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource, ref int countdown) {
       if (!IsOri) {
         return true;
       }
@@ -651,7 +650,7 @@ namespace OriMod {
       return true;
     }
 
-    public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit) {
+    public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit, int countdown) {
       if (!_useCustomHurtSound) return;
       _useCustomHurtSound = false;
       PlaySound("Ori/Hurt/seinHurtRegular" + _randHurt.NextNoRepeat(4), 0.75f);
@@ -696,7 +695,7 @@ namespace OriMod {
         return;
       }
 
-      if(Player.dead || Player.invis || !Animations_fromThis.playerAnim.Valid) {
+      if(Player.dead || Player.invis || !Animations.playerAnim.Valid) {
         OriLayers.playerSprite.Hide();
       }
 
