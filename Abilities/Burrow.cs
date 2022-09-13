@@ -197,10 +197,11 @@ namespace OriMod.Abilities {
       if (!CanBurrowAny) {
         bool didX = false;
         bool didY = false;
+        InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * (player.gravDir < 0 ? 48 : 32));
         var innerPoints = InnerHitbox.Points;
         for (int i = 0, len = innerPoints.Length; i < len; i++) {
           Point point = innerPoints[i];
-          Tile tile = Main.tile[point.X, point.Y];
+          Tile tile = Main.tile[point];
           if (!CanBurrow(tile)) {
             OnCollision(i, ref didX, ref didY);
           }

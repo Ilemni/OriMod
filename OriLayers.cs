@@ -15,11 +15,9 @@ namespace OriMod {
     /// <summary>
     /// Draws the Ori sprite.
     /// </summary>
-    [Autoload(false)]
     internal sealed class OriPlayerSprite : PlayerDrawLayer {
-      private Position _draw_pos;
+      public override bool IsHeadLayer => true;
       public override void SetStaticDefaults() {
-        _draw_pos = new AfterParent(PlayerDrawLayers.FaceAcc);
         playerSprite = ModContent.GetInstance<OriPlayerSprite>();
       }
       public override string Name => "OriPlayer";
@@ -28,7 +26,7 @@ namespace OriMod {
         OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
         bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
-        DrawData data = oPlayer.Animations.playerAnim.GetDrawData(drawInfo);
+        DrawData data = oPlayer.Animations_fromThis.playerAnim.GetDrawData(drawInfo);
         bool doFlash = player.immune && oPlayer.immuneTimer == 0;
         data.color = doFlash
             ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, player.immuneAlpha / 255f)
@@ -50,21 +48,17 @@ namespace OriMod {
           oPlayer.abilities.burrow.DrawEffects(ref drawInfo);
         }
       }
-      public override Position GetDefaultPosition() => _draw_pos;
-      public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
-        OriPlayer.Local.IsOri && !OriPlayer.Local.Transforming;
+      public override Position GetDefaultPosition() => 
+        new Between(ModContent.GetInstance<OriBashArrowLayer>(), null);
     }
     internal static PlayerDrawLayer playerSprite { get; private set; }
 
     /// <summary>
     /// Draws the Ori trails.
     /// </summary>
-    [Autoload(false)]
     internal sealed class OriTrailLayer : PlayerDrawLayer {
-      private Position _draw_pos;
       public override string Name => "OriTrail";
       public override void SetStaticDefaults() {
-        _draw_pos = new AfterParent(playerSprite);
         trailLayer = ModContent.GetInstance<OriTrailLayer>();
       }
       protected override void Draw(ref PlayerDrawSet drawInfo) {
@@ -80,54 +74,45 @@ namespace OriMod {
         }
         drawInfo.DrawDataCache.AddRange(trail.TrailDrawDatas);
       }
-      public override Position GetDefaultPosition() => _draw_pos;
-      public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
-        OriPlayer.Local.IsOri && !OriPlayer.Local.Transforming;
+      public override Position GetDefaultPosition() => 
+        new Between(PlayerDrawLayers.FaceAcc, ModContent.GetInstance<OriPlayerSprite>());
     }
     internal static PlayerDrawLayer trailLayer { get; private set; }
 
     /// <summary>
     /// Draws the <see cref="Glide"/> feather when the player glides.
     /// </summary>
-    [Autoload(false)]
     internal sealed class OriFeatherLayer : PlayerDrawLayer {
-      private Position _draw_pos;
       public override string Name => "Feather";
       public override void SetStaticDefaults() {
-        _draw_pos = new AfterParent(trailLayer);
         featherSprite = ModContent.GetInstance<OriFeatherLayer>();
       }
       protected override void Draw(ref PlayerDrawSet drawInfo) {
         OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-
-        drawInfo.DrawDataCache.Add(oPlayer.Animations.glideAnim.GetDrawData(drawInfo));
+        drawInfo.DrawDataCache.Add(oPlayer.Animations_fromThis.glideAnim.GetDrawData(drawInfo));
       }
-      public override Position GetDefaultPosition() => _draw_pos;
-      public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
-        OriPlayer.Local.IsOri && !OriPlayer.Local.Transforming;
+      public override Position GetDefaultPosition() => 
+        new Between(ModContent.GetInstance<OriTrailLayer>(), ModContent.GetInstance<OriBashArrowLayer>());
     }
     internal static PlayerDrawLayer featherSprite { get; private set; }
 
     /// <summary>
     /// Draws the <see cref="Bash"/> arrow when the player Bashes or Launches.
     /// </summary>
-    [Autoload(false)]
     internal sealed class OriBashArrowLayer : PlayerDrawLayer {
-      private Position _draw_pos;
       public override string Name => "BashArrow";
       public override void SetStaticDefaults() {
-        _draw_pos = new AfterParent(featherSprite);
         bashArrow = ModContent.GetInstance<OriBashArrowLayer>();
       }
       protected override void Draw(ref PlayerDrawSet drawInfo) {
         OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-        Animation anim = oPlayer.Animations.bashAnim;
+        Animation anim = oPlayer.Animations_fromThis.bashAnim;
         AbilityManager abilities = oPlayer.abilities;
 
         Vector2 pos;
         float rotation;
         int frame;
-        Ability ab = abilities.bash ? (Ability)abilities.bash : abilities.launch;
+        Ability ab = abilities.bash ? abilities.bash : abilities.launch;
         if (abilities.bash) {
           pos = abilities.bash.BashEntity.Center;
           rotation = abilities.bash.BashAngle;
@@ -144,9 +129,8 @@ namespace OriMod {
         DrawData data = new(anim.CurrentTexture, pos, rect, Color.White, rotation, orig, 1, SpriteEffects.None, 0);
         drawInfo.DrawDataCache.Add(data);
       }
-      public override Position GetDefaultPosition() => _draw_pos;
-      public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
-        OriPlayer.Local.IsOri && !OriPlayer.Local.Transforming;
+      public override Position GetDefaultPosition() =>
+        new Between(ModContent.GetInstance<OriFeatherLayer>(), ModContent.GetInstance<OriPlayerSprite>());
     }
     internal static PlayerDrawLayer bashArrow { get; private set; }
 

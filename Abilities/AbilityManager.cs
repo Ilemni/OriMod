@@ -225,7 +225,8 @@ namespace OriMod.Abilities {
       if (player.dead) {
         return false;
       }
-      return !(player.mount?.Active ?? false);
+      var _k = player.mount?.Active;
+      return !(_k ?? false);
     }
 
     /// <summary>

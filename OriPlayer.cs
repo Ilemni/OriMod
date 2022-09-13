@@ -42,6 +42,8 @@ namespace OriMod {
     /// </summary>
     internal OriAnimationController Animations =>
       _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(Local));
+    internal OriAnimationController Animations_fromThis =>
+      _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(this));
 
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
@@ -545,6 +547,7 @@ namespace OriMod {
       }
 
       if (IsOri) {
+        Animations.Update();
         abilities.PostUpdate();
 
         if (DoPlayerLight && !abilities.burrow.Active) {
@@ -685,60 +688,81 @@ namespace OriMod {
     }
 
     public override void HideDrawLayers(PlayerDrawSet drawInfo) {
-      //var layers = PlayerDrawLayerLoader.Layers;
       if (!IsOri && !Transforming) {
+        OriLayers.playerSprite.Hide();
+        OriLayers.trailLayer.Hide();
+        OriLayers.featherSprite.Hide();
+        OriLayers.bashArrow.Hide();
         return;
+      }
+
+      if(Player.dead || Player.invis || !Animations_fromThis.playerAnim.Valid) {
+        OriLayers.playerSprite.Hide();
+      }
+
+      if (!Animations.playerAnim.Valid || abilities.burrow || Player.mount.Active) {
+        OriLayers.trailLayer.Hide();
+      }
+
+      if (!abilities.glide) {
+        OriLayers.featherSprite.Hide();
+      }
+
+      if (!abilities.bash && !abilities.launch.Starting) {
+        OriLayers.bashArrow.Hide();
       }
 
       #region Disable vanilla layers
 
-      PlayerDrawLayers.Skin.Hide();
-      //PlayerDrawLayers.Arms.Hide();
-      //PlayerDrawLayers.Body.Hide();
-      //PlayerDrawLayers.Face.Hide();
-      PlayerDrawLayers.Head.Hide();
-      //PlayerDrawLayers.Legs.Hide();
-      PlayerDrawLayers.WaistAcc.Hide();
-      PlayerDrawLayers.NeckAcc.Hide();
-      //PlayerDrawLayers.ShieldAcc.Hide();
+      PlayerDrawLayers.ArmorLongCoat.Hide();
+      PlayerDrawLayers.ArmOverItem.Hide();
+      PlayerDrawLayers.BackAcc.Hide();
+      PlayerDrawLayers.Backpacks.Hide();
+      PlayerDrawLayers.BalloonAcc.Hide();
+      PlayerDrawLayers.BeetleBuff.Hide();
+      PlayerDrawLayers.BladedGlove.Hide();
+      PlayerDrawLayers.ElectrifiedDebuffBack.Hide();
+      PlayerDrawLayers.ElectrifiedDebuffFront.Hide();
+      PlayerDrawLayers.EyebrellaCloud.Hide();
       PlayerDrawLayers.FaceAcc.Hide();
+      PlayerDrawLayers.FinchNest.Hide();
+      PlayerDrawLayers.FrontAccBack.Hide();
+      PlayerDrawLayers.FrontAccFront.Hide();
+      PlayerDrawLayers.FrozenOrWebbedDebuff.Hide();
       PlayerDrawLayers.HairBack.Hide();
-      //PlayerDrawLayers.ShoeAcc.Hide();
       PlayerDrawLayers.HandOnAcc.Hide();
-      //PlayerDrawLayers.HandOffAcc.Hide();
+      PlayerDrawLayers.Head.Hide();
+      PlayerDrawLayers.HeadBack.Hide();
+      PlayerDrawLayers.HeldItem.Hide();
+      PlayerDrawLayers.IceBarrier.Hide();
+      PlayerDrawLayers.JimsCloak.Hide();
+      PlayerDrawLayers.Leggings.Hide();
+      PlayerDrawLayers.LeinforsHairShampoo.Hide();
+      PlayerDrawLayers.NeckAcc.Hide();
+      PlayerDrawLayers.OffhandAcc.Hide();
+      PlayerDrawLayers.PortableStool.Hide();
+      PlayerDrawLayers.ProjectileOverArm.Hide();
+      PlayerDrawLayers.Robe.Hide();
+      PlayerDrawLayers.Shield.Hide();
+      PlayerDrawLayers.Shoes.Hide();
+      PlayerDrawLayers.Skin.Hide();
+      PlayerDrawLayers.SkinLongCoat.Hide();
+      PlayerDrawLayers.SolarShield.Hide();
+      PlayerDrawLayers.Tails.Hide();
+      PlayerDrawLayers.Torso.Hide();
+      PlayerDrawLayers.WaistAcc.Hide();
+      PlayerDrawLayers.WebbedDebuffBack.Hide();
+
       if (OnWall || Transforming || abilities.stomp || abilities.airJump || abilities.burrow || abilities.chargeJump ||
           abilities.wallChargeJump) {
         PlayerDrawLayers.Wings.Hide();
       }
-
+      
       #endregion
 
       /*if (Abilities.soulLink.PlacedSoulLink) {
         layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
-      }
-      int idx = layers.IndexOf(PlayerDrawLayers.FaceAcc);
-
-      if (IsOri) {
-        if (Animations.playerAnim.Valid && !abilities.burrow && !Player.mount.Active) {
-          layers.Insert(idx++, OriLayers.Instance.trailLayer);
-        }
-
-        if (abilities.glide) {
-          layers.Insert(idx++, OriLayers.Instance.featherSprite);
-        }
-
-        if (abilities.bash || abilities.launch.Starting) {
-          layers.Insert(idx++, OriLayers.Instance.bashArrow);
-        }
-      }
-
-      if (!Player.dead && !Player.invis && Animations.playerAnim.Valid) {
-        layers.Insert(idx, OriLayers.Instance.playerSprite);
-      }
-
-      Player.head = EquipLoader.GetEquipSlot(OriMod.instance, "OriHead", EquipType.Head);
-      OriLayers.trailLayer.visible =
-        OriLayers.playerSprite.visible && !abilities.burrow && !Player.mount.Active;*/
+      }*/
     }
 
     public override void OnEnterWorld(Player p) {

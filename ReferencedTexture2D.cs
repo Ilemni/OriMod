@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -31,20 +32,28 @@ namespace OriMod {
       }
 
       if (OriMod.instance.HasAsset(texturePath)) {
-        texture = OriMod.instance.Assets.Request<Texture2D>(texturePath).Value;
+        _texture = OriMod.instance.Assets.Request<Texture2D>(texturePath);
       }
       else if (ModContent.HasAsset(texturePath)) {
-        texture = ModContent.Request<Texture2D>(texturePath).Value;
+        _texture = ModContent.Request<Texture2D>(texturePath);
       }
       else {
         throw new ArgumentException($"{texturePath} is not a valid texture path.", nameof(texturePath));
       }
     }
+        
+    private readonly Asset<Texture2D> _texture;
+    public bool ready => _texture.IsLoaded;
 
     /// <summary>
     /// Texture that this instance represents.
     /// </summary>
-    public readonly Texture2D texture;
+    public Texture2D texture { get { 
+        if(ready) return _texture.Value;
+        _texture.Wait();
+        return _texture.Value;
+      }
+    }
 
     public static implicit operator Texture2D(ReferencedTexture2D ct) => ct.texture;
     public static explicit operator ReferencedTexture2D(Texture2D tx) => new ReferencedTexture2D(tx.Name);
