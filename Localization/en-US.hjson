@@ -1,0 +1,343 @@
+Mods: {
+	OriMod: {
+		Common: {
+			Sein: "Sein"
+			SF: "Spirit Flame"
+			SpiritOrb: "Spirit Orb"
+			OriPotion: "Spirit Potion"
+			Medal: "Spirit Medallion"
+			LoreNibel: "Words of the Fallen Land of Nibel: "
+			LoreNiwen: "Words of the Spirits of New Niwen: "
+		}
+		Config: {
+			Label: {
+				Title: "Client Config"
+				PlayerLight: "Player Light"
+				PlayerLightGlobal: "Global Player Light"
+				StompDelay: "Stomp Activation Delay"
+				SoftCrouch: "Soft Crouch"
+				SmoothCamera: "Smooth Camera"
+				BurrowControls: "Burrow Controls"
+				Color1: "Player Color"
+				Color2: "Player Color (Secondary)"
+			}
+			Header: {
+				Gameplay: "Gameplay"
+				Controls: "Controls"
+				Aesthetics: "Aesthetics"
+			}
+			Tooltip: {
+				PlayerLight:
+					'''
+					Determines if your player faintly glows.
+					Default: true
+					'''
+				PlayerLightGlobal:
+					'''
+					Determines if all other players glow based on your config or their config.
+					Default: false
+					'''
+				StompDelay:
+					'''
+					Duration the Stomp key must be held until activating Stomp.
+					Default: 0
+					'''
+				SoftCrouch:
+					'''
+					Allows moving while holding crouch.
+					Default: false
+					'''
+				SmoothCamera:
+					'''
+					Smooths the camera when it moves.
+					Default: true
+					'''
+				BurrowControls:
+					'''
+					Determines which controls you use while burrowing.
+					Default: Mouse
+					'''
+				Color1:
+					'''
+					The color of your Spirit.
+					Default: 210, 255, 255
+					'''
+				Color2:
+					'''
+					The secondary color of your Spirit.
+					Default: 0, 0, 0, 0
+					'''
+			}
+		}
+		ItemName: {
+			SpiritOrb1: "{$Mods.OriMod.Common.SpiritOrb}"
+			SpiritOrb2: "Darkened {$Mods.OriMod.Common.SpiritOrb}"
+			SpiritOrb3: "Blazing {$Mods.OriMod.Common.SpiritOrb}"
+			SpiritOrb4: "Focused {$Mods.OriMod.Common.SpiritOrb}"
+			SpiritOrb5: "Divine {$Mods.OriMod.Common.SpiritOrb}"
+			SpiritOrb6: "Spiritual {$Mods.OriMod.Common.SpiritOrb}"
+			SpiritOrb7: "Ascended {$Mods.OriMod.Common.SpiritOrb}"
+			SpiritOrb8: "Grandmaster {$Mods.OriMod.Common.SpiritOrb}"
+			OriPotion: "{$Mods.OriMod.Common.OriPotion}"
+			OriPotionEmpty: "Spirit Bottle"
+			SpiritSapling: "Spirit Sprout"
+			SpiritSapling2: "Spirit Sapling"
+			SpiritSapling3: "Spirit Tree"
+			AbilityMedallionEmpty: "Blank {$Mods.OriMod.Common.Medal}"
+			AirJumpLevel1: "Double Jump {$Mods.OriMod.Common.Medal}"
+			AirJumpLevel2: "Triple Jump {$Mods.OriMod.Common.Medal}"
+			AirJumpLevel3: "Quadruple Jump {$Mods.OriMod.Common.Medal}"
+			AirJumpLevel4: "Quintuple Jump {$Mods.OriMod.Common.Medal}"
+			BashLevel1: "Bash {$Mods.OriMod.Common.Medal}"
+			BashLevel2: "Enhanced Bash {$Mods.OriMod.Common.Medal}"
+			BashLevel3: "Ultra Bash {$Mods.OriMod.Common.Medal}"
+			BurrowLevel1: "Burrow {$Mods.OriMod.Common.Medal}"
+			BurrowLevel2: "Enhanced Burrow {$Mods.OriMod.Common.Medal}"
+			BurrowLevel3: "Greater Burrow {$Mods.OriMod.Common.Medal}"
+			ChargeJumpLevel1: "Charge Jump {$Mods.OriMod.Common.Medal}"
+			ChargeJumpLevel2: "Wall Charge Jump {$Mods.OriMod.Common.Medal}"
+			ChargeJumpLevel3: "Launch {$Mods.OriMod.Common.Medal}"
+			ChargeJumpLevel4: "Ultra Launch {$Mods.OriMod.Common.Medal}"
+			ClimbLevel1: "Climb {$Mods.OriMod.Common.Medal}"
+			DashLevel1: "Dash {$Mods.OriMod.Common.Medal}"
+			DashLevel2: "Air Dash {$Mods.OriMod.Common.Medal}"
+			DashLevel3: "Charge Dash {$Mods.OriMod.Common.Medal}"
+			GlideLevel1: "Glide {$Mods.OriMod.Common.Medal}"
+			StompLevel1: "Stomp {$Mods.OriMod.Common.Medal}"
+			StompLevel2: "Enhanced Stomp {$Mods.OriMod.Common.Medal}"
+			StompLevel3: "Ultra Stomp {$Mods.OriMod.Common.Medal}"
+			WallJumpLevel1: "Wall Jump {$Mods.OriMod.Common.Medal}"
+		}
+		BuffName: {
+			SeinBuff1: "{$Mods.OriMod.Common.Sein}"
+			SeinBuff2: "{$Mods.OriMod.Common.Sein} (Darkened)"
+			SeinBuff3: "{$Mods.OriMod.Common.Sein} (Blazed)"
+			SeinBuff4: "{$Mods.OriMod.Common.Sein} (Focused)"
+			SeinBuff5: "{$Mods.OriMod.Common.Sein} (Divine)"
+			SeinBuff6: "{$Mods.OriMod.Common.Sein} (Spiritual)"
+			SeinBuff7: "{$Mods.OriMod.Common.Sein} (Ascended)"
+			SeinBuff8: "{$Mods.OriMod.Common.Sein} (Grandmaster)"
+		}
+		ItemTooltip: {
+			SpiritOrb1: "Calls forth a familiar ally."
+			SpiritOrb2: "Calls forth a trustworthy companion."
+			SpiritOrb3: "Calls forth a reliable friend."
+			SpiritOrb4: "Calls forth a dependable partner."
+			SpiritOrb5: "Calls forth your honorable comrade."
+			SpiritOrb6: "Calls forth your soul mate."
+			SpiritOrb7: "Calls forth the oracle of the Spirit Tree."
+			SpiritOrb8: "Calls forth the full might of the Spirit Tree."
+			OriPotion:
+				'''
+				Remotely change yourself to and from a Spirit
+				After use, the bottle can be refilled
+				"Taste the Spirit!"
+				'''
+			OriPotionEmpty:
+				'''
+				Refill at a Spirit Sapling
+				"The Spirit energy has been all used up."
+				'''
+			SpiritSapling: "A gift from the Spirit Tree."
+			SpiritSapling2: "A young Spirit Tree still in early growth."
+			SpiritSapling3: "A fully grown Spirit Tree, smaller in size than the most powerful ones."
+			AbilityMedallionEmpty: "Used to create strong {$Mods.OriMod.Common.Medal}s to unlock or upgrade abilities."
+			AirJumpLevel1:
+				'''
+				Unlocks Air Jump
+				Granting you the ability to jump from the air!
+				'''
+			AirJumpLevel2:
+				'''
+				Upgrades Air Jump to Level 2
+				Allows a second jump in the air!
+				'''
+			AirJumpLevel3:
+				'''
+				Upgrades Air Jump to Level 3
+				Allows a third jump in the air!
+				'''
+			AirJumpLevel4:
+				'''
+				Upgrades Air Jump to Level 4
+				You already know what this will do.
+				'''
+			BashLevel1:
+				'''
+				Unlocks Bash
+				Allows you to Bash on enemies, launching you
+				and your target in opposite directions!
+				'''
+			BashLevel2:
+				'''
+				Upgrades Bash to Level 2
+				Allows you to Bash 
+				projectiles, and deal damage to foes!
+				'''
+			BashLevel3:
+				'''
+				Upgrades Bash to Level 3
+				Greatly enhances your Bashing speeds,
+				distance, and damage dealt!
+				'''
+			BurrowLevel1:
+				'''
+				Unlocks Burrow
+				Allows you to burrow through the ground!
+				'''
+			BurrowLevel2:
+				'''
+				Upgrades Burrow to Level 2
+				Allows you to burrow through tougher terrain!
+				'''
+			BurrowLevel3:
+				'''
+				Upgrades Burrow to Level 3
+				Allows you to burrow through all terrain!
+				'''
+			ChargeJumpLevel1:
+				'''
+				Unlocks Charge Jump
+				Allows you to jump high into the air!
+				'''
+			ChargeJumpLevel2:
+				'''
+				Upgrades Charge Jump to Level 2
+				Allows you to jump high from walls!
+				'''
+			ChargeJumpLevel3:
+				'''
+				Upgrades Charge Jump to Level 3
+				Allows you to Launch yourself through the air!
+				'''
+			ChargeJumpLevel4:
+				'''
+				Upgrades Charge Jump to Level 4
+				Allows for powerful chains of Launches in the air!
+				'''
+			ClimbLevel1:
+				'''
+				Unlocks Climb
+				Allows you to hold on to and ascend walls!
+				'''
+			DashLevel1:
+				'''
+				Unlocks Dash
+				Allows you to Dash at high speeds!
+				'''
+			DashLevel2:
+				'''
+				Upgrades Dash to Level 2
+				Allows you to Dash in the air!
+				'''
+			DashLevel3:
+				'''
+				Upgrades Dash to Level 3
+				Allows you to quickly Dash into enemies, dealing damage!
+				'''
+			GlideLevel1:
+				'''
+				Unlocks Glide
+				Allows you to glide through the air!
+				'''
+			StompLevel1:
+				'''
+				Unlocks Stomp
+				Allows you to slam into the ground,
+				creating a shockwave to damage nearby enemies!
+				'''
+			StompLevel2:
+				'''
+				Upgrades Stomp to Level 2
+				Enhances your stomping capabilities
+				for even more damage, pushing enemies far back!
+				'''
+			StompLevel3:
+				'''
+				Upgrades Stomp to Level 3
+				Further enhances the power of Stomp!
+				'''
+			WallJumpLevel1:
+				'''
+				Unlocks Wall Jump
+				Allows you to jump on walls to ascend!
+				'''
+		}
+		BuffDescription: {
+			SeinBuff1: "The eyes of the Spirit Tree."
+			SeinBuff2: "The wrath of the Spirit Tree, sharpened by evil forces."
+			SeinBuff3: "The fury of the Spirit Tree, reinforced by the inferno."
+			SeinBuff4: "The focus of the Spirit Tree, fortified by serene metal."
+			SeinBuff5: "The light of the Spirit Tree, illuminated by holy essence."
+			SeinBuff6: "The intuition of the Spirit Tree, amplified by the supernatural."
+			SeinBuff7: "The presence of the Spirit Tree, brought forth by higher forces."
+			SeinBuff8: "The ultimate power of the Spirit Tree."
+		}
+		ProjectileName: {
+			SpiritFlame1: "{$Mods.OriMod.Common.SF}"
+			SpiritFlame2: "Darkened {$Mods.OriMod.Common.SF}"
+			SpiritFlame3: "Blazing {$Mods.OriMod.Common.SF}"
+			SpiritFlame4: "Focused {$Mods.OriMod.Common.SF}"
+			SpiritFlame5: "Divine {$Mods.OriMod.Common.SF}"
+			SpiritFlame6: "Amplified {$Mods.OriMod.Common.SF}"
+			SpiritFlame7: "Heightened {$Mods.OriMod.Common.SF}"
+		}
+		MapObject: {
+			SpiritSapling: "Spirit Sprout"
+			SpiritSapling2: "Spirit Sapling"
+			SpiritSapling3: "Spirit Tree"
+		}
+		Lore: {
+			AirJump: {
+				1: "Leru's gift, to cut through the air, proved instrumental in aiding Ori with their quest. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift."
+				2: "{$Mods.OriMod.Common.LoreNibel}In the months following the beginning of Nibel's Blindness, Leru found a key that sealed the Ginso Tree, and with it, possibly the way to saving her land."
+				3: "{$Mods.OriMod.Common.LoreNibel}Gumo had stolen the Water Vein from Leru. Without it, she could not enter the Ginso tree, the path to saving Nibel from Decay."
+				4: "{$Mods.OriMod.Common.LoreNibel}Leru had understood. Despite her determination, she simply lacked the strength to face Ginso's malaise. Even Reem, certainly more capable than Leru, has fallen to it already."
+			}
+			Bash: {
+				1: "{$Mods.OriMod.Common.LoreNibel}Reem quickly learned the issues plaguing Nibel, and possible solutions to the Blindness. He rushed alone, determined to fix the issue as soon as possible. This, however, proved unwise."
+				2: "{$Mods.OriMod.Common.LoreNibel}When the Ginso Tree's waters turned poisonous, Reem tried to help, but he could not predict just how bad the Decay would be when Nibel went blind."
+				3: "{$Mods.OriMod.Common.LoreNibel}Decay was a vicious force, Reem was forced to learn when he ascended the Ginso Tree. That knowledge was left to rot in his Ancestral Tree, deep within."
+			}
+			Burrow: {
+				1: "{$Mods.OriMod.Common.LoreNiwen}Many are the nameless Spirits of Niwen that have fallen to the Decay when the Mother of Light passed."
+				2: "{$Mods.OriMod.Common.LoreNiwen}What is a name, after life? It is a way to be remembered. A name conjures to mind the personality and accomplishments of those before."
+				3: "{$Mods.OriMod.Common.LoreNiwen}The Mother of Light, the Spirit Willow, what was her name? Was it forgotten? Had her second death preceded her first?"
+			}
+			ChargeJump: {
+				1: "{$Mods.OriMod.Common.LoreNibel}Ori felt a great sorrow from Nir's Ancestral Tree. Once a cheerful Spirit, the blinding of Nibel and loss of all her friends caused great despair. She remained in Sorrow Pass until her death."
+				2: "A union of Nir's and Tatsu's gifts, this {$Mods.OriMod.Common.Medal} represents the final ability Ori used in their quest to save Nibel."
+				3: "{$Mods.OriMod.Common.LoreNiwen}A Spirit bearing a Spirit Tree's Light? A ridiculous idea; a Spirit carrying so much Light would surely burst and sink roots on the spot."
+				4: "{$Mods.OriMod.Common.LoreNiwen}Normally Spiritkind is prepared for the death of their Spirit Tree; an extinction as a result of such a death is a truly rare event. Yet perhaps the cause was due to the nature of the Spirit Tree: willow trees have an incredibly short lifespan, and Niwen's spirits may have failed to prepare in time."
+			}
+			Climb: {
+				1: "{$Mods.OriMod.Common.LoreNibel}Tatsu and Atsu, brother and sister, often played in the Misty Woods, but when the Spirit Tree's Light faltered, Tatsu's own light could not last. When Ori found Tatsu, she was already an Ancestral Tree."
+			}
+			Dash: {
+				1: "{$Mods.OriMod.Common.LoreNibel}Eki was known as the fastest of spirits. Though that doesn't mean he was in a league of his own, many are able to keep pace."
+				2: "{$Mods.OriMod.Common.LoreNibel}Formidable rivals to Eki were well-known in Nibel's time. Among these were Amgis, Eatij, and Anoive."
+				3: "{$Mods.OriMod.Common.LoreNibel}In time, the spirit Sudicul would prove to be faster than even Eki."
+			}
+			Glide: {
+				1: "This {$Mods.OriMod.Common.Medal} holds memories of a feather, one that Ori took when he tricked Kuro."
+			}
+			Stomp: {
+				1: "Despite being known as the strongest of Nibel's Spirits, Ilo was a gentle Spirit. Still, his strength knew no bounds. This {$Mods.OriMod.Common.Medal} was a manifestation of his power."
+				2: "{$Mods.OriMod.Common.LoreNibel}Ilo gave it his all to protect the land of Nibel; however, no Spirit could survive Kuro's wrath..."
+				3: "{$Mods.OriMod.Common.LoreNibel}Ori alone would prove that strength does not come from power alone, no matter how much of it one has."
+			}
+			WallJump: {
+				Lv1: "Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift."
+			}
+		}
+		Upgrade: {
+			Sein: {
+				Unlock: {
+					Name: "Sein"
+					Description: "A companion, known as the Light and Eyes of the Spirit Tree."
+					Flavor: "Once a valuable companion to Ori, Sein is willing to help you on your quest."
+				}
+			}
+		}
+	}
+}
