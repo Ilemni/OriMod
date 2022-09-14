@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Audio;
+using ReLogic.Utilities;
 
 namespace OriMod.Projectiles.Minions {
   /// <summary>
@@ -22,7 +23,7 @@ namespace OriMod.Projectiles.Minions {
       Main.projFrames[Projectile.type] = 3;
       Main.projPet[Projectile.type] = true;
       ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-      //ProjectileID.Sets.Homing[Projectile.type] = true;
+      ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
       ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true; //This is necessary for right-click targeting
     }
 
@@ -181,12 +182,8 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <param name="path">Path of the sound effect to play. Relative to the Spirit Flame folder.</param>
     /// <param name="volume">Volume to play the sound at.</param>
-    private void PlaySpiritFlameSound(string path, float volume) {
-      var sound = new SoundStyle("Sounds/Custom/NewSFX/Ori/SpiritFlame/" + path) {
-        Volume = volume
-      };
-      SoundEngine.PlaySound(sound, Projectile.Center);
-    }
+    private SlotId PlaySpiritFlameSound(string path, float volume, out SoundStyle style) =>
+      SoundWrapper.PlaySound(Projectile.Center, "Ori/SpiritFlame/" + path, out style, volume);
 
     /// <summary>
     /// Ensures that the projectile position and velocity are valid.
@@ -352,7 +349,7 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <param name="hasTarget"></param>
     private void Attack(bool hasTarget) {
-      PlaySpiritFlameSound("Throw" + _spiritFlameSound + _rand.NextNoRepeat(3), 0.6f);
+      PlaySpiritFlameSound("Throw" + _spiritFlameSound + _rand.NextNoRepeat(3), 0.6f, out SoundStyle _);
 
       if (!hasTarget) {
         // Fire at air - nothing to target
@@ -410,7 +407,8 @@ namespace OriMod.Projectiles.Minions {
         (!AutoFire ? ManualShootDamageMultiplier : 1));
 
 
-      Projectile spiritFlame = Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Projectile.Center, shootVel, _spiritFlameType, dmg, Projectile.knockBack, Projectile.owner);
+      Projectile spiritFlame = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, shootVel, _spiritFlameType, dmg, Projectile.knockBack, Projectile.owner);
+      spiritFlame.originalDamage = _data.damage;
       spiritFlame.netUpdate = true;
       Projectile.netUpdate = true;
       if (npc is null) {
