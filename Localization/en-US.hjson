@@ -264,14 +264,38 @@ Mods: {
 				'''
 		}
 		BuffDescription: {
-			SeinBuff1: "The eyes of the Spirit Tree."
-			SeinBuff2: "The wrath of the Spirit Tree, sharpened by evil forces."
-			SeinBuff3: "The fury of the Spirit Tree, reinforced by the inferno."
-			SeinBuff4: "The focus of the Spirit Tree, fortified by serene metal."
-			SeinBuff5: "The light of the Spirit Tree, illuminated by holy essence."
-			SeinBuff6: "The intuition of the Spirit Tree, amplified by the supernatural."
-			SeinBuff7: "The presence of the Spirit Tree, brought forth by higher forces."
-			SeinBuff8: "The ultimate power of the Spirit Tree."
+			SeinBuff1:
+				'''
+				"The eyes of the Spirit Tree."
+				'''
+			SeinBuff2:
+				'''
+				"The wrath of the Spirit Tree, sharpened by evil forces."
+				'''
+			SeinBuff3:
+				'''
+				"The fury of the Spirit Tree, reinforced by the inferno."
+				'''
+			SeinBuff4:
+				'''
+				"The focus of the Spirit Tree, fortified by serene metal."
+				'''
+			SeinBuff5:
+				'''
+				"The light of the Spirit Tree, illuminated by holy essence."
+				'''
+			SeinBuff6:
+				'''
+				"The intuition of the Spirit Tree, amplified by the supernatural."
+				'''
+			SeinBuff7:
+				'''
+				"The presence of the Spirit Tree, brought forth by higher forces."
+				'''
+			SeinBuff8:
+				'''
+				"The ultimate power of the Spirit Tree."
+				'''
 		}
 		ProjectileName: {
 			SpiritFlame1: "{$Mods.OriMod.Common.SF}"
