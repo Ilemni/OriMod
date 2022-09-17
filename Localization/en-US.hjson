@@ -351,7 +351,7 @@ Mods: {
 				3: "{$Mods.OriMod.Common.LoreNibel}Ori alone would prove that strength does not come from power alone, no matter how much of it one has."
 			}
 			WallJump: {
-				Lv1: "Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift."
+				1: "Fil was the first of the fallen Spirits to grant Ori their gift, a legacy he had to leave behind so soon. This {$Mods.OriMod.Common.Medal} was a manifestation of such a gift."
 			}
 		}
 		Upgrade: {
