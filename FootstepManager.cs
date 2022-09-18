@@ -221,13 +221,13 @@ namespace OriMod {
     /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for footstep sounds.
     /// </summary>
     private static SlotId PlayFootstep(string path, int x, int y, float volume, out SoundStyle style)
-      => SoundWrapper.PlaySound(x, y, "OriMod/Sounds/Custom/NewSFX/Ori/Footsteps/" + path, out style, volume);
+      => SoundWrapper.PlaySound(x, y, "Ori/Footsteps/" + path, out style, volume);
 
     /// <summary>
     /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for landing sounds.
     /// </summary>
     private static SlotId PlayLanding(string path, int x, int y, float volume, out SoundStyle style)
-      => SoundWrapper.PlaySound(x, y, "OriMod/Sounds/Custom/NewSFX/Ori/Land/" + path, out style, volume, 0.1f);
+      => SoundWrapper.PlaySound(x, y, "Ori/Land/" + path, out style, volume, 0.1f);
     #endregion
 
     /// <summary>
