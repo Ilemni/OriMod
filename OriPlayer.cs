@@ -494,7 +494,6 @@ namespace OriMod {
       }
 
       if (!Transforming) return;
-      Local.Animations.Update();
       Player.direction = _transformDirection;
       Player.controlLeft = false;
       Player.controlRight = false;
@@ -506,6 +505,7 @@ namespace OriMod {
         Player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - transformTimer));
         Player.gravity = 0;
         CreatePlayerDust();
+        Local.Animations.Update();
       }
       else if (transformTimer < TransformStartDuration) {
         // Near end of start
