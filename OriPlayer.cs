@@ -41,7 +41,7 @@ namespace OriMod {
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
     /// </summary>
     internal OriAnimationController Animations =>
-      _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(Main.gameMenu ? this : Local));
+        _anim ??= AnimLibMod.GetAnimationController<OriAnimationController>(Player.GetModPlayer<OriPlayer>());
 
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
