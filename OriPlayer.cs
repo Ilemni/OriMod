@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using AnimLib;
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
@@ -294,7 +293,7 @@ namespace OriMod {
     /// </summary>
     internal void BeginTransformation() {
       Transforming = true;
-      _transformDirection = (sbyte) Player.direction;
+      _transformDirection = (sbyte)Player.direction;
       transformTimer = 0;
     }
 
@@ -423,7 +422,7 @@ namespace OriMod {
         ["Color2"] = SpriteColorSecondary
       };
       abilities.Save(_tag);
-      foreach(var v in _tag) tag.Add(v);
+      foreach (var v in _tag) tag.Add(v);
     }
 
     public override void LoadData(TagCompound tag) {
@@ -611,7 +610,7 @@ namespace OriMod {
       }
 
       return !Collision.IsClearSpotTest(Player.position + new Vector2(0, 8 * Player.gravDir), 16f, Player.width,
-        Player.height, false, false, (int) Player.gravDir, true, true);
+        Player.height, false, false, (int)Player.gravDir, true, true);
     }
 
     private bool CheckOnWall() {
@@ -695,7 +694,7 @@ namespace OriMod {
         return;
       }
 
-      if(Player.dead || Player.invis || !Animations.playerAnim.Valid) {
+      if (Player.dead || Player.invis || !Animations.playerAnim.Valid) {
         OriLayers.playerSprite.Hide();
       }
 
@@ -725,6 +724,7 @@ namespace OriMod {
       PlayerDrawLayers.EyebrellaCloud.Hide();
       PlayerDrawLayers.FaceAcc.Hide();
       PlayerDrawLayers.FinchNest.Hide();
+      PlayerDrawLayers.ForbiddenSetRing.Hide();
       PlayerDrawLayers.FrontAccBack.Hide();
       PlayerDrawLayers.FrontAccFront.Hide();
       PlayerDrawLayers.FrozenOrWebbedDebuff.Hide();
@@ -732,7 +732,6 @@ namespace OriMod {
       PlayerDrawLayers.HandOnAcc.Hide();
       PlayerDrawLayers.Head.Hide();
       PlayerDrawLayers.HeadBack.Hide();
-      PlayerDrawLayers.HeldItem.Hide();
       PlayerDrawLayers.IceBarrier.Hide();
       PlayerDrawLayers.JimsCloak.Hide();
       PlayerDrawLayers.Leggings.Hide();
@@ -742,6 +741,7 @@ namespace OriMod {
       PlayerDrawLayers.PortableStool.Hide();
       PlayerDrawLayers.ProjectileOverArm.Hide();
       PlayerDrawLayers.Robe.Hide();
+      PlayerDrawLayers.SafemanSun.Hide();
       PlayerDrawLayers.Shield.Hide();
       PlayerDrawLayers.Shoes.Hide();
       PlayerDrawLayers.Skin.Hide();
@@ -753,10 +753,11 @@ namespace OriMod {
       PlayerDrawLayers.WebbedDebuffBack.Hide();
 
       if (OnWall || Transforming || abilities.stomp || abilities.airJump || abilities.burrow || abilities.chargeJump ||
-          abilities.wallChargeJump) {
+    abilities.wallChargeJump) {
+        PlayerDrawLayers.HeldItem.Hide();
         PlayerDrawLayers.Wings.Hide();
       }
-      
+
       #endregion
 
       /*if (Abilities.soulLink.PlacedSoulLink) {

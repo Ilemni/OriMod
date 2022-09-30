@@ -49,7 +49,7 @@ namespace OriMod {
         }
       }
       public override Position GetDefaultPosition() => 
-        new Between(ModContent.GetInstance<OriBashArrowLayer>(), null);
+        new Between(ModContent.GetInstance<OriBashArrowLayer>(), PlayerDrawLayers.MountFront);
     }
     internal static PlayerDrawLayer playerSprite { get; private set; }
 
