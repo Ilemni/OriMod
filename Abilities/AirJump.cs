@@ -26,7 +26,7 @@ namespace OriMod.Abilities {
     private sbyte _gravityDirection;
 
     protected override void ReadPacket(BinaryReader r) {
-      currentCooldown = r.ReadUInt16();
+      currentCount = r.ReadUInt16();
       _gravityDirection = r.ReadSByte();
       player.position = r.ReadVector2();
       player.velocity = r.ReadVector2();
