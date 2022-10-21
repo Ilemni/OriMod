@@ -715,16 +715,13 @@ namespace OriMod {
       PlayerDrawLayers.ArmorLongCoat.Hide();
       PlayerDrawLayers.ArmOverItem.Hide();
       PlayerDrawLayers.BackAcc.Hide();
-      PlayerDrawLayers.Backpacks.Hide();
       PlayerDrawLayers.BalloonAcc.Hide();
-      PlayerDrawLayers.BeetleBuff.Hide();
+      //PlayerDrawLayers.BeetleBuff.Hide();
       PlayerDrawLayers.BladedGlove.Hide();
       PlayerDrawLayers.ElectrifiedDebuffBack.Hide();
       PlayerDrawLayers.ElectrifiedDebuffFront.Hide();
-      PlayerDrawLayers.EyebrellaCloud.Hide();
       PlayerDrawLayers.FaceAcc.Hide();
       PlayerDrawLayers.FinchNest.Hide();
-      PlayerDrawLayers.ForbiddenSetRing.Hide();
       PlayerDrawLayers.FrontAccBack.Hide();
       PlayerDrawLayers.FrontAccFront.Hide();
       PlayerDrawLayers.FrozenOrWebbedDebuff.Hide();
@@ -732,21 +729,18 @@ namespace OriMod {
       PlayerDrawLayers.HandOnAcc.Hide();
       PlayerDrawLayers.Head.Hide();
       PlayerDrawLayers.HeadBack.Hide();
-      PlayerDrawLayers.IceBarrier.Hide();
+      //PlayerDrawLayers.IceBarrier.Hide();
       PlayerDrawLayers.JimsCloak.Hide();
       PlayerDrawLayers.Leggings.Hide();
-      PlayerDrawLayers.LeinforsHairShampoo.Hide();
       PlayerDrawLayers.NeckAcc.Hide();
       PlayerDrawLayers.OffhandAcc.Hide();
-      PlayerDrawLayers.PortableStool.Hide();
       PlayerDrawLayers.ProjectileOverArm.Hide();
       PlayerDrawLayers.Robe.Hide();
-      PlayerDrawLayers.SafemanSun.Hide();
+      //PlayerDrawLayers.SafemanSun.Hide();
       PlayerDrawLayers.Shield.Hide();
       PlayerDrawLayers.Shoes.Hide();
       PlayerDrawLayers.Skin.Hide();
       PlayerDrawLayers.SkinLongCoat.Hide();
-      PlayerDrawLayers.SolarShield.Hide();
       PlayerDrawLayers.Tails.Hide();
       PlayerDrawLayers.Torso.Hide();
       PlayerDrawLayers.WaistAcc.Hide();
@@ -756,6 +750,12 @@ namespace OriMod {
     abilities.wallChargeJump) {
         PlayerDrawLayers.HeldItem.Hide();
         PlayerDrawLayers.Wings.Hide();
+        PlayerDrawLayers.Backpacks.Hide();
+        PlayerDrawLayers.ForbiddenSetRing.Hide();
+        PlayerDrawLayers.LeinforsHairShampoo.Hide();
+        //PlayerDrawLayers.EyebrellaCloud.Hide();
+        PlayerDrawLayers.SolarShield.Hide();
+        PlayerDrawLayers.PortableStool.Hide();
       }
 
       #endregion
