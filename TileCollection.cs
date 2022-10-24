@@ -19,7 +19,7 @@ namespace OriMod {
       tilePickaxeMin.AssignValueToKeys<ushort>(0, TileID.Sand, TileID.Slush, TileID.Silt);
       tilePickaxeMin.AssignValueToKeys<ushort>(1,
         TileID.Dirt, TileID.Mud, TileID.ClayBlock, TileID.SnowBlock,
-        TileID.Grass, TileID.CorruptGrass, TileID.FleshGrass, TileID.HallowedGrass, TileID.JungleGrass, TileID.MushroomGrass
+        TileID.Grass, TileID.CorruptGrass, TileID.CrimsonGrass, TileID.HallowedGrass, TileID.JungleGrass, TileID.MushroomGrass
       );
       tilePickaxeMin.AssignValueToKeys<ushort>(50, TileID.Meteorite);
       tilePickaxeMin.AssignValueToKeys<ushort>(55, TileID.Demonite, TileID.Crimtane);
@@ -35,7 +35,7 @@ namespace OriMod {
 
       for (i = TileID.Count; i < TileLoader.TileCount; i++) {
         ModTile modTile = TileLoader.GetTile(i);
-        tilePickaxeMin[i] = (ushort)modTile.minPick;
+        tilePickaxeMin[i] = (ushort)modTile.MinPick;
       }
     }
 

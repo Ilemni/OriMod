@@ -4,6 +4,7 @@ using OriMod.Dusts;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
@@ -16,7 +17,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal Ability(AbilityManager abilities) {
       oPlayer = abilities.oPlayer;
-      player = oPlayer.player;
+      player = oPlayer.Player;
     }
 
     /// <summary>
@@ -212,7 +213,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreReadPacket(BinaryReader r) {
       AbilityState = (State)r.ReadByte();
-      if (!(levelableDependency is null)) {
+      if (levelableDependency is not null) {
         levelableDependency.Level = r.ReadByte();
       }
       CurrentTime = r.ReadInt32();
@@ -224,7 +225,7 @@ namespace OriMod.Abilities {
     /// </summary>
     internal void PreWritePacket(ModPacket packet) {
       packet.Write((byte)AbilityState);
-      if (!(levelableDependency is null)) {
+      if (levelableDependency is not null) {
         packet.Write(levelableDependency.Level);
       }
       packet.Write(CurrentTime);
@@ -310,7 +311,7 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Rudimentary implementation, for now manually called in <see cref="OriLayers"/>.
     /// </summary>
-    internal virtual void DrawEffects() { }
+    internal virtual void DrawEffects(ref PlayerDrawSet drawInfo) { }
     #endregion
 
     /// <summary>
@@ -321,7 +322,7 @@ namespace OriMod.Abilities {
     /// <param name="damage">Damage of the projectile. Use this if the <see cref="AbilityProjectile"/> does not modify damage on its own.</param>
     /// <typeparam name="T">Type of <see cref="AbilityProjectile"/> to create.</typeparam>
     /// <returns>A new <see cref="Projectile"/> with a <see cref="ModProjectile"/> of type <typeparamref name="T"/>.</returns>
-    protected Projectile NewAbilityProjectile<T>(Vector2 offset = default, Vector2 velocity = default, int damage = 0) where T : AbilityProjectile => Projectile.NewProjectileDirect(player.Center + offset, velocity, ModContent.ProjectileType<T>(), damage, 0, player.whoAmI, Level);
+    protected Projectile NewAbilityProjectile<T>(Vector2 offset = default, Vector2 velocity = default, int damage = 0) where T : AbilityProjectile => Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center + offset, velocity, ModContent.ProjectileType<T>(), damage, 0, player.whoAmI, Level);
 
     /// <summary>
     /// String representation of the ability. ID, name, level/max level, current time, and cooldown if applicable.
@@ -339,7 +340,7 @@ namespace OriMod.Abilities {
     /// Whether or not the <see cref="Ability"/> is in use.
     /// </summary>
     /// <seealso cref="InUse"/>
-    public static implicit operator bool(Ability ability) => !(ability is null) && ability.InUse;
+    public static implicit operator bool(Ability ability) => ability is not null && ability.InUse;
 
     /// <summary>
     /// States that the <see cref="Ability"/> can be in. Determines update logic.

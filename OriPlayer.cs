@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using AnimLib;
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
@@ -7,6 +6,7 @@ using OriMod.Buffs;
 using OriMod.Networking;
 using OriMod.Utilities;
 using Terraria;
+using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
@@ -40,7 +40,7 @@ namespace OriMod {
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
     /// </summary>
     internal OriAnimationController Animations =>
-      _anim ?? (_anim = AnimLibMod.GetAnimationController<OriAnimationController>(player));
+        _anim ??= AnimLibMod.GetAnimationController<OriAnimationController>(Player.GetModPlayer<OriPlayer>());
 
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
@@ -204,8 +204,8 @@ namespace OriMod {
     /// </summary>
     internal int immuneTimer;
 
-    private readonly RandomChar _randJump = new RandomChar();
-    private readonly RandomChar _randHurt = new RandomChar();
+    private readonly RandomChar _randJump = new();
+    private readonly RandomChar _randHurt = new();
 
     #region Aesthetics
 
@@ -247,7 +247,7 @@ namespace OriMod {
       ? OriMod.ConfigClient.playerLight
       : multiplayerPlayerLight;
 
-    private Color _lightColor = new Color(0.2f, 0.4f, 0.4f);
+    private Color _lightColor = new(0.2f, 0.4f, 0.4f);
 
     #endregion
 
@@ -270,12 +270,12 @@ namespace OriMod {
     #region Internal Methods
 
     internal void PlaySound(string path, float volume = 1, float pitch = 0) {
-      SoundWrapper.PlaySound(player.Center, path, volume, pitch);
+      SoundWrapper.PlaySound(Player.Center, path, out SoundStyle _, volume, pitch);
     }
 
     internal void PlayLocalSound(string path, float volume = 1, float pitch = 0) {
       if (IsLocal)
-        SoundWrapper.PlaySound(player.Center, path, volume, pitch);
+        SoundWrapper.PlaySound(Player.Center, path, out SoundStyle _, volume, pitch);
     }
 
     /// <summary>
@@ -293,7 +293,7 @@ namespace OriMod {
     /// </summary>
     internal void BeginTransformation() {
       Transforming = true;
-      _transformDirection = (sbyte) player.direction;
+      _transformDirection = (sbyte)Player.direction;
       transformTimer = 0;
     }
 
@@ -302,7 +302,7 @@ namespace OriMod {
     /// </summary>
     internal void RemoveSeinBuffs() {
       for (int u = 1; u <= SeinData.All.Length; u++) {
-        player.ClearBuff(mod.GetBuff("SeinBuff" + u).Type);
+        Player.ClearBuff(ModContent.Find<ModBuff>(Mod.Name, "SeinBuff" + u).Type);
       }
     }
 
@@ -312,7 +312,7 @@ namespace OriMod {
     internal void KillGrapples() {
       for (int i = 0; i < 1000; i++) {
         Projectile proj = Main.projectile[i];
-        if (proj.active && proj.owner == player.whoAmI && proj.aiStyle == 7) {
+        if (proj.active && proj.owner == Player.whoAmI && proj.aiStyle == 7) {
           proj.Kill();
         }
       }
@@ -327,7 +327,7 @@ namespace OriMod {
       }
 
       Dust dust = Main.dust[
-        Dust.NewDust(player.position, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, new Color(255, 255, 255))];
+        Dust.NewDust(Player.position, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, new Color(255, 255, 255))];
       dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
       dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
       dust.noGravity = false;
@@ -343,8 +343,8 @@ namespace OriMod {
     /// </summary>
     /// <param name="value"></param>
     private void LowerGravityTo(float value) {
-      if (value < player.gravity) {
-        player.gravity = value;
+      if (value < Player.gravity) {
+        Player.gravity = value;
       }
     }
 
@@ -388,8 +388,8 @@ namespace OriMod {
 
       if (immuneTimer > 1) {
         immuneTimer--;
-        player.immune = true;
-        player.immuneNoBlink = true;
+        Player.immune = true;
+        Player.immuneNoBlink = true;
       }
 
       if (Main.netMode != NetmodeID.Server) {
@@ -401,27 +401,31 @@ namespace OriMod {
       Abilities.soulLink.UpdateDead();
     }*/
 
+    public override void clientClone(ModPlayer clientClone) {
+      base.clientClone(clientClone);
+    }
+
     public override void SendClientChanges(ModPlayer clientPlayer) {
       if (_netUpdate) {
-        ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, player.whoAmI);
+        ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, Player.whoAmI);
         _netUpdate = false;
       }
 
       abilities.SendClientChanges();
     }
 
-    public override TagCompound Save() {
-      TagCompound tag = new TagCompound {
+    public override void SaveData(TagCompound tag) {
+      TagCompound _tag = new() {
         ["OriSet"] = IsOri,
         ["Debug"] = debugMode,
         ["Color1"] = SpriteColorPrimary,
         ["Color2"] = SpriteColorSecondary
       };
-      abilities.Save(tag);
-      return tag;
+      abilities.Save(_tag);
+      foreach (var v in _tag) tag.Add(v);
     }
 
-    public override void Load(TagCompound tag) {
+    public override void LoadData(TagCompound tag) {
       IsOri = tag.GetBool("OriSet");
       debugMode = tag.GetBool("Debug");
       if (tag.ContainsKey("Color1")) {
@@ -442,8 +446,8 @@ namespace OriMod {
     }
 
     public override void PostUpdateMiscEffects() {
-      IsGrappling = player.grappling[0] > -1;
-      if (player.HasBuff(BuffID.TheTongue) || IsGrappling) {
+      IsGrappling = Player.grappling[0] > -1;
+      if (Player.HasBuff(BuffID.TheTongue) || IsGrappling) {
         abilities.DisableAllAbilities();
       }
     }
@@ -452,16 +456,16 @@ namespace OriMod {
       if (IsOri && !Transforming) {
         #region Default Spirit Run Speeds
 
-        player.runAcceleration = 0.5f;
-        player.maxRunSpeed += 2f;
-        player.noFallDmg = true;
+        Player.runAcceleration = 0.5f;
+        Player.maxRunSpeed += 2f;
+        Player.noFallDmg = true;
         LowerGravityTo(0.35f);
-        player.jumpSpeedBoost += 2f;
-        if (IsGrounded || player.controlLeft || player.controlRight) {
+        Player.jumpSpeedBoost += 2f;
+        if (IsGrounded || Player.controlLeft || Player.controlRight) {
           UnrestrictedMovement = false;
         }
 
-        player.runSlowdown = UnrestrictedMovement ? 0 : 1;
+        Player.runSlowdown = UnrestrictedMovement ? 0 : 1;
 
         #endregion
 
@@ -473,15 +477,15 @@ namespace OriMod {
         // Reduce gravity when clinging on wall
         if (OnWall) {
           // Either grounded or falling, not climbing
-          if ((IsGrounded || player.velocity.Y * player.gravDir < 0) && !abilities.climb && !abilities.airJump) {
+          if ((IsGrounded || Player.velocity.Y * Player.gravDir < 0) && !abilities.climb && !abilities.airJump) {
             LowerGravityTo(0.1f);
-            player.maxFallSpeed = 6f;
-            player.jumpSpeedBoost -= 6f;
+            Player.maxFallSpeed = 6f;
+            Player.jumpSpeedBoost -= 6f;
           }
           // Sliding upward on wall, not stomping
-          else if (!IsGrounded && player.velocity.Y * player.gravDir > 0 && !abilities.stomp && !abilities.airJump) {
+          else if (!IsGrounded && Player.velocity.Y * Player.gravDir > 0 && !abilities.stomp && !abilities.airJump) {
             LowerGravityTo(0.1f);
-            player.maxFallSpeed = 6f;
+            Player.maxFallSpeed = 6f;
           }
         }
 
@@ -489,21 +493,22 @@ namespace OriMod {
       }
 
       if (!Transforming) return;
-      player.direction = _transformDirection;
-      player.controlLeft = false;
-      player.controlRight = false;
-      player.controlUp = false;
-      player.controlDown = false;
-      player.controlUseItem = false;
+      Player.direction = _transformDirection;
+      Player.controlLeft = false;
+      Player.controlRight = false;
+      Player.controlUp = false;
+      Player.controlDown = false;
+      Player.controlUseItem = false;
       if (transformTimer < TransformStartDuration - 10) {
         // Starting
-        player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - transformTimer));
-        player.gravity = 0;
+        Player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - transformTimer));
+        Player.gravity = 0;
         CreatePlayerDust();
+        Local.Animations.Update();
       }
       else if (transformTimer < TransformStartDuration) {
         // Near end of start
-        player.gravity = 9f;
+        Player.gravity = 9f;
         IsOri = true;
       }
       else if (transformTimer >= TransformEndDuration ||
@@ -514,8 +519,8 @@ namespace OriMod {
         IsOri = true;
       }
 
-      player.runAcceleration = 0;
-      player.maxRunSpeed = 0;
+      Player.runAcceleration = 0;
+      Player.maxRunSpeed = 0;
     }
 
     public override void PostUpdate() {
@@ -525,14 +530,14 @@ namespace OriMod {
 
       if (SeinMinionActive) {
         if (!(
-              player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
-              player.HasBuff(ModContent.BuffType<SeinBuff2>()) ||
-              player.HasBuff(ModContent.BuffType<SeinBuff3>()) ||
-              player.HasBuff(ModContent.BuffType<SeinBuff4>()) ||
-              player.HasBuff(ModContent.BuffType<SeinBuff5>()) ||
-              player.HasBuff(ModContent.BuffType<SeinBuff6>()) ||
-              player.HasBuff(ModContent.BuffType<SeinBuff7>()) ||
-              player.HasBuff(ModContent.BuffType<SeinBuff8>())
+              Player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
+              Player.HasBuff(ModContent.BuffType<SeinBuff2>()) ||
+              Player.HasBuff(ModContent.BuffType<SeinBuff3>()) ||
+              Player.HasBuff(ModContent.BuffType<SeinBuff4>()) ||
+              Player.HasBuff(ModContent.BuffType<SeinBuff5>()) ||
+              Player.HasBuff(ModContent.BuffType<SeinBuff6>()) ||
+              Player.HasBuff(ModContent.BuffType<SeinBuff7>()) ||
+              Player.HasBuff(ModContent.BuffType<SeinBuff8>())
             )) {
           SeinMinionActive = false;
           SeinMinionType = 0;
@@ -540,10 +545,11 @@ namespace OriMod {
       }
 
       if (IsOri) {
+        Animations.Update();
         abilities.PostUpdate();
 
         if (DoPlayerLight && !abilities.burrow.Active) {
-          Lighting.AddLight(player.Center, _lightColor.ToVector3());
+          Lighting.AddLight(Player.Center, _lightColor.ToVector3());
         }
 
         if (input.jump.JustPressed && IsGrounded && !abilities.burrow) {
@@ -559,15 +565,15 @@ namespace OriMod {
         bool doDust = false;
         if (!oldGrounded) {
           doDust = true;
-          FootstepManager.Instance.PlayLandingFromPlayer(player);
+          FootstepManager.Instance.PlayLandingFromPlayer(Player, out SoundStyle _);
         }
         else if (Animations.TrackName == "Running" && (Animations.FrameIndex == 4 || Animations.FrameIndex == 9)) {
           doDust = true;
-          FootstepManager.Instance.PlayFootstepFromPlayer(player);
+          FootstepManager.Instance.PlayFootstepFromPlayer(Player, out SoundStyle _);
         }
 
         if (doDust) {
-          Vector2 dustPos = player.Bottom + new Vector2(player.direction == -1 ? -4 : 2, -2);
+          Vector2 dustPos = Player.Bottom + new Vector2(Player.direction == -1 ? -4 : 2, -2);
           for (int i = 0; i < 4; i++) {
             Dust dust = Main.dust[
               Dust.NewDust(dustPos, 2, 2, DustID.Clentaminator_Cyan, 0f, -2.7f, 0, new Color(255, 255, 255))];
@@ -586,31 +592,31 @@ namespace OriMod {
     }
 
     private bool CheckGrounded() {
-      float vel = player.velocity.Y * player.gravDir;
+      float vel = Player.velocity.Y * Player.gravDir;
       if (vel < 0 || vel > 0.01f || abilities.climb) {
         return false;
       }
 
-      Vector2 feetPosition = player.gravDir > 0 ? player.Bottom : player.Top;
-      feetPosition.Y += 1f / 255f * player.gravDir;
+      Vector2 feetPosition = Player.gravDir > 0 ? Player.Bottom : Player.Top;
+      feetPosition.Y += 1f / 255f * Player.gravDir;
       Point pos = feetPosition.ToTileCoordinates();
       // ReSharper disable once InvertIf
-      if (player.fireWalk || player.waterWalk || player.waterWalk2) {
+      if (Player.fireWalk || Player.waterWalk || Player.waterWalk2) {
         Tile tile = Main.tile[pos.X, pos.Y];
-        bool testBlock = tile.liquid > 0 && Main.tile[pos.X, pos.Y - 1].liquid == 0;
-        if (testBlock && tile.lava() ? player.fireWalk : player.waterWalk || player.waterWalk2) {
+        bool testBlock = tile.LiquidAmount > 0 && Main.tile[pos.X, pos.Y - 1].LiquidAmount == 0;
+        if (testBlock && (tile.LiquidType == LiquidID.Lava) ? Player.fireWalk : Player.waterWalk || Player.waterWalk2) {
           return true;
         }
       }
 
-      return !Collision.IsClearSpotTest(player.position + new Vector2(0, 8 * player.gravDir), 16f, player.width,
-        player.height, false, false, (int) player.gravDir, true, true);
+      return !Collision.IsClearSpotTest(Player.position + new Vector2(0, 8 * Player.gravDir), 16f, Player.width,
+        Player.height, false, false, (int)Player.gravDir, true, true);
     }
 
     private bool CheckOnWall() {
       Point p = new Vector2(
-        player.Center.X + player.direction + player.direction * player.width * 0.5f,
-        player.position.Y + (player.gravDir < 0f ? -1f : 2f)
+        Player.Center.X + Player.direction + Player.direction * Player.width * 0.5f,
+        Player.position.Y + (Player.gravDir < 0f ? -1f : 2f)
       ).ToTileCoordinates();
       return WorldGen.SolidTile(p.X, p.Y + 1) && WorldGen.SolidTile(p.X, p.Y + 2);
     }
@@ -620,13 +626,13 @@ namespace OriMod {
         return;
       }
 
-      if (player.velocity.LengthSquared() > 0.2f) {
+      if (Player.velocity.LengthSquared() > 0.2f) {
         CreatePlayerDust();
       }
     }
 
     public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit,
-      ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource) {
+      ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource, ref int countdown) {
       if (!IsOri) {
         return true;
       }
@@ -643,7 +649,7 @@ namespace OriMod {
       return true;
     }
 
-    public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit) {
+    public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit, int countdown) {
       if (!_useCustomHurtSound) return;
       _useCustomHurtSound = false;
       PlaySound("Ori/Hurt/seinHurtRegular" + _randHurt.NextNoRepeat(4), 0.75f);
@@ -671,7 +677,7 @@ namespace OriMod {
       if (!genGore) return true;
       genGore = false;
       for (int i = 0; i < 15; i++) {
-        Dust dust = Dust.NewDustDirect(player.position, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0,
+        Dust dust = Dust.NewDustDirect(Player.position, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0,
           new Color(255, 255, 255));
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
       }
@@ -679,30 +685,77 @@ namespace OriMod {
       return true;
     }
 
-    public override void ModifyDrawLayers(List<PlayerLayer> layers) {
+    public override void HideDrawLayers(PlayerDrawSet drawInfo) {
       if (!IsOri && !Transforming) {
+        OriLayers.playerSprite.Hide();
+        OriLayers.trailLayer.Hide();
+        OriLayers.featherSprite.Hide();
+        OriLayers.bashArrow.Hide();
         return;
+      }
+
+      if (Player.dead || Player.invis || !Animations.playerAnim.Valid) {
+        OriLayers.playerSprite.Hide();
+      }
+
+      if (!Animations.playerAnim.Valid || abilities.burrow || Player.mount.Active) {
+        OriLayers.trailLayer.Hide();
+      }
+
+      if (!abilities.glide) {
+        OriLayers.featherSprite.Hide();
+      }
+
+      if (!abilities.bash && !abilities.launch.Starting) {
+        OriLayers.bashArrow.Hide();
       }
 
       #region Disable vanilla layers
 
-      PlayerLayer.Skin.visible = false;
-      PlayerLayer.Arms.visible = false;
-      PlayerLayer.Body.visible = false;
-      PlayerLayer.Face.visible = false;
-      PlayerLayer.Head.visible = false;
-      PlayerLayer.Legs.visible = false;
-      PlayerLayer.WaistAcc.visible = false;
-      PlayerLayer.NeckAcc.visible = false;
-      PlayerLayer.ShieldAcc.visible = false;
-      PlayerLayer.FaceAcc.visible = false;
-      PlayerLayer.Hair.visible = false;
-      PlayerLayer.ShoeAcc.visible = false;
-      PlayerLayer.HandOnAcc.visible = false;
-      PlayerLayer.HandOffAcc.visible = false;
+      PlayerDrawLayers.ArmorLongCoat.Hide();
+      PlayerDrawLayers.ArmOverItem.Hide();
+      PlayerDrawLayers.BackAcc.Hide();
+      PlayerDrawLayers.BalloonAcc.Hide();
+      //PlayerDrawLayers.BeetleBuff.Hide();
+      PlayerDrawLayers.BladedGlove.Hide();
+      PlayerDrawLayers.ElectrifiedDebuffBack.Hide();
+      PlayerDrawLayers.ElectrifiedDebuffFront.Hide();
+      PlayerDrawLayers.FaceAcc.Hide();
+      PlayerDrawLayers.FinchNest.Hide();
+      PlayerDrawLayers.FrontAccBack.Hide();
+      PlayerDrawLayers.FrontAccFront.Hide();
+      PlayerDrawLayers.FrozenOrWebbedDebuff.Hide();
+      PlayerDrawLayers.HairBack.Hide();
+      PlayerDrawLayers.HandOnAcc.Hide();
+      PlayerDrawLayers.Head.Hide();
+      PlayerDrawLayers.HeadBack.Hide();
+      //PlayerDrawLayers.IceBarrier.Hide();
+      PlayerDrawLayers.JimsCloak.Hide();
+      PlayerDrawLayers.Leggings.Hide();
+      PlayerDrawLayers.NeckAcc.Hide();
+      PlayerDrawLayers.OffhandAcc.Hide();
+      PlayerDrawLayers.ProjectileOverArm.Hide();
+      PlayerDrawLayers.Robe.Hide();
+      //PlayerDrawLayers.SafemanSun.Hide();
+      PlayerDrawLayers.Shield.Hide();
+      PlayerDrawLayers.Shoes.Hide();
+      PlayerDrawLayers.Skin.Hide();
+      PlayerDrawLayers.SkinLongCoat.Hide();
+      PlayerDrawLayers.Tails.Hide();
+      PlayerDrawLayers.Torso.Hide();
+      PlayerDrawLayers.WaistAcc.Hide();
+      PlayerDrawLayers.WebbedDebuffBack.Hide();
+
       if (OnWall || Transforming || abilities.stomp || abilities.airJump || abilities.burrow || abilities.chargeJump ||
-          abilities.wallChargeJump) {
-        PlayerLayer.Wings.visible = false;
+    abilities.wallChargeJump) {
+        PlayerDrawLayers.HeldItem.Hide();
+        PlayerDrawLayers.Wings.Hide();
+        PlayerDrawLayers.Backpacks.Hide();
+        PlayerDrawLayers.ForbiddenSetRing.Hide();
+        PlayerDrawLayers.LeinforsHairShampoo.Hide();
+        //PlayerDrawLayers.EyebrellaCloud.Hide();
+        PlayerDrawLayers.SolarShield.Hide();
+        PlayerDrawLayers.PortableStool.Hide();
       }
 
       #endregion
@@ -710,29 +763,6 @@ namespace OriMod {
       /*if (Abilities.soulLink.PlacedSoulLink) {
         layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
       }*/
-      int idx = layers.IndexOf(PlayerLayer.FaceAcc);
-
-      if (IsOri) {
-        if (Animations.playerAnim.Valid && !abilities.burrow && !player.mount.Active) {
-          layers.Insert(idx++, OriLayers.Instance.trailLayer);
-        }
-
-        if (abilities.glide) {
-          layers.Insert(idx++, OriLayers.Instance.featherSprite);
-        }
-
-        if (abilities.bash || abilities.launch.Starting) {
-          layers.Insert(idx++, OriLayers.Instance.bashArrow);
-        }
-      }
-
-      if (!player.dead && !player.invis && Animations.playerAnim.Valid) {
-        layers.Insert(idx, OriLayers.Instance.playerSprite);
-      }
-
-      player.head = mod.GetEquipSlot("OriHead", EquipType.Head);
-      OriLayers.Instance.trailLayer.visible =
-        OriLayers.Instance.playerSprite.visible && !abilities.burrow && !player.mount.Active;
     }
 
     public override void OnEnterWorld(Player p) {

@@ -1,6 +1,5 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -10,10 +9,10 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.Glide;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe();
-      recipe.AddIngredient(ItemID.Feather, 10);
-      recipe.AddIngredient(ItemID.SoulofNight, 20);
-      recipe.AddRecipe();
+      GetAbilityRecipe()
+        .AddIngredient(ItemID.Feather, 10)
+        .AddIngredient(ItemID.SoulofNight, 20)
+        .Register();
     }
   }
 }

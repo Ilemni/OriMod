@@ -27,7 +27,7 @@ namespace OriMod.Projectiles {
     }
 
     public override bool CanHitPlayer(Projectile projectile, Player target) {
-      return !IsBashed || target != BashPlayer.player;
+      return !IsBashed || target != BashPlayer.Player;
     }
   }
 }

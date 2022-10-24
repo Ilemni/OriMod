@@ -1,6 +1,5 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -10,9 +9,9 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.Burrow;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe();
-      recipe.AddIngredient(ItemID.HellstoneBar, 26);
-      recipe.AddRecipe();
+      GetAbilityRecipe()
+        .AddIngredient(ItemID.HellstoneBar, 26)
+        .Register();
     }
   }
 
@@ -24,9 +23,9 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 2;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<BurrowLevel1>();
-      recipe.AddRecipeGroup("OriMod:HardmodeBars3", 22);
-      recipe.AddRecipe();
+      GetAbilityRecipe<BurrowLevel1>()
+        .AddRecipeGroup("OriMod:HardmodeBars3", 22)
+        .Register();
     }
   }
 
@@ -38,9 +37,9 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 3;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<BurrowLevel2>();
-      recipe.AddIngredient(ItemID.ChlorophyteBar, 14);
-      recipe.AddRecipe();
+      GetAbilityRecipe<BurrowLevel2>()
+        .AddIngredient(ItemID.ChlorophyteBar, 14)
+        .Register();
     }
   }
 }

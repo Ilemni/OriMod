@@ -6,23 +6,25 @@ using OriMod.Utilities;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Audio;
+using ReLogic.Utilities;
 
 namespace OriMod.Projectiles.Minions {
   /// <summary>
   /// Minion for the Ori character Sein.
   /// </summary>
   public abstract class Sein : Minion {
-    static Sein() => OriMod.OnUnload += Unload;
+    static Sein() => OriMod.OnUnload += _Unload;
     public sealed override string Texture => "OriMod/Projectiles/Minions/Sein";
 
     public sealed override bool? CanCutTiles() => false;
 
     public sealed override void SetStaticDefaults() {
-      Main.projFrames[projectile.type] = 3;
-      Main.projPet[projectile.type] = true;
-      ProjectileID.Sets.MinionSacrificable[projectile.type] = true;
-      ProjectileID.Sets.Homing[projectile.type] = true;
-      ProjectileID.Sets.MinionTargettingFeature[projectile.type] = true; //This is necessary for right-click targeting
+      Main.projFrames[Projectile.type] = 3;
+      Main.projPet[Projectile.type] = true;
+      ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+      ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
+      ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true; //This is necessary for right-click targeting
     }
 
     /// <summary>
@@ -36,41 +38,41 @@ namespace OriMod.Projectiles.Minions {
     protected abstract ushort BuffType { get; }
 
     public override void SetDefaults() {
-      projectile.netImportant = true;
-      projectile.minion = true;
-      projectile.minionSlots = -0.001f;
-      projectile.penetrate = -1;
-      projectile.timeLeft = 18000;
-      projectile.tileCollide = false;
-      projectile.ignoreWater = true;
+      Projectile.netImportant = true;
+      Projectile.minion = true;
+      Projectile.minionSlots = -0.001f;
+      Projectile.penetrate = -1;
+      Projectile.timeLeft = 18000;
+      Projectile.tileCollide = false;
+      Projectile.ignoreWater = true;
 
       byte type = SeinType;
       _data = SeinData.All[type - 1];
 
-      projectile.width = _data.seinWidth;
-      projectile.height = _data.seinHeight;
+      Projectile.width = _data.seinWidth;
+      Projectile.height = _data.seinHeight;
 
-      _spiritFlameType = mod.ProjectileType("SpiritFlame" + type);
+      _spiritFlameType = Mod.Find<ModProjectile>("SpiritFlame" + type).Type;
       _spiritFlameSound = type <= 2 ? "" : type <= 4 ? "LevelB" : type <= 6 ? "LevelC" : type <= 8 ? "LevelD" : "";
     }
 
     private SeinData _data;
 
-    private Player Player => _player ?? (_player = Main.player[projectile.owner]);
+    private Player Player => _player ?? (_player = Main.player[Projectile.owner]);
 
     /// <summary>
     /// Whether the AI should automatically fire projectiles or not.
     /// </summary>
     /// <returns><see langword="true"/> if the held item is not the same type that spawned this projectile.</returns>
-    private bool AutoFire => Player.HeldItem.shoot != projectile.type;
+    private bool AutoFire => Player.HeldItem.shoot != Projectile.type;
 
     /// <summary>
     /// Current Cooldown of Spirit Flame.
     /// </summary>
     /// <remarks>Gets and sets to <see cref="Projectile.ai"/>[0].</remarks>
     private int Cooldown {
-      get => (int)projectile.ai[0];
-      set => projectile.ai[0] = value;
+      get => (int)Projectile.ai[0];
+      set => Projectile.ai[0] = value;
     }
 
     private float CooldownMin => _data.cooldownMin * (AutoFire ? 1.5f : 1);
@@ -180,18 +182,18 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <param name="path">Path of the sound effect to play. Relative to the Spirit Flame folder.</param>
     /// <param name="volume">Volume to play the sound at.</param>
-    private void PlaySpiritFlameSound(string path, float volume) =>
-      Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Custom/NewSFX/Ori/SpiritFlame/" + path).WithVolume(volume), projectile.Center);
+    private SlotId PlaySpiritFlameSound(string path, float volume, out SoundStyle style) =>
+      SoundWrapper.PlaySound(Projectile.Center, "Ori/SpiritFlame/" + path, out style, volume);
 
     /// <summary>
     /// Ensures that the projectile position and velocity are valid.
     /// </summary>
     private void VerifyNoNaNs() {
-      if (projectile.position.HasNaNs() || (projectile.position - Player.Center).Length() > 1000) {
-        projectile.position = Player.Center;
+      if (Projectile.position.HasNaNs() || (Projectile.position - Player.Center).Length() > 1000) {
+        Projectile.position = Player.Center;
       }
-      if (projectile.velocity.HasNaNs()) {
-        projectile.velocity = new Vector2(0, -1);
+      if (Projectile.velocity.HasNaNs()) {
+        Projectile.velocity = new Vector2(0, -1);
       }
     }
 
@@ -200,7 +202,7 @@ namespace OriMod.Projectiles.Minions {
     /// This is the somewhat subtle swaying about Sein does at any given time in Blind Forest.
     /// </summary>
     private void SeinMovement() {
-      Vector2 goalOffset = GoalPosition - projectile.position;
+      Vector2 goalOffset = GoalPosition - Projectile.position;
       Vector2 goalVelocity = goalOffset * 0.05f;
       float targetSpeed = (_goalNpc?.velocity ?? Player.velocity).Length();
       if (targetSpeed > 8) {
@@ -208,12 +210,12 @@ namespace OriMod.Projectiles.Minions {
       }
 
       float goalSpeed = goalVelocity.Length();
-      float speed = projectile.velocity.Length();
+      float speed = Projectile.velocity.Length();
 
       // Limit acceleration
       float newSpeed = MathHelper.Clamp(goalSpeed, speed * 0.95f - 0.05f, speed * 1.1f + 0.05f);
       newSpeed = Math.Min(newSpeed, 16f);
-      projectile.velocity = goalVelocity.Normalized() * newSpeed;
+      Projectile.velocity = goalVelocity.Normalized() * newSpeed;
     }
 
     /// <summary>
@@ -221,7 +223,7 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     private void UpdateGoalPosition() {
       _timeSinceGoalChanged++;
-      if (_goalNpc is null && (projectile.position - GoalPosition).LengthSquared() < TriggerGoalMoveSquared) {
+      if (_goalNpc is null && (Projectile.position - GoalPosition).LengthSquared() < TriggerGoalMoveSquared) {
         GoalPositionIdx++;
       }
 
@@ -270,7 +272,7 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <returns><see langword="true"/> if there are any <see cref="NPC"/>s that <see cref="Sein"/> can attack; otherwise, <see langword="false"/></returns>
     private bool UpdateTargets() {
-      bool InSight(NPC npc) => Collision.CanHitLine(projectile.position, projectile.width, projectile.height, npc.position, npc.width, npc.height);
+      bool InSight(NPC npc) => Collision.CanHitLine(Projectile.position, Projectile.width, Projectile.height, npc.position, npc.width, npc.height);
       int SortByDistanceClosest(byte id1, byte id2) {
         NPC npc1 = Main.npc[id1];
         NPC npc2 = Main.npc[id2];
@@ -347,7 +349,7 @@ namespace OriMod.Projectiles.Minions {
     /// </summary>
     /// <param name="hasTarget"></param>
     private void Attack(bool hasTarget) {
-      PlaySpiritFlameSound("Throw" + _spiritFlameSound + _rand.NextNoRepeat(3), 0.6f);
+      PlaySpiritFlameSound("Throw" + _spiritFlameSound + _rand.NextNoRepeat(3), 0.6f, out SoundStyle _);
 
       if (!hasTarget) {
         // Fire at air - nothing to target
@@ -371,7 +373,7 @@ namespace OriMod.Projectiles.Minions {
         }
         loopCount++;
       }
-      projectile.netUpdate = true;
+      Projectile.netUpdate = true;
     }
 
     /// <summary>
@@ -388,24 +390,29 @@ namespace OriMod.Projectiles.Minions {
       }
       else {
         // Fire at enemy NPC
-        shootVel = npc.position - projectile.Center;
+        shootVel = npc.position - Projectile.Center;
         rotation = Main.rand.Next(-_data.randDegrees, _data.randDegrees) / 180f * (float)Math.PI;
       }
       if (shootVel == Vector2.Zero) {
         shootVel = Vector2.UnitY;
       }
       shootVel = (shootVel * _data.projectileSpeedStart).RotatedBy(rotation);
-      projectile.velocity += shootVel.Normalized() * -0.2f;
+      Projectile.velocity += shootVel.Normalized() * -0.2f;
 
-      int dmg = (int)(projectile.damage * Player.minionDamage *
+      var _summon_damage = Player.GetDamage<SummonDamageClass>();
+
+      float _summon_damage_mul = _summon_damage.Additive * _summon_damage.Multiplicative;
+
+      int dmg = (int)(((Projectile.damage+_summon_damage.Base) * _summon_damage_mul + _summon_damage.Flat) *
         (!AutoFire ? ManualShootDamageMultiplier : 1));
 
 
-      Projectile spiritFlame = Projectile.NewProjectileDirect(projectile.Center, shootVel, _spiritFlameType, dmg, projectile.knockBack, projectile.owner);
+      Projectile spiritFlame = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, shootVel, _spiritFlameType, dmg, Projectile.knockBack, Projectile.owner);
+      spiritFlame.originalDamage = _data.damage;
       spiritFlame.netUpdate = true;
-      projectile.netUpdate = true;
+      Projectile.netUpdate = true;
       if (npc is null) {
-        Vector2 pos = new Vector2(projectile.position.X, projectile.position.Y + Main.rand.Next(8, 48)).RotatedBy(Main.rand.NextFloat((float)Math.PI * 2));
+        Vector2 pos = new Vector2(Projectile.position.X, Projectile.position.Y + Main.rand.Next(8, 48)).RotatedBy(Main.rand.NextFloat((float)Math.PI * 2));
         spiritFlame.ai[0] = pos.X != 0 ? pos.X : float.Epsilon;
         spiritFlame.ai[1] = pos.Y;
         spiritFlame.timeLeft = 20;
@@ -418,13 +425,13 @@ namespace OriMod.Projectiles.Minions {
     }
 
     protected override void CheckActive() {
-      Player player = Main.player[projectile.owner];
+      Player player = Main.player[Projectile.owner];
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       if (player.dead || !player.active) {
         oPlayer.RemoveSeinBuffs();
       }
-      else if (projectile.type == oPlayer.SeinMinionType && projectile.whoAmI == oPlayer.SeinMinionId && player.HasBuff(BuffType)) {
-        projectile.timeLeft = 2;
+      else if (Projectile.type == oPlayer.SeinMinionType && Projectile.whoAmI == oPlayer.SeinMinionId && player.HasBuff(BuffType)) {
+        Projectile.timeLeft = 2;
       }
     }
 
@@ -434,7 +441,7 @@ namespace OriMod.Projectiles.Minions {
       TickCooldown();
       VerifyNoNaNs();
 
-      Lighting.AddLight(projectile.Center, _data.color.ToVector3() * _data.lightStrength);
+      Lighting.AddLight(Projectile.Center, _data.color.ToVector3() * _data.lightStrength);
       if (Player.whoAmI != Main.myPlayer) {
         return;
       }
@@ -455,16 +462,17 @@ namespace OriMod.Projectiles.Minions {
     }
 
     // ReSharper disable RedundantAssignment
-    public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough) {
+    public override bool TileCollideStyle(ref int width, ref int height, ref bool fallThrough, ref Vector2 centerFrac) {
       // ReSharper restore RedundantAssignment
       fallThrough = true;
       width = 4;
       height = 4;
+      centerFrac = new Vector2(0.5f, 0.5f);
       return false;
     }
 
-    public override void PostDraw(SpriteBatch spriteBatch, Color lightColor) {
-      Vector2 pos = projectile.BottomRight - Main.screenPosition;
+    public override void PostDraw(Color lightColor) {
+      Vector2 pos = Projectile.BottomRight - Main.screenPosition;
       Texture2D tex = OriTextures.Instance.sein.texture;
       Vector2 orig = new Vector2(tex.Width, tex.Width) * 0.5f;
       for (int i = 0; i < 3; i++) {
@@ -476,11 +484,11 @@ namespace OriMod.Projectiles.Minions {
 
         color.A = (byte)(i == 0 ? 255 : i == 1 ? 200 : 175);
         Rectangle sourceRect = new Rectangle(0, i * tex.Height / 3, tex.Width, tex.Width);
-        spriteBatch.Draw(tex, pos, sourceRect, color, projectile.rotation, orig, projectile.scale, SpriteEffects.None, 0f);
+        Main.EntitySpriteDraw(tex, pos, sourceRect, color, Projectile.rotation, orig, Projectile.scale, SpriteEffects.None, 0);
       }
     }
 
-    private static void Unload() {
+    private static void _Unload() {
       _goalPositions = null;
     }
 

@@ -12,7 +12,7 @@ namespace OriMod.Tiles {
   /// Tile used to transform the player from and to Ori state.
   /// </summary>
   public class SpiritSapling : ModTile {
-    public override void SetDefaults() {
+    public override void SetStaticDefaults() {
       Main.tileFrameImportant[Type] = true;
       Main.tileNoAttach[Type] = true;
       Main.tileLavaDeath[Type] = true;
@@ -25,16 +25,16 @@ namespace OriMod.Tiles {
       TileObjectData.addTile(Type);
       ModTranslation name = CreateMapEntryName();
       AddMapEntry(new Color(200, 200, 200), name);
-      disableSmartCursor = true;
+      //disableSmartCursor = true;
     }
 
     public override void KillMultiTile(int i, int j, int frameX, int frameY) {
-      Item.NewItem(i * 16, j * 16, 32, 32, ModContent.ItemType<Items.SpiritSapling>());
+      Item.NewItem(null, i * 16, j * 16, 32, 32, ModContent.ItemType<Items.SpiritSapling>());
     }
 
-    public override bool NewRightClick(int i, int j) {
+    public override bool RightClick(int i, int j) {
       OriPlayer oPlayer = OriPlayer.Local;
-      Player player = oPlayer.player;
+      Player player = oPlayer.Player;
 
       Main.mouseRightRelease = false;
       if (oPlayer.Transforming) {

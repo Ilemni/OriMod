@@ -26,7 +26,7 @@ namespace OriMod.Abilities {
     private sbyte _gravityDirection;
 
     protected override void ReadPacket(BinaryReader r) {
-      currentCooldown = r.ReadUInt16();
+      currentCount = r.ReadUInt16();
       _gravityDirection = r.ReadSByte();
       player.position = r.ReadVector2();
       player.velocity = r.ReadVector2();
@@ -48,8 +48,8 @@ namespace OriMod.Abilities {
 
     internal override void Tick() {
       if (CanUse && input.jump.JustPressed) {
-        if (player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail ||
-            player.jumpAgainSandstorm || player.canCarpet || player.canRocket || player.mount.Active) return;
+        if (player.canJumpAgain_Blizzard || player.canJumpAgain_Cloud || player.canJumpAgain_Fart || player.canJumpAgain_Sail ||
+            player.canJumpAgain_Sandstorm || player.canCarpet || (player.rocketBoots!=0 && player.rocketTime>0) || player.mount.Active) return;
         SetState(State.Active);
         currentCount++;
         _gravityDirection = (sbyte)player.gravDir;

@@ -1,5 +1,4 @@
 ﻿using OriMod.Abilities;
-using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -9,10 +8,10 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.WallJump;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe();
-      recipe.AddRecipeGroup("OriMod:GoldBars", 15);
-      recipe.AddRecipeGroup("OriMod:WallJumpGear");
-      recipe.AddRecipe();
+      GetAbilityRecipe()
+        .AddRecipeGroup("OriMod:GoldBars", 15)
+        .AddRecipeGroup("OriMod:WallJumpGear")
+        .Register();
     }
   }
 }

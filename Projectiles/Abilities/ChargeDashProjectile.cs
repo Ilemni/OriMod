@@ -13,18 +13,18 @@ namespace OriMod.Projectiles.Abilities {
 
     public override void SetDefaults() {
       base.SetDefaults();
-      projectile.width = 96;
-      projectile.height = 96;
-      projectile.damage = 40;
+      Projectile.width = 96;
+      Projectile.height = 96;
+      Projectile.damage = 40;
     }
 
     protected override void Behavior() {
       base.Behavior();
       // Size is stretched greatly based on velocity.
-      Player player = oPlayer.player;
+      Player player = oPlayer.Player;
       Vector2 vel = player.velocity;
-      projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 1.5f, player.width * 1.5f, 96);
-      projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 1.5f, player.height * 1.5f, 96);
+      Projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 1.5f, player.width * 1.5f, 96);
+      Projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 1.5f, player.height * 1.5f, 96);
     }
 
     /// <summary>

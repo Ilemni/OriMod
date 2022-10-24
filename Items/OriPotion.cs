@@ -10,17 +10,17 @@ namespace OriMod.Items {
   /// </summary>
   public class OriPotion : ModItem {
     public override void SetDefaults() {
-      item.width = 24;
-      item.height = 26;
-      item.maxStack = 1;
-      item.rare = ItemRarityID.Blue;
-      item.useAnimation = 17;
-      item.useTime = 30;
-      item.useStyle = ItemUseStyleID.EatingUsing;
-      item.consumable = true;
+      Item.width = 24;
+      Item.height = 26;
+      Item.maxStack = 1;
+      Item.rare = ItemRarityID.Blue;
+      Item.useAnimation = 17;
+      Item.useTime = 30;
+      Item.useStyle = ItemUseStyleID.EatFood;
+      Item.consumable = true;
     }
 
-    public override bool UseItem(Player player) {
+    public override bool? UseItem(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.IsOri ^= true;
 
@@ -32,25 +32,22 @@ namespace OriMod.Items {
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
       }
       oPlayer.PlaySound("SavePoints/checkpointSpawnSound");
-      Item.NewItem(player.getRect(), ModContent.ItemType<OriPotionEmpty>(), noGrabDelay: true);
+      Item.NewItem(player.GetSource_FromThis(), player.getRect(), ModContent.ItemType<OriPotionEmpty>(), noGrabDelay: true);
       return true;
     }
 
     public override void AddRecipes() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(ItemID.Bottle);
-      recipe.AddIngredient(ItemID.Moonglow);
-      recipe.AddIngredient(ItemID.Shiverthorn);
-      recipe.AddIngredient(ItemID.Fireblossom);
-      recipe.AddTile(null, "SpiritSapling");
-      recipe.SetResult(this);
-      recipe.AddRecipe();
-
-      ModRecipe recipe2 = new ModRecipe(mod);
-      recipe2.AddIngredient(null, "OriPotionEmpty");
-      recipe2.AddTile(null, "SpiritSapling");
-      recipe2.SetResult(this);
-      recipe2.AddRecipe();
+      CreateRecipe()
+        .AddIngredient(ItemID.Bottle)
+        .AddIngredient(ItemID.Moonglow)
+        .AddIngredient(ItemID.Shiverthorn)
+        .AddIngredient(ItemID.Fireblossom)
+        .AddTile(ModContent.TileType<Tiles.SpiritSapling>())
+        .Register();
+      CreateRecipe()
+        .AddIngredient(ModContent.ItemType<OriPotionEmpty>())
+        .AddTile(ModContent.TileType<Tiles.SpiritSapling>())
+        .Register();
     }
   }
 }

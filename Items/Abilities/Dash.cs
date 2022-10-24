@@ -1,6 +1,5 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -10,10 +9,10 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.Dash;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe();
-      recipe.AddRecipeGroup("OriMod:HardmodeBars1", 14);
-      recipe.AddIngredient(ItemID.SoulofLight, 10);
-      recipe.AddRecipe();
+      GetAbilityRecipe()
+        .AddRecipeGroup("OriMod:HardmodeBars1", 14)
+        .AddIngredient(ItemID.SoulofLight, 10)
+        .Register();
     }
   }
 
@@ -25,10 +24,10 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 2;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<DashLevel1>();
-      recipe.AddIngredient(ItemID.HallowedBar, 20);
-      recipe.AddIngredient(ItemID.SoulofLight, 20);
-      recipe.AddRecipe();
+      GetAbilityRecipe<DashLevel1>()
+        .AddIngredient(ItemID.HallowedBar, 20)
+        .AddIngredient(ItemID.SoulofLight, 20)
+        .Register();
     }
   }
 
@@ -43,11 +42,11 @@ namespace OriMod.Items.Abilities {
     public override byte Level => 3;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe<DashLevel2>();
-      recipe.AddIngredient(ItemID.ShroomiteBar, 10);
-      recipe.AddIngredient(ItemID.SoulofLight, 35);
-      recipe.AddIngredient(ItemID.Tabi);
-      recipe.AddRecipe();
+      GetAbilityRecipe<DashLevel2>()
+        .AddIngredient(ItemID.ShroomiteBar, 10)
+        .AddIngredient(ItemID.SoulofLight, 35)
+        .AddIngredient(ItemID.Tabi)
+        .Register();
     }
   }
 }

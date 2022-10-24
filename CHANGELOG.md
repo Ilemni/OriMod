@@ -1,3 +1,11 @@
+# v3.1.0.0
+
+## Updated to terraria 1.4
+
+Terraria 1.4 port attempt.
+
+---
+
 # v3.0.0.3
 
 ## Bug Fixes

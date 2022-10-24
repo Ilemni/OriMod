@@ -15,22 +15,22 @@ namespace OriMod.Projectiles.Abilities {
 
     public override void SetDefaults() {
       base.SetDefaults();
-      projectile.width = 96;
-      projectile.height = 96;
+      Projectile.width = 96;
+      Projectile.height = 96;
     }
 
     protected override void CheckAbilityActive() {
       if (oPlayer.abilities.chargeJump || oPlayer.abilities.wallChargeJump) {
-        projectile.timeLeft = 2;
+        Projectile.timeLeft = 2;
       }
     }
 
     protected override void Behavior() {
       base.Behavior();
       // Stretch projectile size based on velocity
-      Vector2 vel = oPlayer.player.velocity;
-      projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 2.5f, 96, 250);
-      projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 2.5f, 96, 250);
+      Vector2 vel = oPlayer.Player.velocity;
+      Projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 2.5f, 96, 250);
+      Projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 2.5f, 96, 250);
     }
   }
 }

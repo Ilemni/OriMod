@@ -49,7 +49,7 @@ namespace OriMod.Abilities {
     }
 
     protected override void UpdateActive() {
-      if (player.controlJump && (player.jumpAgainBlizzard || player.jumpAgainCloud || player.jumpAgainFart || player.jumpAgainSail || player.jumpAgainSandstorm)) {
+      if (player.controlJump && (player.canJumpAgain_Blizzard || player.canJumpAgain_Cloud || player.canJumpAgain_Fart || player.canJumpAgain_Sail || player.canJumpAgain_Sandstorm)) {
         SetState(State.Inactive);
         PutOnCooldown();
         return;

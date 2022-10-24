@@ -13,15 +13,15 @@ namespace OriMod.Projectiles.Abilities {
 
     public override void SetDefaults() {
       base.SetDefaults();
-      projectile.width = 40;
-      projectile.height = 56;
+      Projectile.width = 40;
+      Projectile.height = 56;
     }
 
     protected override void Behavior() {
       base.Behavior();
       // Height is stretched based on velocity.
-      projectile.height = Math.Max(56, (int)(oPlayer.player.velocity.Y * 2));
-      projectile.position.Y += 10;
+      Projectile.height = Math.Max(56, (int)(oPlayer.Player.velocity.Y * 2));
+      Projectile.position.Y += 10;
     }
 
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {

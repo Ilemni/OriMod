@@ -39,7 +39,7 @@ namespace OriMod.Utilities {
     /// Checks if any active <see cref="NPC"/>s are bosses.
     /// </summary>
     public static bool IsAnyBossAlive()
-      => Main.npc.Any(npc => npc.active && (npc.boss || NPCID.Sets.TechnicallyABoss[npc.type]));
+      => Main.npc.Any(npc => npc.active && (npc.boss || NPCID.Sets.ShouldBeCountedAsBoss[npc.type]));
 
     #region Distance Checking
     /// <summary>
@@ -68,7 +68,7 @@ namespace OriMod.Utilities {
     #endregion
 
     internal static Vector2 GetMouseDirection(OriPlayer oPlayer, out float angle, Vector2? direction = null, float maxAngle = (float)Math.PI) {
-      Player player = oPlayer.player;
+      Player player = oPlayer.Player;
       Vector2 dir = direction ?? new Vector2(player.direction, player.gravDir);
 
       Vector2 offset = Main.MouseWorld;

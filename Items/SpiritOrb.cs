@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -27,56 +28,51 @@ namespace OriMod.Items {
     /// </summary>
     protected abstract int SeinType { get; }
 
-    protected ModRecipe GetRecipe<T>() where T : ModItem {
-      ModRecipe recipe = GetRecipe();
-      recipe.AddIngredient(ModContent.ItemType<T>());
-      return recipe;
-    }
+    protected Recipe GetRecipe<T>() where T : ModItem =>
+      GetRecipe()
+        .AddIngredient(ModContent.ItemType<T>());
 
-    protected ModRecipe GetRecipe() {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
-      recipe.SetResult(this);
-      return recipe;
-    }
+    protected Recipe GetRecipe() =>
+      CreateRecipe()
+        .AddTile(ModContent.TileType<Tiles.SpiritSapling>());
 
     public override void SetDefaults() {
-      item.buffType = GetBuffType();
-      item.shoot = GetShootType();
-      item.summon = true;
-      item.mana = 10;
-      item.width = 18;
-      item.height = 18;
-      item.useTime = 21;
-      item.useAnimation = 21;
-      item.useStyle = ItemUseStyleID.SwingThrow;
-      item.noMelee = true;
-      item.UseSound = SoundID.Item44;
+      Item.buffType = GetBuffType();
+      Item.shoot = GetShootType();
+      Item.DamageType = DamageClass.Summon;
+      Item.mana = 10;
+      Item.width = 18;
+      Item.height = 18;
+      Item.useTime = 21;
+      Item.useAnimation = 21;
+      Item.useStyle = ItemUseStyleID.Swing;
+      Item.noMelee = true;
+      Item.UseSound = SoundID.Item44;
 
       SeinData data = SeinData.All[SeinType - 1];
-      item.damage = data.damage;
-      item.rare = data.rarity;
-      item.value = data.value;
-      item.color = data.color;
+      Item.damage = data.damage;
+      Item.rare = data.rarity;
+      Item.value = data.value;
+      Item.color = data.color;
     }
 
     public override bool AltFunctionUse(Player player) => true;
 
     public override bool CanUseItem(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-      return player.altFunctionUse != 2 && (!oPlayer.SeinMinionActive || oPlayer.SeinMinionType != item.shoot);
+      return player.altFunctionUse != 2 && (!oPlayer.SeinMinionActive || oPlayer.SeinMinionType != Item.shoot);
     }
 
-    public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack) {
+    public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.RemoveSeinBuffs();
-      player.AddBuff(item.buffType, 2);
-      oPlayer.SeinMinionType = item.shoot;
+      player.AddBuff(Item.buffType, 2);
+      oPlayer.SeinMinionType = Item.shoot;
       oPlayer.SeinMinionActive = true;
       if (player.altFunctionUse == 2) {
-        player.MinionNPCTargetAim();
+        player.MinionNPCTargetAim(true);
       }
-      oPlayer.SeinMinionId = Projectile.NewProjectile(player.Center, -Vector2.UnitY, item.shoot, item.damage, item.knockBack, player.whoAmI);
+      oPlayer.SeinMinionId = Projectile.NewProjectile(source, position, -Vector2.UnitY, type, damage, knockBack, player.whoAmI);
       return false;
     }
   }

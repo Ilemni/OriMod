@@ -7,6 +7,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
+using static Terraria.ModLoader.KeybindLoader;
+using static Terraria.ModLoader.EquipLoader;
 
 namespace OriMod {
   /// <summary>
@@ -14,11 +16,9 @@ namespace OriMod {
   /// </summary>
   public sealed partial class OriMod : Mod {
     public OriMod() {
-      Properties = new ModProperties {
-        Autoload = true,
-        AutoloadGores = true,
-        AutoloadSounds = true
-      };
+      ContentAutoloadingEnabled = true;
+      GoreAutoloadingEnabled = true;
+      MusicAutoloadingEnabled = true;      
       instance = this;
     }
 
@@ -89,37 +89,37 @@ namespace OriMod {
     /// Key used for controlling <see cref="Abilities.SoulLink"/>.
     /// </summary>
     // ReSharper disable once UnassignedField.Global
-    [Obsolete] public static ModHotKey soulLinkKey;
+    [Obsolete] public static ModKeybind soulLinkKey;
 
     /// <summary>
     /// Key used for controlling <see cref="Abilities.Bash"/>.
     /// </summary>
-    public static ModHotKey bashKey;
+    public static ModKeybind bashKey;
 
     /// <summary>
     /// Key used for activating <see cref="Abilities.Dash"/> and <see cref="Abilities.ChargeDash"/>.
     /// </summary>
-    public static ModHotKey dashKey;
+    public static ModKeybind dashKey;
 
     /// <summary>
     /// Key used for controlling <see cref="Abilities.Climb"/>.
     /// </summary>
-    public static ModHotKey climbKey;
+    public static ModKeybind climbKey;
 
     /// <summary>
     /// Key used for controlling <see cref="Abilities.Glide"/>.
     /// </summary>
-    public static ModHotKey featherKey;
+    public static ModKeybind featherKey;
 
     /// <summary>
     /// Key used for the charging of <see cref="Abilities.ChargeDash"/> and <see cref="Abilities.ChargeJump"/>.
     /// </summary>
-    public static ModHotKey chargeKey;
+    public static ModKeybind chargeKey;
 
     /// <summary>
     /// Key used for activating <see cref="Abilities.Burrow"/>.
     /// </summary>
-    public static ModHotKey burrowKey;
+    public static ModKeybind burrowKey;
 
     public override void AddRecipeGroups() {
       RecipeGroup.RegisterGroup("OriMod:EnchantedItems",
@@ -160,15 +160,16 @@ namespace OriMod {
     }
 
     public override void Load() {
-      //SoulLinkKey = RegisterHotKey("SoulLink", "E");
-      bashKey = RegisterHotKey("Bash", "Mouse2");
-      dashKey = RegisterHotKey("Dash", "LeftControl");
-      climbKey = RegisterHotKey("Climbing", "LeftShift");
-      featherKey = RegisterHotKey("Feather", "LeftShift");
-      chargeKey = RegisterHotKey("Charge", "W");
-      burrowKey = RegisterHotKey("Burrow", "LeftControl");
+      //SoulLinkKey = RegisterKeybind(instance, "SoulLink", "E");
+      bashKey = RegisterKeybind(instance, "Bash", "Mouse2");
+      dashKey = RegisterKeybind(instance, "Dash", "LeftControl");
+      climbKey = RegisterKeybind(instance, "Climbing", "LeftShift");
+      featherKey = RegisterKeybind(instance, "Feather", "LeftShift");
+      chargeKey = RegisterKeybind(instance, "Charge", "W");
+      burrowKey = RegisterKeybind(instance, "Burrow", "LeftControl");
       if (!Main.dedServ) {
-        AddEquipTexture(null, EquipType.Head, "OriHead", "OriMod/PlayerEffects/OriHead");
+        AddEquipTexture(instance, "OriMod/PlayerEffects/OriHead", EquipType.Head, null, "OriHead",
+            GetEquipTexture(instance, "OriHead", EquipType.Head));
       }
 
       SeinData.Load();

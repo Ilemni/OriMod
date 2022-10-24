@@ -59,7 +59,7 @@ namespace OriMod.Abilities {
     private void Start() {
       oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _randChar.NextNoRepeat(3), 0.8f);
       _currentCharge = 0;
-      Projectile.NewProjectile(player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f,
+      Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f,
         player.whoAmI, 0, 1);
       PutOnCooldown();
       // TODO: multiplayer sync of direction

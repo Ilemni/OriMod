@@ -10,94 +10,129 @@ namespace OriMod {
   /// <summary>
   /// Contains all <see cref="PlayerLayer"/>s this mod creates.
   /// </summary>
-  internal sealed class OriLayers : SingleInstance<OriLayers> {
-    private OriLayers() { }
+  internal static class OriLayers {
 
     /// <summary>
     /// Draws the Ori sprite.
     /// </summary>
-    internal readonly PlayerLayer playerSprite = new PlayerLayer("OriMod", "OriPlayer", delegate (PlayerDrawInfo drawInfo) {
-      Player player = drawInfo.drawPlayer;
-      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-      bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
+    internal sealed class OriPlayerSprite : PlayerDrawLayer {
+      public override bool IsHeadLayer => true;
+      public override void SetStaticDefaults() {
+        playerSprite = ModContent.GetInstance<OriPlayerSprite>();
+      }
+      public override string Name => "OriPlayer";
+      protected override void Draw(ref PlayerDrawSet drawInfo) {
+        Player player = drawInfo.drawPlayer;
+        OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+        bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
-      DrawData data = oPlayer.Animations.playerAnim.GetDrawData(drawInfo);
-      bool doFlash = player.immune && oPlayer.immuneTimer == 0;
-      data.color = doFlash
-          ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, player.immuneAlpha / 255f)
-          : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
-      data.origin.Y += 5 * player.gravDir;
-      Main.playerDrawData.Add(data);
-
-      // Secondary color layer, only used when IsOri is true (i.e. not during transform start)
-      if (oPlayer.IsOri) {
+        DrawData data = oPlayer.Animations.playerAnim.GetDrawData(drawInfo);
+        bool doFlash = player.immune && oPlayer.immuneTimer == 0;
         data.color = doFlash
-            ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, player.immuneAlpha / 255f)
-            : oPlayer.SpriteColorSecondary;
+            ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, player.immuneAlpha / 255f)
+            : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
+        data.origin.Y += 5 * player.gravDir;
+        drawInfo.DrawDataCache.Add(data);
 
-        data.texture = OriTextures.Instance.playerSecondary;
-        Main.playerDrawData.Add(data);
-      }
+        // Secondary color layer, only used when IsOri is true (i.e. not during transform start)
+        if (oPlayer.IsOri) {
+          data.color = doFlash
+              ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, player.immuneAlpha / 255f)
+              : oPlayer.SpriteColorSecondary;
 
-      if (oPlayer.IsLocal && oPlayer.abilities.burrow.Unlocked) {
-        oPlayer.abilities.burrow.DrawEffects();
+          data.texture = OriTextures.Instance.playerSecondary;
+          drawInfo.DrawDataCache.Add(data);
+        }
+
+        if (oPlayer.IsLocal && oPlayer.abilities.burrow.Unlocked) {
+          oPlayer.abilities.burrow.DrawEffects(ref drawInfo);
+        }
       }
-    });
+      public override Position GetDefaultPosition() => 
+        new Between(ModContent.GetInstance<OriBashArrowLayer>(), PlayerDrawLayers.MountFront);
+    }
+    internal static PlayerDrawLayer playerSprite { get; private set; }
 
     /// <summary>
     /// Draws the Ori trails.
     /// </summary>
-    internal readonly PlayerLayer trailLayer = new PlayerLayer("OriMod", "OriTrail", delegate (PlayerDrawInfo drawInfo) {
-      Player player = drawInfo.drawPlayer;
-      Trail trail = player.GetModPlayer<OriPlayer>().trail;
-      if (trail.hasDrawnThisFrame) {
-        return;
+    internal sealed class OriTrailLayer : PlayerDrawLayer {
+      public override string Name => "OriTrail";
+      public override void SetStaticDefaults() {
+        trailLayer = ModContent.GetInstance<OriTrailLayer>();
       }
-      trail.hasDrawnThisFrame = true;
-      trail.UpdateSegments();
-      if (!player.dead && !player.invis) {
-        trail.ResetNextSegment();
+      protected override void Draw(ref PlayerDrawSet drawInfo) {
+        Player player = drawInfo.drawPlayer;
+        Trail trail = player.GetModPlayer<OriPlayer>().trail;
+        if (trail.hasDrawnThisFrame) {
+          return;
+        }
+        trail.hasDrawnThisFrame = true;
+        trail.UpdateSegments();
+        if (!player.dead && !player.invis) {
+          trail.ResetNextSegment();
+        }
+        drawInfo.DrawDataCache.AddRange(trail.TrailDrawDatas);
       }
-      Main.playerDrawData.AddRange(trail.TrailDrawDatas);
-    });
-
-    /// <summary>
-    /// Draws the <see cref="Bash"/> arrow when the player Bashes or Launches.
-    /// </summary>
-    internal readonly PlayerLayer bashArrow = new PlayerLayer("OriMod", "BashArrow", delegate (PlayerDrawInfo drawInfo) {
-      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      Animation anim = oPlayer.Animations.bashAnim;
-      AbilityManager abilities = oPlayer.abilities;
-
-      Vector2 pos;
-      float rotation;
-      int frame;
-      Ability ab = abilities.bash ? (Ability)abilities.bash : abilities.launch;
-      if (abilities.bash) {
-        pos = abilities.bash.BashEntity.Center;
-        rotation = abilities.bash.BashAngle;
-        frame = ab.CurrentTime < 40 ? 0 : ab.CurrentTime < 50 ? 1 : 2;
-      }
-      else {
-        pos = oPlayer.player.Center;
-        rotation = abilities.launch.LaunchAngle;
-        frame = ab.CurrentTime < 25 ? 0 : ab.CurrentTime < 35 ? 1 : 2;
-      }
-      pos -= Main.screenPosition;
-      Rectangle rect = anim.TileAt(anim.source["Bash"], frame);
-      Vector2 orig = rect.Size() / 2;
-      DrawData data = new DrawData(anim.CurrentTexture, pos, rect, Color.White, rotation, orig, 1, SpriteEffects.None, 0);
-      Main.playerDrawData.Add(data);
-    });
+      public override Position GetDefaultPosition() => 
+        new Between(PlayerDrawLayers.FaceAcc, ModContent.GetInstance<OriPlayerSprite>());
+    }
+    internal static PlayerDrawLayer trailLayer { get; private set; }
 
     /// <summary>
     /// Draws the <see cref="Glide"/> feather when the player glides.
     /// </summary>
-    internal readonly PlayerLayer featherSprite = new PlayerLayer("OriMod", "Feather", delegate (PlayerDrawInfo drawInfo) {
-      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
+    internal sealed class OriFeatherLayer : PlayerDrawLayer {
+      public override string Name => "Feather";
+      public override void SetStaticDefaults() {
+        featherSprite = ModContent.GetInstance<OriFeatherLayer>();
+      }
+      protected override void Draw(ref PlayerDrawSet drawInfo) {
+        OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
+        drawInfo.DrawDataCache.Add(oPlayer.Animations.glideAnim.GetDrawData(drawInfo));
+      }
+      public override Position GetDefaultPosition() => 
+        new Between(ModContent.GetInstance<OriTrailLayer>(), ModContent.GetInstance<OriBashArrowLayer>());
+    }
+    internal static PlayerDrawLayer featherSprite { get; private set; }
 
-      Main.playerDrawData.Add(oPlayer.Animations.glideAnim.GetDrawData(drawInfo));
-    });
+    /// <summary>
+    /// Draws the <see cref="Bash"/> arrow when the player Bashes or Launches.
+    /// </summary>
+    internal sealed class OriBashArrowLayer : PlayerDrawLayer {
+      public override string Name => "BashArrow";
+      public override void SetStaticDefaults() {
+        bashArrow = ModContent.GetInstance<OriBashArrowLayer>();
+      }
+      protected override void Draw(ref PlayerDrawSet drawInfo) {
+        OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
+        Animation anim = oPlayer.Animations.bashAnim;
+        AbilityManager abilities = oPlayer.abilities;
+
+        Vector2 pos;
+        float rotation;
+        int frame;
+        Ability ab = abilities.bash ? abilities.bash : abilities.launch;
+        if (abilities.bash) {
+          pos = abilities.bash.BashEntity.Center;
+          rotation = abilities.bash.BashAngle;
+          frame = ab.CurrentTime < 40 ? 0 : ab.CurrentTime < 50 ? 1 : 2;
+        }
+        else {
+          pos = oPlayer.Player.Center;
+          rotation = abilities.launch.LaunchAngle;
+          frame = ab.CurrentTime < 25 ? 0 : ab.CurrentTime < 35 ? 1 : 2;
+        }
+        pos -= Main.screenPosition;
+        Rectangle rect = anim.TileAt(anim.source["Bash"], frame);
+        Vector2 orig = rect.Size() / 2;
+        DrawData data = new(anim.CurrentTexture, pos, rect, Color.White, rotation, orig, 1, SpriteEffects.None, 0);
+        drawInfo.DrawDataCache.Add(data);
+      }
+      public override Position GetDefaultPosition() =>
+        new Between(ModContent.GetInstance<OriFeatherLayer>(), ModContent.GetInstance<OriPlayerSprite>());
+    }
+    internal static PlayerDrawLayer bashArrow { get; private set; }
 
     /*
     /// <summary>
@@ -105,7 +140,7 @@ namespace OriMod {
     /// <para>(Consider using <see cref="Dust"/> or <see cref="Projectile"/> instead of <see cref="PlayerLayer"/>).</para>
     /// </summary>
     [Obsolete]
-    internal readonly PlayerLayer soulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawInfo drawInfo) {
+    internal readonly PlayerLayer soulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawSet drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
       Vector2 pos = oPlayer.Abilities.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
       int frame = (int)(Main.time % 48 / 8) * 64;
@@ -115,7 +150,7 @@ namespace OriMod {
       SpriteEffects effect = SpriteEffects.None;
 
       var data = new DrawData(OriTextures.Instance.soulLink, pos, rect, Color.White, 0, orig, 1, effect, 0);
-      Main.playerDrawData.Add(data);
+      drawInfo.DrawDataCache.Add(data);
     });*/
   }
 }

@@ -1,6 +1,5 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Items.Abilities {
   /// <summary>
@@ -10,10 +9,10 @@ namespace OriMod.Items.Abilities {
     public override byte Id => AbilityId.Climb;
 
     public override void AddRecipes() {
-      ModRecipe recipe = GetAbilityRecipe();
-      recipe.AddIngredient(ItemID.HellstoneBar, 14);
-      recipe.AddIngredient(ItemID.TigerClimbingGear);
-      recipe.AddRecipe();
+      GetAbilityRecipe()
+        .AddIngredient(ItemID.HellstoneBar, 14)
+        .AddIngredient(ItemID.TigerClimbingGear)
+        .Register();
     }
   }
 }

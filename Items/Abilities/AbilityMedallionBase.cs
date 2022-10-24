@@ -22,9 +22,9 @@ namespace OriMod.Items.Abilities {
     public virtual byte Level => 1;
 
     public override void SetDefaults() {
-      item.useStyle = ItemUseStyleID.HoldingUp;
-      item.useTime = 45;
-      item.useAnimation = 45;
+      Item.useStyle = ItemUseStyleID.HoldUp;
+      Item.useTime = 45;
+      Item.useAnimation = 45;
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ namespace OriMod.Items.Abilities {
     /// </summary>
     /// <param name="player">The player using the item.</param>
     /// <returns><see langword="true"/> if the ability can be leveled. If this returns <see langword="false"/>, this <see cref="AbilityMedallionBase"/> or the <see cref="Ability"/> must be fixed.</returns>
-    public override bool UseItem(Player player) {
+    public override bool? UseItem(Player player) {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       Ability ability = oPlayer.abilities[Id];
       if (ability is ILevelable levelable) {
@@ -76,19 +76,18 @@ namespace OriMod.Items.Abilities {
     /// <para>These are standard recipes to all <see cref="AbilityMedallionBase"/> types.</para>
     /// </summary>
     /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
-    protected ModRecipe GetAbilityRecipe() => GetAbilityRecipe<AbilityMedallionEmpty>();
+    protected Recipe GetAbilityRecipe() => GetAbilityRecipe<AbilityMedallionEmpty>();
 
     /// <summary>
     /// Gets a <see cref="ModRecipe"/> that uses the ingredient <typeparamref name="T"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
     /// <para>This is intended for leveled Medallions, where <typeparamref name="T"/> is the previous level's Medallion.</para>
     /// </summary>
     /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
-    protected ModRecipe GetAbilityRecipe<T>() where T : ModItem {
-      ModRecipe recipe = new ModRecipe(mod);
-      recipe.AddIngredient(ModContent.ItemType<T>());
-      recipe.AddTile(ModContent.TileType<Tiles.SpiritSapling>());
-      recipe.SetResult(this);
-      return recipe;
-    }
+    /// 
+
+    protected Recipe GetAbilityRecipe<T>() where T : ModItem => 
+        CreateRecipe()
+        .AddIngredient(ModContent.ItemType<T>())
+        .AddTile(ModContent.TileType<Tiles.SpiritSapling>());
   }
 }
