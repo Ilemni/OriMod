@@ -1,3 +1,11 @@
+# v3.2.0.0
+
+## Abilities refactoring 
+
+Refactored, now uses AnimLib's abilities code
+
+---
+
 # v3.1.0.0
 
 ## Updated to terraria 1.4

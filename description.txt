@@ -1,6 +1,9 @@
 Ori and the Blind Forest / Ori and the Will of the Wisps
 crossover pack.
 
+--- v3.2 ---
+Refactored, now uses AnimLib's abilities code
+
 --- v3.1 ---
 Updated to terraria 1.4
 

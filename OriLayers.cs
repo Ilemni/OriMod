@@ -1,3 +1,4 @@
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Abilities;
@@ -48,7 +49,7 @@ namespace OriMod {
           oPlayer.abilities.burrow.DrawEffects(ref drawInfo);
         }
       }
-      public override Position GetDefaultPosition() => 
+      public override Position GetDefaultPosition() =>
         new Between(ModContent.GetInstance<OriBashArrowLayer>(), PlayerDrawLayers.MountFront);
     }
     internal static PlayerDrawLayer playerSprite { get; private set; }
@@ -74,7 +75,7 @@ namespace OriMod {
         }
         drawInfo.DrawDataCache.AddRange(trail.TrailDrawDatas);
       }
-      public override Position GetDefaultPosition() => 
+      public override Position GetDefaultPosition() =>
         new Between(PlayerDrawLayers.FaceAcc, ModContent.GetInstance<OriPlayerSprite>());
     }
     internal static PlayerDrawLayer trailLayer { get; private set; }
@@ -91,7 +92,7 @@ namespace OriMod {
         OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
         drawInfo.DrawDataCache.Add(oPlayer.Animations.glideAnim.GetDrawData(drawInfo));
       }
-      public override Position GetDefaultPosition() => 
+      public override Position GetDefaultPosition() =>
         new Between(ModContent.GetInstance<OriTrailLayer>(), ModContent.GetInstance<OriBashArrowLayer>());
     }
     internal static PlayerDrawLayer featherSprite { get; private set; }
@@ -107,7 +108,7 @@ namespace OriMod {
       protected override void Draw(ref PlayerDrawSet drawInfo) {
         OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
         Animation anim = oPlayer.Animations.bashAnim;
-        AbilityManager abilities = oPlayer.abilities;
+        OriAbilityManager abilities = oPlayer.abilities;
 
         Vector2 pos;
         float rotation;
@@ -116,12 +117,12 @@ namespace OriMod {
         if (abilities.bash) {
           pos = abilities.bash.BashEntity.Center;
           rotation = abilities.bash.BashAngle;
-          frame = ab.CurrentTime < 40 ? 0 : ab.CurrentTime < 50 ? 1 : 2;
+          frame = ab.stateTime < 40 ? 0 : ab.stateTime < 50 ? 1 : 2;
         }
         else {
           pos = oPlayer.Player.Center;
           rotation = abilities.launch.LaunchAngle;
-          frame = ab.CurrentTime < 25 ? 0 : ab.CurrentTime < 35 ? 1 : 2;
+          frame = ab.stateTime < 25 ? 0 : ab.stateTime < 35 ? 1 : 2;
         }
         pos -= Main.screenPosition;
         Rectangle rect = anim.TileAt(anim.source["Bash"], frame);
@@ -133,24 +134,5 @@ namespace OriMod {
         new Between(ModContent.GetInstance<OriFeatherLayer>(), ModContent.GetInstance<OriPlayerSprite>());
     }
     internal static PlayerDrawLayer bashArrow { get; private set; }
-
-    /*
-    /// <summary>
-    /// <see cref="PlayerLayer"/> that represents the <see cref="SoulLink"/> a player can place within the world.
-    /// <para>(Consider using <see cref="Dust"/> or <see cref="Projectile"/> instead of <see cref="PlayerLayer"/>).</para>
-    /// </summary>
-    [Obsolete]
-    internal readonly PlayerLayer soulLinkLayer = new PlayerLayer("OriMod", "SoulLink", delegate (PlayerDrawSet drawInfo) {
-      OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      Vector2 pos = oPlayer.Abilities.soulLink.SoulLinkLocation.ToWorldCoordinates() - Main.screenPosition;
-      int frame = (int)(Main.time % 48 / 8) * 64;
-      var rect = new Rectangle(0, frame, 48, 64);
-      Vector2 orig = rect.Size() / 2;
-      orig.Y += 8;
-      SpriteEffects effect = SpriteEffects.None;
-
-      var data = new DrawData(OriTextures.Instance.soulLink, pos, rect, Color.White, 0, orig, 1, effect, 0);
-      drawInfo.DrawDataCache.Add(data);
-    });*/
   }
 }

@@ -1,6 +1,7 @@
-using System.IO;
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
+using System.IO;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
@@ -10,14 +11,14 @@ namespace OriMod.Abilities {
   /// <remarks>
   /// This ability is derived from the Ori games, despite Terraria already allowing wall jumps with some accessories.
   /// </remarks>
-  public sealed class WallJump : Ability, ILevelable {
-    internal WallJump(AbilityManager manager) : base(manager) { }
+  public sealed class WallJump : Ability<OriAbilityManager>, ILevelable {
     public override int Id => AbilityId.WallJump;
-    public override byte Level => (this as ILevelable).Level;
-    byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 1;
+    public override int Level => (this as ILevelable).Level;
+    int ILevelable.Level { get; set; }
+    int ILevelable.MaxLevel => 1;
 
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !InUse && !player.mount.Active &&
+    public override bool CanUse => base.CanUse && abilities.oPlayer.OnWall &&
+      !abilities.oPlayer.IsGrounded && !InUse && !player.mount.Active &&
       !abilities.wallChargeJump.Charged;
 
     private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
@@ -28,48 +29,49 @@ namespace OriMod.Abilities {
 
     private readonly RandomChar _rand = new RandomChar();
 
-    protected override void ReadPacket(BinaryReader r) {
+    public override void ReadPacket(BinaryReader r) {
       _wallDirection = r.ReadSByte();
       _gravDirection = r.ReadSByte();
     }
 
-    protected override void WritePacket(ModPacket packet) {
+    public override void WritePacket(ModPacket packet) {
       packet.Write(_wallDirection);
       packet.Write(_gravDirection);
     }
 
-    protected override void UpdateActive() {
+    public override void UpdateActive() {
       player.velocity.Y = WallJumpVelocity.Y * _gravDirection;
-      oPlayer.PlaySound("Ori/WallJump/seinWallJumps" + _rand.NextNoRepeat(5), 0.75f);
+      abilities.oPlayer.PlaySound("Ori/WallJump/seinWallJumps" + _rand.NextNoRepeat(5), 0.75f);
     }
 
-    protected override void UpdateEnding() {
-      if (oPlayer.OnWall) {
+    public override void UpdateEnding() {
+      if (abilities.oPlayer.OnWall) {
         player.velocity.Y -= _gravDirection;
       }
     }
 
-    protected override void UpdateUsing() {
+    public override void UpdateUsing() {
       player.velocity.X = WallJumpVelocity.X * -_wallDirection;
       player.direction = _wallDirection;
-      oPlayer.UnrestrictedMovement = true;
+      abilities.oPlayer.UnrestrictedMovement = true;
     }
 
-    internal override void Tick() {
-      if (CanUse && input.jump.JustPressed) {
-        SetState(State.Active);
+    public override void PreUpdate() {
+      if (CanUse && abilities.oPlayer.input.jump.JustPressed) {
+        SetState(AbilityState.Active);
         if (IsLocal) {
           _wallDirection = (sbyte)player.direction;
           _gravDirection = (sbyte)player.gravDir;
         }
-        abilities.climb.SetState(State.Inactive);
+        abilities.climb.SetState(AbilityState.Inactive);
       }
       else if (Active) {
-        SetState(State.Ending);
+        SetState(AbilityState.Ending);
       }
       else if (Ending) {
-        if (oPlayer.IsGrounded || CurrentTime > EndTime || CurrentTime > EndTime * 0.5f && (player.controlRight || player.controlLeft)) {
-          SetState(State.Inactive);
+        if (abilities.oPlayer.IsGrounded || stateTime > EndTime ||
+          stateTime > EndTime * 0.5f && (player.controlRight || player.controlLeft)) {
+          SetState(AbilityState.Inactive);
         }
       }
     }

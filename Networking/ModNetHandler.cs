@@ -21,9 +21,6 @@ namespace OriMod.Networking {
     /// <inheritdoc cref="OriPlayerPacketHandler"/>
     internal readonly OriPlayerPacketHandler oriPlayerHandler = new OriPlayerPacketHandler(OriState);
 
-    /// <inheritdoc cref="AbilityPacketHandler"/>
-    internal readonly AbilityPacketHandler abilityPacketHandler = new AbilityPacketHandler(AbilityState);
-
     /// <summary>
     /// Sends the received <see cref="ModPacket"/> to the desired <see cref="PacketHandler"/> based on data read from <paramref name="reader"/>.
     /// </summary>
@@ -34,9 +31,6 @@ namespace OriMod.Networking {
       switch (packetClass) {
         case OriState:
           oriPlayerHandler.HandlePacket(reader, fromWho);
-          break;
-        case AbilityState:
-          abilityPacketHandler.HandlePacket(reader, fromWho);
           break;
         default:
           OriMod.Error("UnknownPacket", args: packetClass);

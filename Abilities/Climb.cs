@@ -1,3 +1,4 @@
+using AnimLib.Abilities;
 using System;
 using System.IO;
 using Terraria.ModLoader;
@@ -6,14 +7,14 @@ namespace OriMod.Abilities {
   /// <summary>
   /// Ability for climbing on walls.
   /// </summary>
-  public sealed class Climb : Ability, ILevelable {
-    internal Climb(AbilityManager manager) : base(manager) { }
+  public sealed class Climb : Ability<OriAbilityManager>, ILevelable {
     public override int Id => AbilityId.Climb;
-    public override byte Level => (this as ILevelable).Level;
-    byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 1;
+    public override int Level => (this as ILevelable).Level;
+    int ILevelable.Level { get; set; }
+    int ILevelable.MaxLevel => 1;
+    public override bool Unlocked => Level > 0;
 
-    internal override bool CanUse => base.CanUse && oPlayer.OnWall && !oPlayer.IsGrounded && !player.mount.Active &&
+    public override bool CanUse => base.CanUse && abilities.oPlayer.OnWall && !abilities.oPlayer.IsGrounded && !player.mount.Active &&
       !abilities.bash && !abilities.burrow && !abilities.launch && !abilities.stomp && !abilities.wallChargeJump && !abilities.wallJump;
 
     internal bool IsCharging {
@@ -30,17 +31,17 @@ namespace OriMod.Abilities {
     // Prevent flip gravity when climbing upwards
     private bool _disableUp;
 
-    protected override void ReadPacket(BinaryReader r) {
+    public override void ReadPacket(BinaryReader r) {
       wallDirection = r.ReadSByte();
       IsCharging = r.ReadBoolean();
     }
 
-    protected override void WritePacket(ModPacket packet) {
+    public override void WritePacket(ModPacket packet) {
       packet.Write(wallDirection);
       packet.Write(IsCharging);
     }
 
-    protected override void UpdateActive() {
+    public override void UpdateActive() {
       if (IsCharging) {
         player.velocity.Y = 0;
       }
@@ -66,18 +67,18 @@ namespace OriMod.Abilities {
       player.controlDown = false;
     }
 
-    protected override void UpdateEnding() {
+    public override void UpdateEnding() {
       player.velocity.X = wallDirection * 5f;
       player.velocity.Y = -player.gravDir * 4f;
     }
 
-    protected override void UpdateUsing() {
+    public override void UpdateUsing() {
       if (player.controlUp) {
         _disableUp = true;
       }
     }
 
-    protected internal override void PostUpdateAbilities() {
+    public override void PostUpdateAbilities() {
       if (!_disableUp) return;
       if (!player.controlUp) {
         _disableUp = false;
@@ -85,28 +86,28 @@ namespace OriMod.Abilities {
       player.controlUp = false;
     }
 
-    internal override void Tick() {
+    public override void PreUpdate() {
       if (!IsLocal) {
         return;
       }
       if (!InUse) {
-        if (CanUse && input.climb.Current) {
-          SetState(State.Active);
+        if (CanUse && abilities.oPlayer.input.climb.Current) {
+          SetState(AbilityState.Active);
           wallDirection = (sbyte)player.direction;
         }
       }
       else if (Ending) {
         int maxTime = player.gravDir >= 1 ? 7 : 9;
-        if (CurrentTime >= maxTime) {
-          SetState(State.Inactive);
+        if (stateTime >= maxTime) {
+          SetState(AbilityState.Inactive);
         }
       }
-      else if (!input.climb.Current || !CanUse && !player.controlUp) {
-        SetState(State.Inactive);
+      else if (!abilities.oPlayer.input.climb.Current || !CanUse && !player.controlUp) {
+        SetState(AbilityState.Inactive);
       }
       else if (!CanUse && player.controlUp) {
         // Climb over top of things
-        SetState(State.Ending);
+        SetState(AbilityState.Ending);
       }
       IsCharging = Active && abilities.wallChargeJump.Unlocked && (wallDirection == 1 ? player.controlLeft : player.controlRight);
     }

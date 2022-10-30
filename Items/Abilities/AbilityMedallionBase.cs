@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
-using OriMod.Abilities;
+using AnimLib.Abilities;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;

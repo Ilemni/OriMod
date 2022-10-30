@@ -1,5 +1,6 @@
 using AnimLib;
 using Microsoft.Xna.Framework;
+using AnimLib.Abilities;
 using OriMod.Abilities;
 using OriMod.Animations;
 using OriMod.Buffs;
@@ -13,6 +14,8 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using AnimLib.Extensions;
+using System;
 
 namespace OriMod {
   /// <summary>
@@ -29,12 +32,18 @@ namespace OriMod {
     /// <summary>
     /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
     /// </summary>
-    internal AbilityManager abilities { get; private set; }
+    internal OriAbilityManager abilities =>
+      _abilities ?? (_abilities = AnimLibMod.GetAbilityManager<OriAbilityManager>(this));
+    private OriAbilityManager _abilities;
 
     /// <summary>
     /// Net-synced controls of this player.
     /// </summary>
     internal OriInput input { get; private set; }
+
+    private AnimCharacter<OriAnimationController, OriAbilityManager> _character;
+    public AnimCharacter<OriAnimationController, OriAbilityManager> character =>
+      _character ?? (_character = this.GetAnimCharacter<OriAnimationController, OriAbilityManager>());
 
     /// <summary>
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
@@ -64,10 +73,11 @@ namespace OriMod {
     /// <para>External mods that attempt to be compatible with this one will need to use this property.</para>
     /// </summary>
     public bool IsOri {
-      get => _isOri;
+      get => character.IsActive && (!Transforming || transformTimer >= TransformStartDuration - 10);
       set {
         if (value == _isOri) return;
-        _netUpdate = true;
+        if (value) character.TryEnable();
+        else character.TryDisable();
         _isOri = value;
       }
     }
@@ -88,6 +98,7 @@ namespace OriMod {
       internal set {
         if (value == _transforming) return;
         _netUpdate = true;
+        if(value) character.TryEnable();
         _transforming = value;
       }
     }
@@ -363,7 +374,6 @@ namespace OriMod {
     #endregion
 
     public override void Initialize() {
-      abilities = new AbilityManager(this);
       input = new OriInput();
 
       if (!Main.dedServ) {
@@ -410,8 +420,6 @@ namespace OriMod {
         ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, Player.whoAmI);
         _netUpdate = false;
       }
-
-      abilities.SendClientChanges();
     }
 
     public override void SaveData(TagCompound tag) {
@@ -421,7 +429,8 @@ namespace OriMod {
         ["Color1"] = SpriteColorPrimary,
         ["Color2"] = SpriteColorSecondary
       };
-      abilities.Save(_tag);
+      //TODO: Remove old save data once ready
+      abilities.OldSave(_tag);
       foreach (var v in _tag) tag.Add(v);
     }
 
@@ -436,8 +445,7 @@ namespace OriMod {
         _spriteColorPrimary = OriMod.ConfigClient.playerColor;
         _spriteColorSecondary = OriMod.ConfigClient.playerColorSecondary;
       }
-
-      abilities.Load(tag);
+      abilities.OldLoad(tag);
     }
 
     public override void ProcessTriggers(TriggersSet triggersSet) {
@@ -452,7 +460,7 @@ namespace OriMod {
       }
     }
 
-    public override void PostUpdateRunSpeeds() {
+    public void PostUpdatePhysics() {
       if (IsOri && !Transforming) {
         #region Default Spirit Run Speeds
 
@@ -488,8 +496,6 @@ namespace OriMod {
             Player.maxFallSpeed = 6f;
           }
         }
-
-        abilities.Update();
       }
 
       if (!Transforming) return;
@@ -504,7 +510,6 @@ namespace OriMod {
         Player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - transformTimer));
         Player.gravity = 0;
         CreatePlayerDust();
-        Local.Animations.Update();
       }
       else if (transformTimer < TransformStartDuration) {
         // Near end of start
@@ -524,6 +529,15 @@ namespace OriMod {
     }
 
     public override void PostUpdate() {
+      if (abilities.oldAbility is not null) {
+        foreach (Ability ability in abilities) {
+          if (ability is ILevelable levelable) {
+            levelable.Level = Math.Max(abilities.oldAbility[ability.Id], levelable.Level);
+          }
+        }
+        abilities.oldAbility = null;
+      }
+
       if (IsOri && !Transforming) {
         HasTransformedOnce = true;
       }
@@ -545,9 +559,6 @@ namespace OriMod {
       }
 
       if (IsOri) {
-        Animations.Update();
-        abilities.PostUpdate();
-
         if (DoPlayerLight && !abilities.burrow.Active) {
           Lighting.AddLight(Player.Center, _lightColor.ToVector3());
         }

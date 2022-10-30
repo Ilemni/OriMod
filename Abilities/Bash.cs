@@ -1,10 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.NPCs;
 using OriMod.Projectiles;
 using OriMod.Utilities;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,18 +14,19 @@ namespace OriMod.Abilities {
   /// <summary>
   /// Ability for pushing the player and enemies in opposite directions. Iconic ability of the Ori franchise.
   /// </summary>
-  public sealed class Bash : Ability, ILevelable {
+  public sealed class Bash : Ability<OriAbilityManager>, ILevelable {
     static Bash() => OriMod.OnUnload += Unload;
-    internal Bash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityId.Bash;
-    public override byte Level => (this as ILevelable).Level;
-    byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 3;
+    public override int Level => (this as ILevelable).Level;
+    public override bool Unlocked => Level > 0;
+    int ILevelable.Level { get; set; }
+    int ILevelable.MaxLevel => 3;
 
-    internal override bool CanUse => base.CanUse && Inactive && !player.mount.Active &&
+    public override bool CanUse => base.CanUse && Inactive && !player.mount.Active &&
       !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump && !abilities.climb && !abilities.dash &&
       !abilities.launch && !abilities.stomp && !abilities.wallChargeJump;
-    protected override Color RefreshColor => Color.LightYellow;
+
+    public override void OnRefreshed() => abilities.RefreshParticles(Color.LightYellow);
 
     private static List<short> CannotBashNpc => _cannotBashNpc ?? (_cannotBashNpc = new List<short> {
       NPCID.BlazingWheel, NPCID.SpikeBall, NPCID.DD2EterniaCrystal, NPCID.DD2LanePortal
@@ -130,7 +132,7 @@ namespace OriMod.Abilities {
 
     private readonly RandomChar _rand = new RandomChar();
 
-    protected override void ReadPacket(BinaryReader r) {
+    public override void ReadPacket(BinaryReader r) {
       if (!InUse) return;
       if (Starting) {
         _targetStartPos = r.ReadVector2();
@@ -142,7 +144,7 @@ namespace OriMod.Abilities {
       BashAngle = r.ReadSingle();
     }
 
-    protected override void WritePacket(ModPacket packet) {
+    public override void WritePacket(ModPacket packet) {
       if (!InUse) return;
       if (Starting) {
         packet.WriteVector2(_targetStartPos);
@@ -228,18 +230,18 @@ namespace OriMod.Abilities {
 
       BashTarget.IsBashed = true;
       BashTarget.BashPosition = BashEntity.Center;
-      BashTarget.BashPlayer = oPlayer;
+      BashTarget.BashPlayer = abilities.oPlayer;
 
       _playerStartPos = player.Center;
       _targetStartPos = BashEntity.Center;
-      oPlayer.PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
+      abilities.oPlayer.PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
       return true;
     }
 
     private void End() {
       player.pulley = false;
-      oPlayer.PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), 0.5f);
-      oPlayer.UnrestrictedMovement = true;
+      abilities.oPlayer.PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), 0.5f);
+      abilities.oPlayer.UnrestrictedMovement = true;
 
       Vector2 bashVector = new Vector2((float)(0 - Math.Cos(BashAngle)), (float)(0 - Math.Sin(BashAngle)));
       Vector2 playerBashVector = -bashVector * BashPlayerStrength;
@@ -248,23 +250,23 @@ namespace OriMod.Abilities {
       player.position += playerBashVector * 3;
       BashEntity.velocity = npcBashVector;
       player.position += npcBashVector * 5;
-      if (oPlayer.IsGrounded) {
+      if (abilities.oPlayer.IsGrounded) {
         player.position.Y -= 1f;
       }
 
-      oPlayer.immuneTimer = 5;
+      abilities.oPlayer.immuneTimer = 5;
 
       BashTarget.IsBashed = false;
       if (IsLocal && Level >= 2 && BashEntity is NPC npc) {
         player.ApplyDamageToNPC(npc, BashDamage, 0, 1, false);
       }
 
-      PutOnCooldown();
+      StartCooldown();
     }
 
-    protected override void UpdateUsing() {
+    public override void UpdateUsing() {
       if (!Ending) {
-        if (!(BashEntity is null)) {
+        if (BashEntity is not null) {
           BashEntity.Center = _targetStartPos;
         }
 
@@ -298,7 +300,7 @@ namespace OriMod.Abilities {
       player.controlTorch = false;
       player.controlUseItem = false;
       player.controlUseTile = false;
-      oPlayer.immuneTimer = 2;
+      abilities.oPlayer.immuneTimer = 2;
       player.buffImmune[BuffID.CursedInferno] = true;
       player.buffImmune[BuffID.Dazed] = true;
       player.buffImmune[BuffID.Frozen] = true;
@@ -319,38 +321,36 @@ namespace OriMod.Abilities {
       player.buffImmune[BuffID.WindPushed] = true;
     }
 
-    internal override void Tick() {
-      if (CanUse && input.bash.JustPressed) {
+    public override void PreUpdate() {
+      if (CanUse && abilities.oPlayer.input.bash.JustPressed) {
         bool didBash = Start();
         if (didBash) {
-          SetState(State.Starting);
+          SetState(AbilityState.Starting);
         }
         else {
           if (!abilities.launch.CanUse) {
-            oPlayer.PlayLocalSound("Ori/Bash/bashNoTargetB", 0.35f);
+            abilities.oPlayer.PlayLocalSound("Ori/Bash/bashNoTargetB", 0.35f);
           }
         }
       }
       else if (InUse) {
         if (Starting) {
-          if (CurrentTime > MinBashDuration) {
-            SetState(State.Active, preserveCurrentTime: true);
+          if (stateTime > MinBashDuration) {
+            SetState(AbilityState.Active, preserveCurrentTime: true);
           }
           return;
         }
 
         if (!Active) return;
-        if (CurrentTime == MinBashDuration + 4) {
-          oPlayer.PlayLocalSound("Ori/Bash/seinBashLoopA", 0.5f);
+        if (stateTime == MinBashDuration + 4) {
+          abilities.oPlayer.PlayLocalSound("Ori/Bash/seinBashLoopA", 0.5f);
         }
-        oPlayer.Animations.Update();
+        abilities.oPlayer.Animations.Update();
 
-        if (CurrentTime <= MaxBashDuration && input.bash.Current && !(BashEntity is null) && BashEntity.active) return;
+        if (stateTime <= MaxBashDuration && abilities.oPlayer.input.bash.Current &&
+          BashEntity is not null && BashEntity.active) return;
         End();
-        SetState(State.Inactive);
-      }
-      else {
-        TickCooldown();
+        SetState(AbilityState.Inactive);
       }
     }
 

@@ -1,3 +1,4 @@
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
 using OriMod.Projectiles.Abilities;
@@ -9,26 +10,24 @@ namespace OriMod.Abilities {
   /// <summary>
   /// Ability for a quick and high jump that can deal damage to enemies.
   /// </summary>
-  public sealed class ChargeJump : Ability, ILevelable {
+  public sealed class ChargeJump : Ability<OriAbilityManager>, ILevelable {
     static ChargeJump() => OriMod.OnUnload += Unload;
-
-    internal ChargeJump(AbilityManager manager) : base(manager) {
-    }
-
+    public override bool Unlocked => Level > 0;
     public override int Id => AbilityId.ChargeJump;
-    public override byte Level => (this as ILevelable).Level;
-    byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 5;
+    public override int Level => (this as ILevelable).Level;
+    int ILevelable.Level { get; set; }
+    int ILevelable.MaxLevel => 5;
 
-    internal override bool CanUse => base.CanUse && !InUse && Charged &&
+    public override bool CanUse => base.CanUse && !InUse && Charged &&
                                      !abilities.burrow && !abilities.chargeDash && !abilities.climb &&
                                      !abilities.dash && !abilities.launch &&
                                      !abilities.stomp && !abilities.wallChargeJump;
 
-    protected override int Cooldown => 120;
-    protected override Color RefreshColor => Color.Blue;
+    public override int Cooldown => 120;
+    public override void OnRefreshed() => abilities.RefreshParticles(Color.Blue);
 
-    private bool CanCharge => base.CanUse && !InUse && oPlayer.IsGrounded && input.charge.Current;
+    private bool CanCharge => base.CanUse && !InUse &&
+      abilities.oPlayer.IsGrounded && abilities.oPlayer.input.charge.Current;
     private bool Charged => _currentCharge >= MaxCharge;
 
     /// <summary>
@@ -52,12 +51,12 @@ namespace OriMod.Abilities {
     private readonly RandomChar _rand = new RandomChar();
 
     private void StartChargeJump() {
-      oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _rand.NextNoRepeat(3));
+      abilities.oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _rand.NextNoRepeat(3));
       _currentCharge = 0;
       Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero,
         ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1);
-      PutOnCooldown();
-      abilities.climb.SetState(State.Inactive);
+      StartCooldown();
+      abilities.climb.SetState(AbilityState.Inactive);
     }
 
     private void UpdateCharged() {
@@ -66,44 +65,42 @@ namespace OriMod.Abilities {
       }
     }
 
-    protected override void UpdateActive() {
-      float speed = Speeds[CurrentTime] * 0.35f;
+    public override void UpdateActive() {
+      float speed = Speeds[stateTime] * 0.35f;
       player.velocity.Y = speed * -player.gravDir;
-      oPlayer.immuneTimer = 12;
+      abilities.oPlayer.immuneTimer = 12;
     }
 
-    protected override void UpdateUsing() {
+    public override void UpdateUsing() {
       player.controlJump = false;
     }
 
-    internal override void Tick() {
+    public override void UpdateCooldown() {
+      if (abilities.burrow) return;
+      base.UpdateCooldown();
+    }
+
+    public override void PreUpdate() {
       if (abilities.burrow) {
         _currentCharge = 0;
         _currentGrace = 0;
         return;
       }
 
-      if (!Refreshed && !InUse) {
-        currentCooldown--;
-        if (currentCooldown < 0) {
-          Refreshed = true;
-        }
-      }
-
       if (!Charged && CanCharge) {
         if (_currentCharge == 0) {
-          oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpChargeB", 0.6f, .2f);
+          abilities.oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpChargeB", 0.6f, .2f);
         }
 
         _currentCharge++;
         if (_currentCharge > MaxCharge) {
-          oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpChargeB", 0.6f, .2f);
+          abilities.oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpChargeB", 0.6f, .2f);
         }
       }
 
-      if (CanUse && input.jump.JustPressed) {
+      if (CanUse && abilities.oPlayer.input.jump.JustPressed) {
         StartChargeJump();
-        SetState(State.Active);
+        SetState(AbilityState.Active);
       }
       else if (Charged) {
         UpdateCharged();
@@ -114,13 +111,13 @@ namespace OriMod.Abilities {
           _currentGrace--;
           if (_currentGrace < 0) {
             _currentCharge = 0;
-            oPlayer.PlaySound("Ori/ChargeDash/seinChargeDashUncharge", 0.6f, .3f);
+            abilities.oPlayer.PlaySound("Ori/ChargeDash/seinChargeDashUncharge", 0.6f, .3f);
           }
         }
       }
 
-      if (Active && CurrentTime >= Duration) {
-        SetState(State.Inactive);
+      if (Active && stateTime >= Duration) {
+        SetState(AbilityState.Inactive);
       }
     }
 

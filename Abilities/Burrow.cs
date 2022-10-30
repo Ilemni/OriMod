@@ -1,9 +1,10 @@
-using System;
-using System.IO;
-using System.Linq;
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Utilities;
+using System;
+using System.IO;
+using System.Linq;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -16,17 +17,17 @@ namespace OriMod.Abilities {
   /// <remarks>
   /// This ability was somewhat difficult to balance; the simplest solution was to restrict tiles to whatever pickaxe was in inventory.
   /// </remarks>
-  public sealed class Burrow : Ability, ILevelable {
+  public sealed class Burrow : Ability<OriAbilityManager>, ILevelable {
     static Burrow() => OriMod.OnUnload += Unload;
-    internal Burrow(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityId.Burrow;
-    public override byte Level => (this as ILevelable).Level;
-    byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 3;
+    public override int Level => (this as ILevelable).Level;
+    public override bool Unlocked => Level > 0;
+    int ILevelable.Level { get; set; }
+    int ILevelable.MaxLevel => 3;
 
-    internal override bool CanUse => base.CanUse && !player.mount.Active && !InMenu && abilities.crouch;
-    protected override int Cooldown => 12;
-    protected override Color RefreshColor => Color.SandyBrown;
+    public override bool CanUse => base.CanUse && !player.mount.Active && !InMenu && abilities.crouch;
+    public override int Cooldown => 12;
+    public override void OnRefreshed() => abilities.RefreshParticles(Color.SandyBrown);
 
     private int MaxDuration {
       get {
@@ -109,7 +110,7 @@ namespace OriMod.Abilities {
     /// <param name="didX">Whether or not a collision has occured on the X axis.</param>
     /// <param name="didY">Whether or not a collision has occured on the Y axis.</param>
     private void OnCollision(int hitboxIdx, ref bool didX, ref bool didY) {
-      oPlayer.Debug("Bounce! " + hitboxIdx);
+      abilities.oPlayer.Debug("Bounce! " + hitboxIdx);
       switch (hitboxIdx) {
         case 0: // Top
         case 1: // Bottom
@@ -138,21 +139,21 @@ namespace OriMod.Abilities {
       }
     }
 
-    protected override void ReadPacket(BinaryReader r) {
+    public override void ReadPacket(BinaryReader r) {
       _lastPosition = r.ReadVector2();
       player.position = _lastPosition;
       velocity = r.ReadVector2();
       _breath = r.ReadSingle();
     }
 
-    protected override void WritePacket(ModPacket packet) {
+    public override void WritePacket(ModPacket packet) {
       packet.WriteVector2(_lastPosition);
       packet.WriteVector2(velocity);
       packet.Write(_breath);
     }
 
-    protected override void UpdateActive() {
-      if (input.leftClick.Current) {
+    public override void UpdateActive() {
+      if (abilities.oPlayer.input.leftClick.Current) {
         if (currentSpeed < FastSpeed) {
           currentSpeed = OriUtils.Lerp(currentSpeed, FastSpeed, 0.09f);
         }
@@ -209,22 +210,22 @@ namespace OriMod.Abilities {
 
       // Apply changes
       player.velocity = Vector2.Zero;
-      oPlayer.CreatePlayerDust();
+      abilities.oPlayer.CreatePlayerDust();
 
       // Breath
       if (_breath > 0) {
-        _breath -= input.leftClick.Current ? 2.2f : 1;
+        _breath -= abilities.oPlayer.input.leftClick.Current ? 2.2f : 1;
       }
     }
 
-    protected override void UpdateEnding() {
+    public override void UpdateEnding() {
       // Runs when leaving solid tiles
       player.velocity = velocity * SpeedExitMultiplier;
       player.direction = Math.Sign(velocity.X);
-      oPlayer.UnrestrictedMovement = true;
+      abilities.oPlayer.UnrestrictedMovement = true;
     }
 
-    protected override void UpdateUsing() {
+    public override void UpdateUsing() {
       // Manage suffocation debuff
       if (_breath > 0) {
         player.buffImmune[BuffID.Suffocation] = true;
@@ -241,17 +242,17 @@ namespace OriMod.Abilities {
       player.controlUseTile = false;
       player.controlThrow = false;
       player.controlUp = false;
-      oPlayer.KillGrapples();
+      abilities.oPlayer.KillGrapples();
       player.grapCount = 0;
     }
 
-    protected internal override void PostUpdate() {
+    public override void PostUpdate() {
       if (!InUse) return;
       player.position = _lastPosition + velocity;
       _lastPosition = player.position;
     }
 
-    internal override void DrawEffects(ref PlayerDrawSet drawInfo) {
+    internal void DrawEffects(ref PlayerDrawSet drawInfo) {
       if (_breath >= MaxDuration) return;
       // UI indication for breath
       Vector2 baseDrawPos = player.Right - Main.screenPosition;
@@ -280,20 +281,20 @@ namespace OriMod.Abilities {
       }
     }
 
-    internal override void Tick() {
+    public override void PreUpdate() {
       if (InUse) {
         InnerHitbox.UpdateHitbox(player.Center + velocity.Normalized() * (player.gravDir < 0 ? 48 : 32));
 
         if (Active) {
           bool canBurrow = InnerHitbox.Points.Any(p => IsSolid(Main.tile[p.X, p.Y]));
           if (!canBurrow) {
-            SetState(State.Ending);
+            SetState(AbilityState.Ending);
           }
         }
         else if (Ending) {
-          if (CurrentTime > 2) {
-            SetState(State.Inactive);
-            PutOnCooldown();
+          if (stateTime > 2) {
+            SetState(AbilityState.Inactive);
+            StartCooldown();
           }
         }
 
@@ -301,9 +302,7 @@ namespace OriMod.Abilities {
       }
       else {
         // Not in use
-        TickCooldown();
-
-        if (CanUse && input.burrow.JustPressed) {
+        if (CanUse && abilities.oPlayer.input.burrow.JustPressed) {
           EnterHitbox.UpdateHitbox(player.Center);
 
           // Check if player can enter Burrow
@@ -319,8 +318,8 @@ namespace OriMod.Abilities {
 
           if (doBurrow) {
             // Enter Burrow
-            SetState(State.Active);
-            currentCooldown = Cooldown;
+            SetState(AbilityState.Active);
+            cooldownLeft = Cooldown;
 
             // TODO: consider moving this write to an Update method
             currentSpeed = FastSpeed;

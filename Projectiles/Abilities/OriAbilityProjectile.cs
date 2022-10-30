@@ -1,3 +1,5 @@
+using AnimLib;
+using AnimLib.Projectiles;
 using OriMod.Abilities;
 using Terraria;
 using Terraria.ModLoader;
@@ -6,28 +8,13 @@ namespace OriMod.Projectiles.Abilities {
   /// <summary>
   /// Base class for ability projectiles. These act more as hitboxes and have no visible texture.
   /// </summary>
-  public abstract class AbilityProjectile : ModProjectile {
-    /// <summary>
-    /// Correlates to a <see cref="Id"/>.
-    /// </summary>
-    public abstract byte Id { get; }
-
-    /// <summary>
-    /// The level of the <see cref="OriMod.Abilities.Ability"/> when this <see cref="AbilityProjectile"/> was created.
-    /// </summary>
-    public int Level => (int)Projectile.ai[0];
-
+  public abstract class OriAbilityProjectile : AbilityProjectile {
     /// <summary>
     /// THe <see cref="OriPlayer"/> that this <see cref="AbilityProjectile"/> belongs to.
     /// </summary>
-    public OriPlayer oPlayer => _oPlayer ?? (_oPlayer = Main.player[Projectile.owner].GetModPlayer<OriPlayer>());
-    private OriPlayer _oPlayer;
-
-    /// <summary>
-    /// The <see cref="OriMod.Abilities.Ability"/> that this <see cref="AbilityProjectile"/> belongs to.
-    /// </summary>
-    public Ability ability => oPlayer.abilities[Id];
-
+    public OriAbilityManager abilities => _abilities ??
+      (_abilities = AnimLibMod.GetAbilityManager<OriAbilityManager>(aPlayer.Player.GetModPlayer<OriPlayer>()));
+    private OriAbilityManager _abilities;
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
 
     /// <summary>
@@ -64,7 +51,7 @@ namespace OriMod.Projectiles.Abilities {
     /// <para>Defaults to setting projectile center to player center.</para>
     /// </summary>
     protected virtual void Behavior() {
-      Projectile.Center = oPlayer.Player.Center;
+      Projectile.Center = aPlayer.Player.Center;
     }
   }
 }

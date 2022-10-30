@@ -1,6 +1,7 @@
-using System;
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
+using System;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -9,14 +10,14 @@ namespace OriMod.Abilities {
   /// <remarks>
   /// This ability is derived from the Ori games, despite Terraria already allowing gliding with wings.
   /// </remarks>
-  public sealed class Glide : Ability, ILevelable {
-    internal Glide(AbilityManager manager) : base(manager) { }
+  public sealed class Glide : Ability<OriAbilityManager>, ILevelable {
     public override int Id => AbilityId.Glide;
-    public override byte Level => (this as ILevelable).Level;
-    byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 1;
+    public override int Level => (this as ILevelable).Level;
+    int ILevelable.Level { get; set; }
+    int ILevelable.MaxLevel => 1;
+    public override bool Unlocked => Level > 0;
 
-    internal override bool CanUse =>
+    public override bool CanUse =>
       base.CanUse && !Ending && player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active &&
       !abilities.airJump && !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump &&
       !abilities.climb && !abilities.dash && !abilities.launch && !abilities.stomp && !abilities.wallChargeJump &&
@@ -34,56 +35,57 @@ namespace OriMod.Abilities {
     private bool _oldLeft;
     private bool _oldRight;
 
-    protected override void UpdateStarting() {
-      if (CurrentTime == 0) {
-        oPlayer.PlaySound("Ori/Glide/seinGlideStart" + _randStart.NextNoRepeat(3), 0.8f);
+    public override void UpdateStarting() {
+      if (stateTime == 0) {
+        abilities.oPlayer.PlaySound("Ori/Glide/seinGlideStart" + _randStart.NextNoRepeat(3), 0.8f);
       }
     }
 
-    protected override void UpdateActive() {
+    public override void UpdateActive() {
       if (player.controlLeft != _oldLeft || player.controlRight != _oldRight) {
-        oPlayer.PlaySound("Ori/Glide/seinGlideMoveLeftRight" + _randActive.NextNoRepeat(5), 0.45f);
+        abilities.oPlayer.PlaySound("Ori/Glide/seinGlideMoveLeftRight" + _randActive.NextNoRepeat(5), 0.45f);
       }
       _oldLeft = player.controlLeft;
       _oldRight = player.controlRight;
     }
 
-    protected override void UpdateEnding() {
-      if (CurrentTime == 0) {
-        oPlayer.PlaySound("Ori/Glide/seinGlideEnd" + _randEnd.NextNoRepeat(3), 0.8f);
+    public override void UpdateEnding() {
+      if (stateTime == 0) {
+        abilities.oPlayer.PlaySound("Ori/Glide/seinGlideEnd" + _randEnd.NextNoRepeat(3), 0.8f);
       }
     }
 
-    protected override void UpdateUsing() {
+    public override void UpdateUsing() {
       player.maxFallSpeed = MathHelper.Clamp(player.gravity * 5, 1f, 2f);
-      if (oPlayer.UnrestrictedMovement) return;
+      if (abilities.oPlayer.UnrestrictedMovement) return;
       player.runSlowdown = RunSlowdown;
       player.runAcceleration = RunAcceleration;
     }
 
-    internal override void Tick() {
-      if (!InUse && CanUse && !oPlayer.OnWall && input.glide.Current) {
-        SetState(State.Starting);
+    public override void PreUpdate() {
+      if (!InUse && CanUse && !abilities.oPlayer.OnWall && abilities.oPlayer.input.glide.Current) {
+        SetState(AbilityState.Starting);
         return;
       }
       if (abilities.dash || abilities.airJump || abilities.burrow || abilities.launch) {
-        SetState(State.Inactive);
+        SetState(AbilityState.Inactive);
         return;
       }
-      
+
       if (!InUse) return;
       if (Starting) {
-        if (CurrentTime > StartDuration) {
-          SetState(State.Active);
+        if (stateTime > StartDuration) {
+          SetState(AbilityState.Active);
         }
       }
       else if (Ending) {
-        if (CurrentTime > EndDuration) {
-          SetState(State.Inactive);
+        if (stateTime > EndDuration) {
+          SetState(AbilityState.Inactive);
         }
       }
-      else if (player.velocity.Y * player.gravDir < 0 || oPlayer.OnWall || oPlayer.IsGrounded || !input.glide.Current) {
-        SetState(State.Ending);
+      else if (player.velocity.Y * player.gravDir < 0 || abilities.oPlayer.OnWall
+        || abilities.oPlayer.IsGrounded || !abilities.oPlayer.input.glide.Current) {
+        SetState(AbilityState.Ending);
       }
     }
   }
