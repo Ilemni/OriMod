@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
+﻿using AnimLib;
+using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using ReLogic.Utilities;
 using Terraria;

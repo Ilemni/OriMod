@@ -1,3 +1,4 @@
+using AnimLib;
 using OriMod.Utilities;
 using Terraria.ID;
 using Terraria.ModLoader;

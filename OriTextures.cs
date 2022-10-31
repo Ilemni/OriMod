@@ -1,3 +1,5 @@
+using AnimLib;
+
 namespace OriMod {
   /// <summary>
   /// Stores references to <see cref="Microsoft.Xna.Framework.Graphics.Texture2D"/> that are used in code.
