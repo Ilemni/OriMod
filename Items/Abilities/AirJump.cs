@@ -10,8 +10,8 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       GetAbilityRecipe()
-        .AddRecipeGroup("OriMod:DarkBars", 12)
-        .AddRecipeGroup("OriMod:JumpBottles")
+        .AddRecipeGroup(OriRecipeGroups.DarkBars, 12)
+        .AddRecipeGroup(OriRecipeGroups.JumpBottles)
         .Register();
     }
   }
@@ -25,8 +25,8 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       GetAbilityRecipe<AirJumpLevel1>()
-        .AddRecipeGroup("OriMod:HardmodeBars2", 12)
-        .AddRecipeGroup("OriMod:JumpBalloons")
+        .AddRecipeGroup(OriRecipeGroups.HardmodeBars2, 12)
+        .AddRecipeGroup(OriRecipeGroups.JumpBalloons)
         .Register();
     }
   }

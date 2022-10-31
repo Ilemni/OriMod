@@ -24,7 +24,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       GetAbilityRecipe<BurrowLevel1>()
-        .AddRecipeGroup("OriMod:HardmodeBars3", 22)
+        .AddRecipeGroup(OriRecipeGroups.HardmodeBars3, 22)
         .Register();
     }
   }

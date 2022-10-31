@@ -9,8 +9,8 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       GetAbilityRecipe()
-        .AddRecipeGroup("OriMod:GoldBars", 15)
-        .AddRecipeGroup("OriMod:WallJumpGear")
+        .AddRecipeGroup(OriRecipeGroups.GoldBars, 15)
+        .AddRecipeGroup(OriRecipeGroups.WallJumpGear)
         .Register();
     }
   }

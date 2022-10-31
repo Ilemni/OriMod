@@ -7,7 +7,7 @@ namespace OriMod.Items.Abilities {
   public sealed class AbilityMedallionEmpty : ModItem {
     public override void AddRecipes() {
       CreateRecipe()
-        .AddRecipeGroup("OriMod:IronBars", 8)
+        .AddRecipeGroup(OriRecipeGroups.IronBars, 8)
         .AddTile(ModContent.TileType<Tiles.SpiritSapling>())
         .Register();
     }
