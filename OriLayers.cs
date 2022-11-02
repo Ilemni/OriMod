@@ -32,6 +32,7 @@ namespace OriMod {
         data.color = doFlash
             ? Color.Lerp(oPlayer.SpriteColorPrimary, Color.Red, player.immuneAlpha / 255f)
             : isTransformStart ? Color.White : oPlayer.SpriteColorPrimary;
+        data.shader = player.dye[1].dye;
         data.origin.Y += 5 * player.gravDir;
         drawInfo.DrawDataCache.Add(data);
 
@@ -42,6 +43,7 @@ namespace OriMod {
               : oPlayer.SpriteColorSecondary;
 
           data.texture = OriTextures.Instance.playerSecondary;
+          data.shader = player.dye[1].dye;
           drawInfo.DrawDataCache.Add(data);
         }
 
