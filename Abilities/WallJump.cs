@@ -16,6 +16,7 @@ namespace OriMod.Abilities {
     public override int Level => (this as ILevelable).Level;
     int ILevelable.Level { get; set; }
     int ILevelable.MaxLevel => 1;
+    public override bool Unlocked => Level > 0;
 
     public override bool CanUse => base.CanUse && abilities.oPlayer.OnWall &&
       !abilities.oPlayer.IsGrounded && !InUse && !player.mount.Active &&
