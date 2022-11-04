@@ -62,6 +62,11 @@ namespace OriMod {
     [DefaultValue(typeof(Color), "0, 0, 0, 0")]
     public Color playerColorSecondary;
 
+    [LocalizedLabel("DyeLerp")]
+    [LocalizedTooltip("DyeLerp")]
+    [DefaultValue(typeof(float), "0.65")]
+    public float dyeLerp;
+
     public override void OnLoaded() {
       OriMod.ConfigClient = this;
     }

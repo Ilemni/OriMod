@@ -20,6 +20,7 @@ Mods: {
 				BurrowControls: "Burrow Controls"
 				Color1: "Player Color"
 				Color2: "Player Color (Secondary)"
+				DyeLerp: "Dye Color Blend"
 			}
 			Header: {
 				Gameplay: "Gameplay"
@@ -66,6 +67,14 @@ Mods: {
 					'''
 					The secondary color of your Spirit.
 					Default: 0, 0, 0, 0
+					'''
+				DyeLerp: 
+					'''
+					Primary color dye mix
+					0 - Use Ori color
+					1 - Use Dye color
+					Or between to mix colors
+					(Put bye to the breastplate slot)
 					'''
 			}
 		}

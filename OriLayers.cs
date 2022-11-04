@@ -1,8 +1,8 @@
 using AnimLib.Abilities;
+using AnimLib.Shaders;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Abilities;
-using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
@@ -20,7 +20,7 @@ namespace OriMod {
     /// </summary>
     internal sealed class OriPlayerSprite : PlayerDrawLayer {
       private int armor_dye;
-      Color? shColor;
+      ArmorShaderFields dyeFields;
       public override bool IsHeadLayer => true;
       public override void SetStaticDefaults() {
         playerSprite = ModContent.GetInstance<OriPlayerSprite>();
@@ -35,11 +35,13 @@ namespace OriMod {
         bool doFlash = player.immune && oPlayer.immuneTimer == 0;
         if (armor_dye != player.dye[1].netID) {
           var shader = GameShaders.Armor.GetShaderFromItemId(player.dye[1].netID);
-          if (shader is not null) shColor = new((Vector3)typeof(ArmorShaderData).GetField("_uColor", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(shader));
-          else shColor = null;
+          if (shader is not null) dyeFields = new ArmorShaderFields(shader);
+          else dyeFields = null;
           armor_dye = player.dye[1].netID;
         }
-        Color sprCol = Color.Lerp(oPlayer.SpriteColorPrimary, shColor ?? Color.White, shColor is null ? 0 : 0.65f);
+        Color shColor = dyeFields?.uColor ?? Color.White;
+        Color sprCol = Color.Lerp(oPlayer.SpriteColorPrimary, shColor,
+          shColor == Color.White ? 0 : OriMod.ConfigClient.dyeLerp);
         data.color = doFlash
             ? Color.Lerp(sprCol, Color.Red, player.immuneAlpha / 255f)
             : isTransformStart ? Color.White : sprCol;
@@ -49,12 +51,6 @@ namespace OriMod {
 
         // Secondary color layer, only used when IsOri is true (i.e. not during transform start)
         if (oPlayer.IsOri) {
-          //  Color _c = default;
-          //  if (shColor is not null) {
-          //    _c = shColor.Value;
-          //    _c.A = oPlayer.SpriteColorSecondary.A;
-          //  }          
-          //  sprCol = shColor is null ? oPlayer.SpriteColorSecondary : Color.Lerp(oPlayer.SpriteColorSecondary, _c, 0.65f);
           data.color = doFlash
               ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, player.immuneAlpha / 255f)
               : oPlayer.SpriteColorSecondary;
