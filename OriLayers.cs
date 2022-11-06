@@ -1,5 +1,5 @@
 using AnimLib.Abilities;
-using AnimLib.Shaders;
+using AnimLib.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Abilities;
@@ -20,7 +20,7 @@ namespace OriMod {
     /// </summary>
     internal sealed class OriPlayerSprite : PlayerDrawLayer {
       private int armor_dye;
-      ArmorShaderFields dyeFields;
+      ArmorShaderData shader;
       public override bool IsHeadLayer => true;
       public override void SetStaticDefaults() {
         playerSprite = ModContent.GetInstance<OriPlayerSprite>();
@@ -34,12 +34,10 @@ namespace OriMod {
         DrawData data = oPlayer.Animations.playerAnim.GetDrawData(drawInfo);
         bool doFlash = player.immune && oPlayer.immuneTimer == 0;
         if (armor_dye != player.dye[1].netID) {
-          var shader = GameShaders.Armor.GetShaderFromItemId(player.dye[1].netID);
-          if (shader is not null) dyeFields = new ArmorShaderFields(shader);
-          else dyeFields = null;
+          shader = GameShaders.Armor.GetShaderFromItemId(player.dye[1].netID);
           armor_dye = player.dye[1].netID;
         }
-        Color shColor = dyeFields?.uColor ?? Color.White;
+        Color shColor = shader?.GetColor() ?? Color.White;
         Color sprCol = Color.Lerp(oPlayer.SpriteColorPrimary, shColor,
           shColor == Color.White ? 0 : OriMod.ConfigClient.dyeLerp);
         data.color = doFlash
