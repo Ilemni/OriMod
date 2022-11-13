@@ -86,12 +86,6 @@ namespace OriMod {
     #endregion
 
     /// <summary>
-    /// Key used for controlling <see cref="Abilities.SoulLink"/>.
-    /// </summary>
-    // ReSharper disable once UnassignedField.Global
-    [Obsolete] public static ModKeybind soulLinkKey;
-
-    /// <summary>
     /// Key used for controlling <see cref="Abilities.Bash"/>.
     /// </summary>
     public static ModKeybind bashKey;
