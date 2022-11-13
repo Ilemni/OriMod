@@ -28,7 +28,7 @@ namespace OriMod {
     /// </summary>
     public static object Call(params object[] args) {
       int len = args.Length;
-      if (len <= 0 || !(args[0] is string cmd)) return null;
+      if (len <= 0 || args[0] is not string cmd) return null;
       
       OriPlayer oPlayer = null;
       if (len >= 2) {
@@ -37,14 +37,14 @@ namespace OriMod {
 
       switch (cmd) {
         case "ResetPlayerModData":
-          if (!(oPlayer is null)) {
+          if (oPlayer is not null) {
             oPlayer.ResetData();
             return true;
           }
           OriMod.Log.Warn($"{OriMod.instance.Name}.Call() - ResetPlayerModData - Expected type {typeof(Player)}, got {args[1].GetType()}");
           return false;
         case "IsOri":
-          if (!(oPlayer is null)) {
+          if (oPlayer is not null) {
             return oPlayer.IsOri || oPlayer.Transforming;
           }
           OriMod.Log.Warn($"{OriMod.instance.Name}.Call() - Transforming - Expected type {typeof(Player)}, got {args[1].GetType()}");

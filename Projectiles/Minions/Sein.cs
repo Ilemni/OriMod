@@ -227,7 +227,7 @@ namespace OriMod.Projectiles.Minions {
         GoalPositionIdx++;
       }
 
-      if (!(_goalNpc is null) && !_goalNpc.active) {
+      if (_goalNpc is not null && !_goalNpc.active) {
         _goalNpc = null;
       }
       if (_targetIDs.Count == 0 || !Main.npc[_targetIDs[0]].active) {
@@ -276,7 +276,7 @@ namespace OriMod.Projectiles.Minions {
       int SortByDistanceClosest(byte id1, byte id2) {
         NPC npc1 = Main.npc[id1];
         NPC npc2 = Main.npc[id2];
-        if (!(_mainTargetNpc is null)) {
+        if (_mainTargetNpc is not null) {
           if (npc1.whoAmI == _mainTargetNpc.whoAmI) return -1;
           if (npc2.whoAmI == _mainTargetNpc.whoAmI) return 1;
         }
@@ -330,7 +330,7 @@ namespace OriMod.Projectiles.Minions {
       _targetIDs.Clear();
       _targetIDs.AddRange(newTargetIDs.GetRange(0, Math.Min(newTargetIDs.Count, _data.targets)));
 
-      return !(_mainTargetNpc is null) || newTargetIDs.Count > 0;
+      return _mainTargetNpc is not null || newTargetIDs.Count > 0;
     }
 
     /// <summary>

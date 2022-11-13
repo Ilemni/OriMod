@@ -31,7 +31,7 @@ namespace OriMod {
       void AddNewSein(SeinData newSein) {
         SeinData lastSein = list.Count == 0 ?
           new SeinData() :
-          list[list.Count - 1];
+          list[^1];
 
         foreach (FieldInfo field in fields) {
           object defVal = field.GetValue(defaultSein);
