@@ -39,7 +39,7 @@ namespace OriMod {
         }
         Color shColor = shader?.GetColor() ?? Color.White;
         Color sprCol = Color.Lerp(oPlayer.SpriteColorPrimary, shColor,
-          shColor == Color.White ? 0 : OriMod.ConfigClient.dyeLerp);
+          shColor == Color.White ? 0 : oPlayer.DyeColorBlend);
         data.color = doFlash
             ? Color.Lerp(sprCol, Color.Red, player.immuneAlpha / 255f)
             : isTransformStart ? Color.White : sprCol;

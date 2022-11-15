@@ -85,6 +85,7 @@ namespace OriMod {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.SpriteColorPrimary = playerColor;
       oPlayer.SpriteColorSecondary = playerColorSecondary;
+      oPlayer.DyeColorBlend = dyeLerp;
     }
   }
 

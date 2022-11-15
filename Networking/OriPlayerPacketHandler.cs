@@ -24,6 +24,7 @@ namespace OriMod.Networking {
       byte seinMinionType = seinMinionActive ? reader.ReadByte() : (byte)0;
       Color spriteColorPrimary = reader.ReadRGB();
       Color spriteColorSecondary = reader.ReadRGBA();
+      float dyeLerp = reader.ReadSingle();
 
       fromPlayer.IsOri = oriSet;
       fromPlayer.Transforming = transforming;
@@ -34,6 +35,7 @@ namespace OriMod.Networking {
       fromPlayer.multiplayerPlayerLight = mpcPlayerLight;
       fromPlayer.SpriteColorPrimary = spriteColorPrimary;
       fromPlayer.SpriteColorSecondary = spriteColorSecondary;
+      fromPlayer.DyeColorBlend = dyeLerp;
 
       fromPlayer.input.ReadPacket(reader);
 
@@ -71,6 +73,7 @@ namespace OriMod.Networking {
 
       packet.WriteRGB(fromPlayer.SpriteColorPrimary);
       packet.WriteRGBA(fromPlayer.SpriteColorSecondary);
+      packet.Write(fromPlayer.DyeColorBlend);
 
       fromPlayer.input.WritePacket(packet);
 

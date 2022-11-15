@@ -247,6 +247,19 @@ namespace OriMod {
     }
 
     /// <summary>
+    /// Coef. of ori and dye color lerp for this instance of <see cref="OriPlayer"/>.
+    /// </summary>
+    public float DyeColorBlend {
+      get => _dyeColorBlend;
+      set {
+        _dyeColorBlend = value;
+        if (IsLocal) {
+          OriMod.ConfigClient.dyeLerp = value;
+        }
+      }
+    }
+
+    /// <summary>
     /// Whether or not the multiplayer client instance of this <see cref="OriPlayer"/> uses light.
     /// </summary>
     internal bool multiplayerPlayerLight = false;
@@ -273,6 +286,7 @@ namespace OriMod {
     private bool _transforming;
     private Color _spriteColorPrimary = Color.LightCyan;
     private Color _spriteColorSecondary = Color.LightCyan;
+    private float _dyeColorBlend = 0.65f;
 
     #endregion
 
@@ -427,7 +441,8 @@ namespace OriMod {
         ["OriSet"] = IsOri,
         ["Debug"] = debugMode,
         ["Color1"] = SpriteColorPrimary,
-        ["Color2"] = SpriteColorSecondary
+        ["Color2"] = SpriteColorSecondary,
+        ["DyeColLerp"] = DyeColorBlend
       };
       //TODO: Remove old save data once ready
       abilities.OldSave(_tag);
@@ -444,6 +459,12 @@ namespace OriMod {
       else {
         _spriteColorPrimary = OriMod.ConfigClient.playerColor;
         _spriteColorSecondary = OriMod.ConfigClient.playerColorSecondary;
+      }
+      if(tag.ContainsKey("DyeColLerp")) {
+        DyeColorBlend = tag.GetFloat("DyeColLerp");
+      }
+      else {
+        _dyeColorBlend = OriMod.ConfigClient.dyeLerp;
       }
       abilities.OldLoad(tag);
     }
@@ -787,6 +808,7 @@ namespace OriMod {
       oPlayer.SeinMinionType = 0;
       OriMod.ConfigClient.playerColor = oPlayer.SpriteColorPrimary;
       OriMod.ConfigClient.playerColorSecondary = oPlayer.SpriteColorSecondary;
+      OriMod.ConfigClient.dyeLerp = oPlayer.DyeColorBlend;
     }
 
     public override void OnRespawn(Player p) {
