@@ -19,7 +19,7 @@ namespace OriMod.Abilities {
   /// </remarks>
   public sealed class Launch : Ability<OriAbilityManager> {
     public override int Id => AbilityId.Launch;
-    public override int Level => (byte)Math.Max(0, levelableDependency.Level - 2);
+    public override int Level => Math.Max(0, levelableDependency.Level - 2);
     public override ILevelable levelableDependency => abilities.chargeJump;
     public override bool Unlocked => Level > 0;
 
