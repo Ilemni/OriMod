@@ -14,7 +14,7 @@ namespace OriMod.Abilities {
   public sealed class Dash : Ability<OriAbilityManager>, ILevelable {
     static Dash() => OriMod.OnUnload += Unload;
     public override int Id => AbilityId.Dash;
-    public override int Level => (this as ILevelable).Level;
+    public override int Level => ((ILevelable)this).Level;
     int ILevelable.Level { get; set; }
     int ILevelable.MaxLevel => 3;
     public override bool Unlocked => Level > 0;

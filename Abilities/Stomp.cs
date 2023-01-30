@@ -13,7 +13,7 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class Stomp : Ability<OriAbilityManager>, ILevelable {
     public override int Id => AbilityId.Stomp;
-    public override int Level => (this as ILevelable).Level;
+    public override int Level => ((ILevelable)this).Level;
     int ILevelable.Level { get; set; }
     int ILevelable.MaxLevel => 3;
     public override bool Unlocked => Level > 0;

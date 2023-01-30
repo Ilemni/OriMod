@@ -12,7 +12,7 @@ namespace OriMod.Abilities {
   /// </remarks>
   public sealed class Glide : Ability<OriAbilityManager>, ILevelable {
     public override int Id => AbilityId.Glide;
-    public override int Level => (this as ILevelable).Level;
+    public override int Level => ((ILevelable)this).Level;
     int ILevelable.Level { get; set; }
     int ILevelable.MaxLevel => 1;
     public override bool Unlocked => Level > 0;

@@ -10,7 +10,7 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class AirJump : Ability<OriAbilityManager>, ILevelable {
     public override int Id => AbilityId.AirJump;
-    public override int Level => (this as ILevelable).Level;
+    public override int Level => ((ILevelable)this).Level;
     public override bool Unlocked => Level > 0;
     int ILevelable.Level { get; set; }
     public int MaxLevel => 4;

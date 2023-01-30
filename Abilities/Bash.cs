@@ -17,7 +17,7 @@ namespace OriMod.Abilities {
   public sealed class Bash : Ability<OriAbilityManager>, ILevelable {
     static Bash() => OriMod.OnUnload += Unload;
     public override int Id => AbilityId.Bash;
-    public override int Level => (this as ILevelable).Level;
+    public override int Level => ((ILevelable)this).Level;
     public override bool Unlocked => Level > 0;
     int ILevelable.Level { get; set; }
     int ILevelable.MaxLevel => 3;

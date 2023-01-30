@@ -14,7 +14,7 @@ namespace OriMod.Abilities {
     static ChargeJump() => OriMod.OnUnload += Unload;
     public override bool Unlocked => Level > 0;
     public override int Id => AbilityId.ChargeJump;
-    public override int Level => (this as ILevelable).Level;
+    public override int Level => ((ILevelable)this).Level;
     int ILevelable.Level { get; set; }
     int ILevelable.MaxLevel => 5;
 
