@@ -19,8 +19,6 @@ namespace OriMod {
     /// Draws the Ori sprite.
     /// </summary>
     internal sealed class OriPlayerSprite : PlayerDrawLayer {
-      private int armor_dye;
-      ArmorShaderData shader;
       public override bool IsHeadLayer => true;
       public override void SetStaticDefaults() {
         playerSprite = ModContent.GetInstance<OriPlayerSprite>();
@@ -33,11 +31,11 @@ namespace OriMod {
 
         DrawData data = oPlayer.Animations.playerAnim.GetDrawData(drawInfo);
         bool doFlash = player.immune && oPlayer.immuneTimer == 0;
-        if (armor_dye != player.dye[1].netID) {
-          shader = GameShaders.Armor.GetShaderFromItemId(player.dye[1].netID);
-          armor_dye = player.dye[1].netID;
+        if (oPlayer.armor_dye != player.dye[1].netID) {
+          oPlayer.dye_shader = GameShaders.Armor.GetShaderFromItemId(player.dye[1].netID);
+          oPlayer.armor_dye = player.dye[1].netID;
         }
-        Color shColor = shader?.GetColor() ?? Color.White;
+        Color shColor = oPlayer.dye_shader?.GetColor() ?? Color.White;
         Color sprCol = Color.Lerp(oPlayer.SpriteColorPrimary, shColor,
           shColor == Color.White ? 0 : oPlayer.DyeColorBlend);
         data.color = doFlash

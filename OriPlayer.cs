@@ -87,6 +87,9 @@ namespace OriMod {
     /// </summary>
     public bool IsLocal { get; private set; }
 
+    internal int armor_dye;
+    internal ArmorShaderData dye_shader;
+
     #region Transformation
 
     /// <summary>
