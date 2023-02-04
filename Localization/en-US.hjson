@@ -20,6 +20,7 @@ Mods: {
 				BurrowControls: "Burrow Controls"
 				Color1: "Player Color"
 				Color2: "Player Color (Secondary)"
+				LookUpCamOffset: "Vertical Look Offset"
 				DyeLerp: "Dye Color Blend"
 			}
 			Header: {
@@ -67,6 +68,14 @@ Mods: {
 					'''
 					The secondary color of your Spirit.
 					Default: 0, 0, 0, 0
+					'''
+				LookUpCamOffset:
+					'''
+					By how much camera should be
+					moved when Ori is crouching
+					or looking up
+					Default: 300
+					Min: 0, Max: 300
 					'''
 				DyeLerp: 
 					'''
