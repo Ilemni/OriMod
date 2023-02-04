@@ -87,7 +87,14 @@ namespace OriMod {
     /// </summary>
     public bool IsLocal { get; private set; }
 
+    /// <summary>
+    /// Stores previous armor dye item ID, from armor dye slot, used for armor shader update.
+    /// </summary>
     internal int armor_dye;
+
+    /// <summary>
+    /// Current dye_shader data, used for dye shader base color extraction.
+    /// </summary>
     internal ArmorShaderData dye_shader;
 
     #region Transformation
