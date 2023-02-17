@@ -247,11 +247,12 @@ Mods: {
 				'''
 				Upgrades Dash to Level 2
 				Allows you to Dash in the air!
+				Allows you to quickly Dash into enemies, dealing damage!
 				'''
 			DashLevel3:
 				'''
 				Upgrades Dash to Level 3
-				Allows you to quickly Dash into enemies, dealing damage!
+				Allows you to perform dashes more rapidly!
 				'''
 			GlideLevel1:
 				'''
