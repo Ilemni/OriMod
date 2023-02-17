@@ -35,7 +35,7 @@ namespace OriMod.Projectiles.Minions {
     /// <summary>
     /// Type for <see cref="Buffs.SeinBuff"/>. This value should be from <see cref="ModContent.BuffType{T}"/>
     /// </summary>
-    protected abstract ushort BuffType { get; }
+    protected abstract int BuffType { get; }
 
     public override void SetDefaults() {
       Projectile.netImportant = true;

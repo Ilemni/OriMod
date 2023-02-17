@@ -16,6 +16,7 @@ using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
 using AnimLib.Extensions;
 using System;
+using System.Linq;
 
 namespace OriMod {
   /// <summary>
@@ -336,8 +337,8 @@ namespace OriMod {
     /// Removes all Sein-related buffs from the player.
     /// </summary>
     internal void RemoveSeinBuffs() {
-      for (int u = 1; u <= SeinData.All.Length; u++) {
-        Player.ClearBuff(ModContent.Find<ModBuff>(Mod.Name, "SeinBuff" + u).Type);
+      for (int u = 0; u < SeinData.All.Length; u++) {
+        Player.ClearBuff(SeinData.SeinBuffs[u]);
       }
     }
 
@@ -574,16 +575,7 @@ namespace OriMod {
       }
 
       if (SeinMinionActive) {
-        if (!(
-              Player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff2>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff3>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff4>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff5>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff6>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff7>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff8>())
-            )) {
+        if (!SeinData.SeinBuffs.Any(Player.HasBuff)) {
           SeinMinionActive = false;
           SeinMinionType = 0;
         }
