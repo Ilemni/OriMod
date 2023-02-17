@@ -19,7 +19,7 @@ namespace OriMod.Abilities {
 
     public override bool CanUse => base.CanUse && !IsOnCooldown && !InUse && !abilities.oPlayer.OnWall && !player.mount.Active &&
       !abilities.bash && !abilities.burrow && !abilities.launch && !abilities.lookUp && !abilities.stomp;
-    public override int Cooldown => 90;
+    public override int Cooldown => levelableDependency.Level >= 3 ? 60 : 90;
     public override void OnRefreshed() => abilities.RefreshParticles(Color.LightBlue);
 
     private static int ManaCost => 20;
