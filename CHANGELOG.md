@@ -1,8 +1,13 @@
 # v3.2.0.0
 
-## Abilities refactoring 
+## Feature update 
 
-Refactored, now uses AnimLib's abilities code
+Added Ori dye support, place dye to chestplate slot!
+Added camera movement on looking up and crouching
+Refactored code, now uses AnimLib's abilities code
+Got rid of obsolete features in recipe groups
+Corrected dash ability lv2 and lv3 descriptions
+Reduced charge dash cooldown on lv3
 
 ---
 
