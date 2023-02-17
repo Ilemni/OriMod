@@ -147,6 +147,7 @@ namespace OriMod.Abilities {
 
     public void OldLoad(TagCompound tag) {
       if (!tag.ContainsKey("AbilityLevels")) {
+        oldAbility = null;
         return;
       }
       oldAbility = tag.GetByteArray("AbilityLevels");
