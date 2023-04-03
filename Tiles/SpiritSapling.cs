@@ -26,7 +26,7 @@ namespace OriMod.Tiles {
       TileObjectData.addTile(Type);
       LocalizedText name = CreateMapEntryName();
       AddMapEntry(new Color(200, 200, 200), name);
-      //disableSmartCursor = true;
+      TileID.Sets.DisableSmartCursor[Type] = true;
     }
 
     public override bool RightClick(int i, int j) {

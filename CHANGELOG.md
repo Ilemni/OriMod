@@ -8,6 +8,7 @@ Refactored code, now uses AnimLib's abilities code
 Got rid of obsolete features in recipe groups
 Corrected dash ability lv2 and lv3 descriptions
 Reduced charge dash cooldown on lv3
+Disabled active cursor on sappling
 
 ---
 
