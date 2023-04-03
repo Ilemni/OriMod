@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using OriMod.Utilities;
+using Steamworks;
 using Terraria;
 
 namespace OriMod.Projectiles.Abilities {
@@ -66,23 +67,29 @@ namespace OriMod.Projectiles.Abilities {
       return false;
     }
 
-    private void ModifyHitAny(Entity target, ref int damage, ref bool crit) {
-      if (!crit && Main.rand.NextBool(5)) {
-        crit = true;
-      }
-      int multiplier = Projectile.penetrate / Projectile.maxPenetrate;
-      damage = (int)(damage * 0.6f + damage * 0.4f * multiplier);
+    private void ModifyHitAny(Entity target) {
       Vector2 vector = target.Center - aPlayer.Player.Center;
       float dist = target.Distance(aPlayer.Player.Center);
-      float kb = Knockback * (160 - dist) / 160;
+      float kb = Knockback * (160.0f - dist) / 160.0f;
       if (kb < 6) {
         kb = 6;
       }
       target.velocity += vector.Normalized() * kb;
     }
 
-    public override void ModifyHitPlayer(Player target, ref int damage, ref bool crit) => ModifyHitAny(target, ref damage, ref crit);
-    public override void ModifyHitPvp(Player target, ref int damage, ref bool crit) => ModifyHitAny(target, ref damage, ref crit);
-    public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection) => ModifyHitAny(target, ref damage, ref crit);
+    public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) {
+      float multiplier = (float)Projectile.penetrate / Projectile.maxPenetrate;
+      modifiers.FinalDamage.Scale(0.6f + 0.4f * multiplier);
+      ModifyHitAny(target);
+    }
+
+    public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
+      if (Main.rand.NextBool(5)) {
+        modifiers.SetCrit();
+      }
+      float multiplier = (float)Projectile.penetrate / Projectile.maxPenetrate;
+      modifiers.FinalDamage.Scale(0.6f + 0.4f * multiplier);
+      ModifyHitAny(target);
+    }
   }
 }

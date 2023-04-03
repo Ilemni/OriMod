@@ -153,7 +153,7 @@ namespace OriMod.Projectiles.Minions {
       Projectile.velocity = Vector2.Lerp(Projectile.velocity.Normalized(), offset.Normalized(), _lerp) * _speed;
     }
 
-    public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
+    public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone) {
       Projectile.active = false;
     }
   }

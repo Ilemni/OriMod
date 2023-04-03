@@ -6,6 +6,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.ID;
+using Terraria.Localization;
 
 namespace OriMod.Tiles {
   /// <summary>
@@ -23,7 +24,7 @@ namespace OriMod.Tiles {
       TileObjectData.newTile.StyleHorizontal = true;
       TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
       TileObjectData.addTile(Type);
-      ModTranslation name = CreateMapEntryName();
+      LocalizedText name = CreateMapEntryName();
       AddMapEntry(new Color(200, 200, 200), name);
       //disableSmartCursor = true;
     }
