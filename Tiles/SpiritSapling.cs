@@ -25,7 +25,7 @@ namespace OriMod.Tiles {
       TileObjectData.addTile(Type);
       ModTranslation name = CreateMapEntryName();
       AddMapEntry(new Color(200, 200, 200), name);
-      //disableSmartCursor = true;
+      TileID.Sets.DisableSmartCursor[Type] = true;
     }
 
     public override void KillMultiTile(int i, int j, int frameX, int frameY) {
