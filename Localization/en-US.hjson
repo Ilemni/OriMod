@@ -204,7 +204,11 @@ Mods: {
 		Items: {
 			AbilityMedallionEmpty: {
 				DisplayName: Blank {$Mods.OriMod.Common.Medal}
-				Tooltip: Used to create strong {$Mods.OriMod.Common.Medal}s to unlock or upgrade abilities.
+				Tooltip:
+					'''
+					Used to create strong {$Mods.OriMod.Common.Medal}s 
+					to unlock or upgrade abilities.
+					'''
 			}
 
 			AirJumpLevel1: {
