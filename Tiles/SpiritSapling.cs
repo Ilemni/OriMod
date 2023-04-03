@@ -28,10 +28,6 @@ public class SpiritSapling : ModTile {
     TileID.Sets.DisableSmartCursor[Type] = true;
   }
 
-  public override void KillMultiTile(int i, int j, int frameX, int frameY) {
-    Item.NewItem(null, i * 16, j * 16, 32, 32, ModContent.ItemType<Items.SpiritSapling>());
-  }
-
   public override bool RightClick(int i, int j) {
     OriPlayer oPlayer = OriPlayer.Local;
     Player player = oPlayer.Player;
