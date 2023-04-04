@@ -676,12 +676,12 @@ namespace OriMod {
 
     public override void OnHurt(Player.HurtInfo info) {
       UnrestrictedMovement = true;
-      if(!info.SoundDisabled) _useCustomHurtSound = true;
     }
 
     public override void PostHurt(Player.HurtInfo info) {
-      if (!_useCustomHurtSound) return;
-      _useCustomHurtSound = false;
+      if (!IsOri) return;
+      //if (!_useCustomHurtSound) return;
+      //_useCustomHurtSound = false;
       PlaySound("Ori/Hurt/seinHurtRegular" + _randHurt.NextNoRepeat(4), 0.75f);
     }
 
