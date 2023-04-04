@@ -9,6 +9,7 @@ Got rid of obsolete features in recipe groups
 Corrected dash ability lv2 and lv3 descriptions
 Reduced charge dash cooldown on lv3
 Disabled active cursor on sappling
+Reduced stomp randomness (fixed invalid float to int cast)
 
 ---
 

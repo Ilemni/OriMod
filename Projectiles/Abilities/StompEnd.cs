@@ -56,6 +56,7 @@ namespace OriMod.Projectiles.Abilities {
       base.SetDefaults();
       Projectile.width = 600;
       Projectile.height = 320;
+      Projectile.CritChance = 20;
     }
 
     public override bool PreAI() {
@@ -84,9 +85,6 @@ namespace OriMod.Projectiles.Abilities {
     }
 
     public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
-      if (Main.rand.NextBool(5)) {
-        modifiers.SetCrit();
-      }
       float multiplier = (float)Projectile.penetrate / Projectile.maxPenetrate;
       modifiers.FinalDamage.Scale(0.6f + 0.4f * multiplier);
       ModifyHitAny(target);
