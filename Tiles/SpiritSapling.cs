@@ -17,6 +17,7 @@ namespace OriMod.Tiles {
       Main.tileFrameImportant[Type] = true;
       Main.tileNoAttach[Type] = true;
       Main.tileLavaDeath[Type] = true;
+      TileID.Sets.DisableSmartCursor[Type] = true;
       TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
       TileObjectData.newTile.Origin = new Point16(0, 1);
       TileObjectData.newTile.CoordinateHeights = new[] { 16, 18 };
@@ -24,9 +25,8 @@ namespace OriMod.Tiles {
       TileObjectData.newTile.StyleHorizontal = true;
       TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
       TileObjectData.addTile(Type);
-      LocalizedText name = CreateMapEntryName();
+      LocalizedText name = CreateMapEntryName(); 
       AddMapEntry(new Color(200, 200, 200), name);
-      TileID.Sets.DisableSmartCursor[Type] = true;
     }
 
     public override bool RightClick(int i, int j) {

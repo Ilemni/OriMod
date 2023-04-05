@@ -675,6 +675,7 @@ namespace OriMod {
     }
 
     public override void OnHurt(Player.HurtInfo info) {
+      if (!IsOri) return;
       UnrestrictedMovement = true;
     }
 
