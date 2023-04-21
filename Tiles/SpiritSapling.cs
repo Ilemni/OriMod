@@ -1,7 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.Enums;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
@@ -19,7 +18,6 @@ namespace OriMod.Tiles {
       TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
       TileObjectData.newTile.Origin = new Point16(0, 1);
       TileObjectData.newTile.CoordinateHeights = new[] { 16, 18 };
-      TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
       TileObjectData.newTile.StyleHorizontal = true;
       TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
       TileObjectData.addTile(Type);
