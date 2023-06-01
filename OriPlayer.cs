@@ -358,7 +358,7 @@ namespace OriMod {
     /// Emits a white dust speck from the player.
     /// </summary>
     internal void CreatePlayerDust() {
-      if (_playerDustTimer > 0) {
+      if (_playerDustTimer > 0 || !Animations.GraphicsEnabledCompat) {
         return;
       }
 
@@ -721,6 +721,7 @@ namespace OriMod {
     }
 
     public override void HideDrawLayers(PlayerDrawSet drawInfo) {
+      if(!Animations.GraphicsEnabledCompat) return;
       if (!IsOri && !Transforming) {
         OriLayers.playerSprite.Hide();
         OriLayers.trailLayer.Hide();
