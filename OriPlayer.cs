@@ -586,7 +586,7 @@ namespace OriMod {
           Lighting.AddLight(Player.Center, _lightColor.ToVector3());
         }
 
-        if (input.jump.JustPressed && IsGrounded && !abilities.burrow) {
+        if (Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
           PlaySound("Ori/Jump/seinJumpsGrass" + _randJump.NextNoRepeat(5), 0.6f);
         }
 
@@ -597,11 +597,12 @@ namespace OriMod {
         // Footstep effects
         if (Main.dedServ || !IsGrounded) return;
         bool doDust = false;
-        if (!oldGrounded) {
+        if (!oldGrounded && Animations.GraphicsEnabledCompat) {
           doDust = true;
           FootstepManager.Instance.PlayLandingFromPlayer(Player, out SoundStyle _);
         }
-        else if (Animations.TrackName == "Running" && (Animations.FrameIndex == 4 || Animations.FrameIndex == 9)) {
+        else if (Animations.TrackName == "Running" && (Animations.FrameIndex == 4 || Animations.FrameIndex == 9) 
+          && Animations.GraphicsEnabledCompat) {
           doDust = true;
           FootstepManager.Instance.PlayFootstepFromPlayer(Player, out SoundStyle _);
         }
