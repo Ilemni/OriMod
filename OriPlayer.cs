@@ -23,6 +23,9 @@ namespace OriMod {
   /// <see cref="ModPlayer"/> class for <see cref="OriMod"/>. Contains Ori data for a player, such as abilities and animations.
   /// </summary>
   public sealed class OriPlayer : ModPlayer {
+
+    public const string abilitiesTagName = "AnimLibAbilities";
+
     #region Variables
 
     /// <summary>
@@ -97,6 +100,8 @@ namespace OriMod {
     /// Current dye_shader data, used for dye shader base color extraction.
     /// </summary>
     internal ArmorShaderData dye_shader;
+
+    private bool old_data_loaded = false;
 
     #region Transformation
 
@@ -455,8 +460,13 @@ namespace OriMod {
         ["Color2"] = SpriteColorSecondary,
         ["DyeColLerp"] = DyeColorBlend
       };
+
+      //Backward compatibility don't pay attention
       //TODO: Remove old save data once ready
       abilities.OldSave(_tag);
+
+      _tag[abilitiesTagName] = abilities.Save();
+
       foreach (var v in _tag) tag.Add(v);
     }
 
@@ -477,7 +487,27 @@ namespace OriMod {
       else {
         _dyeColorBlend = OriMod.ConfigClient.dyeLerp;
       }
+
+      //Backward compatibility don't pay attention
       abilities.OldLoad(tag);
+
+      //This is current version
+      if (tag.ContainsKey(abilitiesTagName))
+        abilities.Load(tag.GetCompound(abilitiesTagName));
+
+      //Backward compatibility don't pay attention
+      if (abilities.oldAbility is not null)
+      {
+        foreach (Ability ability in abilities)
+        {
+          if (ability is ILevelable levelable && levelable.Level == 0)
+          {
+            levelable.Level = abilities.oldAbility[ability.Id];
+          }
+        }
+        abilities.oldAbility = null;
+      }
+      //Backward compatibility don't pay attention
     }
 
     public override void ProcessTriggers(TriggersSet triggersSet) {
@@ -561,15 +591,29 @@ namespace OriMod {
     }
 
     public override void PostUpdate() {
-      if (abilities.oldAbility is not null) {
-        foreach (Ability ability in abilities) {
-          if (ability is ILevelable levelable) {
-            levelable.Level = Math.Max(abilities.oldAbility[ability.Id], levelable.Level);
+      //Backward compatibility don't pay attention
+      if(!old_data_loaded) {
+        AnimPlayer ap = Player.GetModPlayer<AnimPlayer>();
+        if (ap.OldAbilities is not null && 
+          ap.OldAbilities.ContainsKey(Mod.Name))
+        {
+          TagCompound tag = ap.OldAbilities.GetCompound(Mod.Name);
+          foreach (Ability ability in abilities)
+          {
+            if(ability is ILevelable levelable && levelable.Level == 0)
+            {
+              string name = ability.GetType().Name;
+              if (!tag.ContainsKey(name)) continue;
+              TagCompound aTag = tag.Get<TagCompound>(name);
+              ability.Load(aTag);
+            }
           }
-        }
-        abilities.oldAbility = null;
+        } 
+        old_data_loaded = true;
       }
+      //Backward compatibility don't pay attention
 
+      //There the method starts
       if (IsOri && !Transforming) {
         HasTransformedOnce = true;
       }
