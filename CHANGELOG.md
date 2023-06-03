@@ -12,6 +12,7 @@ Disabled active cursor on sappling
 Fixed spirit sappling placement silent exception
 Fixed trail, burrow indicator and bash arrow rotating with player
 Fixed infinite Launch looping and windup cancellation
+Fixed wings and various jump, mount or hook items working during transformation
 
 ---
 

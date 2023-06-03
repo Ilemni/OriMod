@@ -566,6 +566,9 @@ namespace OriMod {
       Player.controlRight = false;
       Player.controlUp = false;
       Player.controlDown = false;
+      Player.controlJump = false;
+      Player.controlMount = false;
+      Player.controlHook = false;
       Player.controlUseItem = false;
       if (transformTimer < TransformStartDuration - 10) {
         // Starting
