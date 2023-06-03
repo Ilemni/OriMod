@@ -1,4 +1,5 @@
 using AnimLib;
+using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.ValueContentAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Animations;
@@ -70,7 +71,9 @@ namespace OriMod {
       Color color = _oPlayer.SpriteColorPrimary * alpha;
       Vector2 origin = new Vector2(rect.Width / 2f, rect.Height / 2f + 5 * _oPlayer.Player.gravDir);
 
-      return new DrawData(OriTextures.Instance.trail, pos, rect, color, _rotation, origin, 1, _effect, 0);
+      var data = new DrawData(OriTextures.Instance.trail, pos, rect, color, _rotation, origin, 1, _effect, 0);
+      data.ignorePlayerRotation = true;
+      return data;
     }
 
     public override string ToString() => $"tile:{_tile}, rotation:{_rotation}, effect:{_effect}";
