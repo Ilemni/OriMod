@@ -10,7 +10,7 @@ Corrected dash ability lv2 and lv3 descriptions
 Reduced charge dash cooldown on lv3
 Disabled active cursor on sappling
 Fixed spirit sappling placement silent exception
-Fixed trail rotating with player
+Fixed trail, burrow indicator and bash arrow rotating with player
 
 ---
 

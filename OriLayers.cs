@@ -147,6 +147,7 @@ namespace OriMod {
         Rectangle rect = anim.TileAt(anim.source["Bash"], frame);
         Vector2 orig = rect.Size() / 2;
         DrawData data = new(anim.CurrentTexture, pos, rect, Color.White, rotation, orig, 1, SpriteEffects.None, 0);
+        data.ignorePlayerRotation = true;
         drawInfo.DrawDataCache.Add(data);
       }
       public override Position GetDefaultPosition() =>
