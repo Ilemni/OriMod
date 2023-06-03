@@ -166,8 +166,11 @@ namespace OriMod.Abilities {
       }
 
       if (Starting) {
+        if(stateTime < MinLaunchDuration && CurrentChain > 1
+          && !abilities.oPlayer.input.bash.Current) return;
         if (stateTime > MaxLaunchDuration ||
-          stateTime > MinLaunchDuration && !abilities.oPlayer.input.bash.Current) {
+          (stateTime >= MinLaunchDuration
+          && !abilities.oPlayer.input.bash.Current)) {
           SetState(AbilityState.Active);
         }
         else if (CurrentChain > 1 && !abilities.oPlayer.input.bash.Current) {
