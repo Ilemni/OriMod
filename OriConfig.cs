@@ -62,6 +62,16 @@ namespace OriMod {
     [DefaultValue(typeof(Color), "0, 0, 0, 0")]
     public Color playerColorSecondary;
 
+    [LocalizedLabel("DyeEnabled")]
+    [LocalizedTooltip("DyeEnabled")]
+    [DefaultValue(typeof(bool), "true")]
+    public bool dyeEnabled;
+
+    [LocalizedLabel("DyeEnabledAll")]
+    [LocalizedTooltip("DyeEnabledAll")]
+    [DefaultValue(typeof(bool), "true")]
+    public bool dyeEnabledAll;
+
     [LocalizedLabel("DyeLerp")]
     [LocalizedTooltip("DyeLerp")]
     [DefaultValue(typeof(float), "0.65")]

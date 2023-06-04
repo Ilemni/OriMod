@@ -29,6 +29,8 @@ namespace OriMod {
       protected override void Draw(ref PlayerDrawSet drawInfo) {
         Player player = drawInfo.drawPlayer;
         OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+        bool dyeEn = OriMod.ConfigClient.dyeEnabled &&
+          (OriMod.ConfigClient.dyeEnabledAll || oPlayer.IsLocal);
         bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
         DrawData data = oPlayer.Animations.playerAnim.GetDrawData(drawInfo);
@@ -39,11 +41,11 @@ namespace OriMod {
         }
         Color shColor = oPlayer.dye_shader?.GetColor() ?? Color.White;
         Color sprCol = Color.Lerp(oPlayer.SpriteColorPrimary, shColor,
-          shColor == Color.White ? 0 : oPlayer.DyeColorBlend);
+          (!dyeEn || shColor == Color.White) ? 0 : oPlayer.DyeColorBlend);
         data.color = doFlash
             ? Color.Lerp(sprCol, Color.Red, player.immuneAlpha / 255f)
             : isTransformStart ? Color.White : sprCol;
-        data.shader = player.dye[1].dye;
+        data.shader = dyeEn ? player.dye[1].dye : 0;
         data.origin.Y += 5 * player.gravDir;
         drawInfo.DrawDataCache.Add(data);
 
