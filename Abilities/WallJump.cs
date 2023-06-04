@@ -58,7 +58,7 @@ namespace OriMod.Abilities {
     }
 
     public override void PreUpdate() {
-      if (CanUse && abilities.oPlayer.input.jump.JustPressed) {
+      if (CanUse && abilities.oPlayer.input.jump.JustPressed && IsLocal) {
         SetState(AbilityState.Active);
         if (IsLocal) {
           _wallDirection = (sbyte)player.direction;

@@ -49,7 +49,7 @@ namespace OriMod.Abilities {
     }
 
     public override void PreUpdate() {
-      if (CanUse && abilities.oPlayer.input.jump.JustPressed) {
+      if (CanUse && abilities.oPlayer.input.jump.JustPressed && IsLocal) {
         if (player.canJumpAgain_Blizzard || player.canJumpAgain_Cloud || player.canJumpAgain_Fart || player.canJumpAgain_Sail ||
             player.canJumpAgain_Sandstorm || player.canCarpet || (player.rocketBoots != 0 && player.rocketTime > 0) || player.mount.Active) return;
         SetState(AbilityState.Active);
