@@ -56,10 +56,11 @@ namespace OriMod.Items.Abilities {
           }
         }
         string strStart = player.whoAmI == Main.myPlayer ? "You" : $"{player.name} has";
-        Main.NewText(
-          levelable.Level == 1
-            ? $"{strStart} unlocked {NiceName(ability)}!"
-            : $"{strStart} upgraded {NiceName(ability)} to Level {levelable.Level}!", Color.LightGreen);
+        if (!Main.dedServ)
+          Main.NewText(
+            levelable.Level == 1
+              ? $"{strStart} unlocked {NiceName(ability)}!"
+              : $"{strStart} upgraded {NiceName(ability)} to Level {levelable.Level}!", Color.LightGreen);
         return true;
       }
 
