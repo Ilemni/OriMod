@@ -42,12 +42,6 @@ namespace OriMod {
     [DefaultValue(true)]
     public bool smoothCamera;
 
-    [LocalizedLabel("LookUpCamOffset")]
-    [LocalizedTooltip("LookUpCamOffset")]
-    [DefaultValue(300.0f)]
-    [Range(0.0f, 300.0f)]
-    public float lookUpCamOffset;
-
     [JsonIgnore]
     internal bool BurrowToMouse => burrowControls == "Mouse";
 
