@@ -68,6 +68,8 @@ namespace OriMod {
 
     internal bool debugMode;
 
+    private bool wasMounted;
+
     /// <summary>
     /// Stored between <see cref="PreHurt(bool, bool, ref int, ref int, ref bool, ref bool, ref bool, ref bool, ref PlayerDeathReason)"/> and <see cref="PostHurt(bool, bool, double, int, bool)"/>, determines if custom hurt sounds are played.
     /// </summary>
@@ -781,6 +783,13 @@ namespace OriMod {
 
       if (Player.dead || Player.invis || !Animations.playerAnim.Valid) {
         OriLayers.playerSprite.Hide();
+      }
+
+      if(Player.mount.Active) wasMounted = true;
+      else {
+        if (wasMounted) for (int i = 0; i < Trail.Count; ++i)
+            trail.UpdateSegments();
+        wasMounted = false;
       }
 
       if (!Animations.playerAnim.Valid || abilities.burrow || Player.mount.Active) {
