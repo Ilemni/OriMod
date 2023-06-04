@@ -61,6 +61,13 @@ namespace OriMod {
     }
 
     /// <summary>
+    /// Decreases Alpha to zero.
+    /// </summary>
+    public void Decay() {
+      _timeLeft = 0;
+    }
+
+    /// <summary>
     /// Gets the Trail <see cref="DrawData"/> for this <see cref="OriPlayer"/>.
     /// </summary>
     public DrawData GetDrawData() {

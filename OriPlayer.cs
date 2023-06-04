@@ -795,8 +795,7 @@ namespace OriMod {
 
       if(Player.mount.Active) wasMounted = true;
       else {
-        if (wasMounted) for (int i = 0; i < Trail.Count; ++i)
-            trail.UpdateSegments();
+        if (wasMounted) trail.DecayAllSegments();
         wasMounted = false;
       }
 
