@@ -37,7 +37,7 @@ namespace OriMod {
       BitVector32 value = new BitVector32(reader.ReadUInt16());
       int i = 0;
       foreach (Input input in this) {
-        input.SetInputValue(value[i++]);
+        input.SetInputValue(value[(1 << i++)]);
       }
     }
 
@@ -45,7 +45,7 @@ namespace OriMod {
       BitVector32 arr = new BitVector32();
       int i = 0;
       foreach (Input input in this) {
-        arr[i++] = input.GetInputValue();
+        arr[(1 << i++)] = input.GetInputValue();
       }
       packet.Write((ushort)arr.Data);
     }
