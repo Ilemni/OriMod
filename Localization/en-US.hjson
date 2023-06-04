@@ -23,6 +23,7 @@ Mods: {
 				DyeLerp: "Dye Color Blend"
 				DyeEnabled: "Spirit dye visibility"
 				DyeEnabledAll: "Global spirit dye visibility"
+				BlockControlsInMenu: "Block ability controls in menu"
 			}
 			Header: {
 				Gameplay: "Gameplay"
@@ -91,6 +92,11 @@ Mods: {
 					Spirit Dye visibility should be enabled for effect.
 					Other players will still see your dye if they have it enabled.
 					(Put dye to the breastplate slot)
+					'''					
+				BlockControlsInMenu: 
+					'''
+					Blocks ability controls completely
+					when inventory, menu or dialogue are open.
 					'''
 			}
 		}

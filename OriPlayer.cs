@@ -33,6 +33,8 @@ namespace OriMod {
     /// </summary>
     public static OriPlayer Local => Main.LocalPlayer.GetModPlayer<OriPlayer>();
 
+    private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || Player.talkNPC >= 0 || Player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
+
     /// <summary>
     /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
     /// </summary>
@@ -44,6 +46,8 @@ namespace OriMod {
     /// Net-synced controls of this player.
     /// </summary>
     internal OriInput input { get; private set; }
+
+    internal bool controls_blocked;
 
     private AnimCharacter _character;
     public AnimCharacter character =>
@@ -515,6 +519,10 @@ namespace OriMod {
     }
 
     public override void ProcessTriggers(TriggersSet triggersSet) {
+      if(IsLocal) {
+        controls_blocked =
+          OriMod.ConfigClient.blockControlsInMenu && InMenu;
+      }
       input.Update(out bool doNetUpdate);
       if (doNetUpdate) _netUpdate = true;
     }

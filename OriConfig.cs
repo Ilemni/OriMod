@@ -50,6 +50,11 @@ namespace OriMod {
     [DefaultValue("Mouse"), OptionStrings(new[] { "WASD", "Mouse" })]
     public string burrowControls;
 
+    [LocalizedLabel("BlockControlsInMenu")]
+    [LocalizedTooltip("BlockControlsInMenu")]
+    [DefaultValue("false")]
+    public bool blockControlsInMenu;
+
     [Header("$Mods.OriMod.Config.Header.Aesthetics")]
 
     [LocalizedLabel("Color1")]
