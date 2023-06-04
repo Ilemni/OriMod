@@ -82,6 +82,7 @@ Mods: {
 					'''
 					Should spirit dye display be enabled?
 					Other players will still see your dye if they have it enabled.
+					(Put dye to the breastplate slot)
 					'''
 				DyeEnabledAll: 
 					'''
@@ -89,6 +90,7 @@ Mods: {
 					If off, you will see only your dye, if on - dye of every player.
 					Spirit Dye visibility should be enabled for effect.
 					Other players will still see your dye if they have it enabled.
+					(Put dye to the breastplate slot)
 					'''
 			}
 		}
