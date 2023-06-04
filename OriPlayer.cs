@@ -45,15 +45,16 @@ namespace OriMod {
     /// </summary>
     internal OriInput input { get; private set; }
 
-    private AnimCharacter<OriAnimationController, OriAbilityManager> _character;
-    public AnimCharacter<OriAnimationController, OriAbilityManager> character =>
-      _character ?? (_character = this.GetAnimCharacter<OriAnimationController, OriAbilityManager>());
+    private AnimCharacter _character;
+    public AnimCharacter character =>
+      _character ?? (_character = this.GetAnimCharacter());
 
     /// <summary>
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
     /// </summary>
     internal OriAnimationController Animations =>
-        _anim ??= AnimLibMod.GetAnimationController<OriAnimationController>(Player.GetModPlayer<OriPlayer>());
+        Main.dedServ ? null :
+        (_anim ??= AnimLibMod.GetAnimationController<OriAnimationController>(Player.GetModPlayer<OriPlayer>()));
 
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
@@ -80,6 +81,7 @@ namespace OriMod {
       get => character.IsActive && (!Transforming || transformTimer >= TransformStartDuration - 10);
       set {
         if (value == _isOri) return;
+        _netUpdate = true;
         if (value) character.TryEnable();
         else character.TryDisable();
         _isOri = value;
@@ -363,7 +365,7 @@ namespace OriMod {
     /// Emits a white dust speck from the player.
     /// </summary>
     internal void CreatePlayerDust() {
-      if (_playerDustTimer > 0 || !Animations.GraphicsEnabledCompat) {
+      if (Main.dedServ || _playerDustTimer > 0 || !Animations.GraphicsEnabledCompat) {
         return;
       }
 
@@ -633,7 +635,7 @@ namespace OriMod {
           Lighting.AddLight(Player.Center, _lightColor.ToVector3());
         }
 
-        if (Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
+        if (!Main.dedServ && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
           PlaySound("Ori/Jump/seinJumpsGrass" + _randJump.NextNoRepeat(5), 0.6f);
         }
 
@@ -768,7 +770,7 @@ namespace OriMod {
     }
 
     public override void HideDrawLayers(PlayerDrawSet drawInfo) {
-      if(!Animations.GraphicsEnabledCompat) return;
+      if(Main.dedServ || !Animations.GraphicsEnabledCompat) return;
       if (!IsOri && !Transforming) {
         OriLayers.playerSprite.Hide();
         OriLayers.trailLayer.Hide();

@@ -21,7 +21,7 @@ namespace OriMod {
     internal sealed class OriPlayerSprite : PlayerDrawLayer {
       public override bool IsHeadLayer => true;
       public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
-        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations.GraphicsEnabledCompat;
+        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations?.GraphicsEnabledCompat ?? false;
       public override void SetStaticDefaults() {
         playerSprite = ModContent.GetInstance<OriPlayerSprite>();
       }
@@ -73,7 +73,7 @@ namespace OriMod {
     internal sealed class OriTrailLayer : PlayerDrawLayer {
       public override string Name => "OriTrail";
       public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
-        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations.GraphicsEnabledCompat;
+        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations?.GraphicsEnabledCompat ?? false;
       public override void SetStaticDefaults() {
         trailLayer = ModContent.GetInstance<OriTrailLayer>();
       }
@@ -101,7 +101,7 @@ namespace OriMod {
     internal sealed class OriFeatherLayer : PlayerDrawLayer {
       public override string Name => "Feather";
       public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
-        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations.GraphicsEnabledCompat;
+        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations?.GraphicsEnabledCompat ?? false;
       public override void SetStaticDefaults() {
         featherSprite = ModContent.GetInstance<OriFeatherLayer>();
       }
@@ -120,7 +120,7 @@ namespace OriMod {
     internal sealed class OriBashArrowLayer : PlayerDrawLayer {
       public override string Name => "BashArrow";
       public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
-        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations.GraphicsEnabledCompat;
+        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations?.GraphicsEnabledCompat ?? false;
       public override void SetStaticDefaults() {
         bashArrow = ModContent.GetInstance<OriBashArrowLayer>();
       }

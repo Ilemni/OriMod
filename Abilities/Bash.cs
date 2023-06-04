@@ -345,7 +345,7 @@ namespace OriMod.Abilities {
         if (stateTime == MinBashDuration + 4) {
           abilities.oPlayer.PlayLocalSound("Ori/Bash/seinBashLoopA", 0.5f);
         }
-        abilities.oPlayer.Animations.Update();
+        abilities.oPlayer.Animations?.Update();
 
         if (stateTime <= MaxBashDuration && abilities.oPlayer.input.bash.Current &&
           BashEntity is not null && BashEntity.active) return;
