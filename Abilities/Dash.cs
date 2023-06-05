@@ -69,7 +69,8 @@ namespace OriMod.Abilities {
         SetState(AbilityState.Inactive);
         return;
       }
-      if (CanUse && abilities.oPlayer.input.dash.JustPressed) {
+      if (CanUse && abilities.oPlayer.input.dash.JustPressed &&
+        !(abilities.burrow.CanUse && abilities.oPlayer.input.burrow.JustPressed)) {
         SetState(AbilityState.Active);
         StartDash();
         return;
