@@ -3,9 +3,11 @@ using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using System;
+using System.IO;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -84,6 +86,8 @@ namespace OriMod.Abilities {
       player.gravity = Gravity;
       player.maxFallSpeed = MaxFallSpeed;
       abilities.oPlayer.immuneTimer = 12;
+
+      netUpdate = true;
     }
 
     internal void EndStomp() {
@@ -123,11 +127,11 @@ namespace OriMod.Abilities {
           if (abilities.oPlayer.input.stomp.JustPressed) {
             _currentHoldDown = 1;
           }
-          if (_currentHoldDown >= 1 && abilities.oPlayer.input.stomp.Current) {
+          if (_currentHoldDown >= 1 && abilities.oPlayer.input.stomp.Current && IsLocal) {
             _currentHoldDown++;
             if (_currentHoldDown > HoldDownDelay) {
-              SetState(AbilityState.Starting);
               _currentHoldDown = 0;
+              SetState(AbilityState.Starting);
             }
           }
         }
@@ -148,6 +152,18 @@ namespace OriMod.Abilities {
           EndStomp();
         }
       }
+    }
+
+    public override void ReadPacket(BinaryReader r) {
+      _currentHoldDown = r.ReadInt32();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
+    }
+
+    public override void WritePacket(ModPacket packet) {
+      packet.Write(_currentHoldDown);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
   }
 }

@@ -75,12 +75,16 @@ namespace OriMod.Abilities {
       _currentCharge = r.ReadInt32();
       _direction = r.ReadVector2();
       Angle = r.ReadSingle();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
     public override void WritePacket(ModPacket packet) {
       packet.Write(_currentCharge);
       packet.WriteVector2(_direction);
       packet.Write(Angle);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
     public override void UpdateActive() {
@@ -91,6 +95,8 @@ namespace OriMod.Abilities {
       player.controlJump = false;
       player.controlLeft = false;
       player.controlRight = false;
+
+      netUpdate = true;
     }
 
     public override void PreUpdate() {

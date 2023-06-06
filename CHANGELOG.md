@@ -5,6 +5,7 @@
 Added Ori dye support, place dye to chestplate slot!
 Added option to block ability controls when any menu is open
 Refactored code, now uses AnimLib's abilities code
+Improved ability netsync
 Got rid of obsolete features in recipe groups
 Corrected dash ability lv2 and lv3 descriptions
 Reduced charge dash cooldown on lv3

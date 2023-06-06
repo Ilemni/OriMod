@@ -4,6 +4,7 @@ using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using System;
 using System.IO;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -70,15 +71,17 @@ namespace OriMod.Abilities {
     private readonly RandomChar _rand = new RandomChar();
 
     public override void ReadPacket(BinaryReader r) {
-      if (!InUse) return;
       CurrentChain = r.ReadUInt16();
       LaunchAngle = r.ReadSingle();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
     public override void WritePacket(ModPacket packet) {
-      if (!InUse) return;
       packet.Write(CurrentChain);
       packet.Write(LaunchAngle);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
     public override void UpdateUsing() {

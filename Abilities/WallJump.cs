@@ -2,6 +2,7 @@ using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using System.IO;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
@@ -33,11 +34,15 @@ namespace OriMod.Abilities {
     public override void ReadPacket(BinaryReader r) {
       _wallDirection = r.ReadSByte();
       _gravDirection = r.ReadSByte();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
     public override void WritePacket(ModPacket packet) {
       packet.Write(_wallDirection);
       packet.Write(_gravDirection);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
     public override void UpdateActive() {
