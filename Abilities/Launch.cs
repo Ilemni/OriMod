@@ -149,7 +149,7 @@ namespace OriMod.Abilities {
     }
 
     public override void PreUpdate() {
-      if (CanUse && abilities.oPlayer.input.bash.JustPressed) {
+      if (CanUse && abilities.oPlayer.input.bash.JustPressed && IsLocal) {
         if (CurrentChain == 0) {
           abilities.oPlayer.PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
         }
