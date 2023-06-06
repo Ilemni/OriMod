@@ -112,7 +112,7 @@ namespace OriMod.Abilities {
     }
 
     public override void UpdateActive() {
-      netUpdate = true;
+      if (IsLocal) netUpdate = true;
     }
 
     public override void UpdateUsing() {

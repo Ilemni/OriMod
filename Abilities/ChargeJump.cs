@@ -71,7 +71,7 @@ namespace OriMod.Abilities {
       player.velocity.Y = speed * -player.gravDir;
       abilities.oPlayer.immuneTimer = 12;
 
-      netUpdate = true;
+      if (IsLocal) netUpdate = true;
     }
 
     public override void UpdateUsing() {

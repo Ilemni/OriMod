@@ -96,7 +96,7 @@ namespace OriMod.Abilities {
       player.controlLeft = false;
       player.controlRight = false;
 
-      netUpdate = true;
+      if (IsLocal) netUpdate = true;
     }
 
     public override void PreUpdate() {

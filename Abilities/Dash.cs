@@ -65,7 +65,7 @@ namespace OriMod.Abilities {
       if (stateTime > 20) {
         player.runSlowdown = 26f;
       }
-      netUpdate = true;
+      if (IsLocal) netUpdate = true;
     }
 
     public override bool RefreshCondition() => abilities.bash || abilities.oPlayer.OnWall || abilities.oPlayer.IsGrounded || player.mount.Active;

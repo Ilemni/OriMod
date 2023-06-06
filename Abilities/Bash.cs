@@ -268,7 +268,7 @@ namespace OriMod.Abilities {
       StartCooldown();
     }
     public override void UpdateActive() {
-      netUpdate = true;
+      if(IsLocal) netUpdate = true;
     }
 
     public override void UpdateUsing() {

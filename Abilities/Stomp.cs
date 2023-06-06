@@ -87,7 +87,7 @@ namespace OriMod.Abilities {
       player.maxFallSpeed = MaxFallSpeed;
       abilities.oPlayer.immuneTimer = 12;
 
-      netUpdate = true;
+      if (IsLocal) netUpdate = true;
     }
 
     internal void EndStomp() {
