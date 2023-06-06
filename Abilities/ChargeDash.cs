@@ -1,8 +1,9 @@
-using System;
-using System.IO;
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
+using System;
+using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -10,17 +11,16 @@ namespace OriMod.Abilities {
   /// <summary>
   /// Ability for a quick and fast horizontal dash. May be used in the air.
   /// </summary>
-  public sealed class ChargeDash : Ability {
+  public sealed class ChargeDash : Ability<OriAbilityManager> {
     static ChargeDash() => OriMod.OnUnload += Unload;
-    internal ChargeDash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityId.ChargeDash;
-    public override byte Level => (byte)(levelableDependency.Level >= 2 ? 1 : 0);
-    protected override ILevelable levelableDependency => abilities.dash;
+    public override bool Unlocked => levelableDependency.Level >= 2;
+    public override ILevelable levelableDependency => abilities.dash;
 
-    internal override bool CanUse => base.CanUse && Refreshed && !InUse && !oPlayer.OnWall && !player.mount.Active &&
+    public override bool CanUse => base.CanUse && !IsOnCooldown && !InUse && !abilities.oPlayer.OnWall && !player.mount.Active &&
       !abilities.bash && !abilities.burrow && !abilities.launch && !abilities.lookUp && !abilities.stomp;
-    protected override int Cooldown => Level >= 3 ? 0 : 90;
-    protected override Color RefreshColor => Color.LightBlue;
+    public override int Cooldown => levelableDependency.Level >= 3 ? 60 : 90;
+    public override void OnRefreshed() => abilities.RefreshParticles(Color.LightBlue);
 
     private static int ManaCost => 20;
     private static int Duration => Speeds.Length - 1;
@@ -49,26 +49,24 @@ namespace OriMod.Abilities {
 
     private readonly RandomChar _rand = new RandomChar();
 
-    protected override void ReadPacket(BinaryReader r) {
+    public override void ReadPacket(BinaryReader r) {
       _npcId = r.ReadUInt16();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
-    protected override void WritePacket(ModPacket packet) {
+    public override void WritePacket(ModPacket packet) {
       packet.Write(_npcId);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
-    internal override void PutOnCooldown(bool force = false) {
-      Refreshed = false;
-      base.PutOnCooldown(force);
-    }
+    //internal override void PutOnCooldown(bool force = false) {
+    //  Refreshed = false;
+    //  base.PutOnCooldown(force);
+    //}
 
-    protected override void TickCooldown() {
-      if (Refreshed && currentCooldown <= 0) return;
-      currentCooldown--;
-      if (currentCooldown < 0 && !input.charge.Current) {
-        Refreshed = true;
-      }
-    }
+    public override bool RefreshCondition() => !abilities.oPlayer.input.charge.Current;
 
     private void Start() {
       float tempDist = 720f * 720f;
@@ -86,7 +84,7 @@ namespace OriMod.Abilities {
       _direction = Target is null
         ? (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction)
         : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
-      oPlayer.PlaySound("Ori/ChargeDash/seinChargeDash" + _rand.NextNoRepeat(3), 0.5f);
+      abilities.oPlayer.PlaySound("Ori/ChargeDash/seinChargeDash" + _rand.NextNoRepeat(3), 0.5f);
       NewAbilityProjectile<ChargeDashProjectile>(damage: 50);
     }
 
@@ -95,8 +93,8 @@ namespace OriMod.Abilities {
     /// </summary>
     /// <param name="byNpcContact">If the cause for ending is by player contact with <see cref="Target"/> (true), or for any other reason (false).</param>
     internal void End(bool byNpcContact = false) {
-      SetState(State.Inactive);
-      PutOnCooldown();
+      SetState(AbilityState.Inactive);
+      StartCooldown();
       NPC target = Target;
       if (byNpcContact) {
         // Force player position to same as target's, and reduce speed.
@@ -107,14 +105,18 @@ namespace OriMod.Abilities {
       else if (Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
         Vector2 newVel = target is null && !abilities.airJump ? new Vector2(_direction, 0) : player.velocity;
-        newVel = newVel.Normalized() * Speeds[Speeds.Length - 1];
+        newVel = newVel.Normalized() * Speeds[^1];
         player.velocity = newVel;
       }
       Target = null;
     }
 
-    protected override void UpdateUsing() {
-      float speed = Speeds[CurrentTime];
+    public override void UpdateActive() {
+      if (IsLocal) netUpdate = true;
+    }
+
+    public override void UpdateUsing() {
+      float speed = Speeds[stateTime];
       player.gravity = 0;
       NPC target = Target;
 
@@ -127,17 +129,18 @@ namespace OriMod.Abilities {
       }
       else {
         player.velocity.X = speed * _direction * 0.8f;
-        player.velocity.Y = (oPlayer.IsGrounded ? -0.1f : 0.15f * (CurrentTime + 1)) * player.gravDir;
+        player.velocity.Y = (abilities.oPlayer.IsGrounded ? -0.1f : 0.15f * (stateTime + 1)) * player.gravDir;
       }
 
       player.runSlowdown = 26f;
-      oPlayer.immuneTimer = 12;
+      abilities.oPlayer.immuneTimer = 12;
     }
 
-    internal override void Tick() {
-      if (IsLocal && CanUse && input.dash.JustPressed && input.charge.Current) {
+    public override void PreUpdate() {
+      if (IsLocal && CanUse && abilities.oPlayer.input.dash.JustPressed &&
+        abilities.oPlayer.input.charge.Current) {
         if (player.CheckMana(ManaCost, true, true)) {
-          SetState(State.Active);
+          SetState(AbilityState.Active);
           Start();
         }
         else if (!abilities.dash) {
@@ -145,10 +148,10 @@ namespace OriMod.Abilities {
         }
         return;
       }
-      TickCooldown();
       if (!InUse) return;
-      abilities.dash.Refreshed = false;
-      if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash || abilities.launch || player.controlJump) {
+      UpdateCooldown();
+      abilities.dash.StartCooldown();
+      if (stateTime > Duration || abilities.oPlayer.OnWall || abilities.bash || abilities.launch || player.controlJump) {
         End();
       }
     }

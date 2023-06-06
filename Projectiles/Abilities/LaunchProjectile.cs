@@ -5,8 +5,8 @@ namespace OriMod.Projectiles.Abilities {
   /// Projectile hitbox for when the player is using <see cref="Launch"/>.
   /// <para>Ending stomp spawns a <see cref="StompEnd"/> projectile to deal damage.</para>
   /// </summary>
-  public sealed class LaunchProjectile : AbilityProjectile {
-    public override byte Id => AbilityId.Launch;
+  public sealed class LaunchProjectile : OriAbilityProjectile {
+    public override int Id => AbilityId.Launch;
 
     public override void SetDefaults() {
       base.SetDefaults();

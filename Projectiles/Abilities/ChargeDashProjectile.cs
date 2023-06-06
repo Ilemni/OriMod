@@ -8,8 +8,8 @@ namespace OriMod.Projectiles.Abilities {
   /// Projectile hitbox for when the player is using <see cref="ChargeDash"/>.
   /// </summary>
   // ReSharper disable once ClassNeverInstantiated.Global
-  public sealed class ChargeDashProjectile : AbilityProjectile {
-    public override byte Id => AbilityId.ChargeDash;
+  public sealed class ChargeDashProjectile : OriAbilityProjectile {
+    public override int Id => AbilityId.ChargeDash;
 
     public override void SetDefaults() {
       base.SetDefaults();
@@ -21,7 +21,7 @@ namespace OriMod.Projectiles.Abilities {
     protected override void Behavior() {
       base.Behavior();
       // Size is stretched greatly based on velocity.
-      Player player = oPlayer.Player;
+      Player player = aPlayer.Player;
       Vector2 vel = player.velocity;
       Projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 1.5f, player.width * 1.5f, 96);
       Projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 1.5f, player.height * 1.5f, 96);
@@ -31,7 +31,7 @@ namespace OriMod.Projectiles.Abilities {
     /// Ends <see cref="ChargeDash"/> if this hits the target NPC
     /// </summary>
     public override void OnHitNPC(NPC target, int damage, float knockback, bool crit) {
-      ChargeDash cDash = oPlayer.abilities.chargeDash;
+      ChargeDash cDash = abilities.chargeDash;
       if (cDash.NpcIsTarget(target)) {
         cDash.End();
       }

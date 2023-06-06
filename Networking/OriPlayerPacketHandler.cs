@@ -20,10 +20,12 @@ namespace OriMod.Networking {
       bool unrestrictedMovement = flags[2];
       bool seinMinionActive = flags[3];
       bool mpcPlayerLight = flags[4];
+      bool controls_blocked = flags[5];
       ushort transformTimer = transforming ? reader.ReadUInt16() : (ushort)0;
       byte seinMinionType = seinMinionActive ? reader.ReadByte() : (byte)0;
       Color spriteColorPrimary = reader.ReadRGB();
       Color spriteColorSecondary = reader.ReadRGBA();
+      float dyeLerp = reader.ReadSingle();
 
       fromPlayer.IsOri = oriSet;
       fromPlayer.Transforming = transforming;
@@ -34,6 +36,8 @@ namespace OriMod.Networking {
       fromPlayer.multiplayerPlayerLight = mpcPlayerLight;
       fromPlayer.SpriteColorPrimary = spriteColorPrimary;
       fromPlayer.SpriteColorSecondary = spriteColorSecondary;
+      fromPlayer.DyeColorBlend = dyeLerp;
+      fromPlayer.controls_blocked = controls_blocked;
 
       fromPlayer.input.ReadPacket(reader);
 
@@ -58,6 +62,7 @@ namespace OriMod.Networking {
         [2] = fromPlayer.UnrestrictedMovement,
         [3] = fromPlayer.SeinMinionActive,
         [4] = fromPlayer.multiplayerPlayerLight,
+        [5] = fromPlayer.controls_blocked
       };
 
       packet.Write(flags);
@@ -71,6 +76,7 @@ namespace OriMod.Networking {
 
       packet.WriteRGB(fromPlayer.SpriteColorPrimary);
       packet.WriteRGBA(fromPlayer.SpriteColorSecondary);
+      packet.Write(fromPlayer.DyeColorBlend);
 
       fromPlayer.input.WritePacket(packet);
 

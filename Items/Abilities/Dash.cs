@@ -10,7 +10,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       GetAbilityRecipe()
-        .AddRecipeGroup("OriMod:HardmodeBars1", 14)
+        .AddRecipeGroup(OriRecipeGroups.HardmodeBars1, 14)
         .AddIngredient(ItemID.SoulofLight, 10)
         .Register();
     }

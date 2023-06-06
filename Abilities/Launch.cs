@@ -1,8 +1,10 @@
-﻿using System;
-using System.IO;
+﻿using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
+using System;
+using System.IO;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,18 +18,16 @@ namespace OriMod.Abilities {
   /// This must be a separate class rather than built into Bash, as this would otherwise require
   /// Bash to be unlocked as well to be usable.
   /// </remarks>
-  public sealed class Launch : Ability {
-    internal Launch(AbilityManager manager) : base(manager) {
-    }
-
+  public sealed class Launch : Ability<OriAbilityManager> {
     public override int Id => AbilityId.Launch;
-    public override byte Level => (byte) Math.Max(0, levelableDependency.Level - 2);
-    protected override ILevelable levelableDependency => abilities.chargeJump;
+    public override int Level => Math.Max(0, levelableDependency.Level - 2);
+    public override ILevelable levelableDependency => abilities.chargeJump;
+    public override bool Unlocked => Level > 0;
 
     /// <summary>
     /// Bash restrictions, plus in air and bash failed
     /// </summary>
-    internal override bool CanUse => base.CanUse && Inactive && !oPlayer.IsGrounded && !player.mount.Active &&
+    public override bool CanUse => base.CanUse && Inactive && !abilities.oPlayer.IsGrounded && !player.mount.Active &&
                                      !abilities.bash && !abilities.burrow && !abilities.chargeDash &&
                                      !abilities.chargeJump && !abilities.climb &&
                                      !abilities.dash && !abilities.stomp && !abilities.wallChargeJump;
@@ -40,7 +40,7 @@ namespace OriMod.Abilities {
           case 1: return 1;
           case 2: return 3;
           case 3: return 7;
-          default: return (ushort) (Level * 3 + 1);
+          default: return (ushort)(Level * 3 + 1);
         }
       }
     }
@@ -67,25 +67,27 @@ namespace OriMod.Abilities {
         : CurrentChain == 1 ? 25 : 40;
 
     public float LaunchAngle { get; private set; }
-    private Vector2 LaunchDirection => new Vector2((float) Math.Cos(LaunchAngle), (float) Math.Sin(LaunchAngle));
+    private Vector2 LaunchDirection => new Vector2((float)Math.Cos(LaunchAngle), (float)Math.Sin(LaunchAngle));
     private readonly RandomChar _rand = new RandomChar();
 
-    protected override void ReadPacket(BinaryReader r) {
-      if (!InUse) return;
+    public override void ReadPacket(BinaryReader r) {
       CurrentChain = r.ReadUInt16();
       LaunchAngle = r.ReadSingle();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
-    protected override void WritePacket(ModPacket packet) {
-      if (!InUse) return;
+    public override void WritePacket(ModPacket packet) {
       packet.Write(CurrentChain);
       packet.Write(LaunchAngle);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
-    protected override void UpdateUsing() {
+    public override void UpdateUsing() {
       if (!Active) {
         if (IsLocal) {
-          OriUtils.GetMouseDirection(oPlayer, out float angle, Vector2.One);
+          OriUtils.GetMouseDirection(abilities.oPlayer, out float angle, Vector2.One);
           LaunchAngle = angle;
         }
 
@@ -133,76 +135,72 @@ namespace OriMod.Abilities {
       player.buffImmune[BuffID.WindPushed] = true;
     }
 
-    protected override void UpdateActive() {
-      if (CurrentTime == 0) {
+    public override void UpdateActive() {
+      if (stateTime == 0) {
         NewAbilityProjectile<LaunchProjectile>(damage: 70);
       }
 
       player.pulley = false;
       player.velocity = LaunchDirection * LaunchSpeed;
-      oPlayer.immuneTimer = 5;
+      abilities.oPlayer.immuneTimer = 5;
     }
 
     private void End() {
       player.velocity = LaunchDirection * 10;
-      oPlayer.UnrestrictedMovement = true;
-      Refreshed = false;
+      abilities.oPlayer.UnrestrictedMovement = true;
+      StartCooldown();
     }
 
-    internal override void Tick() {
-      if (CanUse && input.bash.JustPressed) {
+    public override void PreUpdate() {
+      if (CanUse && abilities.oPlayer.input.bash.JustPressed && IsLocal) {
         if (CurrentChain == 0) {
-          oPlayer.PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
+          abilities.oPlayer.PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
         }
 
-        SetState(State.Starting);
+        SetState(AbilityState.Starting);
         CurrentChain = 1;
       }
-      else if (!InUse) {
-        TickCooldown();
-        return;
-      }
+      else if (!InUse) return;
 
-      if (oPlayer.IsGrounded || oPlayer.OnWall) {
+      if (abilities.oPlayer.IsGrounded || abilities.oPlayer.OnWall) {
         // Prevent any usage of Launch while not in air
-        SetState(State.Inactive);
+        SetState(AbilityState.Inactive);
         return;
       }
 
       if (Starting) {
-        if (CurrentTime > MaxLaunchDuration || CurrentTime > MinLaunchDuration && !input.bash.Current) {
-          SetState(State.Active);
-        }
-        else if (CurrentChain > 1 && !input.bash.Current) {
-          SetState(State.Inactive);
+        if (stateTime > MaxLaunchDuration ||
+          (stateTime >= MinLaunchDuration
+          && !abilities.oPlayer.input.bash.Current)) {
+          SetState(AbilityState.Active);
         }
 
         return;
       }
 
       if (!Active) return;
-      if (oPlayer.IsGrounded || oPlayer.OnWall) {
-        SetState(State.Inactive);
+      if (abilities.oPlayer.IsGrounded || abilities.oPlayer.OnWall) {
+        SetState(AbilityState.Inactive);
       }
 
       // Post-ending state depends on player input
       // Maybe too sensitive to rely on input packet
-      if (!IsLocal || CurrentTime <= EndDuration) return;
-      if (CurrentChain < MaxChain && input.bash.Current) {
+      if (!IsLocal || stateTime <= EndDuration) return;
+      if (CurrentChain < MaxChain && abilities.oPlayer.input.bash.Current) {
         CurrentChain++;
-        SetState(State.Starting);
-        oPlayer.PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), Level == 3 ? 0.15f : 0.35f);
+        SetState(AbilityState.Starting);
+        abilities.oPlayer.PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), Level == 3 ? 0.15f : 0.35f);
       }
       else {
         End();
-        SetState(State.Inactive);
-        oPlayer.PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), 0.55f);
+        SetState(AbilityState.Inactive);
+        abilities.oPlayer.PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), 0.55f);
       }
     }
 
-    protected override void TickCooldown() {
-      if (!oPlayer.IsGrounded && !abilities.bash) return;
-      Refreshed = true;
+    public override void UpdateCooldown() {
+      if (!abilities.oPlayer.IsGrounded && !abilities.bash) return;
+      EndCooldown();
       CurrentChain = 0;
     }
   }

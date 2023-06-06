@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OriMod {
   public sealed class SeinData {
@@ -12,6 +13,11 @@ namespace OriMod {
     /// Collection of all <see cref="SeinData"/>s in the mod.
     /// </summary>
     public static SeinData[] All { get; private set; }
+
+    /// <summary>
+    /// Collection of all sein buffs ids.
+    /// </summary>
+    public static int[] SeinBuffs { get; private set; }
 
     /// <summary>
     /// Loads all Sein variants. Sein stats are hardcoded into this method.
@@ -31,7 +37,7 @@ namespace OriMod {
       void AddNewSein(SeinData newSein) {
         SeinData lastSein = list.Count == 0 ?
           new SeinData() :
-          list[list.Count - 1];
+          list[^1];
 
         foreach (FieldInfo field in fields) {
           object defVal = field.GetValue(defaultSein);
@@ -206,11 +212,16 @@ namespace OriMod {
       });
 
       All = list.ToArray();
+      SeinBuffs = new int[All.Length];
+      for (int u = 0; u < All.Length; u++) {
+        SeinBuffs[u] = ModContent.Find<ModBuff>(OriMod.instance.Name, "SeinBuff" + (u+1)).Type;
+      }
       OriMod.OnUnload += Unload;
     }
 
     private static void Unload() {
       All = null;
+      SeinBuffs = null;
     }
 
     #region Stats

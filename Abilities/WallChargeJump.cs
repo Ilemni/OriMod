@@ -1,9 +1,10 @@
-using System;
-using System.IO;
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
+using System;
+using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -11,17 +12,14 @@ namespace OriMod.Abilities {
   /// <summary>
   /// Ability for a charged jump off walls.
   /// </summary>
-  public sealed class WallChargeJump : Ability {
+  public sealed class WallChargeJump : Ability<OriAbilityManager> {
     static WallChargeJump() => OriMod.OnUnload += Unload;
 
-    internal WallChargeJump(AbilityManager manager) : base(manager) {
-    }
-
     public override int Id => AbilityId.WallChargeJump;
-    public override byte Level => (byte) (abilities.climb.Unlocked && levelableDependency.Level >= 2 ? 1 : 0);
-    protected override ILevelable levelableDependency => abilities.chargeJump;
+    public override bool Unlocked => abilities.climb.Unlocked && levelableDependency.Level >= 2;
+    public override ILevelable levelableDependency => abilities.chargeJump;
 
-    internal override bool CanUse => base.CanUse && Charged && CanCharge;
+    public override bool CanUse => base.CanUse && Charged && CanCharge;
 
     private static int MaxCharge => 35;
     private static int Duration => Speeds.Length - 1;
@@ -57,11 +55,11 @@ namespace OriMod.Abilities {
     private readonly RandomChar _randChar = new RandomChar();
 
     private void Start() {
-      oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _randChar.NextNoRepeat(3), 0.8f);
+      abilities.oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _randChar.NextNoRepeat(3), 0.8f);
       _currentCharge = 0;
       Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f,
         player.whoAmI, 0, 1);
-      PutOnCooldown();
+      StartCooldown();
       // TODO: multiplayer sync of direction
       // Currently it is very, very incorrect to use mouse position for multiplayer clients
       player.velocity = _direction * Speeds[0] * 0.5f;
@@ -73,66 +71,72 @@ namespace OriMod.Abilities {
       }
     }
 
-    protected override void ReadPacket(BinaryReader r) {
+    public override void ReadPacket(BinaryReader r) {
       _currentCharge = r.ReadInt32();
       _direction = r.ReadVector2();
       Angle = r.ReadSingle();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
-    protected override void WritePacket(ModPacket packet) {
+    public override void WritePacket(ModPacket packet) {
       packet.Write(_currentCharge);
       packet.WriteVector2(_direction);
       packet.Write(Angle);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
-    protected override void UpdateActive() {
-      float speed = Speeds[CurrentTime] * 0.5f;
+    public override void UpdateActive() {
+      float speed = Speeds[stateTime] * 0.5f;
       player.velocity = _direction * speed;
       player.direction = Math.Sign(player.velocity.X);
       player.maxFallSpeed = Math.Abs(player.velocity.Y);
       player.controlJump = false;
       player.controlLeft = false;
       player.controlRight = false;
+
+      if (IsLocal) netUpdate = true;
     }
 
-    internal override void Tick() {
+    public override void PreUpdate() {
       if (abilities.burrow) {
         _currentCharge = 0;
         return;
       }
 
-      TickCooldown();
+      if (InUse) UpdateCooldown();
       if (IsLocal && !Charged && CanCharge) {
         if (_currentCharge == 0) {
-          oPlayer.PlayLocalSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+          abilities.oPlayer.PlayLocalSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
         }
 
         _currentCharge++;
         netUpdate = true;
         if (_currentCharge > MaxCharge) {
-          oPlayer.PlayLocalSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+          abilities.oPlayer.PlayLocalSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
         }
       }
 
-      if (CanUse && input.jump.JustPressed) {
+      if (CanUse && abilities.oPlayer.input.jump.JustPressed) {
         Start();
-        SetState(State.Active);
+        SetState(AbilityState.Active);
       }
       else if (Charged) {
         UpdateCharged();
         if (IsLocal) {
-          _direction = OriUtils.GetMouseDirection(oPlayer, out float angle,
+          _direction = OriUtils.GetMouseDirection(abilities.oPlayer, out float angle,
             new Vector2(-abilities.climb.wallDirection, player.gravDir), MaxAngle);
           Angle = angle;
           if (!CanCharge) {
             _currentCharge = 0;
-            oPlayer.PlayLocalSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
+            abilities.oPlayer.PlayLocalSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
           }
         }
       }
 
-      if (!Active || CurrentTime <= Duration) return;
-      SetState(State.Inactive);
+      if (!Active || stateTime <= Duration) return;
+      SetState(AbilityState.Inactive);
       netUpdate = false; // Deterministic
     }
 

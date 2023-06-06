@@ -23,11 +23,11 @@ namespace OriMod.Items {
     public override void AddRecipes() {
       CreateRecipe()
         .AddIngredient(ItemID.Wood, 10)
-        .AddRecipeGroup("OriMod:EnchantedItems")
+        .AddRecipeGroup(OriRecipeGroups.EnchantedItems)
         .Register();
       CreateRecipe()
         .AddIngredient(ItemID.Wood, 10)
-        .AddRecipeGroup("OriMod:MovementAccessories", 3)
+        .AddRecipeGroup(OriRecipeGroups.MovementAccessories, 3)
         .Register();
     }
   }

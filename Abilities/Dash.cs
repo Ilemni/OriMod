@@ -1,6 +1,8 @@
-using System.IO;
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
+using System.IO;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
@@ -10,18 +12,18 @@ namespace OriMod.Abilities {
   /// <remarks>
   /// This ability is derived from the Ori games, despite Terraira already allowing dashing with the Shield of Cthuhlu.
   /// </remarks>
-  public sealed class Dash : Ability, ILevelable {
+  public sealed class Dash : Ability<OriAbilityManager>, ILevelable {
     static Dash() => OriMod.OnUnload += Unload;
-    internal Dash(AbilityManager manager) : base(manager) { }
     public override int Id => AbilityId.Dash;
-    public override byte Level => (this as ILevelable).Level;
-    byte ILevelable.Level { get; set; }
-    byte ILevelable.MaxLevel => 3;
+    public override int Level => ((ILevelable)this).Level;
+    int ILevelable.Level { get; set; }
+    int ILevelable.MaxLevel => 3;
+    public override bool Unlocked => Level > 0;
 
-    internal override bool CanUse => base.CanUse && !InUse && Refreshed && !oPlayer.OnWall && !player.mount.Active && (Level >= 2 || oPlayer.IsGrounded) &&
+    public override bool CanUse => base.CanUse && !InUse && !IsOnCooldown && !abilities.oPlayer.OnWall && !player.mount.Active && (Level >= 2 || abilities.oPlayer.IsGrounded) &&
       !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.launch && !abilities.stomp;
-    protected override int Cooldown => Level >= 3 ? 0 : 60;
-    protected override Color RefreshColor => Color.White;
+    public override int Cooldown => Level >= 3 ? 0 : 60;
+    public override void OnRefreshed() => abilities.RefreshParticles(Color.White);
 
     private static float[] Speeds => _speeds ?? (_speeds = new float[25] {
       50f, 50f, 50f, 49.9f, 49.6f, 49f, 48f, 46.7f, 44.9f, 42.4f, 39.3f, 35.4f, 28.6f, 20f,
@@ -36,64 +38,59 @@ namespace OriMod.Abilities {
 
     internal void StartDash() {
       _direction = (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction);
-      oPlayer.PlaySound("Ori/Dash/seinDash" + _rand.NextNoRepeat(3), 0.2f);
+      abilities.oPlayer.PlaySound("Ori/Dash/seinDash" + _rand.NextNoRepeat(3), 0.2f);
       player.pulley = false;
     }
 
-    protected override void ReadPacket(BinaryReader r) {
+    public override void ReadPacket(BinaryReader r) {
       _direction = r.ReadSByte();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
-    protected override void WritePacket(ModPacket packet) {
+    public override void WritePacket(ModPacket packet) {
       packet.Write(_direction);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
-    protected override void UpdateActive() {
+    public override void UpdateActive() {
       if (player.controlJump && (player.canJumpAgain_Blizzard || player.canJumpAgain_Cloud || player.canJumpAgain_Fart || player.canJumpAgain_Sail || player.canJumpAgain_Sandstorm)) {
-        SetState(State.Inactive);
-        PutOnCooldown();
+        SetState(AbilityState.Inactive);
+        StartCooldown();
         return;
       }
-      player.velocity.X = Speeds[CurrentTime] * 0.5f * _direction;
-      player.velocity.Y = 0.25f * (CurrentTime + 1) * player.gravDir;
-      if (CurrentTime > 20) {
+      player.velocity.X = Speeds[stateTime] * 0.5f * _direction;
+      player.velocity.Y = 0.25f * (stateTime + 1) * player.gravDir;
+      if (stateTime > 20) {
         player.runSlowdown = 26f;
       }
+      if (IsLocal) netUpdate = true;
     }
 
-    internal override void PutOnCooldown(bool force = false) {
-      base.PutOnCooldown(force);
-      Refreshed = false;
-    }
+    public override bool RefreshCondition() => abilities.bash || abilities.oPlayer.OnWall || abilities.oPlayer.IsGrounded || player.mount.Active;
 
-    protected override void TickCooldown() {
-      if (currentCooldown <= 0 && Refreshed) return;
-      currentCooldown--;
-      if (currentCooldown < 0 && (abilities.bash || oPlayer.OnWall || oPlayer.IsGrounded || player.mount.Active)) {
-        Refreshed = true;
-      }
-    }
-
-    internal override void Tick() {
+    public override void PreUpdate() {
       if (abilities.chargeDash) {
-        SetState(State.Inactive);
+        SetState(AbilityState.Inactive);
         return;
       }
-      if (CanUse && input.dash.JustPressed) {
-        SetState(State.Active);
+      if (CanUse && abilities.oPlayer.input.dash.JustPressed &&
+        !(abilities.burrow.CanUse && abilities.oPlayer.input.burrow.JustPressed)) {
+        SetState(AbilityState.Active);
         StartDash();
         return;
       }
-      TickCooldown();
       if (!InUse) return;
+      UpdateCooldown();
       if (abilities.airJump) {
-        SetState(State.Inactive);
+        SetState(AbilityState.Inactive);
         player.velocity.X = Speeds[24] * _direction; // Rip hyperspeed dash-jump
-        PutOnCooldown(true);
+        StartCooldown(); //force = true
       }
-      else if (CurrentTime > Duration || oPlayer.OnWall || abilities.bash) {
-        SetState(State.Inactive);
-        PutOnCooldown(true);
+      else if (stateTime > Duration || abilities.oPlayer.OnWall || abilities.bash) {
+        SetState(AbilityState.Inactive);
+        StartCooldown(); //force = true
       }
     }
 

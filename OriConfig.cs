@@ -50,6 +50,11 @@ namespace OriMod {
     [DefaultValue("Mouse"), OptionStrings(new[] { "WASD", "Mouse" })]
     public string burrowControls;
 
+    [LocalizedLabel("BlockControlsInMenu")]
+    [LocalizedTooltip("BlockControlsInMenu")]
+    [DefaultValue("false")]
+    public bool blockControlsInMenu;
+
     [Header("$Mods.OriMod.Config.Header.Aesthetics")]
 
     [LocalizedLabel("Color1")]
@@ -61,6 +66,21 @@ namespace OriMod {
     [LocalizedTooltip("Color2")]
     [DefaultValue(typeof(Color), "0, 0, 0, 0")]
     public Color playerColorSecondary;
+
+    [LocalizedLabel("DyeEnabled")]
+    [LocalizedTooltip("DyeEnabled")]
+    [DefaultValue(typeof(bool), "true")]
+    public bool dyeEnabled;
+
+    [LocalizedLabel("DyeEnabledAll")]
+    [LocalizedTooltip("DyeEnabledAll")]
+    [DefaultValue(typeof(bool), "true")]
+    public bool dyeEnabledAll;
+
+    [LocalizedLabel("DyeLerp")]
+    [LocalizedTooltip("DyeLerp")]
+    [DefaultValue(typeof(float), "0.65")]
+    public float dyeLerp;
 
     public override void OnLoaded() {
       OriMod.ConfigClient = this;
@@ -80,6 +100,7 @@ namespace OriMod {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
       oPlayer.SpriteColorPrimary = playerColor;
       oPlayer.SpriteColorSecondary = playerColorSecondary;
+      oPlayer.DyeColorBlend = dyeLerp;
     }
   }
 

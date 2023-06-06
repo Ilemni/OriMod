@@ -1,5 +1,6 @@
 using AnimLib;
 using Microsoft.Xna.Framework;
+using AnimLib.Abilities;
 using OriMod.Abilities;
 using OriMod.Animations;
 using OriMod.Buffs;
@@ -13,12 +14,18 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using AnimLib.Extensions;
+using System;
+using System.Linq;
 
 namespace OriMod {
   /// <summary>
   /// <see cref="ModPlayer"/> class for <see cref="OriMod"/>. Contains Ori data for a player, such as abilities and animations.
   /// </summary>
   public sealed class OriPlayer : ModPlayer {
+
+    public const string abilitiesTagName = "AnimLibAbilities";
+
     #region Variables
 
     /// <summary>
@@ -26,21 +33,32 @@ namespace OriMod {
     /// </summary>
     public static OriPlayer Local => Main.LocalPlayer.GetModPlayer<OriPlayer>();
 
+    private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || Player.talkNPC >= 0 || Player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
+
     /// <summary>
     /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
     /// </summary>
-    internal AbilityManager abilities { get; private set; }
+    internal OriAbilityManager abilities =>
+      _abilities ?? (_abilities = AnimLibMod.GetAbilityManager<OriAbilityManager>(this));
+    private OriAbilityManager _abilities;
 
     /// <summary>
     /// Net-synced controls of this player.
     /// </summary>
     internal OriInput input { get; private set; }
 
+    internal bool controls_blocked;
+
+    private AnimCharacter _character;
+    public AnimCharacter character =>
+      _character ?? (_character = this.GetAnimCharacter());
+
     /// <summary>
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
     /// </summary>
     internal OriAnimationController Animations =>
-        _anim ??= AnimLibMod.GetAnimationController<OriAnimationController>(Player.GetModPlayer<OriPlayer>());
+        Main.dedServ ? null :
+        (_anim ??= AnimLibMod.GetAnimationController<OriAnimationController>(Player.GetModPlayer<OriPlayer>()));
 
     /// <summary>
     /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
@@ -54,6 +72,8 @@ namespace OriMod {
 
     internal bool debugMode;
 
+    private bool wasMounted;
+
     /// <summary>
     /// Stored between <see cref="PreHurt(bool, bool, ref int, ref int, ref bool, ref bool, ref bool, ref bool, ref PlayerDeathReason)"/> and <see cref="PostHurt(bool, bool, double, int, bool)"/>, determines if custom hurt sounds are played.
     /// </summary>
@@ -64,10 +84,12 @@ namespace OriMod {
     /// <para>External mods that attempt to be compatible with this one will need to use this property.</para>
     /// </summary>
     public bool IsOri {
-      get => _isOri;
+      get => character.IsActive && (!Transforming || transformTimer >= TransformStartDuration - 10);
       set {
         if (value == _isOri) return;
         _netUpdate = true;
+        if (value) character.TryEnable();
+        else character.TryDisable();
         _isOri = value;
       }
     }
@@ -76,6 +98,18 @@ namespace OriMod {
     /// <see langword="true"/> if this <see cref="OriPlayer"/> belongs to the local client, otherwise <see langword="false"/>.
     /// </summary>
     public bool IsLocal { get; private set; }
+
+    /// <summary>
+    /// Stores previous armor dye item ID, from armor dye slot, used for armor shader update.
+    /// </summary>
+    internal int armor_dye;
+
+    /// <summary>
+    /// Current dye_shader data, used for dye shader base color extraction.
+    /// </summary>
+    internal ArmorShaderData dye_shader;
+
+    private bool old_data_loaded = false;
 
     #region Transformation
 
@@ -88,6 +122,7 @@ namespace OriMod {
       internal set {
         if (value == _transforming) return;
         _netUpdate = true;
+        if(value) character.TryEnable();
         _transforming = value;
       }
     }
@@ -236,6 +271,19 @@ namespace OriMod {
     }
 
     /// <summary>
+    /// Coef. of ori and dye color lerp for this instance of <see cref="OriPlayer"/>.
+    /// </summary>
+    public float DyeColorBlend {
+      get => _dyeColorBlend;
+      set {
+        _dyeColorBlend = value;
+        if (IsLocal) {
+          OriMod.ConfigClient.dyeLerp = value;
+        }
+      }
+    }
+
+    /// <summary>
     /// Whether or not the multiplayer client instance of this <see cref="OriPlayer"/> uses light.
     /// </summary>
     internal bool multiplayerPlayerLight = false;
@@ -262,6 +310,7 @@ namespace OriMod {
     private bool _transforming;
     private Color _spriteColorPrimary = Color.LightCyan;
     private Color _spriteColorSecondary = Color.LightCyan;
+    private float _dyeColorBlend = 0.65f;
 
     #endregion
 
@@ -301,8 +350,8 @@ namespace OriMod {
     /// Removes all Sein-related buffs from the player.
     /// </summary>
     internal void RemoveSeinBuffs() {
-      for (int u = 1; u <= SeinData.All.Length; u++) {
-        Player.ClearBuff(ModContent.Find<ModBuff>(Mod.Name, "SeinBuff" + u).Type);
+      for (int u = 0; u < SeinData.All.Length; u++) {
+        Player.ClearBuff(SeinData.SeinBuffs[u]);
       }
     }
 
@@ -322,7 +371,7 @@ namespace OriMod {
     /// Emits a white dust speck from the player.
     /// </summary>
     internal void CreatePlayerDust() {
-      if (_playerDustTimer > 0) {
+      if (Main.dedServ || _playerDustTimer > 0 || !Animations.GraphicsEnabledCompat) {
         return;
       }
 
@@ -363,7 +412,6 @@ namespace OriMod {
     #endregion
 
     public override void Initialize() {
-      abilities = new AbilityManager(this);
       input = new OriInput();
 
       if (!Main.dedServ) {
@@ -410,8 +458,6 @@ namespace OriMod {
         ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, Player.whoAmI);
         _netUpdate = false;
       }
-
-      abilities.SendClientChanges();
     }
 
     public override void SaveData(TagCompound tag) {
@@ -419,9 +465,16 @@ namespace OriMod {
         ["OriSet"] = IsOri,
         ["Debug"] = debugMode,
         ["Color1"] = SpriteColorPrimary,
-        ["Color2"] = SpriteColorSecondary
+        ["Color2"] = SpriteColorSecondary,
+        ["DyeColLerp"] = DyeColorBlend
       };
-      abilities.Save(_tag);
+
+      //Backward compatibility don't pay attention
+      //TODO: Remove old save data once ready
+      abilities.OldSave(_tag);
+
+      _tag[abilitiesTagName] = abilities.Save();
+
       foreach (var v in _tag) tag.Add(v);
     }
 
@@ -436,11 +489,40 @@ namespace OriMod {
         _spriteColorPrimary = OriMod.ConfigClient.playerColor;
         _spriteColorSecondary = OriMod.ConfigClient.playerColorSecondary;
       }
+      if(tag.ContainsKey("DyeColLerp")) {
+        DyeColorBlend = tag.GetFloat("DyeColLerp");
+      }
+      else {
+        _dyeColorBlend = OriMod.ConfigClient.dyeLerp;
+      }
 
-      abilities.Load(tag);
+      //Backward compatibility don't pay attention
+      abilities.OldLoad(tag);
+
+      //This is current version
+      if (tag.ContainsKey(abilitiesTagName))
+        abilities.Load(tag.GetCompound(abilitiesTagName));
+
+      //Backward compatibility don't pay attention
+      if (abilities.oldAbility is not null)
+      {
+        foreach (Ability ability in abilities)
+        {
+          if (ability is ILevelable levelable && levelable.Level == 0)
+          {
+            levelable.Level = abilities.oldAbility[ability.Id];
+          }
+        }
+        abilities.oldAbility = null;
+      }
+      //Backward compatibility don't pay attention
     }
 
     public override void ProcessTriggers(TriggersSet triggersSet) {
+      if(IsLocal) {
+        controls_blocked =
+          OriMod.ConfigClient.blockControlsInMenu && InMenu;
+      }
       input.Update(out bool doNetUpdate);
       if (doNetUpdate) _netUpdate = true;
     }
@@ -452,7 +534,7 @@ namespace OriMod {
       }
     }
 
-    public override void PostUpdateRunSpeeds() {
+    public void PostUpdatePhysics() {
       if (IsOri && !Transforming) {
         #region Default Spirit Run Speeds
 
@@ -488,8 +570,6 @@ namespace OriMod {
             Player.maxFallSpeed = 6f;
           }
         }
-
-        abilities.Update();
       }
 
       if (!Transforming) return;
@@ -498,13 +578,15 @@ namespace OriMod {
       Player.controlRight = false;
       Player.controlUp = false;
       Player.controlDown = false;
+      Player.controlJump = false;
+      Player.controlMount = false;
+      Player.controlHook = false;
       Player.controlUseItem = false;
       if (transformTimer < TransformStartDuration - 10) {
         // Starting
         Player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - transformTimer));
         Player.gravity = 0;
         CreatePlayerDust();
-        Local.Animations.Update();
       }
       else if (transformTimer < TransformStartDuration) {
         // Near end of start
@@ -524,35 +606,46 @@ namespace OriMod {
     }
 
     public override void PostUpdate() {
+      //Backward compatibility don't pay attention
+      if(!old_data_loaded) {
+        AnimPlayer ap = Player.GetModPlayer<AnimPlayer>();
+        if (ap.OldAbilities is not null && 
+          ap.OldAbilities.ContainsKey(Mod.Name))
+        {
+          TagCompound tag = ap.OldAbilities.GetCompound(Mod.Name);
+          foreach (Ability ability in abilities)
+          {
+            if(ability is ILevelable levelable && levelable.Level == 0)
+            {
+              string name = ability.GetType().Name;
+              if (!tag.ContainsKey(name)) continue;
+              TagCompound aTag = tag.Get<TagCompound>(name);
+              ability.Load(aTag);
+            }
+          }
+        } 
+        old_data_loaded = true;
+      }
+      //Backward compatibility don't pay attention
+
+      //There the method starts
       if (IsOri && !Transforming) {
         HasTransformedOnce = true;
       }
 
       if (SeinMinionActive) {
-        if (!(
-              Player.HasBuff(ModContent.BuffType<SeinBuff1>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff2>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff3>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff4>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff5>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff6>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff7>()) ||
-              Player.HasBuff(ModContent.BuffType<SeinBuff8>())
-            )) {
+        if (!SeinData.SeinBuffs.Any(Player.HasBuff)) {
           SeinMinionActive = false;
           SeinMinionType = 0;
         }
       }
 
       if (IsOri) {
-        Animations.Update();
-        abilities.PostUpdate();
-
         if (DoPlayerLight && !abilities.burrow.Active) {
           Lighting.AddLight(Player.Center, _lightColor.ToVector3());
         }
 
-        if (input.jump.JustPressed && IsGrounded && !abilities.burrow) {
+        if (!Main.dedServ && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
           PlaySound("Ori/Jump/seinJumpsGrass" + _randJump.NextNoRepeat(5), 0.6f);
         }
 
@@ -563,11 +656,12 @@ namespace OriMod {
         // Footstep effects
         if (Main.dedServ || !IsGrounded) return;
         bool doDust = false;
-        if (!oldGrounded) {
+        if (!oldGrounded && Animations.GraphicsEnabledCompat) {
           doDust = true;
           FootstepManager.Instance.PlayLandingFromPlayer(Player, out SoundStyle _);
         }
-        else if (Animations.TrackName == "Running" && (Animations.FrameIndex == 4 || Animations.FrameIndex == 9)) {
+        else if (Animations.TrackName == "Running" && (Animations.FrameIndex == 4 || Animations.FrameIndex == 9) 
+          && Animations.GraphicsEnabledCompat) {
           doDust = true;
           FootstepManager.Instance.PlayFootstepFromPlayer(Player, out SoundStyle _);
         }
@@ -686,6 +780,7 @@ namespace OriMod {
     }
 
     public override void HideDrawLayers(PlayerDrawSet drawInfo) {
+      if(Main.dedServ || !Animations.GraphicsEnabledCompat) return;
       if (!IsOri && !Transforming) {
         OriLayers.playerSprite.Hide();
         OriLayers.trailLayer.Hide();
@@ -696,6 +791,12 @@ namespace OriMod {
 
       if (Player.dead || Player.invis || !Animations.playerAnim.Valid) {
         OriLayers.playerSprite.Hide();
+      }
+
+      if(Player.mount.Active) wasMounted = true;
+      else {
+        if (wasMounted) trail.DecayAllSegments();
+        wasMounted = false;
       }
 
       if (!Animations.playerAnim.Valid || abilities.burrow || Player.mount.Active) {
@@ -776,6 +877,7 @@ namespace OriMod {
       oPlayer.SeinMinionType = 0;
       OriMod.ConfigClient.playerColor = oPlayer.SpriteColorPrimary;
       OriMod.ConfigClient.playerColorSecondary = oPlayer.SpriteColorSecondary;
+      OriMod.ConfigClient.dyeLerp = oPlayer.DyeColorBlend;
     }
 
     public override void OnRespawn(Player p) {

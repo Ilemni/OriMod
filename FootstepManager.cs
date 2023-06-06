@@ -1,5 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
+﻿using AnimLib;
+using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using ReLogic.Utilities;
 using Terraria;
@@ -36,7 +36,7 @@ namespace OriMod {
           continue;
         }
         string tileName = TileLoader.GetTile(i).Name;
-        string name = tileName.Substring(tileName.LastIndexOf('.') + 1);
+        string name = tileName[(tileName.LastIndexOf('.') + 1)..];
         FootstepSound sound = SoundFromName(name);
         _tileFootstepSounds[i] = sound;
 

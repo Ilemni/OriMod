@@ -20,6 +20,10 @@ Mods: {
 				BurrowControls: "Burrow Controls"
 				Color1: "Player Color"
 				Color2: "Player Color (Secondary)"
+				DyeLerp: "Dye Color Blend"
+				DyeEnabled: "Spirit dye visibility"
+				DyeEnabledAll: "Global spirit dye visibility"
+				BlockControlsInMenu: "Block ability controls in menu"
 			}
 			Header: {
 				Gameplay: "Gameplay"
@@ -66,6 +70,33 @@ Mods: {
 					'''
 					The secondary color of your Spirit.
 					Default: 0, 0, 0, 0
+					'''
+				DyeLerp: 
+					'''
+					Primary color dye mix
+					0 - Use Ori color
+					1 - Use Dye color
+					Or between to mix colors
+					(Put dye to the breastplate slot)
+					'''
+				DyeEnabled: 
+					'''
+					Should spirit dye display be enabled?
+					Other players will still see your dye if they have it enabled.
+					(Put dye to the breastplate slot)
+					'''
+				DyeEnabledAll: 
+					'''
+					Should spirit dye display be enabled of every spirit, or only local player?
+					If off, you will see only your dye, if on - dye of every player.
+					Spirit Dye visibility should be enabled for effect.
+					Other players will still see your dye if they have it enabled.
+					(Put dye to the breastplate slot)
+					'''					
+				BlockControlsInMenu: 
+					'''
+					Blocks ability controls completely
+					when inventory, menu or dialogue are open.
 					'''
 			}
 		}
@@ -229,11 +260,12 @@ Mods: {
 				'''
 				Upgrades Dash to Level 2
 				Allows you to Dash in the air!
+				Allows you to quickly Dash into enemies, dealing damage!
 				'''
 			DashLevel3:
 				'''
 				Upgrades Dash to Level 3
-				Allows you to quickly Dash into enemies, dealing damage!
+				Allows you to perform dashes more rapidly!
 				'''
 			GlideLevel1:
 				'''

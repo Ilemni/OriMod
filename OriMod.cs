@@ -86,12 +86,6 @@ namespace OriMod {
     #endregion
 
     /// <summary>
-    /// Key used for controlling <see cref="Abilities.SoulLink"/>.
-    /// </summary>
-    // ReSharper disable once UnassignedField.Global
-    [Obsolete] public static ModKeybind soulLinkKey;
-
-    /// <summary>
     /// Key used for controlling <see cref="Abilities.Bash"/>.
     /// </summary>
     public static ModKeybind bashKey;
@@ -120,44 +114,6 @@ namespace OriMod {
     /// Key used for activating <see cref="Abilities.Burrow"/>.
     /// </summary>
     public static ModKeybind burrowKey;
-
-    public override void AddRecipeGroups() {
-      RecipeGroup.RegisterGroup("OriMod:EnchantedItems",
-        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Enchanted Items", ItemID.EnchantedSword,
-          ItemID.EnchantedBoomerang, ItemID.Arkhalis));
-      RecipeGroup.RegisterGroup("OriMod:MovementAccessories",
-        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Basic Movement Accessories", ItemID.Aglet,
-          ItemID.AnkletoftheWind, ItemID.RocketBoots, ItemID.HermesBoots, ItemID.CloudinaBottle, ItemID.FlurryBoots,
-          ItemID.SailfishBoots, ItemID.SandstorminaBottle, ItemID.FartinaJar, ItemID.ShinyRedBalloon, ItemID.ShoeSpikes,
-          ItemID.ClimbingClaws, ItemID.EoCShield));
-
-      RecipeGroup.RegisterGroup("OriMod:IronBars",
-        new RecipeGroup(() => "Iron/Lead Bars", ItemID.IronBar, ItemID.LeadBar));
-      RecipeGroup.RegisterGroup("OriMod:GoldBars",
-        new RecipeGroup(() => "Gold/Platinum Bars", ItemID.GoldBar, ItemID.PlatinumBar));
-      RecipeGroup.RegisterGroup("OriMod:DarkBars",
-        new RecipeGroup(() => "Demonite/Crimtane Bars", ItemID.DemoniteBar, ItemID.CrimtaneBar));
-      RecipeGroup.RegisterGroup("OriMod:HardmodeBars1",
-        new RecipeGroup(() => "Cobalt/Palladium Bars", ItemID.CobaltBar, ItemID.PalladiumBar));
-      RecipeGroup.RegisterGroup("OriMod:HardmodeBars2",
-        new RecipeGroup(() => "Mythril/Orichalcum Bars", ItemID.MythrilBar, ItemID.OrichalcumBar));
-      RecipeGroup.RegisterGroup("OriMod:HardmodeBars3",
-        new RecipeGroup(() => "Adamantite/Titanium Bars", ItemID.AdamantiteBar, ItemID.TitaniumBar));
-      RecipeGroup.RegisterGroup("OriMod:LunarFragments",
-        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Lunar Fragments", ItemID.FragmentNebula,
-          ItemID.FragmentSolar, ItemID.FragmentStardust, ItemID.FragmentVortex));
-
-      RecipeGroup.RegisterGroup("OriMod:WallJumpGear",
-        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Wall Jump Gear", ItemID.ClimbingClaws,
-          ItemID.ShoeSpikes));
-      RecipeGroup.RegisterGroup("OriMod:JumpBottles",
-        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Bottles", ItemID.CloudinaBottle,
-          ItemID.BlizzardinaBottle, ItemID.SandstorminaBottle, ItemID.TsunamiInABottle, ItemID.FartinaJar));
-      RecipeGroup.RegisterGroup("OriMod:JumpBalloons",
-        new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Balloons",
-          ItemID.CloudinaBalloon, ItemID.BlizzardinaBalloon, ItemID.SandstorminaBalloon, ItemID.SharkronBalloon,
-          ItemID.FartInABalloon));
-    }
 
     public override void Load() {
       //SoulLinkKey = RegisterKeybind(instance, "SoulLink", "E");

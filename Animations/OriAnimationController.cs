@@ -1,7 +1,8 @@
-﻿using System;
+﻿using AnimLib.Abilities;
 using AnimLib.Animations;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Abilities;
+using System;
 
 namespace OriMod.Animations {
   /// <summary>
@@ -35,7 +36,7 @@ namespace OriMod.Animations {
     /// </summary>
     public override void Update() {
       OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-      AbilityManager abilities = oPlayer.abilities;
+      OriAbilityManager abilities = oPlayer.abilities;
 
       // Transformation
       if (oPlayer.Transforming) {
@@ -96,42 +97,42 @@ namespace OriMod.Animations {
       // Switch-case for animations with start/mid/end segments
 
       if (abilities.glide) {
-        switch (abilities.glide.AbilityState) {
-          case Ability.State.Starting:
+        switch (abilities.glide.state) {
+          case AbilityState.Starting:
             PlayTrack("GlideStart");
             return;
-          case Ability.State.Active:
+          case AbilityState.Active:
             PlayTrack("Glide");
             return;
-          case Ability.State.Ending:
+          case AbilityState.Ending:
             PlayTrack("GlideStart", direction: Direction.Reverse);
             return;
         }
       }
 
       if (abilities.crouch) {
-        switch (abilities.crouch.AbilityState) {
-          case Ability.State.Starting:
+        switch (abilities.crouch.state) {
+          case AbilityState.Starting:
             PlayTrack("CrouchStart");
             return;
-          case Ability.State.Active:
+          case AbilityState.Active:
             PlayTrack("Crouch");
             return;
-          case Ability.State.Ending:
+          case AbilityState.Ending:
             PlayTrack("CrouchStart", direction: Direction.Reverse);
             return;
         }
       }
 
       if (abilities.lookUp) {
-        switch (abilities.lookUp.AbilityState) {
-          case Ability.State.Starting:
+        switch (abilities.lookUp.state) {
+          case AbilityState.Starting:
             PlayTrack("LookUpStart");
             return;
-          case Ability.State.Active:
+          case AbilityState.Active:
             PlayTrack("LookUp");
             return;
-          case Ability.State.Ending:
+          case AbilityState.Ending:
             PlayTrack("LookUpStart", direction: Direction.Reverse);
             return;
         }
@@ -140,11 +141,11 @@ namespace OriMod.Animations {
       // More complex animations
 
       if (abilities.stomp) {
-        switch (abilities.stomp.AbilityState) {
-          case Ability.State.Starting:
+        switch (abilities.stomp.state) {
+          case AbilityState.Starting:
             PlayTrack("AirJump", rotation: FrameTime * 0.8f);
             return;
-          case Ability.State.Active:
+          case AbilityState.Active:
             PlayTrack("ChargeJump", duration: 2, rotation: (float)Math.PI, loop: LoopMode.Always, direction: Direction.PingPong);
             return;
         }
@@ -157,7 +158,7 @@ namespace OriMod.Animations {
           PlayTrack("ChargeJump", duration: 6, rotation: abilities.launch.LaunchAngle + (float)Math.PI / 2 * player.gravDir, loop: LoopMode.Always, direction: Direction.PingPong, effects: SpriteEffects.None);
         }
         else {
-          int ct = abilities.launch.CurrentTime;
+          int ct = abilities.launch.stateTime;
           float accel = ct * (ct < 5 ? 0.05f : ct < 20 ? 0.03f : 0.02f);
           // Somewhat accelerating speed of rotation
           PlayTrack("AirJump", rotation: SpriteRotation + accel * player.direction);
@@ -181,7 +182,7 @@ namespace OriMod.Animations {
         }
 
         if (!abilities.wallChargeJump.Charged) {
-          PlayTrack("WallChargeJumpCharge", frameIndex: abilities.wallChargeJump.Refreshed ? null : (int?)0);
+          PlayTrack("WallChargeJumpCharge", frameIndex: !abilities.wallChargeJump.IsOnCooldown ? null : (int?)0);
           return;
         }
 

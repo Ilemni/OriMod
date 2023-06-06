@@ -10,7 +10,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       GetAbilityRecipe()
-        .AddRecipeGroup("OriMod:HardmodeBars3", 18)
+        .AddRecipeGroup(OriRecipeGroups.HardmodeBars3, 18)
         .Register();
     }
   }
@@ -39,7 +39,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       GetAbilityRecipe<StompLevel2>()
-        .AddRecipeGroup("OriMod:LunarFragments", 24)
+        .AddRecipeGroup(OriRecipeGroups.LunarFragments, 24)
         .AddIngredient(ItemID.SoulofMight, 22)
         .Register();
     }

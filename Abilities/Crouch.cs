@@ -1,20 +1,20 @@
+using AnimLib.Abilities;
+
 namespace OriMod.Abilities {
   /// <summary>
   /// Ability for crouching. This ability is entirely visual, and is alwaays unlocked.
   /// </summary>
-  public sealed class Crouch : Ability {
-    internal Crouch(AbilityManager manager) : base(manager) { }
+  public sealed class Crouch : Ability<OriAbilityManager> {
     public override int Id => AbilityId.Crouch;
-    public override byte Level => 1;
 
-    internal override bool CanUse => base.CanUse && oPlayer.IsGrounded && !Restricted && !player.mount.Active &&
+    public override bool CanUse => base.CanUse && abilities.oPlayer.IsGrounded && !Restricted && !player.mount.Active &&
       !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.dash && !abilities.launch &&
       !abilities.lookUp && !abilities.stomp;
     private bool Restricted => OriMod.ConfigClient.softCrouch && (player.controlLeft || player.controlRight);
     private static int StartDuration => 10;
     private static int EndDuration => 4;
 
-    protected override void UpdateUsing() {
+    public override void UpdateUsing() {
       if (OriMod.ConfigClient.softCrouch) return;
       player.runAcceleration = 0;
       player.maxRunSpeed = 0;
@@ -38,26 +38,26 @@ namespace OriMod.Abilities {
       // }
     }
 
-    internal override void Tick() {
+    public override void PreUpdate() {
       if (!InUse) {
         if (CanUse && player.controlDown) {
-          SetState(State.Starting);
+          SetState(AbilityState.Starting);
         }
       }
       else if (!CanUse) {
-        SetState(State.Inactive);
+        SetState(AbilityState.Inactive);
       }
       else if (!player.controlDown && !Ending) {
-        SetState(Active ? State.Ending : State.Inactive);
+        SetState(Active ? AbilityState.Ending : AbilityState.Inactive);
       }
       else if (Starting) {
-        if (CurrentTime > StartDuration) {
-          SetState(State.Active);
+        if (stateTime > StartDuration) {
+          SetState(AbilityState.Active);
         }
       }
       else if (Ending) {
-        if (CurrentTime > EndDuration) {
-          SetState(State.Inactive);
+        if (stateTime > EndDuration) {
+          SetState(AbilityState.Inactive);
         }
       }
     }

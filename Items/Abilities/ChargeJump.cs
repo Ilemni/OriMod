@@ -12,7 +12,7 @@ namespace OriMod.Items.Abilities {
       GetAbilityRecipe()
         .AddIngredient(ItemID.HallowedBar, 18)
         .AddIngredient(ItemID.FrogLeg)
-        .AddRecipeGroup("OriMod:JumpBalloons")
+        .AddRecipeGroup(OriRecipeGroups.JumpBalloons)
         .Register();
     }
   }
@@ -41,7 +41,7 @@ namespace OriMod.Items.Abilities {
 
     public override void AddRecipes() {
       GetAbilityRecipe<ChargeJumpLevel2>()
-        .AddRecipeGroup("OriMod:LunarFragments", 30)
+        .AddRecipeGroup(OriRecipeGroups.LunarFragments, 30)
         .AddIngredient(ItemID.SoulofFlight, 25)
         .AddIngredient(ItemID.SoulofLight, 30)
         .Register();

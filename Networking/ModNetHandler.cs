@@ -1,3 +1,4 @@
+using AnimLib;
 using System.IO;
 using Terraria.ModLoader;
 
@@ -13,16 +14,8 @@ namespace OriMod.Networking {
     /// </summary>
     private const byte OriState = 1;
 
-    /// <summary>
-    /// Type for <see cref="AbilityPacketHandler"/>.
-    /// </summary>
-    private const byte AbilityState = 2;
-
     /// <inheritdoc cref="OriPlayerPacketHandler"/>
-    internal readonly OriPlayerPacketHandler oriPlayerHandler = new OriPlayerPacketHandler(OriState);
-
-    /// <inheritdoc cref="AbilityPacketHandler"/>
-    internal readonly AbilityPacketHandler abilityPacketHandler = new AbilityPacketHandler(AbilityState);
+    internal readonly OriPlayerPacketHandler oriPlayerHandler = new(OriState);
 
     /// <summary>
     /// Sends the received <see cref="ModPacket"/> to the desired <see cref="PacketHandler"/> based on data read from <paramref name="reader"/>.
@@ -34,9 +27,6 @@ namespace OriMod.Networking {
       switch (packetClass) {
         case OriState:
           oriPlayerHandler.HandlePacket(reader, fromWho);
-          break;
-        case AbilityState:
-          abilityPacketHandler.HandlePacket(reader, fromWho);
           break;
         default:
           OriMod.Error("UnknownPacket", args: packetClass);
