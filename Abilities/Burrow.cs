@@ -75,21 +75,21 @@ namespace OriMod.Abilities;
     /// Tile hitbox for determining if the player can enter Burrow state.
     /// </summary>
   internal static TileHitbox EnterHitbox => _eh ??= Unloadable.New(new TileHitbox(
-      P(0, -1), P(0, 0), P(0, 1), // Center
-      P(-1, -1), P(-1, 0), P(-1, 1), // Left
-      P(2, -1), P(2, 0), P(2, 1),  // Right
-      P(0, -2), P(1, -2), // Top
-      P(0, 2), P(1, 2),  // Bottom
-      P(2, 2), P(2, -2), P(-1, 2), P(-1, -2) // Corners
+    (0, -1), (0, 0), (0, 1), // Center
+    (-1, -1), (-1, 0), (-1, 1), // Left
+    (2, -1), (2, 0), (2, 1),  // Right
+    (0, -2), (1, -2), // Top
+    (0, 2), (1, 2),  // Bottom
+    (2, 2), (2, -2), (-1, 2), (-1, -2) // Corners
   ), () => _eh = null);
     /// <summary>
     /// Tile hitbox for determining collisions when in the Burrow state
     /// </summary>
   internal static TileHitbox InnerHitbox => _ih ??= Unloadable.New(new TileHitbox(
-      P(0, -1), // Top
-      P(0, 1),  // Bottom
-      P(-1, 0), // Left
-      P(1, 0)  // Right
+    (0, -1), // Top
+    (0, 1),  // Bottom
+    (-1, 0), // Left
+    (1, 0)  // Right
   ), () => _ih = null);
     private static TileHitbox _eh;
     private static TileHitbox _ih;
