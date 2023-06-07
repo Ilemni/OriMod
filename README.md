@@ -3,16 +3,11 @@ Terraria mod that introduces the Ori franchise. Created by Fro Zen and TwiliChao
 
 The Ori franchise is the property of Microsoft. This mod and its creators are in no way affiliated with Microsoft or Moon Studios.
 
-If you enjoy this mod, we strongly urge you purchase Ori and the Blind Forest, as well as Ori and the Will of the Wisps when it releases.
+If you enjoy this mod, we strongly urge you purchase both Ori and the Blind Forest and Ori and the Will of the Wisps.
 
-# Changelog
-
-# v3.0
-
-## Updated to tML v0.11.7.7
-
-Animation backend ported to library mod AnimLib
-
+---
+## Changelog: [link](CHANGELOG.md)
+---
 ### Abilities
 Added Ability Levels
 - These are upgraded with the new craftable Spirit Medalion items.
