@@ -7,110 +7,112 @@ using Terraria.ModLoader.Config;
 
 namespace OriMod;
 
-  /// <summary>
-  /// Configurations for the player's own Ori settings.
-  /// </summary>
-  [LocalizedLabel("Title")]
-  public class OriConfigClient1 : ModConfig {
-    public override ConfigScope Mode => ConfigScope.ClientSide;
+/// <summary>
+/// Configurations for the player's own Ori settings.
+/// </summary>
+[Label($"{ConfigPath}.DisplayName")]
+public class OriConfigClient1 : ModConfig {
+  private const string ConfigPath = $"$Mods.{nameof(OriMod)}.Configs.{nameof(OriConfigClient1)}";
+  private const string HeaderPath = $"{ConfigPath}.Headers";
 
-    [Header("$Mods.OriMod.Config.Header.Gameplay")]
-    
-    [LocalizedLabel("PlayerLight")]
-    [LocalizedTooltip("PlayerLight")]
-    [DefaultValue(true)]
-    public bool playerLight;
+  public override ConfigScope Mode => ConfigScope.ClientSide;
 
-    [LocalizedLabel("PlayerLightGlobal")]
-    [LocalizedTooltip("PlayerLightGlobal")]
-    [DefaultValue(false)]
-    public bool globalPlayerLight;
+  [Header($"{HeaderPath}.Gameplay")]
 
-    [Header("$Mods.OriMod.Config.Header.Controls")]
-    
-    [LocalizedLabel("StompDelay")]
-    [LocalizedTooltip("StompDelay")]
-    [DefaultValue(0)]
-    public float stompHoldDownDelay;
+  [LocalizedLabel(nameof(playerLight))]
+  [LocalizedTooltip(nameof(playerLight))]
+  [DefaultValue(true)]
+  public bool playerLight;
 
-    [LocalizedLabel("SoftCrouch")]
-    [LocalizedTooltip("SoftCrouch")]
-    [DefaultValue(false)]
-    public bool softCrouch;
+  [LocalizedLabel(nameof(globalPlayerLight))]
+  [LocalizedTooltip(nameof(globalPlayerLight))]
+  [DefaultValue(false)]
+  public bool globalPlayerLight;
+  
+  [Header($"{HeaderPath}.Controls")]
 
-    [LocalizedLabel("SmoothCamera")]
-    [LocalizedTooltip("SmoothCamera")]
-    [DefaultValue(true)]
-    public bool smoothCamera;
+  [LocalizedLabel(nameof(stompHoldDownDelay))]
+  [LocalizedTooltip(nameof(stompHoldDownDelay))]
+  [DefaultValue(0)]
+  public float stompHoldDownDelay;
 
-    [JsonIgnore]
-    internal bool BurrowToMouse => burrowControls == "Mouse";
+  [LocalizedLabel(nameof(softCrouch))]
+  [LocalizedTooltip(nameof(softCrouch))]
+  [DefaultValue(false)]
+  public bool softCrouch;
 
-    [LocalizedLabel("BurrowControls")]
-    [LocalizedTooltip("BurrowControls")]
-    [DefaultValue("Mouse"), OptionStrings(new[] { "WASD", "Mouse" })]
-    public string burrowControls;
+  [LocalizedLabel(nameof(smoothCamera))]
+  [LocalizedTooltip(nameof(smoothCamera))]
+  [DefaultValue(true)]
+  public bool smoothCamera;
 
-    [LocalizedLabel("BlockControlsInMenu")]
-    [LocalizedTooltip("BlockControlsInMenu")]
-    [DefaultValue("false")]
-    public bool blockControlsInMenu;
+  [JsonIgnore]
+  internal bool BurrowToMouse => burrowControls == "Mouse";
 
-    [Header("$Mods.OriMod.Config.Header.Aesthetics")]
+  [LocalizedLabel(nameof(burrowControls))]
+  [LocalizedTooltip(nameof(burrowControls))]
+  [DefaultValue("Mouse"), OptionStrings(new[] { "WASD", "Mouse" })]
+  public string burrowControls;
 
-    [LocalizedLabel("Color1")]
-    [LocalizedTooltip("Color1")]
-    [DefaultValue(typeof(Color), "210, 255, 255, 255"), ColorNoAlpha]
-    public Color playerColor;
+  [LocalizedLabel(nameof(blockControlsInMenu))]
+  [LocalizedTooltip(nameof(blockControlsInMenu))]
+  [DefaultValue("false")]
+  public bool blockControlsInMenu;
 
-    [LocalizedLabel("Color2")]
-    [LocalizedTooltip("Color2")]
-    [DefaultValue(typeof(Color), "0, 0, 0, 0")]
-    public Color playerColorSecondary;
+  [Header($"{HeaderPath}.Aesthetics")]
 
-    [LocalizedLabel("DyeEnabled")]
-    [LocalizedTooltip("DyeEnabled")]
-    [DefaultValue(typeof(bool), "true")]
-    public bool dyeEnabled;
+  [LocalizedLabel(nameof(playerColor))]
+  [LocalizedTooltip(nameof(playerColor))]
+  [DefaultValue(typeof(Color), "210, 255, 255, 255"), ColorNoAlpha]
+  public Color playerColor;
 
-    [LocalizedLabel("DyeEnabledAll")]
-    [LocalizedTooltip("DyeEnabledAll")]
-    [DefaultValue(typeof(bool), "true")]
-    public bool dyeEnabledAll;
+  [LocalizedLabel(nameof(playerColorSecondary))]
+  [LocalizedTooltip(nameof(playerColorSecondary))]
+  [DefaultValue(typeof(Color), "0, 0, 0, 0")]
+  public Color playerColorSecondary;
 
-    [LocalizedLabel("DyeLerp")]
-    [LocalizedTooltip("DyeLerp")]
-    [DefaultValue(typeof(float), "0.65")]
-    public float dyeLerp;
+  [LocalizedLabel(nameof(dyeEnabled))]
+  [LocalizedTooltip(nameof(dyeEnabled))]
+  [DefaultValue(typeof(bool), "true")]
+  public bool dyeEnabled;
 
-    public override void OnLoaded() {
-      OriMod.ConfigClient = this;
-    }
+  [LocalizedLabel(nameof(dyeEnabledAll))]
+  [LocalizedTooltip(nameof(dyeEnabledAll))]
+  [DefaultValue(typeof(bool), "true")]
+  public bool dyeEnabledAll;
 
-    [OnDeserialized]
-    public void OnDeserializedMethod(StreamingContext stream) {
-      playerColor.A = 255;
-      if (stompHoldDownDelay < 0) {
-        stompHoldDownDelay = 0;
-      }
-    }
+  [LocalizedLabel(nameof(dyeLerp))]
+  [LocalizedTooltip(nameof(dyeLerp))]
+  [DefaultValue(typeof(float), "0.65")]
+  public float dyeLerp;
 
-    public override void OnChanged() {
-      Player player = Main.LocalPlayer;
-      if (!player.active) return;
-      OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-      oPlayer.SpriteColorPrimary = playerColor;
-      oPlayer.SpriteColorSecondary = playerColorSecondary;
-      oPlayer.DyeColorBlend = dyeLerp;
+  public override void OnLoaded() {
+    OriMod.ConfigClient = this;
+  }
+
+  [OnDeserialized]
+  public void OnDeserializedMethod(StreamingContext stream) {
+    playerColor.A = 255;
+    if (stompHoldDownDelay < 0) {
+      stompHoldDownDelay = 0;
     }
   }
 
-  // Shorthand [LocalizedLabel("MyKey")] vs [Label("$Mods.OriMod.Config.Label.MyKey")]
-  // Does not work with HeaderAttribute, since ModLoader.Config.UI.UIModConfig uses "obj.GetType() == typeof(HeaderAttribute)"
+  public override void OnChanged() {
+    Player player = Main.LocalPlayer;
+    if (!player.active) return;
+    OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+    oPlayer.SpriteColorPrimary = playerColor;
+    oPlayer.SpriteColorSecondary = playerColorSecondary;
+    oPlayer.DyeColorBlend = dyeLerp;
+  }
+
+  // Shorthand [LocalizedLabel("MyKey")] vs [Label("$Mods.OriMod.Configs.ConfigClient1.MyKey.Label")]
+  // When compiling to 1.4.4, all attributes should be removed.
   class LocalizedLabelAttribute : LabelAttribute {
-    public LocalizedLabelAttribute(string labelKey) : base($"$Mods.OriMod.Config.Label.{labelKey}") {
-    }
+    public LocalizedLabelAttribute(string labelKey) : base($"{ConfigPath}.{labelKey}.Label") { }
   }
   class LocalizedTooltipAttribute : TooltipAttribute {
-    public LocalizedTooltipAttribute(string tooltipKey) : base($"$Mods.OriMod.Config.Tooltip.{tooltipKey}") { }
+    public LocalizedTooltipAttribute(string tooltipKey) : base($"{ConfigPath}.{tooltipKey}.Tooltip") { }
+  }
 }

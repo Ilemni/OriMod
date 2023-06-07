@@ -9,97 +9,147 @@ Mods: {
 			LoreNibel: "Words of the Fallen Land of Nibel: "
 			LoreNiwen: "Words of the Spirits of New Niwen: "
 		}
-		Config: {
-			Label: {
-				Title: "Client Config"
-				PlayerLight: "Player Light"
-				PlayerLightGlobal: "Global Player Light"
-				StompDelay: "Stomp Activation Delay"
-				SoftCrouch: "Soft Crouch"
-				SmoothCamera: "Smooth Camera"
-				BurrowControls: "Burrow Controls"
-				Color1: "Player Color"
-				Color2: "Player Color (Secondary)"
-				DyeLerp: "Dye Color Blend"
-				DyeEnabled: "Spirit dye visibility"
-				DyeEnabledAll: "Global spirit dye visibility"
-				BlockControlsInMenu: "Block ability controls in menu"
-			}
-			Header: {
-				Gameplay: "Gameplay"
-				Controls: "Controls"
-				Aesthetics: "Aesthetics"
-			}
-			Tooltip: {
-				PlayerLight:
-					'''
-					Determines if your player faintly glows.
-					Default: true
-					'''
-				PlayerLightGlobal:
-					'''
-					Determines if all other players glow based on your config or their config.
-					Default: false
-					'''
-				StompDelay:
-					'''
-					Duration the Stomp key must be held until activating Stomp.
-					Default: 0
-					'''
-				SoftCrouch:
-					'''
-					Allows moving while holding crouch.
-					Default: false
-					'''
-				SmoothCamera:
-					'''
-					Smooths the camera when it moves.
-					Default: true
-					'''
-				BurrowControls:
-					'''
-					Determines which controls you use while burrowing.
-					Default: Mouse
-					'''
-				Color1:
-					'''
-					The color of your Spirit.
-					Default: 210, 255, 255
-					'''
-				Color2:
-					'''
-					The secondary color of your Spirit.
-					Default: 0, 0, 0, 0
-					'''
-				DyeLerp: 
-					'''
-					Primary color dye mix
-					0 - Use Ori color
-					1 - Use Dye color
-					Or between to mix colors
-					(Put dye to the breastplate slot)
-					'''
-				DyeEnabled: 
-					'''
-					Should spirit dye display be enabled?
-					Other players will still see your dye if they have it enabled.
-					(Put dye to the breastplate slot)
-					'''
-				DyeEnabledAll: 
-					'''
-					Should spirit dye display be enabled of every spirit, or only local player?
-					If off, you will see only your dye, if on - dye of every player.
-					Spirit Dye visibility should be enabled for effect.
-					Other players will still see your dye if they have it enabled.
-					(Put dye to the breastplate slot)
-					'''					
-				BlockControlsInMenu: 
-					'''
-					Blocks ability controls completely
-					when inventory, menu or dialogue are open.
-					'''
+
+		Configs: {
+			OriConfigClient1: {
+				DisplayName: Client Config
+
+				Headers: {
+					Gameplay: Gameplay
+					Controls: Controls
+					Aesthetics: Aesthetics
+				}
+
+				playerLight: {
+					Label: Player Light
+					Tooltip:
+						'''
+						Determines if your player faintly glows.
+						Default: true
+						'''
+				}
+
+				globalPlayerLight: {
+					Label: Global Player Light
+					Tooltip:
+						'''
+						Determines if all other players glow
+						based on your config or their config.
+						Default: false
+						'''
+				}
+
+				stompHoldDownDelay: {
+					Label: Stomp Activation Delay
+					Tooltip:
+						'''
+						Duration the Stomp key must be held
+						until activating Stomp.
+						Default: 0
+						'''
+				}
+
+				softCrouch: {
+					Label: Soft Crouch
+					Tooltip:
+						'''
+						Allows moving while holding crouch.
+						Default: false
+						'''
+				}
+
+				smoothCamera: {
+					Label: Smooth Camera
+					Tooltip:
+						'''
+						Smooths the camera when it moves.
+						Default: true
+						'''
+				}
+
+				lookUpCamOffset: {
+					Label: Vertical Look Offset
+					Tooltip:
+						'''
+						By how much camera should be moved when
+						Ori is crouching or looking up
+						Default: 300
+						Min: 0, Max: 300
+						'''
+				}
+
+				burrowControls: {
+					Label: Burrow Controls
+					Tooltip:
+						'''
+						Determines which controls you use while burrowing.
+						Default: Mouse
+						'''
+				}
+
+				playerColor: {
+					Label: Player Color
+					Tooltip:
+						'''
+						The color of your Spirit.
+						Default: 210, 255, 255
+						'''
+				}
+
+				playerColorSecondary: {
+					Label: Player Color (Secondary)
+					Tooltip:
+						'''
+						The secondary color of your Spirit.
+						Default: 0, 0, 0, 0
+						'''
+				}
+
+				dyeLerp: {
+					Label: Dye Color Blend
+					Tooltip:
+						'''
+						Primary color dye mix
+						0 - Use Ori color
+						1 - Use Dye color
+						Or between to mix colors
+						(Put dye to the breastplate slot)
+						'''
+				}
+
+				dyeEnabled: {
+					Label: Dye Enabled
+					Tooltip:
+						'''
+						Should spirit dye display be enabled?
+						Other players will still see your dye if they have it enabled.
+						(Put dye to the breastplate slot)
+						'''
+				}
+
+				dyeEnabledAll: {
+					Label: Global Dye Enabled
+					Tooltip:
+						'''
+						Should spirit dye display be enabled of every spirit, or only local player?
+						If off, you will see only your dye, if on - dye of every player.
+						Spirit Dye visibility should be enabled for effect.
+						Other players will still see your dye if they have it enabled.
+						(Put dye to the breastplate slot)
+						'''
+				}
+
+				blockControlsInMenu: {
+					Label: Block Controls In Menu
+					Tooltip:
+						'''
+						Blocks ability controls completely
+						when inventory, menu or dialogue are open.
+						'''
+				}
 			}
 		}
+
 		ItemName: {
 			SpiritOrb1: "{$Mods.OriMod.Common.SpiritOrb}"
 			SpiritOrb2: "Darkened {$Mods.OriMod.Common.SpiritOrb}"

@@ -9,69 +9,146 @@ Mods: {
 			LoreNibel: "Слова Падшей земли Нибель: "
 			LoreNiwen: "Слова Духов Нового Нивена: "
 		}
-		Config: {
-			Label: {
-				Title: "Настройки клиента"
-				PlayerLight: "Свет игрока"
-				PlayerLightGlobal: "Глобальный Свет игрока"
-				StompDelay: "Задержка активации Топота"
-				SoftCrouch: "Мягкое приседание"
-				SmoothCamera: "Плавная камера"
-				BurrowControls:
-					'''
-					Управление навыком "Бурение"
-					'''
-				Color1: "Цвет Игрока"
-				Color2: "Цвет Игрока (Вторичный)"
-			}
-			Header: {
-				Gameplay: "Геймплей"
-				Controls: "Управление"
-				Aesthetics: "Внешность Духа"
-			}
-			Tooltip: {
-				PlayerLight:
-					'''
-					Определяет, светится ли Игрок.
-					По умолчанию: true
-					'''
-				PlayerLightGlobal:
-					'''
-					Определяет, будут ли светиться все остальные игроки по твоим настройкам или по своим.
-					По умолчанию: false
-					'''
-				StompDelay:
-					'''
-					Время удержания кнопки Топота до его активации.
-					По умолчанию: 0
-					'''
-				SoftCrouch:
-					'''
-					Позволяет двигаться на корточках.
-					По умолчанию: false
-					'''
-				SmoothCamera:
-					'''
-					Делает движения камеры более плавными при движении игрока.
-					По умолчанию: true
-					'''
-				BurrowControls:
-					'''
-					Определяет клавиши для управления навыком "Бурение".
-					По умолчанию: Mouse
-					'''
-				Color1:
-					'''
-					Цвет твоего Духа.
-					По умолчанию: 210, 255, 255
-					'''
-				Color2:
-					'''
-					Вторичный цвет Духа.
-					По умолчанию: 0, 0, 0, 0
-					'''
+
+		Configs: {
+			OriConfigClient1: {
+				DisplayName: Настройки клиента
+
+				Headers: {
+					Gameplay: Геймплей
+					Controls: Управление
+					Aesthetics: Внешность Духа
+				}
+
+				playerLight: {
+					Label: Свет игрока
+					Tooltip:
+						'''
+						Определяет, светится ли Игрок.
+						По умолчанию: true
+						'''
+				}
+
+				globalPlayerLight: {
+					Label: Глобальный Свет игрока
+					Tooltip:
+						'''
+						Определяет, будут ли светиться все остальные игроки по твоим настройкам или по своим.
+						По умолчанию: false
+						'''
+				}
+
+				stompHoldDownDelay: {
+					Label: Задержка активации Топота
+					Tooltip:
+						'''
+						Время удержания кнопки Топота до его активации.
+						По умолчанию: 0
+						'''
+				}
+
+				softCrouch: {
+					Label: Мягкое приседание
+					Tooltip:
+						'''
+						Позволяет двигаться на корточках.
+						По умолчанию: false
+						'''
+				}
+
+				smoothCamera: {
+					Label: Плавная камера
+					Tooltip:
+						'''
+						Делает движения камеры более плавными при движении игрока.
+						По умолчанию: true
+						'''
+				}
+
+				lookUpCamOffset: {
+					Label: Вертикальное смещение взгляда
+					Tooltip:
+						'''
+						На сколько нужно двигать
+						камеру, когда Ори присел или
+						смотрит наверх
+						По умолчанию: 300
+						Мин: 0, Макс: 300
+						'''
+				}
+
+				burrowControls: {
+					Label: Управление навыком "Бурение"
+					Tooltip:
+						'''
+						Определяет клавиши для управления навыком "Бурение".
+						По умолчанию: Mouse
+						'''
+				}
+
+				playerColor: {
+					Label: Цвет Игрока
+					Tooltip:
+						'''
+						Цвет твоего Духа.
+						По умолчанию: 210, 255, 255
+						'''
+				}
+
+				playerColorSecondary: {
+					Label: Цвет Игрока (Вторичный)
+					Tooltip:
+						'''
+						Вторичный цвет Духа.
+						По умолчанию: 0, 0, 0, 0
+						'''
+				}
+
+				dyeLerp: {
+					Label: Смешивание цвета красителя
+					Tooltip:
+						'''
+						Смешивание первичного цвета
+						0 - Использовать цвет Ори
+						1 - Использовать цвет красителя
+						Ну или посередине, чтобы смешать
+						(Краситель класть в слот нагрудника)
+						'''
+				}
+
+				dyeEnabled: {
+					/* Tooltip:
+						'''
+						Should spirit dye display be enabled?
+						Other players will still see your dye if they have it enabled.
+						(Put dye to the breastplate slot)
+						''' */
+					// Label: dye Enabled
+				}
+
+				dyeEnabledAll: {
+					/* Tooltip:
+						'''
+						Should spirit dye display be enabled of every spirit, or only local player?
+						If off, you will see only your dye, if on - dye of every player.
+						Spirit Dye visibility should be enabled for effect.
+						Other players will still see your dye if they have it enabled.
+						(Put dye to the breastplate slot)
+						''' */
+					// Label: dye Enabled All
+				}
+
+				blockControlsInMenu: {
+					/* Tooltip:
+						'''
+						Blocks ability controls completely
+						when inventory, menu or dialogue are open.
+						''' */
+					// Label: block Controls In Menu
+				}
 			}
 		}
+
 		ItemName: {
 			SpiritOrb1: "{$Mods.OriMod.Common.SpiritOrb}"
 			SpiritOrb2: "Тёмная {$Mods.OriMod.Common.SpiritOrb}"
