@@ -5,8 +5,9 @@ using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.ID;
+using Terraria.Localization;
 
-namespace OriMod.Tiles; 
+namespace OriMod.Tiles;
 
 /// <summary>
 /// Tile used to transform the player from and to Ori state.
@@ -22,7 +23,7 @@ public class SpiritSapling : ModTile {
     TileObjectData.newTile.StyleHorizontal = true;
     TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
     TileObjectData.addTile(Type);
-    ModTranslation name = CreateMapEntryName();
+    LocalizedText name = CreateMapEntryName(); 
     AddMapEntry(new Color(200, 200, 200), name);
     TileID.Sets.DisableSmartCursor[Type] = true;
   }

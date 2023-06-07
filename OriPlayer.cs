@@ -1,10 +1,13 @@
 using AnimLib;
-using Microsoft.Xna.Framework;
 using AnimLib.Abilities;
+using AnimLib.Extensions;
+using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using OriMod.Animations;
 using OriMod.Networking;
 using OriMod.Utilities;
+using System;
+using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -13,8 +16,6 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using AnimLib.Extensions;
-using System.Linq;
 
 namespace OriMod;
 
@@ -447,8 +448,9 @@ public sealed class OriPlayer : ModPlayer {
     Abilities.soulLink.UpdateDead();
   }*/
 
-  public override void clientClone(ModPlayer clientClone) {
-    base.clientClone(clientClone);
+  // TODO: Consider thinking about standardizing network operations for Ori state.
+  public override void CopyClientState(ModPlayer clientClone) {
+    base.CopyClientState(clientClone);
   }
 
   public override void SendClientChanges(ModPlayer clientPlayer) {
@@ -600,26 +602,15 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void PostUpdate() {
-    //Backward compatibility don't pay attention
-    if (!old_data_loaded) {
-      AnimPlayer ap = Player.GetModPlayer<AnimPlayer>();
-      if (ap.OldAbilities is not null &&
-          ap.OldAbilities.ContainsKey(Mod.Name)) {
-        TagCompound tag = ap.OldAbilities.GetCompound(Mod.Name);
-        foreach (Ability ability in abilities) {
-          if (ability is ILevelable levelable && levelable.Level == 0) {
-            string name = ability.GetType().Name;
-            if (!tag.ContainsKey(name)) continue;
-            TagCompound aTag = tag.Get<TagCompound>(name);
-            ability.Load(aTag);
-          }
+    if (abilities.oldAbility is not null) {
+      foreach (Ability ability in abilities) {
+        if (ability is ILevelable levelable) {
+          levelable.Level = Math.Max(abilities.oldAbility[ability.Id], levelable.Level);
         }
       }
-      old_data_loaded = true;
+      abilities.oldAbility = null;
     }
-    //Backward compatibility don't pay attention
 
-    //There the method starts
     if (IsOri && !Transforming) {
       HasTransformedOnce = true;
     }
@@ -716,27 +707,25 @@ public sealed class OriPlayer : ModPlayer {
     }
   }
 
-  public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit,
-    ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource, ref int countdown) {
-    if (!IsOri) {
-      return true;
-    }
+  public override bool FreeDodge(Player.HurtInfo info) =>
+    IsOri && (abilities.stomp || abilities.chargeDash || abilities.chargeJump);
 
-    genGore = false;
-    if (abilities.stomp || abilities.chargeDash || abilities.chargeJump) {
-      return false;
-    }
+  public override void ModifyHurt(ref Player.HurtModifiers modifiers) {
+    if (!IsOri) return;
 
-    if (!playSound) return true;
-    playSound = false;
-    _useCustomHurtSound = true;
-    UnrestrictedMovement = true;
-    return true;
+    modifiers.DisableDust();
+    modifiers.DisableSound();
   }
 
-  public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit, int countdown) {
-    if (!_useCustomHurtSound) return;
-    _useCustomHurtSound = false;
+  public override void OnHurt(Player.HurtInfo info) {
+    if (!IsOri) return;
+
+    UnrestrictedMovement = true;
+  }
+
+  public override void PostHurt(Player.HurtInfo info) {
+    if (!IsOri) return;
+
     PlaySound("Ori/Hurt/seinHurtRegular" + _randHurt.NextNoRepeat(4), 0.75f);
   }
 
@@ -853,13 +842,9 @@ public sealed class OriPlayer : ModPlayer {
     }
 
     #endregion
-
-    /*if (Abilities.soulLink.PlacedSoulLink) {
-      layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
-    }*/
   }
 
-  public override void OnEnterWorld(Player p) {
+  public override void OnEnterWorld() {
     IsLocal = true;
     SeinMinionActive = false;
     SeinMinionType = 0;
@@ -868,7 +853,7 @@ public sealed class OriPlayer : ModPlayer {
     OriMod.ConfigClient.dyeLerp = DyeColorBlend;
   }
 
-  public override void OnRespawn(Player p) {
+  public override void OnRespawn() {
     abilities.DisableAllAbilities();
   }
 }
