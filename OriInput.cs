@@ -11,15 +11,15 @@ namespace OriMod {
   /// Net-synced player input, specific to this mod's controls.
   /// </summary>
   public sealed class OriInput : IEnumerable<Input> {
-    public readonly Input jump = new Input(() => PlayerInput.Triggers.Current.Jump);
-    public readonly Input bash = new Input(() => OriMod.bashKey.Current);
-    public readonly Input dash = new Input(() => OriMod.dashKey.Current);
-    public readonly Input climb = new Input(() => OriMod.climbKey.Current);
-    public readonly Input glide = new Input(() => OriMod.featherKey.Current);
-    public readonly Input stomp = new Input(() => PlayerInput.Triggers.Current.Down);
-    public readonly Input charge = new Input(() => OriMod.chargeKey.Current);
-    public readonly Input burrow = new Input(() => OriMod.burrowKey.Current);
-    public readonly Input leftClick = new Input(() => PlayerInput.Triggers.Current.MouseLeft);
+    public readonly Input jump = new Input(() => PlayerInput.Triggers.Current.Jump && !OriPlayer.Local.controls_blocked);
+    public readonly Input bash = new Input(() => OriMod.bashKey.Current && !OriPlayer.Local.controls_blocked);
+    public readonly Input dash = new Input(() => OriMod.dashKey.Current && !OriPlayer.Local.controls_blocked);
+    public readonly Input climb = new Input(() => OriMod.climbKey.Current && !OriPlayer.Local.controls_blocked);
+    public readonly Input glide = new Input(() => OriMod.featherKey.Current && !OriPlayer.Local.controls_blocked);
+    public readonly Input stomp = new Input(() => PlayerInput.Triggers.Current.Down && !OriPlayer.Local.controls_blocked);
+    public readonly Input charge = new Input(() => OriMod.chargeKey.Current && !OriPlayer.Local.controls_blocked);
+    public readonly Input burrow = new Input(() => OriMod.burrowKey.Current && !OriPlayer.Local.controls_blocked);
+    public readonly Input leftClick = new Input(() => PlayerInput.Triggers.Current.MouseLeft && !OriPlayer.Local.controls_blocked);
 
     /// <summary>
     /// Read and updates the player's inputs.
@@ -37,7 +37,7 @@ namespace OriMod {
       BitVector32 value = new BitVector32(reader.ReadUInt16());
       int i = 0;
       foreach (Input input in this) {
-        input.SetInputValue(value[i++]);
+        input.SetInputValue(value[(1 << i++)]);
       }
     }
 
@@ -45,7 +45,7 @@ namespace OriMod {
       BitVector32 arr = new BitVector32();
       int i = 0;
       foreach (Input input in this) {
-        arr[i++] = input.GetInputValue();
+        arr[(1 << i++)] = input.GetInputValue();
       }
       packet.Write((ushort)arr.Data);
     }

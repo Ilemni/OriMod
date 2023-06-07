@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using OriMod.Dusts;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
+using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -69,6 +70,8 @@ namespace OriMod.Abilities {
       float speed = Speeds[stateTime] * 0.35f;
       player.velocity.Y = speed * -player.gravDir;
       abilities.oPlayer.immuneTimer = 12;
+
+      if (IsLocal) netUpdate = true;
     }
 
     public override void UpdateUsing() {
@@ -123,6 +126,16 @@ namespace OriMod.Abilities {
 
     private static void Unload() {
       _speeds = null;
+    }
+
+    public override void ReadPacket(BinaryReader r) {
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
+    }
+
+    public override void WritePacket(ModPacket packet) {
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
   }
 }

@@ -20,6 +20,8 @@ namespace OriMod {
     /// </summary>
     internal sealed class OriPlayerSprite : PlayerDrawLayer {
       public override bool IsHeadLayer => true;
+      public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
+        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations?.GraphicsEnabledCompat ?? false;
       public override void SetStaticDefaults() {
         playerSprite = ModContent.GetInstance<OriPlayerSprite>();
       }
@@ -27,6 +29,8 @@ namespace OriMod {
       protected override void Draw(ref PlayerDrawSet drawInfo) {
         Player player = drawInfo.drawPlayer;
         OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+        bool dyeEn = OriMod.ConfigClient.dyeEnabled &&
+          (OriMod.ConfigClient.dyeEnabledAll || oPlayer.IsLocal);
         bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
         DrawData data = oPlayer.Animations.playerAnim.GetDrawData(drawInfo);
@@ -37,11 +41,11 @@ namespace OriMod {
         }
         Color shColor = oPlayer.dye_shader?.GetColor() ?? Color.White;
         Color sprCol = Color.Lerp(oPlayer.SpriteColorPrimary, shColor,
-          shColor == Color.White ? 0 : oPlayer.DyeColorBlend);
+          (!dyeEn || shColor == Color.White) ? 0 : oPlayer.DyeColorBlend);
         data.color = doFlash
             ? Color.Lerp(sprCol, Color.Red, player.immuneAlpha / 255f)
             : isTransformStart ? Color.White : sprCol;
-        data.shader = player.dye[1].dye;
+        data.shader = dyeEn ? player.dye[1].dye : 0;
         data.origin.Y += 5 * player.gravDir;
         drawInfo.DrawDataCache.Add(data);
 
@@ -70,6 +74,8 @@ namespace OriMod {
     /// </summary>
     internal sealed class OriTrailLayer : PlayerDrawLayer {
       public override string Name => "OriTrail";
+      public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
+        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations?.GraphicsEnabledCompat ?? false;
       public override void SetStaticDefaults() {
         trailLayer = ModContent.GetInstance<OriTrailLayer>();
       }
@@ -96,6 +102,8 @@ namespace OriMod {
     /// </summary>
     internal sealed class OriFeatherLayer : PlayerDrawLayer {
       public override string Name => "Feather";
+      public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
+        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations?.GraphicsEnabledCompat ?? false;
       public override void SetStaticDefaults() {
         featherSprite = ModContent.GetInstance<OriFeatherLayer>();
       }
@@ -113,6 +121,8 @@ namespace OriMod {
     /// </summary>
     internal sealed class OriBashArrowLayer : PlayerDrawLayer {
       public override string Name => "BashArrow";
+      public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
+        drawInfo.drawPlayer.GetModPlayer<OriPlayer>().Animations?.GraphicsEnabledCompat ?? false;
       public override void SetStaticDefaults() {
         bashArrow = ModContent.GetInstance<OriBashArrowLayer>();
       }
@@ -139,6 +149,7 @@ namespace OriMod {
         Rectangle rect = anim.TileAt(anim.source["Bash"], frame);
         Vector2 orig = rect.Size() / 2;
         DrawData data = new(anim.CurrentTexture, pos, rect, Color.White, rotation, orig, 1, SpriteEffects.None, 0);
+        data.ignorePlayerRotation = true;
         drawInfo.DrawDataCache.Add(data);
       }
       public override Position GetDefaultPosition() =>

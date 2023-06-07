@@ -1,6 +1,4 @@
 using AnimLib.Abilities;
-using OriMod.Utilities;
-using Terraria;
 
 namespace OriMod.Abilities {
   /// <summary>
@@ -60,21 +58,6 @@ namespace OriMod.Abilities {
       else if (Ending) {
         if (stateTime > EndDuration) {
           SetState(AbilityState.Inactive);
-        }
-      }
-    }
-    public override void PostUpdateAbilities() {
-      if (abilities.oPlayer.IsLocal) {
-        switch (state) {
-          case AbilityState.Active:
-            CameraControl.instance.camera_v_offset = OriMod.ConfigClient.lookUpCamOffset *
-              (OriMod.ConfigClient.smoothCamera ? (OriUtils.IsAnyBossAlive() ? 0.15f : 0.05f) : 1.0f) /
-              Main.GameZoomTarget;
-            break;
-          default:
-            if (abilities.lookUp.Inactive)
-              CameraControl.instance.camera_v_offset = 0.0f;
-            break;
         }
       }
     }

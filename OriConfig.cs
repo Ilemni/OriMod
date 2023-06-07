@@ -42,12 +42,6 @@ namespace OriMod {
     [DefaultValue(true)]
     public bool smoothCamera;
 
-    [LocalizedLabel("LookUpCamOffset")]
-    [LocalizedTooltip("LookUpCamOffset")]
-    [DefaultValue(300.0f)]
-    [Range(0.0f, 300.0f)]
-    public float lookUpCamOffset;
-
     [JsonIgnore]
     internal bool BurrowToMouse => burrowControls == "Mouse";
 
@@ -55,6 +49,11 @@ namespace OriMod {
     [LocalizedTooltip("BurrowControls")]
     [DefaultValue("Mouse"), OptionStrings(new[] { "WASD", "Mouse" })]
     public string burrowControls;
+
+    [LocalizedLabel("BlockControlsInMenu")]
+    [LocalizedTooltip("BlockControlsInMenu")]
+    [DefaultValue("false")]
+    public bool blockControlsInMenu;
 
     [Header("$Mods.OriMod.Config.Header.Aesthetics")]
 
@@ -67,6 +66,16 @@ namespace OriMod {
     [LocalizedTooltip("Color2")]
     [DefaultValue(typeof(Color), "0, 0, 0, 0")]
     public Color playerColorSecondary;
+
+    [LocalizedLabel("DyeEnabled")]
+    [LocalizedTooltip("DyeEnabled")]
+    [DefaultValue(typeof(bool), "true")]
+    public bool dyeEnabled;
+
+    [LocalizedLabel("DyeEnabledAll")]
+    [LocalizedTooltip("DyeEnabledAll")]
+    [DefaultValue(typeof(bool), "true")]
+    public bool dyeEnabledAll;
 
     [LocalizedLabel("DyeLerp")]
     [LocalizedTooltip("DyeLerp")]

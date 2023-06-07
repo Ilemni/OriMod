@@ -277,7 +277,9 @@ namespace OriMod.Abilities {
         }
 
         Texture2D tex = OriTextures.Instance.burrowTimer.texture;
-        drawInfo.DrawDataCache.Add(new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0));
+        var data = new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0);
+        data.ignorePlayerRotation = true;
+        drawInfo.DrawDataCache.Add(data);
       }
     }
 

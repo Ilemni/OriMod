@@ -2,6 +2,7 @@ using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using System.IO;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities {
@@ -43,10 +44,14 @@ namespace OriMod.Abilities {
 
     public override void ReadPacket(BinaryReader r) {
       _direction = r.ReadSByte();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
     public override void WritePacket(ModPacket packet) {
       packet.Write(_direction);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
     public override void UpdateActive() {
@@ -60,6 +65,7 @@ namespace OriMod.Abilities {
       if (stateTime > 20) {
         player.runSlowdown = 26f;
       }
+      if (IsLocal) netUpdate = true;
     }
 
     public override bool RefreshCondition() => abilities.bash || abilities.oPlayer.OnWall || abilities.oPlayer.IsGrounded || player.mount.Active;
@@ -69,7 +75,8 @@ namespace OriMod.Abilities {
         SetState(AbilityState.Inactive);
         return;
       }
-      if (CanUse && abilities.oPlayer.input.dash.JustPressed) {
+      if (CanUse && abilities.oPlayer.input.dash.JustPressed &&
+        !(abilities.burrow.CanUse && abilities.oPlayer.input.burrow.JustPressed)) {
         SetState(AbilityState.Active);
         StartDash();
         return;

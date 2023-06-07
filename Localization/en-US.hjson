@@ -13,17 +13,19 @@ Mods: {
 
 		Config: {
 			Label: {
-				Title: Client Config
-				PlayerLight: Player Light
-				PlayerLightGlobal: Global Player Light
-				StompDelay: Stomp Activation Delay
-				SoftCrouch: Soft Crouch
-				SmoothCamera: Smooth Camera
-				BurrowControls: Burrow Controls
-				Color1: Player Color
-				Color2: Player Color (Secondary)
-				LookUpCamOffset: Vertical Look Offset
-				DyeLerp: Dye Color Blend
+				Title: "Client Config"
+				PlayerLight: "Player Light"
+				PlayerLightGlobal: "Global Player Light"
+				StompDelay: "Stomp Activation Delay"
+				SoftCrouch: "Soft Crouch"
+				SmoothCamera: "Smooth Camera"
+				BurrowControls: "Burrow Controls"
+				Color1: "Player Color"
+				Color2: "Player Color (Secondary)"
+				DyeLerp: "Dye Color Blend"
+				DyeEnabled: "Spirit dye visibility"
+				DyeEnabledAll: "Global spirit dye visibility"
+				BlockControlsInMenu: "Block ability controls in menu"
 			}
 
 			Header: {
@@ -73,21 +75,32 @@ Mods: {
 					The secondary color of your Spirit.
 					Default: 0, 0, 0, 0
 					'''
-				LookUpCamOffset:
-					'''
-					By how much camera should be
-					moved when Ori is crouching
-					or looking up
-					Default: 300
-					Min: 0, Max: 300
-					'''
-				DyeLerp:
+				DyeLerp: 
 					'''
 					Primary color dye mix
 					0 - Use Ori color
 					1 - Use Dye color
 					Or between to mix colors
 					(Put dye to the breastplate slot)
+					'''
+				DyeEnabled: 
+					'''
+					Should spirit dye display be enabled?
+					Other players will still see your dye if they have it enabled.
+					(Put dye to the breastplate slot)
+					'''
+				DyeEnabledAll: 
+					'''
+					Should spirit dye display be enabled of every spirit, or only local player?
+					If off, you will see only your dye, if on - dye of every player.
+					Spirit Dye visibility should be enabled for effect.
+					Other players will still see your dye if they have it enabled.
+					(Put dye to the breastplate slot)
+					'''					
+				BlockControlsInMenu: 
+					'''
+					Blocks ability controls completely
+					when inventory, menu or dialogue are open.
 					'''
 			}
 		}

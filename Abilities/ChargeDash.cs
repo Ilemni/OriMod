@@ -51,10 +51,14 @@ namespace OriMod.Abilities {
 
     public override void ReadPacket(BinaryReader r) {
       _npcId = r.ReadUInt16();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
     public override void WritePacket(ModPacket packet) {
       packet.Write(_npcId);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
     //internal override void PutOnCooldown(bool force = false) {
@@ -105,6 +109,10 @@ namespace OriMod.Abilities {
         player.velocity = newVel;
       }
       Target = null;
+    }
+
+    public override void UpdateActive() {
+      if (IsLocal) netUpdate = true;
     }
 
     public override void UpdateUsing() {

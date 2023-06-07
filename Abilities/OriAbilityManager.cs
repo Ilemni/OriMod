@@ -136,6 +136,7 @@ namespace OriMod.Abilities {
       }
     }
 
+    //Backward compatibility don't pay attention
     public void OldSave(TagCompound tag) {
       byte[] arr = new byte[AbilityId.Count];
       foreach (Ability ability in this) {
@@ -145,6 +146,7 @@ namespace OriMod.Abilities {
       tag.Add("AbilityLevels", arr);
     }
 
+    //Backward compatibility don't pay attention
     public void OldLoad(TagCompound tag) {
       if (!tag.ContainsKey("AbilityLevels")) {
         oldAbility = null;
@@ -153,6 +155,7 @@ namespace OriMod.Abilities {
       oldAbility = tag.GetByteArray("AbilityLevels");
     }
 
+    //Backward compatibility don't pay attention
     internal byte[] oldAbility; 
   }
 

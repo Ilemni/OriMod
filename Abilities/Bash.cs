@@ -142,6 +142,8 @@ namespace OriMod.Abilities {
       ushort id = r.ReadUInt16();
       SetTarget(isNpc, id);
       BashAngle = r.ReadSingle();
+      player.position = r.ReadVector2();
+      player.velocity = r.ReadVector2();
     }
 
     public override void WritePacket(ModPacket packet) {
@@ -153,6 +155,8 @@ namespace OriMod.Abilities {
       packet.Write(BashEntity is NPC);
       packet.Write((ushort)(BashEntity?.whoAmI ?? ushort.MaxValue));
       packet.Write(BashAngle);
+      packet.WriteVector2(player.position);
+      packet.WriteVector2(player.velocity);
     }
 
     /// <summary>
@@ -263,6 +267,9 @@ namespace OriMod.Abilities {
 
       StartCooldown();
     }
+    public override void UpdateActive() {
+      if(IsLocal) netUpdate = true;
+    }
 
     public override void UpdateUsing() {
       if (!Ending) {
@@ -345,7 +352,7 @@ namespace OriMod.Abilities {
         if (stateTime == MinBashDuration + 4) {
           abilities.oPlayer.PlayLocalSound("Ori/Bash/seinBashLoopA", 0.5f);
         }
-        abilities.oPlayer.Animations.Update();
+        abilities.oPlayer.Animations?.Update();
 
         if (stateTime <= MaxBashDuration && abilities.oPlayer.input.bash.Current &&
           BashEntity is not null && BashEntity.active) return;

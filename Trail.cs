@@ -72,5 +72,14 @@ namespace OriMod {
     internal void ResetNextSegment() {
       _segments[NextIndex()].Reset();
     }
+
+    /// <summary>
+    /// Call to wipe player's trail completely
+    /// </summary>
+    public void DecayAllSegments() {
+      foreach (TrailSegment segment in _segments) {
+        segment.Decay();
+      }
+    }
   }
 }

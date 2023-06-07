@@ -3,14 +3,19 @@
 ## Feature update 
 
 Added Ori dye support, place dye to chestplate slot!
-Added camera movement on looking up and crouching
+Added option to block ability controls when any menu is open
 Refactored code, now uses AnimLib's abilities code
+Improved ability netsync
 Got rid of obsolete features in recipe groups
 Corrected dash ability lv2 and lv3 descriptions
 Reduced charge dash cooldown on lv3
 Disabled active cursor on sappling
 Reduced stomp randomness (fixed invalid float to int cast)
 Fixed spirit sappling placement silent exception
+Fixed trail, burrow indicator and bash arrow rotating with player
+Fixed infinite Launch looping and windup cancellation
+Fixed inputs net sync
+Fixed wings and various jump, mount or hook items working during transformation
 
 ---
 
