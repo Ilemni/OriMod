@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using Terraria.Audio;
 using ReLogic.Utilities;
 
-namespace OriMod; 
+namespace OriMod;
 
 public static class SoundWrapper {
   /// <summary>
@@ -14,7 +14,7 @@ public static class SoundWrapper {
   private static bool _checkedCanPlaySounds;
 
   public static SlotId PlaySound(Vector2 position, string soundPath, out SoundStyle style, float volumeScale = 1f, float pitchOffset = 0.0f)
-    => PlaySound((int) position.X, (int) position.Y, soundPath, out style, volumeScale, pitchOffset);
+    => PlaySound((int)position.X, (int)position.Y, soundPath, out style, volumeScale, pitchOffset);
 
   public static SlotId PlaySound(int x, int y, string soundPath, out SoundStyle style, float volumeScale = 1f, float pitchOffset = 0.0f) {
     style = new("OriMod/Sounds/Custom/NewSFX/" + soundPath) {

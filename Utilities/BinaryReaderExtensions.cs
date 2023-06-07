@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 namespace OriMod.Utilities; 
 
 public static class BinaryReaderExtensions {
-  public static Color ReadRGBA(this BinaryReader reader) => new Color(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
+  public static Color ReadRGBA(this BinaryReader reader) => new(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
 }
 
 public static class BinaryWriterExtensions {

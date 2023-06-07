@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using Terraria;
 
-namespace OriMod; 
+namespace OriMod;
 
 /// <summary>
 /// Primarily used for <see cref="Abilities.Burrow"/>, stores an array of points as a template, and retrieves tiles of that template when updated.

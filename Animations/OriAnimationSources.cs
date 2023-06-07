@@ -1,16 +1,16 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AnimLib;
 using AnimLib.Animations;
 
-namespace OriMod.Animations; 
+namespace OriMod.Animations;
 
 /// <summary>
 /// Animation data for the Ori sprite.
 /// </summary>
 public sealed class PlayerAnim : AnimationSource {
-  public override PointByte spriteSize { get; } = new PointByte(64, 68);
+  public override PointByte spriteSize { get; } = new(64, 68);
 
-  public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
+  public override Dictionary<string, Track> tracks { get; } = new() {
     ["Default"] = Track.Single(
       F(0, 0)
     ),
@@ -105,12 +105,12 @@ public sealed class PlayerAnim : AnimationSource {
 /// Animation data for the Bash sprite.
 /// </summary>
 public sealed class BashAnim : AnimationSource {
-  public override PointByte spriteSize { get; } = new PointByte(152, 20);
+  public override PointByte spriteSize { get; } = new(152, 20);
 
-  public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
+  public override Dictionary<string, Track> tracks { get; } = new() {
     ["Bash"] = Track.Range(
       F(0, 0), F(0, 2)
-    )
+    ),
   };
 }
 
@@ -118,9 +118,9 @@ public sealed class BashAnim : AnimationSource {
 /// Animation data for the Feather sprite.
 /// </summary>
 public sealed class GlideAnim : AnimationSource {
-  public override PointByte spriteSize { get; } = new PointByte(128, 128);
+  public override PointByte spriteSize { get; } = new(128, 128);
 
-  public override Dictionary<string, Track> tracks { get; } = new Dictionary<string, Track> {
+  public override Dictionary<string, Track> tracks { get; } = new() {
     ["GlideStart"] = Track.Range(LoopMode.None,
       F(0, 0, 5), F(0, 2, 5)
     ),

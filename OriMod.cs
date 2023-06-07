@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using log4net;
 using Microsoft.Xna.Framework;
@@ -10,16 +9,16 @@ using Terraria.ModLoader;
 using static Terraria.ModLoader.KeybindLoader;
 using static Terraria.ModLoader.EquipLoader;
 
-namespace OriMod; 
+namespace OriMod;
 
 /// <summary>
 /// The mod of this assembly.
 /// </summary>
-public sealed partial class OriMod : Mod {
+public sealed class OriMod : Mod {
   public OriMod() {
     ContentAutoloadingEnabled = true;
     GoreAutoloadingEnabled = true;
-    MusicAutoloadingEnabled = true;      
+    MusicAutoloadingEnabled = true;
     instance = this;
   }
 

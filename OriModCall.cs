@@ -1,7 +1,7 @@
-﻿using Terraria;
+using Terraria;
 using Terraria.ModLoader;
 
-namespace OriMod; 
+namespace OriMod;
 
 public static class OriModCall {
   /// <summary>

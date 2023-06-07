@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod; 
+namespace OriMod;
 
 /// <summary>
 /// This class exists simply because I'd rather have direct reference to textures.
@@ -42,7 +42,7 @@ public class ReferencedTexture2D {
       throw new ArgumentException($"{texturePath} is not a valid texture path.", nameof(texturePath));
     }
   }
-        
+  
   private readonly Asset<Texture2D> _texture;
 
   /// <summary>
@@ -53,13 +53,14 @@ public class ReferencedTexture2D {
   /// <summary>
   /// Texture that this instance represents.
   /// </summary>
-  public Texture2D texture { get { 
-      if(ready) return _texture.Value;
+  public Texture2D texture {
+    get {
+      if (ready) return _texture.Value;
       _texture.Wait();
       return _texture.Value;
     }
   }
 
   public static implicit operator Texture2D(ReferencedTexture2D ct) => ct.texture;
-  public static explicit operator ReferencedTexture2D(Texture2D tx) => new ReferencedTexture2D(tx.Name);
+  public static explicit operator ReferencedTexture2D(Texture2D tx) => new(tx.Name);
 }

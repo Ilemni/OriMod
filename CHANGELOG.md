@@ -1,6 +1,6 @@
 # v3.2.0.0
 
-## Feature update 
+## Feature update
 
 Added Ori dye support, place dye to chestplate slot!
 Added option to block ability controls when any menu is open

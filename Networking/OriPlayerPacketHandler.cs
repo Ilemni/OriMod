@@ -57,7 +57,7 @@ internal class OriPlayerPacketHandler : PacketHandler {
     ModPacket packet = GetPacket(fromWho);
     OriPlayer fromPlayer = Main.player[fromWho].GetModPlayer<OriPlayer>();
 
-    BitsByte flags = new BitsByte {
+    BitsByte flags = new() {
       [0] = fromPlayer.IsOri,
       [1] = fromPlayer.Transforming,
       [2] = fromPlayer.UnrestrictedMovement,

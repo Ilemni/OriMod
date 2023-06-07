@@ -31,14 +31,12 @@ public sealed class SeinData {
   /// <para>2b. Only the changes/upgrades are shown, rather than having redundant data. The same could be accomplished with inheritance, but I'd rather not have 8 levels of it.</para>
   /// </remarks>
   internal static void Load() {
-    SeinData defaultSein = new SeinData();
+    SeinData defaultSein = new();
     var fields = typeof(SeinData).GetFields();
 
     var list = new List<SeinData>();
     void AddNewSein(SeinData newSein) {
-      SeinData lastSein = list.Count == 0 ?
-        new SeinData() :
-        list[^1];
+      SeinData lastSein = list.Count == 0 ? new SeinData() : list[^1];
 
       foreach (FieldInfo field in fields) {
         object defVal = field.GetValue(defaultSein);
@@ -215,7 +213,7 @@ public sealed class SeinData {
     All = Unloadable.New(list.ToArray(), () => All = null);
     SeinBuffs = Unloadable.New(new int[All.Length], () => SeinBuffs = null);
     for (int u = 0; u < All.Length; u++) {
-      SeinBuffs[u] = ModContent.Find<ModBuff>(OriMod.instance.Name, "SeinBuff" + (u+1)).Type;
+      SeinBuffs[u] = ModContent.Find<ModBuff>(OriMod.instance.Name, "SeinBuff" + (u + 1)).Type;
     }
   }
 
@@ -361,9 +359,9 @@ public sealed class SeinData {
     int minDps = minDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong);
     int maxDps = maxDmgPerAllBursts * 60 / (cooldownMin * bursts + cooldownLong);
 
-    return minShotsPerBurst == maxShotsPerBurst ?
-      $"Sein ({tierName}): DPS:{minDps}, Shots:{minShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}" :
-      $"Sein ({tierName}): DPS:{minDps}-{maxDps}, Shots:{minShotsPerBurst}-{maxShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}-{maxDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}-{maxDmgPerAllBursts}";
+    return minShotsPerBurst == maxShotsPerBurst
+      ? $"Sein ({tierName}): DPS:{minDps}, Shots:{minShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}"
+      : $"Sein ({tierName}): DPS:{minDps}-{maxDps}, Shots:{minShotsPerBurst}-{maxShotsPerBurst} Bursts:{bursts} DMG per Burst:{minDmgPerBurst}-{maxDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}-{maxDmgPerAllBursts}";
   }
   #endregion
 }

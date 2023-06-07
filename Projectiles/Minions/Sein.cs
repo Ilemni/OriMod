@@ -89,7 +89,7 @@ public abstract class Sein : Minion {
   /// </summary>
   private string _spiritFlameSound;
 
-  private readonly RandomChar _rand = new RandomChar();
+  private readonly RandomChar _rand = new();
 
   /// <summary>
   /// Damage multiplier for when the player manually fires Spirit Flame.
@@ -154,7 +154,7 @@ public abstract class Sein : Minion {
   /// <summary>
   /// List of NPCs last targeted by the minion.
   /// </summary>
-  private readonly List<byte> _targetIDs = new List<byte>();
+  private readonly List<byte> _targetIDs = new();
 
   /// <summary>
   /// Current number of shots fired in rapid succession. Used to incur <see cref="SeinData.cooldownLong"/>.
@@ -483,7 +483,7 @@ public abstract class Sein : Minion {
       }
 
       color.A = (byte)(i == 0 ? 255 : i == 1 ? 200 : 175);
-      Rectangle sourceRect = new Rectangle(0, i * tex.Height / 3, tex.Width, tex.Width);
+      Rectangle sourceRect = new(0, i * tex.Height / 3, tex.Width, tex.Width);
       Main.EntitySpriteDraw(tex, pos, sourceRect, color, Projectile.rotation, orig, Projectile.scale, SpriteEffects.None, 0);
     }
   }

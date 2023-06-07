@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Terraria;
 using Terraria.ModLoader.Config;
 
-namespace OriMod; 
+namespace OriMod;
 
   /// <summary>
   /// Configurations for the player's own Ori settings.

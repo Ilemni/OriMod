@@ -103,8 +103,8 @@ namespace OriMod.Abilities {
       if (player.dead || oPlayer.Transforming) {
         return false;
       }
-      var _k = player.mount?.Active;
-      return !(_k ?? false);
+      bool mountActive = player.mount?.Active ?? false;
+      return !mountActive;
     }
 
     public OriPlayer oPlayer { get; private set; }
@@ -156,7 +156,7 @@ namespace OriMod.Abilities {
     }
 
     //Backward compatibility don't pay attention
-    internal byte[] oldAbility; 
+    internal byte[] oldAbility;
   }
 
 }

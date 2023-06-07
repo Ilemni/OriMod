@@ -3,7 +3,7 @@ using OriMod.Utilities;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod; 
+namespace OriMod;
 
 /// <summary>
 /// Contains the Pickaxe power of each tile. Used for <see cref="Abilities.Burrow"/>.
