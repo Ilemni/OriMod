@@ -9,13 +9,12 @@ using Terraria.ModLoader;
 using Terraria.Audio;
 using ReLogic.Utilities;
 
-namespace OriMod.Projectiles.Minions; 
+namespace OriMod.Projectiles.Minions;
 
 /// <summary>
 /// Minion for the Ori character Sein.
 /// </summary>
 public abstract class Sein : Minion {
-  static Sein() => OriMod.OnUnload += _Unload;
   public sealed override string Texture => "OriMod/Projectiles/Minions/Sein";
 
   public sealed override bool? CanCutTiles() => false;
@@ -101,14 +100,14 @@ public abstract class Sein : Minion {
   /// <summary>
   /// Positions that the minion idly moves towards. Positions are relative to <see cref="_goalNpc"/> with a fixed offset, or the player if <see cref="_goalNpc"/> is <see langword="null"/>.
   /// </summary>
-  private static Vector2[] GoalPositions => _goalPositions ??= new[] {
+  private static Vector2[] GoalPositions => _goalPositions ??= Unloadable.New(new[] {
     new Vector2(-32, 12),
     new Vector2(32, -12),
     new Vector2(-32, -12),
     new Vector2(32, 12),
     new Vector2(-32, -12),
     new Vector2(32, -12),
-  };
+  }, () => _goalPositions = null);
 
   private NPC _goalNpc;
 
@@ -312,7 +311,7 @@ public abstract class Sein : Minion {
     foreach (NPC npc in Main.npc) {
       if (!npc.CanBeChasedBy()) continue;
       float dist = Vector2.DistanceSquared(Player.Center, npc.Center);
-      if (!(dist < _data.TargetThroughWallDistSquared) && 
+      if (!(dist < _data.TargetThroughWallDistSquared) &&
           (!(dist < _data.TargetMaxDistSquared) || !InSight(npc))) continue;
       // Worms...
       if (npc.aiStyle == 6 || npc.aiStyle == 37) { // TODO: Sort targeted worm piece by closest rather than whoAmI
@@ -487,10 +486,6 @@ public abstract class Sein : Minion {
       Rectangle sourceRect = new Rectangle(0, i * tex.Height / 3, tex.Width, tex.Width);
       Main.EntitySpriteDraw(tex, pos, sourceRect, color, Projectile.rotation, orig, Projectile.scale, SpriteEffects.None, 0);
     }
-  }
-
-  private static void _Unload() {
-    _goalPositions = null;
   }
 
   private static Vector2[] _goalPositions;

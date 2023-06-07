@@ -16,7 +16,6 @@ namespace OriMod.Abilities;
   /// Ability for pushing the player and enemies in opposite directions. Iconic ability of the Ori franchise.
   /// </summary>
   public sealed class Bash : Ability<OriAbilityManager>, ILevelable {
-    static Bash() => OriMod.OnUnload += Unload;
     public override int Id => AbilityId.Bash;
     public override int Level => ((ILevelable)this).Level;
     public override bool Unlocked => Level > 0;
@@ -29,11 +28,11 @@ namespace OriMod.Abilities;
 
     public override void OnRefreshed() => abilities.RefreshParticles(Color.LightYellow);
 
-  private static List<short> CannotBashNpc => _cannotBashNpc ??= new List<short> {
+  private static List<short> CannotBashNpc => _cannotBashNpc ??= Unloadable.New( new List<short> {
       NPCID.BlazingWheel, NPCID.SpikeBall, NPCID.DD2EterniaCrystal, NPCID.DD2LanePortal
-  };
+  }, () => _cannotBashNpc = null);
 
-  private static List<short> CannotBashProj => _cannotBashProj ??= new List<short> {
+  private static List<short> CannotBashProj => _cannotBashProj ??= Unloadable.New(new List<short> {
       ProjectileID.FlamethrowerTrap, ProjectileID.FlamesTrap, ProjectileID.GeyserTrap, ProjectileID.SpearTrap,
       ProjectileID.GemHookAmethyst, ProjectileID.GemHookDiamond, ProjectileID.GemHookEmerald,
       ProjectileID.GemHookRuby, ProjectileID.GemHookSapphire, ProjectileID.GemHookTopaz,
@@ -42,7 +41,7 @@ namespace OriMod.Abilities;
       ProjectileID.LunarHookNebula, ProjectileID.LunarHookSolar, ProjectileID.LunarHookStardust, ProjectileID.LunarHookVortex,
       ProjectileID.SlimeHook, ProjectileID.StaticHook, ProjectileID.TendonHook, ProjectileID.ThornHook, ProjectileID.TrackHook,
       ProjectileID.WoodHook, ProjectileID.WormHook,
-  };
+  }, () => _cannotBashNpc = null);
 
     private static List<short> _cannotBashNpc;
     private static List<short> _cannotBashProj;
@@ -361,11 +360,6 @@ namespace OriMod.Abilities;
           BashEntity is not null && BashEntity.active) return;
         End();
         SetState(AbilityState.Inactive);
-      }
     }
-
-    private static void Unload() {
-      _cannotBashNpc = null;
-      _cannotBashProj = null;
   }
 }

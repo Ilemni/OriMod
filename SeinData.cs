@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod; 
+namespace OriMod;
 
 public sealed class SeinData {
   private SeinData() { }
@@ -212,17 +212,11 @@ public sealed class SeinData {
       lightStrength = 2.5f,
     });
 
-    All = list.ToArray();
-    SeinBuffs = new int[All.Length];
+    All = Unloadable.New(list.ToArray(), () => All = null);
+    SeinBuffs = Unloadable.New(new int[All.Length], () => SeinBuffs = null);
     for (int u = 0; u < All.Length; u++) {
       SeinBuffs[u] = ModContent.Find<ModBuff>(OriMod.instance.Name, "SeinBuff" + (u+1)).Type;
     }
-    OriMod.OnUnload += Unload;
-  }
-
-  private static void Unload() {
-    All = null;
-    SeinBuffs = null;
   }
 
   #region Stats

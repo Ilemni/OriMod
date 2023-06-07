@@ -14,7 +14,6 @@ namespace OriMod.Abilities;
   /// This ability is derived from the Ori games, despite Terraira already allowing dashing with the Shield of Cthuhlu.
   /// </remarks>
   public sealed class Dash : Ability<OriAbilityManager>, ILevelable {
-    static Dash() => OriMod.OnUnload += Unload;
     public override int Id => AbilityId.Dash;
     public override int Level => ((ILevelable)this).Level;
     int ILevelable.Level { get; set; }
@@ -26,10 +25,10 @@ namespace OriMod.Abilities;
     public override int Cooldown => Level >= 3 ? 0 : 60;
     public override void OnRefreshed() => abilities.RefreshParticles(Color.White);
 
-  private static float[] Speeds => _speeds ??= new float[25] {
+  private static float[] Speeds => _speeds ??= Unloadable.New(new float[25] {
       50f, 50f, 50f, 49.9f, 49.6f, 49f, 48f, 46.7f, 44.9f, 42.4f, 39.3f, 35.4f, 28.6f, 20f,
       19.6f, 19.1f, 18.7f, 18.3f, 17.9f, 17.4f, 17f, 16.5f, 16.1f, 15.7f, 15.2f
-  };
+  }, () => _speeds = null);
     private static float[] _speeds;
     private static int Duration => Speeds.Length - 1;
 
@@ -93,9 +92,5 @@ namespace OriMod.Abilities;
         SetState(AbilityState.Inactive);
         StartCooldown(); //force = true
       }
-    }
-
-    private static void Unload() {
-      _speeds = null;
   }
 }

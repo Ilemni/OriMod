@@ -19,7 +19,6 @@ namespace OriMod.Abilities;
   /// This ability was somewhat difficult to balance; the simplest solution was to restrict tiles to whatever pickaxe was in inventory.
   /// </remarks>
   public sealed class Burrow : Ability<OriAbilityManager>, ILevelable {
-    static Burrow() => OriMod.OnUnload += Unload;
     public override int Id => AbilityId.Burrow;
     public override int Level => ((ILevelable)this).Level;
     public override bool Unlocked => Level > 0;
@@ -75,23 +74,23 @@ namespace OriMod.Abilities;
     /// <summary>
     /// Tile hitbox for determining if the player can enter Burrow state.
     /// </summary>
-  internal static TileHitbox EnterHitbox => _eh ??= new TileHitbox(
+  internal static TileHitbox EnterHitbox => _eh ??= Unloadable.New(new TileHitbox(
       P(0, -1), P(0, 0), P(0, 1), // Center
       P(-1, -1), P(-1, 0), P(-1, 1), // Left
       P(2, -1), P(2, 0), P(2, 1),  // Right
       P(0, -2), P(1, -2), // Top
       P(0, 2), P(1, 2),  // Bottom
       P(2, 2), P(2, -2), P(-1, 2), P(-1, -2) // Corners
-  });
+  ), () => _eh = null);
     /// <summary>
     /// Tile hitbox for determining collisions when in the Burrow state
     /// </summary>
-  internal static TileHitbox InnerHitbox => _ih ??= new TileHitbox(
+  internal static TileHitbox InnerHitbox => _ih ??= Unloadable.New(new TileHitbox(
       P(0, -1), // Top
       P(0, 1),  // Bottom
       P(-1, 0), // Left
       P(1, 0)  // Right
-  );
+  ), () => _ih = null);
     private static TileHitbox _eh;
     private static TileHitbox _ih;
 
@@ -334,9 +333,5 @@ namespace OriMod.Abilities;
         }
       }
     }
-
-    private static void Unload() {
-      _eh = null;
-      _ih = null;
   }
 }

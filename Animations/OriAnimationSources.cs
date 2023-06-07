@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AnimLib;
 using AnimLib.Animations;
 
@@ -95,13 +95,10 @@ public sealed class PlayerAnim : AnimationSource {
     }),
   };
 
-  public static PlayerAnim Instance => _instance ??= GetInstance();
+  public static PlayerAnim Instance => _instance ??= Unloadable.New(
+    AnimLibMod.GetAnimationSource<PlayerAnim>(OriMod.instance),
+    () => _instance = null);
   private static PlayerAnim _instance;
-
-  private static PlayerAnim GetInstance() {
-    OriMod.OnUnload += () => _instance = null;
-    return AnimLibMod.GetAnimationSource<PlayerAnim>(OriMod.instance);
-  }
 }
 
 /// <summary>

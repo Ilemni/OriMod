@@ -13,7 +13,6 @@ namespace OriMod.Abilities;
   /// Ability for a quick and high jump that can deal damage to enemies.
   /// </summary>
   public sealed class ChargeJump : Ability<OriAbilityManager>, ILevelable {
-    static ChargeJump() => OriMod.OnUnload += Unload;
     public override bool Unlocked => Level > 0;
     public override int Id => AbilityId.ChargeJump;
     public override int Level => ((ILevelable)this).Level;
@@ -39,10 +38,10 @@ namespace OriMod.Abilities;
 
     private static int MaxCharge => 35;
 
-  private static float[] Speeds => _speeds ??= new[] {
+  private static float[] Speeds => _speeds ??= Unloadable.New(new[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f,
       12f
-  };
+  }, () => _speeds = null);
 
     private static float[] _speeds;
     private static int Duration => Speeds.Length;
@@ -123,10 +122,6 @@ namespace OriMod.Abilities;
       if (Active && stateTime >= Duration) {
         SetState(AbilityState.Inactive);
       }
-    }
-
-    private static void Unload() {
-      _speeds = null;
     }
 
     public override void ReadPacket(BinaryReader r) {

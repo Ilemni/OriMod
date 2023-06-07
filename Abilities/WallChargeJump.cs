@@ -14,8 +14,6 @@ namespace OriMod.Abilities;
   /// Ability for a charged jump off walls.
   /// </summary>
   public sealed class WallChargeJump : Ability<OriAbilityManager> {
-    static WallChargeJump() => OriMod.OnUnload += Unload;
-
     public override int Id => AbilityId.WallChargeJump;
     public override bool Unlocked => abilities.climb.Unlocked && levelableDependency.Level >= 2;
     public override ILevelable levelableDependency => abilities.chargeJump;
@@ -25,10 +23,10 @@ namespace OriMod.Abilities;
     private static int MaxCharge => 35;
     private static int Duration => Speeds.Length - 1;
 
-  private static float[] Speeds => _speeds ??= new float[20] {
+  private static float[] Speeds => _speeds ??= Unloadable.New(new float[20] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f,
       12f
-  };
+  }, () => _speeds = null);
 
     private static float[] _speeds;
     private static float MaxAngle => 0.65f;
@@ -139,9 +137,5 @@ namespace OriMod.Abilities;
       if (!Active || stateTime <= Duration) return;
       SetState(AbilityState.Inactive);
       netUpdate = false; // Deterministic
-    }
-
-    private static void Unload() {
-      _speeds = null;
     }
   }

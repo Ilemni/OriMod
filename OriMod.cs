@@ -137,15 +137,8 @@ public sealed partial class OriMod : Mod {
     TileCollection.Initialize();
   }
 
-  /// <summary>
-  /// Use this to null static reference types on unload.
-  /// </summary>
-  public static event Action OnUnload;
-
   public override void Unload() {
-    OnUnload?.Invoke();
-    OnUnload = null;
-
+    Unloadable.Unload();
     instance = null;
 
     bashKey = null;

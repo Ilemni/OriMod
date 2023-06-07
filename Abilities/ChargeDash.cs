@@ -13,7 +13,6 @@ namespace OriMod.Abilities;
   /// Ability for a quick and fast horizontal dash. May be used in the air.
   /// </summary>
   public sealed class ChargeDash : Ability<OriAbilityManager> {
-    static ChargeDash() => OriMod.OnUnload += Unload;
     public override int Id => AbilityId.ChargeDash;
     public override bool Unlocked => levelableDependency.Level >= 2;
     public override ILevelable levelableDependency => abilities.dash;
@@ -25,9 +24,9 @@ namespace OriMod.Abilities;
 
     private static int ManaCost => 20;
     private static int Duration => Speeds.Length - 1;
-  private static float[] Speeds => _speeds ??= new float[15] {
+  private static float[] Speeds => _speeds ??= Unloadable.New(new float[15] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
-  };
+  }, () => _speeds = null);
     private static float[] _speeds;
 
     private ushort _npcId = ushort.MaxValue;
@@ -155,9 +154,5 @@ namespace OriMod.Abilities;
       if (stateTime > Duration || abilities.oPlayer.OnWall || abilities.bash || abilities.launch || player.controlJump) {
         End();
       }
-    }
-
-    private static void Unload() {
-      _speeds = null;
   }
 }
