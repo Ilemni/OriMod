@@ -1,4 +1,3 @@
-
 Mods: {
 	OriMod: {
 		Common: {
@@ -13,19 +12,19 @@ Mods: {
 
 		Config: {
 			Label: {
-				Title: "Client Config"
-				PlayerLight: "Player Light"
-				PlayerLightGlobal: "Global Player Light"
-				StompDelay: "Stomp Activation Delay"
-				SoftCrouch: "Soft Crouch"
-				SmoothCamera: "Smooth Camera"
-				BurrowControls: "Burrow Controls"
-				Color1: "Player Color"
-				Color2: "Player Color (Secondary)"
-				DyeLerp: "Dye Color Blend"
-				DyeEnabled: "Spirit dye visibility"
-				DyeEnabledAll: "Global spirit dye visibility"
-				BlockControlsInMenu: "Block ability controls in menu"
+				Title: Client Config
+				PlayerLight: Player Light
+				PlayerLightGlobal: Global Player Light
+				StompDelay: Stomp Activation Delay
+				SoftCrouch: Soft Crouch
+				SmoothCamera: Smooth Camera
+				BurrowControls: Burrow Controls
+				Color1: Player Color
+				Color2: Player Color (Secondary)
+				DyeLerp: Dye Color Blend
+				DyeEnabled: Spirit dye visibility
+				DyeEnabledAll: Global spirit dye visibility
+				BlockControlsInMenu: Block ability controls in menu
 			}
 
 			Header: {
@@ -75,7 +74,7 @@ Mods: {
 					The secondary color of your Spirit.
 					Default: 0, 0, 0, 0
 					'''
-				DyeLerp: 
+				DyeLerp:
 					'''
 					Primary color dye mix
 					0 - Use Ori color
@@ -83,21 +82,21 @@ Mods: {
 					Or between to mix colors
 					(Put dye to the breastplate slot)
 					'''
-				DyeEnabled: 
+				DyeEnabled:
 					'''
 					Should spirit dye display be enabled?
 					Other players will still see your dye if they have it enabled.
 					(Put dye to the breastplate slot)
 					'''
-				DyeEnabledAll: 
+				DyeEnabledAll:
 					'''
 					Should spirit dye display be enabled of every spirit, or only local player?
 					If off, you will see only your dye, if on - dye of every player.
 					Spirit Dye visibility should be enabled for effect.
 					Other players will still see your dye if they have it enabled.
 					(Put dye to the breastplate slot)
-					'''					
-				BlockControlsInMenu: 
+					'''
+				BlockControlsInMenu:
 					'''
 					Blocks ability controls completely
 					when inventory, menu or dialogue are open.
@@ -524,6 +523,72 @@ Mods: {
 			SpiritFlame6.DisplayName: Amplified {$Mods.OriMod.Common.SF}
 			SpiritFlame7.DisplayName: Heightened {$Mods.OriMod.Common.SF}
 			SpiritFlame8.DisplayName: Ultimate {$Mods.OriMod.Common.SF}
+		}
+
+		Configs: {
+			OriConfigClient1: {
+				DisplayName: "{$Mods.OriMod.Config.Label.Title}"
+
+				playerLight: {
+					Label: "{$Mods.OriMod.Config.Label.PlayerLight}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.PlayerLight}"
+				}
+
+				globalPlayerLight: {
+					Label: "{$Mods.OriMod.Config.Label.PlayerLightGlobal}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.PlayerLightGlobal}"
+				}
+
+				stompHoldDownDelay: {
+					Label: "{$Mods.OriMod.Config.Label.StompDelay}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.StompDelay}"
+				}
+
+				softCrouch: {
+					Label: "{$Mods.OriMod.Config.Label.SoftCrouch}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.SoftCrouch}"
+				}
+
+				smoothCamera: {
+					Label: "{$Mods.OriMod.Config.Label.SmoothCamera}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.SmoothCamera}"
+				}
+
+				burrowControls: {
+					Label: "{$Mods.OriMod.Config.Label.BurrowControls}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.BurrowControls}"
+				}
+
+				blockControlsInMenu: {
+					Label: "{$Mods.OriMod.Config.Label.BlockControlsInMenu}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.BlockControlsInMenu}"
+				}
+
+				playerColor: {
+					Label: "{$Mods.OriMod.Config.Label.Color1}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.Color1}"
+				}
+
+				playerColorSecondary: {
+					Label: "{$Mods.OriMod.Config.Label.Color2}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.Color2}"
+				}
+
+				dyeEnabled: {
+					Label: "{$Mods.OriMod.Config.Label.DyeEnabled}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.DyeEnabled}"
+				}
+
+				dyeEnabledAll: {
+					Label: "{$Mods.OriMod.Config.Label.DyeEnabledAll}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.DyeEnabledAll}"
+				}
+
+				dyeLerp: {
+					Label: "{$Mods.OriMod.Config.Label.DyeLerp}"
+					Tooltip: "{$Mods.OriMod.Config.Tooltip.DyeLerp}"
+				}
+			}
 		}
 	}
 }
