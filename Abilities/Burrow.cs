@@ -10,7 +10,8 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for traveling through solid terrain.
   /// </summary>
@@ -29,27 +30,21 @@ namespace OriMod.Abilities {
     public override int Cooldown => 12;
     public override void OnRefreshed() => abilities.RefreshParticles(Color.SandyBrown);
 
-    private int MaxDuration {
-      get {
-        switch (Level) {
-          case 1: return 300;
-          case 2: return 480;
-          case 3: return 600;
-          default: return 120 + Level * 120;
-        }
-      }
-    }
+  private int MaxDuration =>
+    Level switch {
+      1 => 300,
+      2 => 480,
+      3 => 600,
+      _ => 120 + Level * 120
+    };
 
-    private float RecoveryRate {
-      get {
-        switch (Level) {
-          case 1: return 0.1f;
-          case 2: return 0.2f;
-          case 3: return 0.35f;
-          default: return Level * 0.125f;
-        }
-      }
-    }
+  private float RecoveryRate =>
+    Level switch {
+      1 => 0.1f,
+      2 => 0.2f,
+      3 => 0.35f,
+      _ => Level * 0.125f
+    };
 
     private static int UiIncrement => 60;
     private static float BaseSpeed => 6f;
@@ -60,16 +55,13 @@ namespace OriMod.Abilities {
     private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
 
     private float _breath = float.MaxValue;
-    private int Strength {
-      get {
-        switch (Level) {
-          case 0: return 0;
-          case 1: return 55; // Exclude evil biomes, dungeon
-          case 2: return 200; // Exclude lihzahrd
-          default: return 100 + Level * 50;
-        }
-      }
-    }
+  private int Strength =>
+    Level switch {
+      0 => 0,
+      1 => 55, // Exclude evil biomes, dungeon
+      2 => 200, // Exclude lihzahrd
+      _ => 100 + Level * 50
+    };
 
     private bool CanBurrowAny => Level >= 3;
     internal static bool IsSolid(Tile tile) => tile.HasTile && !tile.IsActuated && tile.HasUnactuatedTile && Main.tileSolid[tile.TileType];
@@ -83,23 +75,23 @@ namespace OriMod.Abilities {
     /// <summary>
     /// Tile hitbox for determining if the player can enter Burrow state.
     /// </summary>
-    internal static TileHitbox EnterHitbox => _eh ?? (_eh = new TileHitbox(
+  internal static TileHitbox EnterHitbox => _eh ??= new TileHitbox(
       P(0, -1), P(0, 0), P(0, 1), // Center
       P(-1, -1), P(-1, 0), P(-1, 1), // Left
       P(2, -1), P(2, 0), P(2, 1),  // Right
       P(0, -2), P(1, -2), // Top
       P(0, 2), P(1, 2),  // Bottom
       P(2, 2), P(2, -2), P(-1, 2), P(-1, -2) // Corners
-    ));
+  });
     /// <summary>
     /// Tile hitbox for determining collisions when in the Burrow state
     /// </summary>
-    internal static TileHitbox InnerHitbox => _ih ?? (_ih = new TileHitbox(
+  internal static TileHitbox InnerHitbox => _ih ??= new TileHitbox(
       P(0, -1), // Top
       P(0, 1),  // Bottom
       P(-1, 0), // Left
       P(1, 0)  // Right
-    ));
+  );
     private static TileHitbox _eh;
     private static TileHitbox _ih;
 
@@ -277,7 +269,7 @@ namespace OriMod.Abilities {
         }
 
         Texture2D tex = OriTextures.Instance.burrowTimer.texture;
-        var data = new DrawData(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0);
+      DrawData data = new(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0);
         data.ignorePlayerRotation = true;
         drawInfo.DrawDataCache.Add(data);
       }
@@ -346,6 +338,5 @@ namespace OriMod.Abilities {
     private static void Unload() {
       _eh = null;
       _ih = null;
-    }
   }
 }

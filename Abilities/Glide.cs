@@ -3,7 +3,8 @@ using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using System;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for reducing fall velocity to a glide.
   /// </summary>
@@ -28,9 +29,9 @@ namespace OriMod.Abilities {
     private static int StartDuration => 8;
     private static int EndDuration => 10;
 
-    private readonly RandomChar _randStart = new RandomChar();
-    private readonly RandomChar _randActive = new RandomChar();
-    private readonly RandomChar _randEnd = new RandomChar();
+  private readonly RandomChar _randStart = new();
+  private readonly RandomChar _randActive = new();
+  private readonly RandomChar _randEnd = new();
 
     private bool _oldLeft;
     private bool _oldRight;
@@ -86,7 +87,6 @@ namespace OriMod.Abilities {
       else if (player.velocity.Y * player.gravDir < 0 || abilities.oPlayer.OnWall
         || abilities.oPlayer.IsGrounded || !abilities.oPlayer.input.glide.Current) {
         SetState(AbilityState.Ending);
-      }
     }
   }
 }

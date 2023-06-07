@@ -10,7 +10,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities;
+
   /// <summary>
   /// Ability for pushing the player and enemies in opposite directions. Iconic ability of the Ori franchise.
   /// </summary>
@@ -28,11 +29,11 @@ namespace OriMod.Abilities {
 
     public override void OnRefreshed() => abilities.RefreshParticles(Color.LightYellow);
 
-    private static List<short> CannotBashNpc => _cannotBashNpc ?? (_cannotBashNpc = new List<short> {
+  private static List<short> CannotBashNpc => _cannotBashNpc ??= new List<short> {
       NPCID.BlazingWheel, NPCID.SpikeBall, NPCID.DD2EterniaCrystal, NPCID.DD2LanePortal
-    });
+  };
 
-    private static List<short> CannotBashProj => _cannotBashProj ?? (_cannotBashProj = new List<short> {
+  private static List<short> CannotBashProj => _cannotBashProj ??= new List<short> {
       ProjectileID.FlamethrowerTrap, ProjectileID.FlamesTrap, ProjectileID.GeyserTrap, ProjectileID.SpearTrap,
       ProjectileID.GemHookAmethyst, ProjectileID.GemHookDiamond, ProjectileID.GemHookEmerald,
       ProjectileID.GemHookRuby, ProjectileID.GemHookSapphire, ProjectileID.GemHookTopaz,
@@ -41,7 +42,7 @@ namespace OriMod.Abilities {
       ProjectileID.LunarHookNebula, ProjectileID.LunarHookSolar, ProjectileID.LunarHookStardust, ProjectileID.LunarHookVortex,
       ProjectileID.SlimeHook, ProjectileID.StaticHook, ProjectileID.TendonHook, ProjectileID.ThornHook, ProjectileID.TrackHook,
       ProjectileID.WoodHook, ProjectileID.WormHook,
-    });
+  };
 
     private static List<short> _cannotBashNpc;
     private static List<short> _cannotBashProj;
@@ -130,7 +131,7 @@ namespace OriMod.Abilities {
     /// </summary>
     public Entity BashEntity { get; private set; }
 
-    private readonly RandomChar _rand = new RandomChar();
+  private readonly RandomChar _rand = new();
 
     public override void ReadPacket(BinaryReader r) {
       if (!InUse) return;
@@ -195,9 +196,11 @@ namespace OriMod.Abilities {
     /// <param name="entity"><see cref="Entity"/> to target for bashing.</param>
     private void SetTarget(Entity entity) {
       BashEntity = entity;
-      BashTarget =
-        entity is NPC npc ? npc.GetGlobalNPC<OriNpc>() as IBashable :
-        entity is Projectile projectile ? projectile.GetGlobalProjectile<OriProjectile>() : null;
+    BashTarget = entity switch {
+      NPC npc => npc.GetGlobalNPC<OriNpc>(),
+      Projectile projectile => projectile.GetGlobalProjectile<OriProjectile>(),
+      _ => null
+    };
     }
 
     /// <summary>
@@ -247,7 +250,7 @@ namespace OriMod.Abilities {
       abilities.oPlayer.PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), 0.5f);
       abilities.oPlayer.UnrestrictedMovement = true;
 
-      Vector2 bashVector = new Vector2((float)(0 - Math.Cos(BashAngle)), (float)(0 - Math.Sin(BashAngle)));
+    Vector2 bashVector = new((float)(0 - Math.Cos(BashAngle)), (float)(0 - Math.Sin(BashAngle)));
       Vector2 playerBashVector = -bashVector * BashPlayerStrength;
       Vector2 npcBashVector = bashVector * BashNpcStrength;
       player.velocity = playerBashVector;
@@ -364,6 +367,5 @@ namespace OriMod.Abilities {
     private static void Unload() {
       _cannotBashNpc = null;
       _cannotBashProj = null;
-    }
   }
 }

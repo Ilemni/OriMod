@@ -4,7 +4,8 @@ using OriMod.Abilities;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OriMod.Projectiles.Abilities {
+namespace OriMod.Projectiles.Abilities; 
+
   /// <summary>
   /// Base class for ability projectiles. These act more as hitboxes and have no visible texture.
   /// </summary>
@@ -12,8 +13,8 @@ namespace OriMod.Projectiles.Abilities {
     /// <summary>
     /// THe <see cref="OriPlayer"/> that this <see cref="AbilityProjectile"/> belongs to.
     /// </summary>
-    public OriAbilityManager abilities => _abilities ??
-      (_abilities = AnimLibMod.GetAbilityManager<OriAbilityManager>(aPlayer.Player.GetModPlayer<OriPlayer>()));
+  public OriAbilityManager abilities => _abilities ??=
+    AnimLibMod.GetAbilityManager<OriAbilityManager>(aPlayer.Player.GetModPlayer<OriPlayer>());
     private OriAbilityManager _abilities;
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
 
@@ -52,6 +53,5 @@ namespace OriMod.Projectiles.Abilities {
     /// </summary>
     protected virtual void Behavior() {
       Projectile.Center = aPlayer.Player.Center;
-    }
   }
 }

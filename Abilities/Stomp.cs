@@ -9,7 +9,8 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for an air-to-ground Area of Effect attack.
   /// </summary>
@@ -29,28 +30,20 @@ namespace OriMod.Abilities {
     private int Damage => 30 + Level * 20;
 
     private static float Gravity => 8f;
-    private int StartDuration {
-      get {
-        switch (Level) {
-          case 0: return 100000; // \o/ \\
-          case 1: return 24;
-          case 2: return 20;
-          default: return 16;
-        }
-      }
-    }
+  private int StartDuration =>
+    Level switch {
+      1 => 24,
+      2 => 20,
+      _ => 16
+    };
 
     private static int MinDuration => 30;
-    private float MaxFallSpeed {
-      get {
-        switch (Level) {
-          case 0: return 300;
-          case 1: return 28;
-          case 2: return 36;
-          default: return 25 + Level * 5;
-        }
-      }
-    }
+  private float MaxFallSpeed =>
+    Level switch {
+      1 => 28,
+      2 => 36,
+      _ => 25 + Level * 5
+    };
 
     /// <summary>
     /// Minimum frames required to hold <see cref="Player.controlDown"/> before Stomp can start.
@@ -59,9 +52,9 @@ namespace OriMod.Abilities {
 
     private int _currentHoldDown;
 
-    private readonly RandomChar _randStart = new RandomChar();
-    private readonly RandomChar _randActive = new RandomChar();
-    private readonly RandomChar _randEnd = new RandomChar();
+  private readonly RandomChar _randStart = new();
+  private readonly RandomChar _randActive = new();
+  private readonly RandomChar _randEnd = new();
 
     public override void UpdateStarting() {
       if (stateTime == 0) {
@@ -94,7 +87,7 @@ namespace OriMod.Abilities {
       abilities.oPlayer.PlaySound("Ori/Stomp/seinStompImpact" + _randEnd.NextNoRepeat(3), 0.9f);
       abilities.airJump.currentCount = 0;
       player.velocity = Vector2.Zero;
-      Vector2 position = new Vector2(player.position.X, player.position.Y + 32);
+    Vector2 position = new(player.position.X, player.position.Y + 32);
       for (int i = 0; i < 25; i++) {
         Dust dust = Dust.NewDustDirect(position, 30, 15, DustID.Clentaminator_Cyan, 0f, 0f, 0, Color.White);
         dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
@@ -164,6 +157,5 @@ namespace OriMod.Abilities {
       packet.Write(_currentHoldDown);
       packet.WriteVector2(player.position);
       packet.WriteVector2(player.velocity);
-    }
   }
 }

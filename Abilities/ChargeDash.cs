@@ -7,7 +7,8 @@ using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for a quick and fast horizontal dash. May be used in the air.
   /// </summary>
@@ -24,9 +25,9 @@ namespace OriMod.Abilities {
 
     private static int ManaCost => 20;
     private static int Duration => Speeds.Length - 1;
-    private static float[] Speeds => _speeds ?? (_speeds = new float[15] {
+  private static float[] Speeds => _speeds ??= new float[15] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
-    });
+  };
     private static float[] _speeds;
 
     private ushort _npcId = ushort.MaxValue;
@@ -47,7 +48,7 @@ namespace OriMod.Abilities {
       set => _npcId = (ushort)(value?.whoAmI ?? ushort.MaxValue);
     }
 
-    private readonly RandomChar _rand = new RandomChar();
+  private readonly RandomChar _rand = new();
 
     public override void ReadPacket(BinaryReader r) {
       _npcId = r.ReadUInt16();
@@ -100,7 +101,7 @@ namespace OriMod.Abilities {
         // Force player position to same as target's, and reduce speed.
         player.position = target.position;
         player.position.Y -= 32f;
-        player.velocity = player.velocity.Normalized() * Speeds[Speeds.Length - 1];
+      player.velocity = player.velocity.Normalized() * Speeds[^1];
       }
       else if (Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
         // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
@@ -158,6 +159,5 @@ namespace OriMod.Abilities {
 
     private static void Unload() {
       _speeds = null;
-    }
   }
 }

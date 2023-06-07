@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.DataStructures;
 
-namespace OriMod {
+namespace OriMod; 
+
   /// <summary>
   /// Class for containing and updating all <see cref="TrailSegment"/>s on an <see cref="OriPlayer"/>.
   /// </summary>
@@ -14,9 +15,7 @@ namespace OriMod {
     /// <param name="oPlayer">The <see cref="OriPlayer"/> this <see cref="Trail"/> will belong to.</param>
     /// <exception cref="ArgumentNullException"><paramref name="oPlayer"/> is <see langword="null"/>.</exception>
     internal Trail(OriPlayer oPlayer) {
-      if (oPlayer is null) {
-        throw new ArgumentNullException(nameof(oPlayer));
-      }
+    ArgumentNullException.ThrowIfNull(oPlayer);
 
       _segments = new TrailSegment[Count];
       int i = 0;
@@ -82,4 +81,3 @@ namespace OriMod {
       }
     }
   }
-}

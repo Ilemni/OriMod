@@ -1,4 +1,4 @@
-﻿using Terraria;
+using Terraria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +9,8 @@ using Terraria.ModLoader;
 using Terraria.ID;
 using OriMod.Networking;
 
-namespace OriMod
-{
+namespace OriMod; 
+
   /// <summary>
   /// Sends info about players' Ori state to newly joined player 
   /// </summary>
@@ -32,6 +32,5 @@ namespace OriMod
         }
       }
       return false;
-    }
   }
 }

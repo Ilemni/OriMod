@@ -5,7 +5,8 @@ using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for a quick horizontal dash. May be used in the air.
   /// </summary>
@@ -25,16 +26,16 @@ namespace OriMod.Abilities {
     public override int Cooldown => Level >= 3 ? 0 : 60;
     public override void OnRefreshed() => abilities.RefreshParticles(Color.White);
 
-    private static float[] Speeds => _speeds ?? (_speeds = new float[25] {
+  private static float[] Speeds => _speeds ??= new float[25] {
       50f, 50f, 50f, 49.9f, 49.6f, 49f, 48f, 46.7f, 44.9f, 42.4f, 39.3f, 35.4f, 28.6f, 20f,
       19.6f, 19.1f, 18.7f, 18.3f, 17.9f, 17.4f, 17f, 16.5f, 16.1f, 15.7f, 15.2f
-    });
+  };
     private static float[] _speeds;
     private static int Duration => Speeds.Length - 1;
 
     private sbyte _direction;
 
-    private readonly RandomChar _rand = new RandomChar();
+  private readonly RandomChar _rand = new();
 
     internal void StartDash() {
       _direction = (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction);
@@ -96,6 +97,5 @@ namespace OriMod.Abilities {
 
     private static void Unload() {
       _speeds = null;
-    }
   }
 }

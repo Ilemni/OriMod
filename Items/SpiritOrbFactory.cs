@@ -3,24 +3,25 @@ using OriMod.Projectiles.Minions;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Items {
-  public class SpiritOrb1 : SpiritOrb {
+namespace OriMod.Items; 
+
+public class SpiritOrb1 : SpiritOrb {
     protected override int GetBuffType() => ModContent.BuffType<SeinBuff1>();
     protected override int GetShootType() => ModContent.ProjectileType<Sein1>();
     protected override int SeinType => 1;
 
     public override void AddRecipes() {
-      GetRecipe()
-        .AddIngredient(ItemID.SilverBar, 8)
-        .Register();
+        GetRecipe()
+            .AddIngredient(ItemID.SilverBar, 8)
+            .Register();
       
-      GetRecipe()
-        .AddIngredient(ItemID.TungstenBar, 8)
-        .Register();
+        GetRecipe()
+            .AddIngredient(ItemID.TungstenBar, 8)
+            .Register();
     }
-  }
+}
 
-  public class SpiritOrb2 : SpiritOrb {
+public class SpiritOrb2 : SpiritOrb {
     protected override int GetBuffType() => ModContent.BuffType<SeinBuff2>();
     protected override int GetShootType() => ModContent.ProjectileType<Sein2>();
     protected override int SeinType => 2;
@@ -34,9 +35,9 @@ namespace OriMod.Items {
             .AddIngredient(ItemID.CrimtaneBar, 12)
             .Register();
     }
-  }
+}
 
-  public class SpiritOrb3 : SpiritOrb {
+public class SpiritOrb3 : SpiritOrb {
     protected override int GetBuffType() => ModContent.BuffType<SeinBuff3>();
     protected override int GetShootType() => ModContent.ProjectileType<Sein3>();
     protected override int SeinType => 3;
@@ -46,9 +47,9 @@ namespace OriMod.Items {
             .AddIngredient(ItemID.HellstoneBar, 15)
             .Register();
     }
-  }
+}
 
-  public class SpiritOrb4 : SpiritOrb {
+public class SpiritOrb4 : SpiritOrb {
     protected override int GetBuffType() => ModContent.BuffType<SeinBuff4>();
     protected override int GetShootType() => ModContent.ProjectileType<Sein4>();
     protected override int SeinType => 4;
@@ -64,9 +65,9 @@ namespace OriMod.Items {
             .AddIngredient(ItemID.SoulofLight, 5)
             .Register();
     }
-  }
+}
 
-  public class SpiritOrb5 : SpiritOrb {
+public class SpiritOrb5 : SpiritOrb {
     protected override int GetBuffType() => ModContent.BuffType<SeinBuff5>();
     protected override int GetShootType() => ModContent.ProjectileType<Sein5>();
     protected override int SeinType => 5;
@@ -77,9 +78,9 @@ namespace OriMod.Items {
             .AddIngredient(ItemID.SoulofLight, 10)
             .Register();
     }
-  }
+}
 
-  public class SpiritOrb6 : SpiritOrb {
+public class SpiritOrb6 : SpiritOrb {
     protected override int GetBuffType() => ModContent.BuffType<SeinBuff6>();
     protected override int GetShootType() => ModContent.ProjectileType<Sein6>();
     protected override int SeinType => 6;
@@ -90,9 +91,9 @@ namespace OriMod.Items {
             .AddIngredient(ItemID.SoulofLight, 15)
             .Register();
     }
-  }
+}
 
-  public class SpiritOrb7 : SpiritOrb {
+public class SpiritOrb7 : SpiritOrb {
     protected override int GetBuffType() => ModContent.BuffType<SeinBuff7>();
     protected override int GetShootType() => ModContent.ProjectileType<Sein7>();
     protected override int SeinType => 7;
@@ -106,9 +107,9 @@ namespace OriMod.Items {
             .AddIngredient(ItemID.SoulofLight, 20)
             .Register();
     }
-  }
+}
 
-  public class SpiritOrb8 : SpiritOrb {
+public class SpiritOrb8 : SpiritOrb {
     protected override int GetBuffType() => ModContent.BuffType<SeinBuff8>();
     protected override int GetShootType() => ModContent.ProjectileType<Sein8>();
     protected override int SeinType => 8;
@@ -123,5 +124,4 @@ namespace OriMod.Items {
             .AddIngredient(ItemID.SoulofLight, 30)
             .Register();
     }
-  }
 }

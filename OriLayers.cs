@@ -9,7 +9,8 @@ using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Animation = AnimLib.Animations.Animation;
 
-namespace OriMod {
+namespace OriMod; 
+
   /// <summary>
   /// Contains all <see cref="PlayerLayer"/>s this mod creates.
   /// </summary>
@@ -156,5 +157,4 @@ namespace OriMod {
         new Between(ModContent.GetInstance<OriFeatherLayer>(), ModContent.GetInstance<OriPlayerSprite>());
     }
     internal static PlayerDrawLayer bashArrow { get; private set; }
-  }
 }

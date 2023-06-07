@@ -1,6 +1,7 @@
 using AnimLib.Abilities;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for crouching. This ability is entirely visual, and is alwaays unlocked.
   /// </summary>
@@ -58,7 +59,6 @@ namespace OriMod.Abilities {
       else if (Ending) {
         if (stateTime > EndDuration) {
           SetState(AbilityState.Inactive);
-        }
       }
     }
   }

@@ -18,7 +18,8 @@ using AnimLib.Extensions;
 using System;
 using System.Linq;
 
-namespace OriMod {
+namespace OriMod; 
+
   /// <summary>
   /// <see cref="ModPlayer"/> class for <see cref="OriMod"/>. Contains Ori data for a player, such as abilities and animations.
   /// </summary>
@@ -39,7 +40,7 @@ namespace OriMod {
     /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
     /// </summary>
     internal OriAbilityManager abilities =>
-      _abilities ?? (_abilities = AnimLibMod.GetAbilityManager<OriAbilityManager>(this));
+    _abilities ??= AnimLibMod.GetAbilityManager<OriAbilityManager>(this);
     private OriAbilityManager _abilities;
 
     /// <summary>
@@ -51,7 +52,7 @@ namespace OriMod {
 
     private AnimCharacter _character;
     public AnimCharacter character =>
-      _character ?? (_character = this.GetAnimCharacter());
+    _character ??= this.GetAnimCharacter<OriAnimationController, OriAbilityManager>();
 
     /// <summary>
     /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
@@ -884,4 +885,3 @@ namespace OriMod {
       abilities.DisableAllAbilities();
     }
   }
-}

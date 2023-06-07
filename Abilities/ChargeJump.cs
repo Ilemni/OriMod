@@ -7,7 +7,8 @@ using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for a quick and high jump that can deal damage to enemies.
   /// </summary>
@@ -38,10 +39,10 @@ namespace OriMod.Abilities {
 
     private static int MaxCharge => 35;
 
-    private static float[] Speeds => _speeds ?? (_speeds = new[] {
+  private static float[] Speeds => _speeds ??= new[] {
       100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f,
       12f
-    });
+  };
 
     private static float[] _speeds;
     private static int Duration => Speeds.Length;
@@ -49,7 +50,7 @@ namespace OriMod.Abilities {
     private int _currentCharge;
     private int _currentGrace;
 
-    private readonly RandomChar _rand = new RandomChar();
+  private readonly RandomChar _rand = new();
 
     private void StartChargeJump() {
       abilities.oPlayer.PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _rand.NextNoRepeat(3));
@@ -138,4 +139,3 @@ namespace OriMod.Abilities {
       packet.WriteVector2(player.velocity);
     }
   }
-}

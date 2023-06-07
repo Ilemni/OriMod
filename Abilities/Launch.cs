@@ -1,4 +1,4 @@
-﻿using AnimLib.Abilities;
+using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
@@ -8,7 +8,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities;
+
   /// <summary>
   /// Ability for launching the player in the desired direction. Used in the air.
   /// </summary>
@@ -34,16 +35,13 @@ namespace OriMod.Abilities {
 
     private ushort CurrentChain { get; set; }
 
-    private ushort MaxChain {
-      get {
-        switch (Level) {
-          case 1: return 1;
-          case 2: return 3;
-          case 3: return 7;
-          default: return (ushort)(Level * 3 + 1);
-        }
-      }
-    }
+  private ushort MaxChain =>
+    Level switch {
+      1 => 1,
+      2 => 3,
+      3 => 7,
+      _ => (ushort)(Level * 3 + 1)
+    };
 
     // Surely there's a better way to do this
     private int MinLaunchDuration =>
@@ -67,8 +65,8 @@ namespace OriMod.Abilities {
         : CurrentChain == 1 ? 25 : 40;
 
     public float LaunchAngle { get; private set; }
-    private Vector2 LaunchDirection => new Vector2((float)Math.Cos(LaunchAngle), (float)Math.Sin(LaunchAngle));
-    private readonly RandomChar _rand = new RandomChar();
+  private Vector2 LaunchDirection => new((float)Math.Cos(LaunchAngle), (float)Math.Sin(LaunchAngle));
+  private readonly RandomChar _rand = new();
 
     public override void ReadPacket(BinaryReader r) {
       CurrentChain = r.ReadUInt16();
@@ -204,4 +202,3 @@ namespace OriMod.Abilities {
       CurrentChain = 0;
     }
   }
-}

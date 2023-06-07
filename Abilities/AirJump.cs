@@ -4,7 +4,8 @@ using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for jumping in the air.
   /// </summary>
@@ -41,7 +42,7 @@ namespace OriMod.Abilities {
       packet.WriteVector2(player.velocity);
     }
 
-    private readonly RandomChar _rand = new RandomChar();
+  private readonly RandomChar _rand = new();
 
     public override void UpdateActive() {
       float newVel = -JumpVelocity * ((float)(EndDuration - stateTime) / EndDuration) * _gravityDirection;
@@ -80,6 +81,5 @@ namespace OriMod.Abilities {
       }
       // Other than activation, Air Jump is deterministic and requires no additional syncing
       netUpdate = false;
-    }
   }
 }

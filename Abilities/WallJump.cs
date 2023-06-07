@@ -5,7 +5,8 @@ using System.IO;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities;
+
   /// <summary>
   /// Ability for jumping off walls.
   /// </summary>
@@ -23,13 +24,13 @@ namespace OriMod.Abilities {
       !abilities.oPlayer.IsGrounded && !InUse && !player.mount.Active &&
       !abilities.wallChargeJump.Charged;
 
-    private static readonly Vector2 WallJumpVelocity = new Vector2(4, -7.2f);
+  private static readonly Vector2 WallJumpVelocity = new(4, -7.2f);
     private static int EndTime => 12;
 
     private sbyte _wallDirection;
     private sbyte _gravDirection;
 
-    private readonly RandomChar _rand = new RandomChar();
+  private readonly RandomChar _rand = new();
 
     public override void ReadPacket(BinaryReader r) {
       _wallDirection = r.ReadSByte();
@@ -78,7 +79,6 @@ namespace OriMod.Abilities {
         if (abilities.oPlayer.IsGrounded || stateTime > EndTime ||
           stateTime > EndTime * 0.5f && (player.controlRight || player.controlLeft)) {
           SetState(AbilityState.Inactive);
-        }
       }
     }
   }

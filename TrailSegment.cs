@@ -6,7 +6,8 @@ using OriMod.Animations;
 using Terraria;
 using Terraria.DataStructures;
 
-namespace OriMod {
+namespace OriMod; 
+
   /// <summary>
   /// For drawing a trail behind the player.
   /// </summary>
@@ -84,5 +85,4 @@ namespace OriMod {
     }
 
     public override string ToString() => $"tile:{_tile}, rotation:{_rotation}, effect:{_effect}";
-  }
 }

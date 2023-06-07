@@ -3,7 +3,8 @@ using System;
 using System.IO;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for climbing on walls.
   /// </summary>
@@ -110,6 +111,5 @@ namespace OriMod.Abilities {
         SetState(AbilityState.Ending);
       }
       IsCharging = Active && abilities.wallChargeJump.Unlocked && (wallDirection == 1 ? player.controlLeft : player.controlRight);
-    }
   }
 }

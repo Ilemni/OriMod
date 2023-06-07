@@ -1,7 +1,8 @@
 using AnimLib.Abilities;
 using System;
 
-namespace OriMod.Abilities {
+namespace OriMod.Abilities; 
+
   /// <summary>
   /// Ability for looking up. Pairs with the ability <see cref="ChargeJump"/>.
   /// <para>This ability on its own is entirely visual, and is always unlocked.</para>
@@ -35,7 +36,6 @@ namespace OriMod.Abilities {
       else if (Ending) {
         if (stateTime > EndDuration) {
           SetState(AbilityState.Inactive);
-        }
       }
     }
   }
