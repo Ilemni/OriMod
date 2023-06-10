@@ -1,6 +1,37 @@
 Ori and the Blind Forest / Ori and the Will of the Wisps
 crossover pack.
 
+[b]If you experience crash at startup with something about "method which doesn't exist in any base class", 
+make sure that AnimLib is 0.3+ version (as for OriMod 3.2), if it isn't try restarting the game, 
+if it doesn't update it, try deleting it through mod management, closing the game, 
+unsubscribing from OriMod and AnimLib, then resubscribing to them, 
+making sure that game have downloaded these mods (~8mb download) and then launching the game again, should help.[/b]
+
+You can leave suggestions and bugs reports in our [url=https://discord.gg/cTwGGkg7DG] discord [/url]
+
+--- Summary ---
+
+To start, craft a Spirit Sprout using 10 wood and either one
+enchanted weapon (sword, boomerang, arkhalis), or three basic
+movement items (bottle items, climbing items, or basic boots not
+including rocket), then place it and right click on it.
+
+Sein will assist you on your journey. At the Spirit Sprout, use 8
+Silver or Tungsten. As you continue your adventure, Sein will
+have the opportunity to grow stronger with you. To do this,
+upgrade the Spirit Orb using various materials.
+
+Unlock and upgrade various abilities by creating
+Spirit Medallions. These Medallions are created at the
+Spirit Sprout, and new ones will become available throughout
+your journey.
+
+Microsoft owns all property to Ori. The creators of this mod
+simply loved Ori and we wanted to make it work in Terraria.
+
+If you enjoy this mod, we encourage you to play
+Ori and the Blind Forest, and Ori and the Will of the Wisps.
+
 --- v3.2 ---
 ---Feature update---
 Added Ori dye support, place dye to chestplate slot!
@@ -10,8 +41,8 @@ Improved ability netsync
 Got rid of obsolete features in recipe groups
 Corrected dash ability lv2 and lv3 descriptions
 Reduced charge dash cooldown on lv3
-Disabled active cursor on sappling
-Fixed spirit sappling placement silent exception
+Disabled active cursor on sapling
+Fixed spirit sapling placement silent exception
 Fixed trail, burrow indicator and bash arrow rotating with player
 Fixed infinite Launch looping and windup cancellation
 Fixed inputs net sync
@@ -91,26 +122,3 @@ Climb:
   library mod AnimLib.
 
 To read about previous versions, visit our mod's homepage.
-
---- Summary ---
-
-To start, craft a Spirit Sprout using 10 wood and either one
-enchanted weapon (sword, boomerang, arkhalis), or three basic
-movement items (bottle items, climbing items, or basic boots not
-including rocket), then place it and right click on it.
-
-Sein will assist you on your journey. At the Spirit Sprout, use 8
-Silver or Tungsten. As you continue your adventure, Sein will
-have the opportunity to grow stronger with you. To do this,
-upgrade the Spirit Orb using various materials.
-
-Unlock and upgrade various abilities by creating
-Spirit Medallions. These Medallions are created at the
-Spirit Sprout, and new ones will become available throughout
-your journey.
-
-Microsoft owns all property to Ori. The creators of this mod
-simply loved Ori and we wanted to make it work in Terraria.
-
-If you enjoy this mod, we encourage you to play
-Ori and the Blind Forest, and Ori and the Will of the Wisps.
