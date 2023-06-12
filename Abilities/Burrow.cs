@@ -10,7 +10,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Abilities; 
+namespace OriMod.Abilities;
 
 /// <summary>
 /// Ability for traveling through solid terrain.
@@ -51,7 +51,8 @@ public sealed class Burrow : OriAbility, ILevelable {
   private static float FastSpeed => 12f;
   private static float SpeedExitMultiplier => 1.2f;
 
-  private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
+  private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || player.talkNPC >= 0 || player.sign >= 0 ||
+    Main.clothesWindow || Main.playerInventory;
 
   private float _breath = float.MaxValue;
   private int Strength =>
@@ -63,9 +64,11 @@ public sealed class Burrow : OriAbility, ILevelable {
     };
 
   private bool CanBurrowAny => Level >= 3;
-  internal static bool IsSolid(Tile tile) => tile is { HasTile: true, IsActuated: false, HasUnactuatedTile: true } && Main.tileSolid[tile.TileType];
+  internal static bool IsSolid(Tile tile) => tile is { HasTile: true, IsActuated: false, HasUnactuatedTile: true } &&
+    Main.tileSolid[tile.TileType];
 
-  internal bool CanBurrow(Tile t) => CanBurrowAny && IsSolid(t) || TileCollection.Instance.tilePickaxeMin[t.TileType] <= Strength;
+  internal bool CanBurrow(Tile t) =>
+    CanBurrowAny && IsSolid(t) || TileCollection.Instance.tilePickaxeMin[t.TileType] <= Strength;
 
   private Vector2 _lastPosition;
   internal Vector2 velocity;
@@ -75,9 +78,9 @@ public sealed class Burrow : OriAbility, ILevelable {
   internal static TileHitbox EnterHitbox => _eh ??= Unloadable.New(new TileHitbox(
     (0, -1), (0, 0), (0, 1), // Center
     (-1, -1), (-1, 0), (-1, 1), // Left
-    (2, -1), (2, 0), (2, 1),  // Right
+    (2, -1), (2, 0), (2, 1), // Right
     (0, -2), (1, -2), // Top
-    (0, 2), (1, 2),  // Bottom
+    (0, 2), (1, 2), // Bottom
     (2, 2), (2, -2), (-1, 2), (-1, -2) // Corners
   ), () => _eh = null);
   /// <summary>
@@ -85,9 +88,9 @@ public sealed class Burrow : OriAbility, ILevelable {
   /// </summary>
   internal static TileHitbox InnerHitbox => _ih ??= Unloadable.New(new TileHitbox(
     (0, -1), // Top
-    (0, 1),  // Bottom
+    (0, 1), // Bottom
     (-1, 0), // Left
-    (1, 0)  // Right
+    (1, 0) // Right
   ), () => _ih = null);
   private static TileHitbox _eh;
   private static TileHitbox _ih;
@@ -159,21 +162,21 @@ public sealed class Burrow : OriAbility, ILevelable {
       if (OriMod.ConfigClient.BurrowToMouse) {
         newVel = player.AngleTo(Main.MouseWorld).ToRotationVector2();
         if (player.confused) {
-            newVel *= -1;
+          newVel *= -1;
         }
       }
       else {
         if (player.controlLeft) {
-            newVel.X -= 1;
+          newVel.X -= 1;
         }
         if (player.controlRight) {
-            newVel.X += 1;
+          newVel.X += 1;
         }
         if (player.controlUp) {
-            newVel.Y -= player.gravDir;
+          newVel.Y -= player.gravDir;
         }
         if (player.controlDown) {
-            newVel.Y += player.gravDir;
+          newVel.Y += player.gravDir;
         }
       }
 
@@ -191,9 +194,9 @@ public sealed class Burrow : OriAbility, ILevelable {
       for (int i = 0, len = innerPoints.Length; i < len; i++) {
         Point point = innerPoints[i];
         Tile tile = Main.tile[point];
-      if (!CanBurrow(tile)) {
-        OnCollision(i, ref didX, ref didY);
-      }
+        if (!CanBurrow(tile)) {
+          OnCollision(i, ref didX, ref didY);
+        }
       }
     }
 
@@ -237,32 +240,41 @@ public sealed class Burrow : OriAbility, ILevelable {
     _lastPosition = player.position;
   }
 
+  /// <summary>
+  /// Draw breath meter to screen
+  /// </summary>
   internal void DrawEffects(ref PlayerDrawSet drawInfo) {
     if (_breath >= MaxDuration) return;
-    // UI indication for breath
-    Vector2 baseDrawPos = player.Right - Main.screenPosition;
-    baseDrawPos.X += 48;
-    baseDrawPos.Y += player.gravDir >= 0 ? 16 : 112;
-    Color color = Color.White * (InUse ? 1 : 0.6f);
 
-    Vector2 drawPos = baseDrawPos;
-    int uiCount = (int)Math.Ceiling(_breath / UiIncrement);
+    Vector2 baseDrawPosition = player.Right - Main.screenPosition;
+    baseDrawPosition.X += 48;
+    baseDrawPosition.Y += player.gravDir >= 0 ? 16 : 112;
+
+    Texture2D texture = OriTextures.Instance.burrowTimer.texture;
+    Vector2 origin = texture.Size() / 2;
+    Color color = Color.White * (InUse ? 1 : 0.6f);
     SpriteEffects effect = player.gravDir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+
+    // Adding to drawDataCache multiple times, position is updated each time
+    Vector2 currentDrawPosition = baseDrawPosition;
+    int uiCount = (int)Math.Ceiling(_breath / UiIncrement);
     for (int i = 0; i < uiCount; i++) {
       if (i % 10 == 0) {
-        drawPos.X = baseDrawPos.X;
-        drawPos.Y += 40 * player.gravDir;
+        currentDrawPosition.X = baseDrawPosition.X;
+        currentDrawPosition.Y += 40 * player.gravDir;
       }
-      drawPos.X += 24;
-      int frameY = 0;
+      currentDrawPosition.X += 24;
 
       // Different frameY if this represents a partially filled bar
-    if (i * UiIncrement + UiIncrement > _breath) {
+      int frameX = (int)Main.time % 30 / 10;
+      int frameY = 0;
+      if (i * (UiIncrement + 1) > _breath) {
         frameY = 4 - (int)_breath % UiIncrement / (UiIncrement / 5);
-    }
+      }
 
-      Texture2D tex = OriTextures.Instance.burrowTimer.texture;
-    DrawData data = new(tex, drawPos, tex.Frame(3, 5, (int)Main.time % 30 / 10, frameY), color, 0, tex.Size() / 2, 1, effect, 0);
+      Rectangle rect = texture.Frame(3, 5, frameX, frameY);
+
+      DrawData data = new(texture, currentDrawPosition, rect, color, 0, origin, 1, effect);
       data.ignorePlayerRotation = true;
       drawInfo.DrawDataCache.Add(data);
     }
@@ -274,49 +286,36 @@ public sealed class Burrow : OriAbility, ILevelable {
 
       if (Active) {
         bool canBurrow = InnerHitbox.Points.Any(p => IsSolid(Main.tile[p.X, p.Y]));
-      if (!canBurrow) {
-        SetState(AbilityState.Ending);
+        if (!canBurrow) {
+          SetState(AbilityState.Ending);
+        }
       }
-        }
-      else if (Ending) {
-        if (stateTime > 2) {
-          SetState(AbilityState.Inactive);
-          StartCooldown();
-        }
+      else if (Ending && stateTime > 2) {
+        SetState(AbilityState.Inactive);
+        StartCooldown();
       }
 
       netUpdate = true;
+      return;
     }
-    else {
-      // Not in use
-      if (CanUse && input.burrow.JustPressed) {
-        EnterHitbox.UpdateHitbox(player.Center);
 
-        // Check if player can enter Burrow
-        bool doBurrow = false;
-        var enterPoints = EnterHitbox.Points;
-        for (int i = 0, len = enterPoints.Length; i < len; i++) {
-          Point p = enterPoints[i];
-          Tile t = Main.tile[p.X, p.Y];
-          if (CanBurrow(t)) {
-            doBurrow = true;
-          }
-        }
+    // Not in use
+    _breath = Math.Clamp(_breath + RecoveryRate, 0, MaxDuration);
 
-        if (doBurrow) {
-          // Enter Burrow
-          SetState(AbilityState.Active);
-          cooldownLeft = Cooldown;
+    // Is player trying to enter Burrow?
+    if (!CanUse || !input.burrow.JustPressed) return;
 
-          // TODO: consider moving this write to an Update method
-          currentSpeed = FastSpeed;
-          velocity = Vector2.UnitY * player.gravDir * currentSpeed;
-          player.position += velocity;
-          _lastPosition = player.position;
-        }
-      }
+    // Check if player can enter Burrow
+    EnterHitbox.UpdateHitbox(player.Center);
+    bool doBurrow = EnterHitbox.Points.Any(p => CanBurrow(Main.tile[p.X, p.Y]));
+    if (!doBurrow) return;
 
-      _breath = Math.Clamp(_breath + RecoveryRate, 0, MaxDuration);
-    }
+    // Enter Burrow
+    SetState(AbilityState.Active);
+    cooldownLeft = Cooldown;
+    currentSpeed = FastSpeed;
+    velocity = Vector2.UnitY * player.gravDir * currentSpeed;
+    player.position += velocity;
+    _lastPosition = player.position;
   }
 }
