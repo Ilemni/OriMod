@@ -98,36 +98,19 @@ public sealed class Burrow : OriAbility, ILevelable {
   /// <summary>
   /// Modify player velocity when they collide with a tile they cannot burrow through.
   /// </summary>
-  /// <param name="hitboxIdx">Index of <see cref="InnerHitbox"/> point.</param>
-  /// <param name="didX">Whether or not a collision has occured on the X axis.</param>
-  /// <param name="didY">Whether or not a collision has occured on the Y axis.</param>
-  private void OnCollision(int hitboxIdx, ref bool didX, ref bool didY) {
-    oPlayer.Debug("Bounce! " + hitboxIdx);
-      switch (hitboxIdx) {
-        case 0: // Top
-        case 1: // Bottom
-          if (!didY) {
-            didY = true;
-            velocity.Y *= -1;
-          }
-          break;
-        case 2: // Left
-        case 3: // Right
-          if (!didX) {
-            didX = true;
-            velocity.X *= -1;
-          }
-          break;
-        default: // Corners
-          if (!didX) {
-            didX = true;
-            velocity.X *= -1;
-          }
-          if (!didY) {
-            didY = true;
-            velocity.Y *= -1;
-          }
-          break;
+  /// <param name="point"><see cref="TileHitbox"/> template point.</param>
+  /// <param name="didX">Whether a collision has occurred on the X axis.</param>
+  /// <param name="didY">Whether a collision has occurred on the Y axis.</param>
+  private void OnCollision(Point point, ref bool didX, ref bool didY) {
+    if (!didX && point.X != 0) {
+      // Left or right
+      didX = true;
+      velocity.X *= -1;
+    }
+    if (!didY && point.Y != 0) {
+      // Top or bottom
+      didY = true;
+      velocity.Y *= -1;
     }
   }
 
@@ -193,9 +176,8 @@ public sealed class Burrow : OriAbility, ILevelable {
       var innerPoints = InnerHitbox.Points;
       for (int i = 0, len = innerPoints.Length; i < len; i++) {
         Point point = innerPoints[i];
-        Tile tile = Main.tile[point];
-        if (!CanBurrow(tile)) {
-          OnCollision(i, ref didX, ref didY);
+        if (!CanBurrow(Main.tile[point])) {
+          OnCollision(InnerHitbox.Template[i], ref didX, ref didY);
         }
       }
     }

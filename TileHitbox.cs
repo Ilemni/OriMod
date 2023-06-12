@@ -35,7 +35,7 @@ public class TileHitbox {
   /// <summary>
   /// Local position of points in the hitbox, in tile coordinates.
   /// </summary>
-  private Point[] Template { get; }
+  public Point[] Template { get; }
 
   /// <summary>
   /// Updates the position of the hitbox based on the given world position.
