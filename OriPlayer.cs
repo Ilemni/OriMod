@@ -645,7 +645,7 @@ namespace OriMod {
           Lighting.AddLight(Player.Center, _lightColor.ToVector3());
         }
 
-        if (!Main.dedServ && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
+        if (!Main.dedServ && !Transforming && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
           PlaySound("Ori/Jump/seinJumpsGrass" + _randJump.NextNoRepeat(5), 0.6f);
         }
 
