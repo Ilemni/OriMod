@@ -44,10 +44,12 @@ internal static class OriLayers {
       Color sprCol = Color.Lerp(oPlayer.SpriteColorPrimary, shColor,
         (!dyeEn || shColor == Color.White) ? 0 : oPlayer.DyeColorBlend);
       data.color = doFlash
-        ? Color.Lerp(sprCol, Color.Red, player.immuneAlpha / 255f)
-        : isTransformStart ? Color.White : sprCol;
+          ? Color.Lerp(sprCol, Color.Red, player.immuneAlpha / 255f)
+          : isTransformStart ? Color.White : sprCol;
       data.shader = dyeEn ? player.dye[1].dye : 0;
       data.origin.Y += 5 * player.gravDir;
+      if (player.portableStoolInfo.IsInUse)
+        data.origin.Y -= 12;
       drawInfo.DrawDataCache.Add(data);
 
       // Secondary color layer, only used when IsOri is true (i.e. not during transform start)
