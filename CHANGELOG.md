@@ -1,3 +1,12 @@
+# v3.2.0.1
+
+## Bugfix
+
+Fixed portable stool visual offset
+Fixed jump sounds played during transformation
+
+---
+
 # v3.2.0.0
 
 ## Feature update 

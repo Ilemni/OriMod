@@ -32,8 +32,14 @@ simply loved Ori and we wanted to make it work in Terraria.
 If you enjoy this mod, we encourage you to play
 Ori and the Blind Forest, and Ori and the Will of the Wisps.
 
+--- v3.2.0.1 ---
+--- Bugfix ---
+
+Fixed portable stool visual offset
+Fixed jump sounds played during transformation
+
 --- v3.2 ---
----Feature update---
+--- Feature update ---
 Added Ori dye support, place dye to chestplate slot!
 Added option to block ability controls when any menu is open
 Refactored code, now uses AnimLib's abilities code
