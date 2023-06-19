@@ -2,6 +2,7 @@
 
 ## Bugfix
 
+Added dim light to tier 1 spirit orb
 Fixed portable stool visual offset
 Fixed jump sounds played during transformation
 
