@@ -7,6 +7,7 @@ namespace OriMod.Items {
   /// </summary>
   public class SpiritSapling : ModItem {
     public override void SetDefaults() {
+      Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.SpiritSapling>());
       Item.width = 12;
       Item.height = 30;
       Item.maxStack = 1;

@@ -5,6 +5,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using Terraria.ID;
+using Terraria.Localization;
 
 namespace OriMod.Tiles {
   /// <summary>
@@ -15,19 +16,15 @@ namespace OriMod.Tiles {
       Main.tileFrameImportant[Type] = true;
       Main.tileNoAttach[Type] = true;
       Main.tileLavaDeath[Type] = true;
+      TileID.Sets.DisableSmartCursor[Type] = true;
       TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
       TileObjectData.newTile.Origin = new Point16(0, 1);
       TileObjectData.newTile.CoordinateHeights = new[] { 16, 18 };
       TileObjectData.newTile.StyleHorizontal = true;
       TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
       TileObjectData.addTile(Type);
-      ModTranslation name = CreateMapEntryName();
+      LocalizedText name = CreateMapEntryName(); 
       AddMapEntry(new Color(200, 200, 200), name);
-      TileID.Sets.DisableSmartCursor[Type] = true;
-    }
-
-    public override void KillMultiTile(int i, int j, int frameX, int frameY) {
-      Item.NewItem(null, i * 16, j * 16, 32, 32, ModContent.ItemType<Items.SpiritSapling>());
     }
 
     public override bool RightClick(int i, int j) {

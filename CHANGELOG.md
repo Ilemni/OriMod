@@ -1,3 +1,13 @@
+# v3.2.0.1
+
+## Bugfix
+
+Added dim light to tier 1 spirit orb
+Fixed portable stool visual offset
+Fixed jump sounds played during transformation
+
+---
+
 # v3.2.0.0
 
 ## Feature update 

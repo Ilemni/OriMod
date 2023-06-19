@@ -1,11 +1,13 @@
 using AnimLib;
-using Microsoft.Xna.Framework;
 using AnimLib.Abilities;
+using AnimLib.Extensions;
+using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using OriMod.Animations;
-using OriMod.Buffs;
 using OriMod.Networking;
 using OriMod.Utilities;
+using System;
+using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -14,9 +16,6 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using AnimLib.Extensions;
-using System;
-using System.Linq;
 
 namespace OriMod {
   /// <summary>
@@ -449,8 +448,9 @@ namespace OriMod {
       Abilities.soulLink.UpdateDead();
     }*/
 
-    public override void clientClone(ModPlayer clientClone) {
-      base.clientClone(clientClone);
+    // TODO: Consider thinking about standartizing network operations for Ori state.
+    public override void CopyClientState(ModPlayer targetCopy) {
+      base.CopyClientState(targetCopy);
     }
 
     public override void SendClientChanges(ModPlayer clientPlayer) {
@@ -645,7 +645,7 @@ namespace OriMod {
           Lighting.AddLight(Player.Center, _lightColor.ToVector3());
         }
 
-        if (!Main.dedServ && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
+        if (!Main.dedServ && !Transforming && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
           PlaySound("Ori/Jump/seinJumpsGrass" + _randJump.NextNoRepeat(5), 0.6f);
         }
 
@@ -725,27 +725,24 @@ namespace OriMod {
       }
     }
 
-    public override bool PreHurt(bool pvp, bool quiet, ref int damage, ref int hitDirection, ref bool crit,
-      ref bool customDamage, ref bool playSound, ref bool genGore, ref PlayerDeathReason damageSource, ref int countdown) {
-      if (!IsOri) {
-        return true;
-      }
+    public override bool FreeDodge(Player.HurtInfo info) => 
+      IsOri && (abilities.stomp || abilities.chargeDash || abilities.chargeJump);
 
-      genGore = false;
-      if (abilities.stomp || abilities.chargeDash || abilities.chargeJump) {
-        return false;
-      }
-
-      if (!playSound) return true;
-      playSound = false;
-      _useCustomHurtSound = true;
-      UnrestrictedMovement = true;
-      return true;
+    public override void ModifyHurt(ref Player.HurtModifiers modifiers) {
+      if (!IsOri) return;
+      modifiers.DisableDust();
+      modifiers.DisableSound();
     }
 
-    public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit, int countdown) {
-      if (!_useCustomHurtSound) return;
-      _useCustomHurtSound = false;
+    public override void OnHurt(Player.HurtInfo info) {
+      if (!IsOri) return;
+      UnrestrictedMovement = true;
+    }
+
+    public override void PostHurt(Player.HurtInfo info) {
+      if (!IsOri) return;
+      //if (!_useCustomHurtSound) return;
+      //_useCustomHurtSound = false;
       PlaySound("Ori/Hurt/seinHurtRegular" + _randHurt.NextNoRepeat(4), 0.75f);
     }
 
@@ -860,27 +857,18 @@ namespace OriMod {
       }
 
       #endregion
-
-      /*if (Abilities.soulLink.PlacedSoulLink) {
-        layers.Insert(0, OriLayers.Instance.SoulLinkLayer);
-      }*/
     }
 
-    public override void OnEnterWorld(Player p) {
-      // ...can't we just use implicit "this"? Is GetModPlayer necessary here?
-      // *checks decompiler*
-      // "player.modPlayers[index].OnEnterWorld(player);"
-      // ...completely unnecessary. Player p == this.player;
-      OriPlayer oPlayer = p.GetModPlayer<OriPlayer>();
-      oPlayer.IsLocal = true;
-      oPlayer.SeinMinionActive = false;
-      oPlayer.SeinMinionType = 0;
-      OriMod.ConfigClient.playerColor = oPlayer.SpriteColorPrimary;
-      OriMod.ConfigClient.playerColorSecondary = oPlayer.SpriteColorSecondary;
-      OriMod.ConfigClient.dyeLerp = oPlayer.DyeColorBlend;
+    public override void OnEnterWorld() {
+      IsLocal = true;
+      SeinMinionActive = false;
+      SeinMinionType = 0;
+      OriMod.ConfigClient.playerColor = SpriteColorPrimary;
+      OriMod.ConfigClient.playerColorSecondary = SpriteColorSecondary;
+      OriMod.ConfigClient.dyeLerp = DyeColorBlend;
     }
 
-    public override void OnRespawn(Player p) {
+    public override void OnRespawn() {
       abilities.DisableAllAbilities();
     }
   }
