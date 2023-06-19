@@ -55,7 +55,9 @@ public sealed class SeinData {
     }
 
     // Tier 1 (Silver)
-    AddNewSein(new SeinData());
+    AddNewSein(new SeinData() {
+      lightStrength = 0.4f
+    });
 
     // Tier 2 (Demonite/Crimtane)
     // Increased shots per burst
