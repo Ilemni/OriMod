@@ -1,3 +1,11 @@
+# v3.2.0.2
+
+## Bugfix
+
+Rocket boots and flying carpet now work after Air Jumps 
+
+---
+
 # v3.2.0.1
 
 ## Bugfix
