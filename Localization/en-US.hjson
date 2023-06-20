@@ -337,6 +337,7 @@ Mods: {
 			SpiritFlame5: "Divine {$Mods.OriMod.Common.SF}"
 			SpiritFlame6: "Amplified {$Mods.OriMod.Common.SF}"
 			SpiritFlame7: "Heightened {$Mods.OriMod.Common.SF}"
+			SpiritFlame8: "Ultimate {$Mods.OriMod.Common.SF}"
 		}
 		MapObject: {
 			SpiritSapling: "Spirit Sprout"
