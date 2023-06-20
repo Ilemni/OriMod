@@ -181,6 +181,16 @@ public sealed class OriPlayer : ModPlayer {
   internal bool IsGrappling { get; private set; }
 
   /// <summary>
+  /// Used for temporary storing of Rocket boots remaining time for airjump
+  /// </summary>
+  private int _rocket_boots_remaining = -1;
+
+  /// <summary>
+  /// Used for temporary storing of Carped remaining time for airjump
+  /// </summary>
+  private int _carpet_remaining = -1;
+
+  /// <summary>
   /// When true, the player will not be slowed down (sets <see cref="Player.runSlowdown"/> to 0 every frame).
   /// </summary>
   public bool UnrestrictedMovement {
@@ -527,6 +537,28 @@ public sealed class OriPlayer : ModPlayer {
     IsGrappling = Player.grappling[0] > -1;
     if (Player.HasBuff(BuffID.TheTongue) || IsGrappling) {
       abilities.DisableAllAbilities();
+    }
+  }
+
+  public override void UpdateEquips() {
+    if(_rocket_boots_remaining != -1) {
+      Player.rocketTime = _rocket_boots_remaining;
+      _rocket_boots_remaining = -1;
+    }
+    if(_carpet_remaining != -1) {
+      Player.carpetTime = _carpet_remaining;
+      _carpet_remaining = -1;
+    }
+  }
+
+  public override void PostUpdateEquips() {
+    if(abilities.airJump.CanUse || abilities.airJump.InUse) {
+      _rocket_boots_remaining = Player.rocketTime;
+      Player.rocketTime = 0;
+    }
+    if (abilities.airJump.InUse) {
+      _carpet_remaining = Player.carpetTime;
+      Player.carpetTime = 0;
     }
   }
 
