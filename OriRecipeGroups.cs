@@ -21,7 +21,7 @@ public class OriRecipeGroups : ModSystem {
 
   public override void AddRecipeGroups() {
     EnchantedItems = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Enchanted Items",
-      ItemID.EnchantedSword, ItemID.EnchantedBoomerang, ItemID.Arkhalis, ItemID.Terragrim);
+      ItemID.EnchantedSword, ItemID.EnchantedBoomerang, ItemID.Terragrim);
     MovementAccessories = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Basic Movement Accessories",
       ItemID.Aglet, ItemID.AnkletoftheWind, ItemID.RocketBoots, ItemID.HermesBoots, ItemID.CloudinaBottle,
       ItemID.FlurryBoots, ItemID.SailfishBoots, ItemID.SandstorminaBottle, ItemID.FartinaJar, ItemID.ShinyRedBalloon,
