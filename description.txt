@@ -36,6 +36,7 @@ Ori and the Blind Forest, and Ori and the Will of the Wisps.
 --- Bugfix ---
 
 Rocket boots and flying carpet now work after Air Jumps 
+Updated recipe groups (terragrim is now accepted for sapling recipe)
 
 --- v3.2.0.1 ---
 --- Bugfix ---
