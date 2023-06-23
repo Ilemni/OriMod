@@ -570,5 +570,20 @@ Mods: {
 			SpiritFlame7.DisplayName: Heightened {$Mods.OriMod.Common.SF}
 			SpiritFlame8.DisplayName: Ultimate {$Mods.OriMod.Common.SF}
 		}
+
+		RecipeGroups: {
+			EnchantedItems: Any Enchanted Items
+			MovementAccessories: Any Basic Movement Accessories
+			IronBars: Iron/Lead Bars
+			GoldBars: Gold/Platinum Bars
+			DarkBars: Demonite/Crimtane Bars
+			HardmodeBars1: Cobalt/Palladium Bars
+			HardmodeBars2: Mythril/Orichalcum Bars
+			HardmodeBars3: Adamantite/Titanium Bars
+			LunarFragments: Any Lunar Fragments
+			WallJumpGear: Any Wall Jump Gear
+			JumpBottles: Any Jump-Enhancing Bottles
+			JumpBalloons: Any Jump-Enhancing Balloons
+		}
 	}
 }

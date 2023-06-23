@@ -20,26 +20,34 @@ public class OriRecipeGroups : ModSystem {
   public static RecipeGroup JumpBalloons { get; private set; }
 
   public override void AddRecipeGroups() {
-    EnchantedItems = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Enchanted Items",
+    EnchantedItems = new RecipeGroup(
+      () => Language.GetTextValue("Mods.OriMod.RecipeGroups.EnchantedItems"),
       ItemID.EnchantedSword, ItemID.EnchantedBoomerang, ItemID.Terragrim);
-    MovementAccessories = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Basic Movement Accessories",
+    MovementAccessories = new RecipeGroup(
+      () => Language.GetTextValue("Mods.OriMod.RecipeGroups.MovementAccessories"),
       ItemID.Aglet, ItemID.AnkletoftheWind, ItemID.RocketBoots, ItemID.HermesBoots, ItemID.CloudinaBottle,
       ItemID.FlurryBoots, ItemID.SailfishBoots, ItemID.SandstorminaBottle, ItemID.FartinaJar, ItemID.ShinyRedBalloon,
       ItemID.ShoeSpikes, ItemID.ClimbingClaws, ItemID.EoCShield, ItemID.BlizzardinaBottle, ItemID.TsunamiInABottle);
-    IronBars = new RecipeGroup(() => "Iron/Lead Bars", ItemID.IronBar, ItemID.LeadBar);
-    GoldBars = new RecipeGroup(() => "Gold/Platinum Bars", ItemID.GoldBar, ItemID.PlatinumBar);
-    DarkBars = new RecipeGroup(() => "Demonite/Crimtane Bars", ItemID.DemoniteBar, ItemID.CrimtaneBar);
-    HardmodeBars1 = new RecipeGroup(() => "Cobalt/Palladium Bars", ItemID.CobaltBar, ItemID.PalladiumBar);
-    HardmodeBars2 = new RecipeGroup(() => "Mythril/Orichalcum Bars", ItemID.MythrilBar, ItemID.OrichalcumBar);
-    HardmodeBars3 = new RecipeGroup(() => "Adamantite/Titanium Bars", ItemID.AdamantiteBar, ItemID.TitaniumBar);
-    LunarFragments = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Lunar Fragments",
+    IronBars = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.IronBars"),
+      ItemID.IronBar, ItemID.LeadBar);
+    GoldBars = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.GoldBars"),
+       ItemID.GoldBar, ItemID.PlatinumBar);
+    DarkBars = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.DarkBars"),
+       ItemID.DemoniteBar, ItemID.CrimtaneBar);
+    HardmodeBars1 = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.HardmodeBars1"),
+       ItemID.CobaltBar, ItemID.PalladiumBar);
+    HardmodeBars2 = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.HardmodeBars2"),
+       ItemID.MythrilBar, ItemID.OrichalcumBar);
+    HardmodeBars3 = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.HardmodeBars3"),
+       ItemID.AdamantiteBar, ItemID.TitaniumBar);
+    LunarFragments = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.LunarFragments"),
       ItemID.FragmentNebula, ItemID.FragmentSolar, ItemID.FragmentStardust, ItemID.FragmentVortex);
-    WallJumpGear = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Wall Jump Gear",
+    WallJumpGear = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.WallJumpGear"),
       ItemID.ClimbingClaws, ItemID.ShoeSpikes);
-    JumpBottles = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Bottles",
+    JumpBottles = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.JumpBottles"),
       ItemID.CloudinaBottle, ItemID.BlizzardinaBottle, ItemID.SandstorminaBottle,
       ItemID.TsunamiInABottle, ItemID.FartinaJar);
-    JumpBalloons = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Jump-Enhancing Balloons",
+    JumpBalloons = new RecipeGroup(() => Language.GetTextValue("Mods.OriMod.RecipeGroups.JumpBalloons"),
       ItemID.CloudinaBalloon, ItemID.BlizzardinaBalloon, ItemID.SandstorminaBalloon, ItemID.SharkronBalloon,
       ItemID.FartInABalloon);
 

@@ -573,5 +573,20 @@ Mods: {
 			SpiritFlame7.DisplayName: Повышенное {$Mods.OriMod.Common.SF}
 			SpiritFlame8.DisplayName: Наимощнейшее {$Mods.OriMod.Common.SF}
 		}
+
+		RecipeGroups: {
+			EnchantedItems: Любые Зачарованные Предметы
+			MovementAccessories: Любые Базовые Аксессуары Подвижности
+			IronBars: Железные/Свинцовые Слитки
+			GoldBars: Золотые/Платиновые Слитки
+			DarkBars: Демонитовые/Багротановые Слитки
+			HardmodeBars1: Кобальтовые/Палладиевые Слитки
+			HardmodeBars2: Мифриловые/Орихалковые Слитки
+			HardmodeBars3: Адамантиевые/Титановые Слитки
+			LunarFragments: Любые Лунные Фрагменты
+			WallJumpGear: Любое Снаряжение Для Прыжков От Стен
+			JumpBottles: Любые Улучшающие Прыжок Бутылки
+			JumpBalloons: Любые Улучшающие Прыжок Воздушные Шарики
+		}
 	}
 }
