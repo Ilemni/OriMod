@@ -3,6 +3,7 @@
 ## Bugfix
 
 Rocket boots and flying carpet now work after Air Jumps 
+Updated recipe groups (terragrim is now accepted for sapling recipe)
 
 ---
 

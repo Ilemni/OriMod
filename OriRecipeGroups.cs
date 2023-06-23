@@ -21,11 +21,11 @@ public class OriRecipeGroups : ModSystem {
 
   public override void AddRecipeGroups() {
     EnchantedItems = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Enchanted Items",
-      ItemID.EnchantedSword, ItemID.EnchantedBoomerang, ItemID.Arkhalis);
+      ItemID.EnchantedSword, ItemID.EnchantedBoomerang, ItemID.Arkhalis, ItemID.Terragrim);
     MovementAccessories = new RecipeGroup(() => $"{Language.GetTextValue("LegacyMisc.37")} Basic Movement Accessories",
       ItemID.Aglet, ItemID.AnkletoftheWind, ItemID.RocketBoots, ItemID.HermesBoots, ItemID.CloudinaBottle,
       ItemID.FlurryBoots, ItemID.SailfishBoots, ItemID.SandstorminaBottle, ItemID.FartinaJar, ItemID.ShinyRedBalloon,
-      ItemID.ShoeSpikes, ItemID.ClimbingClaws, ItemID.EoCShield);
+      ItemID.ShoeSpikes, ItemID.ClimbingClaws, ItemID.EoCShield, ItemID.BlizzardinaBottle, ItemID.TsunamiInABottle);
     IronBars = new RecipeGroup(() => "Iron/Lead Bars", ItemID.IronBar, ItemID.LeadBar);
     GoldBars = new RecipeGroup(() => "Gold/Platinum Bars", ItemID.GoldBar, ItemID.PlatinumBar);
     DarkBars = new RecipeGroup(() => "Demonite/Crimtane Bars", ItemID.DemoniteBar, ItemID.CrimtaneBar);
