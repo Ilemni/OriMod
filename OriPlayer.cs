@@ -781,6 +781,10 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void HideDrawLayers(PlayerDrawSet drawInfo) {
+    if (Player.mount.Active) {
+      wasMounted = true;
+    }
+
     if (Main.dedServ || !Animations.GraphicsEnabledCompat) return;
     if (!IsOri && !Transforming) {
       OriLayers.playerSprite.Hide();
@@ -794,10 +798,7 @@ public sealed class OriPlayer : ModPlayer {
       OriLayers.playerSprite.Hide();
     }
 
-    if (Player.mount.Active) {
-      wasMounted = true;
-    }
-    else {
+    if(!Player.mount.Active) {
       if (wasMounted) trail.DecayAllSegments();
       wasMounted = false;
     }
