@@ -108,8 +108,6 @@ public sealed class OriPlayer : ModPlayer {
   /// </summary>
   internal ArmorShaderData dye_shader;
 
-  private bool old_data_loaded;
-
   #region Transformation
 
   /// <summary>
@@ -634,15 +632,6 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void PostUpdate() {
-    if (abilities.oldAbility is not null) {
-      foreach (Ability ability in abilities) {
-        if (ability is ILevelable levelable) {
-          levelable.Level = Math.Max(abilities.oldAbility[ability.Id], levelable.Level);
-        }
-      }
-      abilities.oldAbility = null;
-    }
-
     if (IsOri && !Transforming) {
       HasTransformedOnce = true;
     }
