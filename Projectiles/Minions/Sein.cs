@@ -22,7 +22,7 @@ public abstract class Sein : Minion {
   public sealed override void SetStaticDefaults() {
     Main.projFrames[Projectile.type] = 3;
     Main.projPet[Projectile.type] = true;
-    ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
+    //ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
     ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
     ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true; //This is necessary for right-click targeting
   }
@@ -39,8 +39,8 @@ public abstract class Sein : Minion {
 
   public override void SetDefaults() {
     Projectile.netImportant = true;
-    Projectile.minion = true;
-    Projectile.minionSlots = -0.001f;
+    //Projectile.minion = true;
+    //Projectile.minionSlots = -0.001f;
     Projectile.penetrate = -1;
     Projectile.timeLeft = 18000;
     Projectile.tileCollide = false;
