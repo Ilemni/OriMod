@@ -42,6 +42,8 @@ public abstract class Sein : Minion {
     Projectile.timeLeft = 18000;
     Projectile.tileCollide = false;
     Projectile.ignoreWater = true;
+    Projectile.ContinuouslyUpdateDamageStats = true;
+    Projectile.DamageType = DamageClass.Summon;
 
     byte type = SeinType;
     _data = SeinData.All[type - 1];
@@ -400,12 +402,10 @@ public abstract class Sein : Minion {
 
     float _summon_damage_mul = _summon_damage.Additive * _summon_damage.Multiplicative;
 
-    int dmg = (int)(((Projectile.damage+_summon_damage.Base) * _summon_damage_mul + _summon_damage.Flat) *
-                    (!AutoFire ? ManualShootDamageMultiplier : 1));
+    int dmg = (int)(Projectile.damage * (!AutoFire ? ManualShootDamageMultiplier : 1));
 
 
     Projectile spiritFlame = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, shootVel, _spiritFlameType, dmg, Projectile.knockBack, Projectile.owner);
-    spiritFlame.originalDamage = _data.damage;
     spiritFlame.netUpdate = true;
     Projectile.netUpdate = true;
     if (npc is null) {
