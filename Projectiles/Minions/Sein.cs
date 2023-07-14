@@ -44,6 +44,7 @@ public abstract class Sein : Minion {
     Projectile.ignoreWater = true;
     Projectile.ContinuouslyUpdateDamageStats = true;
     Projectile.DamageType = DamageClass.Summon;
+    Projectile.minion = true;
 
     byte type = SeinType;
     _data = SeinData.All[type - 1];
