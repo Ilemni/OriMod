@@ -399,10 +399,6 @@ public abstract class Sein : Minion {
     shootVel = (shootVel * _data.projectileSpeedStart).RotatedBy(rotation);
     Projectile.velocity += shootVel.Normalized() * -0.2f;
 
-    var _summon_damage = Player.GetDamage<SummonDamageClass>();
-
-    float _summon_damage_mul = _summon_damage.Additive * _summon_damage.Multiplicative;
-
     int dmg = (int)(Projectile.damage * (!AutoFire ? ManualShootDamageMultiplier : 1));
 
 
