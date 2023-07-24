@@ -22,7 +22,6 @@ public abstract class Sein : Minion {
   public sealed override void SetStaticDefaults() {
     Main.projFrames[Projectile.type] = 3;
     Main.projPet[Projectile.type] = true;
-    ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
     ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true;
     ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true; //This is necessary for right-click targeting
   }
@@ -39,12 +38,13 @@ public abstract class Sein : Minion {
 
   public override void SetDefaults() {
     Projectile.netImportant = true;
-    Projectile.minion = true;
-    Projectile.minionSlots = -0.001f;
     Projectile.penetrate = -1;
     Projectile.timeLeft = 18000;
     Projectile.tileCollide = false;
     Projectile.ignoreWater = true;
+    Projectile.ContinuouslyUpdateDamageStats = true;
+    Projectile.DamageType = DamageClass.Summon;
+    Projectile.minion = true;
 
     byte type = SeinType;
     _data = SeinData.All[type - 1];
@@ -399,16 +399,10 @@ public abstract class Sein : Minion {
     shootVel = (shootVel * _data.projectileSpeedStart).RotatedBy(rotation);
     Projectile.velocity += shootVel.Normalized() * -0.2f;
 
-    var _summon_damage = Player.GetDamage<SummonDamageClass>();
-
-    float _summon_damage_mul = _summon_damage.Additive * _summon_damage.Multiplicative;
-
-    int dmg = (int)(((Projectile.damage+_summon_damage.Base) * _summon_damage_mul + _summon_damage.Flat) *
-                    (!AutoFire ? ManualShootDamageMultiplier : 1));
+    int dmg = (int)(Projectile.damage * (!AutoFire ? ManualShootDamageMultiplier : 1));
 
 
     Projectile spiritFlame = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), Projectile.Center, shootVel, _spiritFlameType, dmg, Projectile.knockBack, Projectile.owner);
-    spiritFlame.originalDamage = _data.damage;
     spiritFlame.netUpdate = true;
     Projectile.netUpdate = true;
     if (npc is null) {
