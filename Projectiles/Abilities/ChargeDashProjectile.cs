@@ -34,7 +34,7 @@ public sealed class ChargeDashProjectile : OriAbilityProjectile {
   public override void OnHitNPC(NPC target, NPC.HitInfo modifiers, int damageDone) {
     ChargeDash cDash = abilities.chargeDash;
     if (cDash.NpcIsTarget(target)) {
-      cDash.End();
+      cDash.End(true);
     }
   }
 }
