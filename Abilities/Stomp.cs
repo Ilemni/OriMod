@@ -106,6 +106,7 @@ public sealed class Stomp : OriAbility, ILevelable {
       player.controlLeft = false;
       player.controlRight = false;
     }
+    player.controlJump = false;
     player.controlHook = false;
     player.controlMount = false;
     player.controlThrow = false;
@@ -135,6 +136,9 @@ public sealed class Stomp : OriAbility, ILevelable {
     else if (Starting) {
       if (stateTime > StartDuration) {
           SetState(AbilityState.Active);
+      }
+      if (abilities.airJump.state == AbilityState.Active) {
+          SetState(AbilityState.Inactive);
       }
     }
     else if (Active) {
