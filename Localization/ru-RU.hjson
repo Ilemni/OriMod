@@ -214,6 +214,7 @@ Mods: {
 			Feather.DisplayName: Перо (Планер)
 			Charge.DisplayName: Заряд прыжка/рывка
 			Burrow.DisplayName: Бурение
+			// Stomp.DisplayName: Stomp
 		}
 
 		Tiles.SpiritSapling.MapEntry: Саженец Древа Духов

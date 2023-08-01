@@ -115,6 +115,11 @@ public sealed class OriMod : Mod {
   /// </summary>
   public static ModKeybind burrowKey;
 
+    /// <summary>
+  /// Key used for activating <see cref="Abilities.Stomp"/>.
+  /// </summary>
+  public static ModKeybind stompKey;
+
   public override void Load() {
     //SoulLinkKey = RegisterKeybind(instance, "SoulLink", "E");
     bashKey = RegisterKeybind(instance, "Bash", "Mouse2");
@@ -123,6 +128,7 @@ public sealed class OriMod : Mod {
     featherKey = RegisterKeybind(instance, "Feather", "LeftShift");
     chargeKey = RegisterKeybind(instance, "Charge", "W");
     burrowKey = RegisterKeybind(instance, "Burrow", "LeftControl");
+    stompKey = RegisterKeybind(instance, "Stomp", "S");
     if (!Main.dedServ) {
       AddEquipTexture(instance, "OriMod/PlayerEffects/OriHead", EquipType.Head, null, "OriHead",
         GetEquipTexture(instance, "OriHead", EquipType.Head));
@@ -146,6 +152,7 @@ public sealed class OriMod : Mod {
     featherKey = null;
     chargeKey = null;
     burrowKey = null;
+    stompKey = null;
     //SoulLinkKey = null;
     ConfigClient = null;
   }

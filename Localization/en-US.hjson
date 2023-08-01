@@ -213,6 +213,7 @@ Mods: {
 			Feather.DisplayName: Feather (Glide)
 			Charge.DisplayName: Charge
 			Burrow.DisplayName: Burrow
+			Stomp.DisplayName: Stomp
 		}
 
 		Tiles.SpiritSapling.MapEntry: Spirit Sapling

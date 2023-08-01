@@ -17,7 +17,7 @@ public sealed class OriInput : IEnumerable<Input> {
   public readonly Input dash = new(() => OriMod.dashKey.Current && !OriPlayer.Local.controls_blocked);
   public readonly Input climb = new(() => OriMod.climbKey.Current && !OriPlayer.Local.controls_blocked);
   public readonly Input glide = new(() => OriMod.featherKey.Current && !OriPlayer.Local.controls_blocked);
-  public readonly Input stomp = new(() => PlayerInput.Triggers.Current.Down && !OriPlayer.Local.controls_blocked);
+  public readonly Input stomp = new(() => OriMod.stompKey.Current && !OriPlayer.Local.controls_blocked);
   public readonly Input charge = new(() => OriMod.chargeKey.Current && !OriPlayer.Local.controls_blocked);
   public readonly Input burrow = new(() => OriMod.burrowKey.Current && !OriPlayer.Local.controls_blocked);
   public readonly Input leftClick = new(() => PlayerInput.Triggers.Current.MouseLeft && !OriPlayer.Local.controls_blocked);

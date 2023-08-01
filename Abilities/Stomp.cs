@@ -120,7 +120,7 @@ public sealed class Stomp : OriAbility, ILevelable {
         if (input.stomp.JustPressed) {
           _currentHoldDown = 1;
         }
-        if (_currentHoldDown >= 1 && input.stomp.Current && IsLocal) {
+        if (_currentHoldDown >= 1 && player.controlDown && input.stomp.Current && IsLocal) {
           _currentHoldDown++;
           if (_currentHoldDown > HoldDownDelay) {
             _currentHoldDown = 0;
