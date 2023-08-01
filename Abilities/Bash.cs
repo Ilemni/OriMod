@@ -249,12 +249,15 @@ public sealed class Bash : OriAbility, ILevelable {
     PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), 0.5f);
     oPlayer.UnrestrictedMovement = true;
 
+    bool isNpc = BashEntity is NPC;
+    NPC npc = (NPC)(isNpc ? BashEntity : null);
+
     Vector2 bashVector = new((float)(0 - Math.Cos(BashAngle)), (float)(0 - Math.Sin(BashAngle)));
     Vector2 playerBashVector = -bashVector * BashPlayerStrength;
     Vector2 npcBashVector = bashVector * BashNpcStrength;
     player.velocity = playerBashVector;
     player.position += playerBashVector * 3;
-    BashEntity.velocity = npcBashVector;
+    if (!isNpc || !npc.immortal) BashEntity.velocity = npcBashVector; // Don't knockback target dummies
     player.position += npcBashVector * 5;
     if (IsGrounded) {
       player.position.Y -= 1f;
@@ -263,7 +266,7 @@ public sealed class Bash : OriAbility, ILevelable {
     oPlayer.immuneTimer = 5;
 
     BashTarget.IsBashed = false;
-    if (IsLocal && Level >= 2 && BashEntity is NPC npc) {
+    if (IsLocal && Level >= 2 && isNpc) {
       player.ApplyDamageToNPC(npc, BashDamage, 0, 1, false);
     }
 
