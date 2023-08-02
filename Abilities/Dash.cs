@@ -62,9 +62,6 @@ public sealed class Dash : OriAbility, ILevelable {
     }
     player.velocity.X = Speeds[stateTime] * 0.5f * _direction;
     player.velocity.Y = 0.25f * (stateTime + 1) * player.gravDir;
-    if (stateTime > 20) {
-      player.runSlowdown = 26f;
-    }
     if (IsLocal) netUpdate = true;
   }
 
@@ -83,7 +80,7 @@ public sealed class Dash : OriAbility, ILevelable {
     }
     if (!InUse) return;
     UpdateCooldown();
-    if (abilities.airJump) {
+    if (abilities.airJump || input.jump.JustPressed) {
       SetState(AbilityState.Inactive);
       player.velocity.X = Speeds[24] * _direction; // Rip hyperspeed dash-jump
       StartCooldown(); //force = true
