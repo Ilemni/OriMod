@@ -26,8 +26,8 @@ public sealed class Glide : OriAbility, ILevelable {
 
   private static float RunSlowdown => 0.125f;
   private static float RunAcceleration => 0.2f;
-  private static int StartDuration => 8;
-  private static int EndDuration => 10;
+  private static int StartDuration => 5;
+  private static int EndDuration => 5;
 
   private readonly RandomChar _randStart = new();
   private readonly RandomChar _randActive = new();

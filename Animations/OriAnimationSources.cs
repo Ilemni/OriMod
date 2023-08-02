@@ -60,7 +60,7 @@ public sealed class PlayerAnim : AnimationSource {
       F(3, 13)
     ),
     ["GlideStart"] = Track.Range(LoopMode.None,
-      F(4, 0, 5), F(4, 2, 5)
+      F(4, 0, 2), F(4, 2, 2)
     ),
     ["GlideIdle"] = Track.Single(
       F(4, 3)
