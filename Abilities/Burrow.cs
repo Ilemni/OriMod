@@ -128,22 +128,14 @@ public sealed class Burrow : OriAbility, ILevelable {
   }
 
   public override void UpdateActive() {
-    if (input.leftClick.Current) {
-      if (currentSpeed < FastSpeed) {
-        currentSpeed = OriUtils.Lerp(currentSpeed, FastSpeed, 0.09f);
-      }
-    }
-    else {
-      if (currentSpeed > BaseSpeed) {
-        currentSpeed = OriUtils.Lerp(currentSpeed, BaseSpeed, 0.875f);
-      }
-    }
 
     if (IsLocal) {
       // Get intended velocity based on input
+      bool holdNeutral = false;
       Vector2 newVel = Vector2.Zero;
       if (OriMod.ConfigClient.BurrowToMouse) {
         newVel = player.AngleTo(Main.MouseWorld).ToRotationVector2();
+        holdNeutral = Vector2.DistanceSquared(Main.MouseWorld,player.Center) < 3600.0f;
         if (player.confused) {
           newVel *= -1;
         }
@@ -161,11 +153,27 @@ public sealed class Burrow : OriAbility, ILevelable {
         if (player.controlDown) {
           newVel.Y += player.gravDir;
         }
+        
+        if (newVel == Vector2.Zero) {
+          holdNeutral = true;
+          newVel = velocity;
+        }
+      }
+      if ((velocity.ToRotation() - newVel.ToRotation()).ToRotationVector2().X < 0f) {
+        holdNeutral = true;
       }
 
-      if (newVel != Vector2.Zero) {
-        velocity = Vector2.Lerp(velocity.Normalized(), newVel.Normalized(), 0.1f) * currentSpeed;
+      if (input.burrow.Current) {
+        currentSpeed = OriUtils.Lerp(currentSpeed, FastSpeed, 0.09f);
       }
+      else {
+        currentSpeed = OriUtils.Lerp(currentSpeed, BaseSpeed * (holdNeutral ? 0.2f : 1f), 0.09f);
+      }
+
+      if (newVel == Vector2.Zero) {
+        newVel = velocity;
+      }
+      velocity = Vector2.Lerp(velocity.Normalized(), newVel.Normalized(), 0.1f) * currentSpeed;
     }
 
     // Detect bouncing
@@ -190,6 +198,7 @@ public sealed class Burrow : OriAbility, ILevelable {
 
   public override void UpdateEnding() {
     // Runs when leaving solid tiles
+    velocity = velocity.Normalized() * Math.Max(velocity.Length(), BaseSpeed);
     player.velocity = velocity * SpeedExitMultiplier;
     player.direction = Math.Sign(velocity.X);
     oPlayer.UnrestrictedMovement = true;
