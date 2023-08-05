@@ -250,7 +250,7 @@ public sealed class Burrow : OriAbility, ILevelable {
       // Different frameY if this represents a partially filled bar
       int frameX = (int)Main.time % 30 / 10;
       int frameY = 0;
-      if (i * (UiIncrement + 1) > _breath) {
+      if ((i+1) * UiIncrement > _breath) {
         frameY = 4 - (int)_breath % UiIncrement / (UiIncrement / 5);
       }
 
