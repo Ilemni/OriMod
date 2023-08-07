@@ -145,7 +145,6 @@ public sealed class Launch : OriAbility {
 
   private void End() {
     player.velocity = LaunchDirection * 10;
-    oPlayer.UnrestrictedMovement = true;
     StartCooldown();
   }
 

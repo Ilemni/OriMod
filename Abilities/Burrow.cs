@@ -201,7 +201,6 @@ public sealed class Burrow : OriAbility, ILevelable {
     velocity = velocity.Normalized() * Math.Max(velocity.Length(), BaseSpeed);
     player.velocity = velocity * SpeedExitMultiplier;
     player.direction = Math.Sign(velocity.X);
-    oPlayer.UnrestrictedMovement = true;
   }
 
   public override void UpdateUsing() {

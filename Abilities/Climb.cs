@@ -69,7 +69,7 @@ public sealed class Climb : OriAbility, ILevelable {
   }
 
   public override void UpdateEnding() {
-    player.velocity.X = wallDirection * 5f;
+    player.velocity.X = wallDirection * 3f;
     player.velocity.Y = -player.gravDir * 4f;
   }
 

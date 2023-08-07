@@ -58,7 +58,6 @@ public sealed class Glide : OriAbility, ILevelable {
 
   public override void UpdateUsing() {
     player.maxFallSpeed = MathHelper.Clamp(player.gravity * 5, 1f, 2f);
-    if (oPlayer.UnrestrictedMovement) return;
     player.runSlowdown = RunSlowdown;
     player.runAcceleration = RunAcceleration;
   }

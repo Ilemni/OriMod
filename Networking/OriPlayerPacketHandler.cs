@@ -18,7 +18,6 @@ internal class OriPlayerPacketHandler : PacketHandler {
     BitsByte flags = reader.ReadByte();
     bool oriSet = flags[0];
     bool transforming = flags[1];
-    bool unrestrictedMovement = flags[2];
     bool seinMinionActive = flags[3];
     bool mpcPlayerLight = flags[4];
     bool controls_blocked = flags[5];
@@ -30,7 +29,6 @@ internal class OriPlayerPacketHandler : PacketHandler {
 
     fromPlayer.IsOri = oriSet;
     fromPlayer.Transforming = transforming;
-    fromPlayer.UnrestrictedMovement = unrestrictedMovement;
     fromPlayer.transformTimer = transformTimer;
     fromPlayer.SeinMinionType = seinMinionType;
     fromPlayer.SeinMinionActive = seinMinionActive;
@@ -60,7 +58,6 @@ internal class OriPlayerPacketHandler : PacketHandler {
     BitsByte flags = new() {
       [0] = fromPlayer.IsOri,
       [1] = fromPlayer.Transforming,
-      [2] = fromPlayer.UnrestrictedMovement,
       [3] = fromPlayer.SeinMinionActive,
       [4] = fromPlayer.multiplayerPlayerLight,
       [5] = fromPlayer.controls_blocked

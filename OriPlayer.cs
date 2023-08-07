@@ -189,18 +189,6 @@ public sealed class OriPlayer : ModPlayer {
   private int _carpet_remaining = -1;
 
   /// <summary>
-  /// When true, the player will not be slowed down (sets <see cref="Player.runSlowdown"/> to 0 every frame).
-  /// </summary>
-  public bool UnrestrictedMovement {
-    get => _unrestrictedMovement;
-    set {
-      if (value == _unrestrictedMovement) return;
-      _netUpdate = true;
-      _unrestrictedMovement = value;
-    }
-  }
-
-  /// <summary>
   /// Info about if this player has a <see cref="Projectiles.Minions.Sein"/> minion summoned. Used to prevent having more than one Sein summoned per player.
   /// </summary>
   public bool SeinMinionActive {
@@ -310,7 +298,6 @@ public sealed class OriPlayer : ModPlayer {
 
   private OriAnimationController _anim;
   private bool _isOri;
-  private bool _unrestrictedMovement;
   private bool _seinMinionActive;
   private int _seinMinionId;
   private int _seinMinionType;
@@ -410,7 +397,6 @@ public sealed class OriPlayer : ModPlayer {
   internal void ResetData() {
     IsOri = false;
     HasTransformedOnce = false;
-    UnrestrictedMovement = false;
     SeinMinionActive = false;
     SeinMinionType = 0;
     abilities.ResetAllAbilities();
@@ -564,16 +550,13 @@ public sealed class OriPlayer : ModPlayer {
     if (IsOri && !Transforming) {
       #region Default Spirit Run Speeds
 
-      Player.runAcceleration = 0.5f;
       Player.maxRunSpeed += 2f;
       Player.noFallDmg = true;
       LowerGravityTo(0.35f);
       Player.jumpSpeedBoost += 2f;
-      if (IsGrounded || Player.controlLeft || Player.controlRight) {
-        UnrestrictedMovement = false;
-      }
 
-      Player.runSlowdown = UnrestrictedMovement ? 0 : 1;
+      Player.runAcceleration = IsGrounded ? 0.5f : 0.3f;
+      Player.runSlowdown = IsGrounded ? 1f : 0.5f;
 
       #endregion
 
@@ -736,12 +719,6 @@ public sealed class OriPlayer : ModPlayer {
 
     modifiers.DisableDust();
     modifiers.DisableSound();
-  }
-
-  public override void OnHurt(Player.HurtInfo info) {
-    if (!IsOri) return;
-
-    UnrestrictedMovement = true;
   }
 
   public override void PostHurt(Player.HurtInfo info) {

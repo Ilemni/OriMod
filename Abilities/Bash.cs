@@ -247,7 +247,6 @@ public sealed class Bash : OriAbility, ILevelable {
   private void End() {
     player.pulley = false;
     PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), 0.5f);
-    oPlayer.UnrestrictedMovement = true;
 
     bool isNpc = BashEntity is NPC;
     NPC npc = (NPC)(isNpc ? BashEntity : null);
