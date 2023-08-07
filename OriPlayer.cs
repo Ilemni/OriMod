@@ -232,7 +232,14 @@ public sealed class OriPlayer : ModPlayer {
   /// <summary>
   /// When greater than 0, sets <see cref="Player.immune"/> to true.
   /// </summary>
-  internal int immuneTimer;
+  internal int immuneTimer {
+    get => Player.immuneTime;
+    set {
+      Player.immuneTime = value;
+      Player.immune = true;
+      Player.immuneNoBlink = true;
+    }
+  }
 
   private readonly RandomChar _randJump = new();
   private readonly RandomChar _randHurt = new();
@@ -425,12 +432,6 @@ public sealed class OriPlayer : ModPlayer {
 
     if (Transforming) {
       immuneTimer = 2;
-    }
-
-    if (immuneTimer > 1) {
-      immuneTimer--;
-      Player.immune = true;
-      Player.immuneNoBlink = true;
     }
 
     if (Main.netMode != NetmodeID.Server) {
