@@ -22,7 +22,8 @@ public sealed class ChargeDash : OriAbility {
   public override int Cooldown => levelableDependency.Level >= 3 ? 60 : 90;
   public override void OnRefreshed() => abilities.RefreshParticles(Color.LightBlue);
 
-  private static int ManaCost => 20;
+  private static int ManaCost => 25;
+  private static float MaxRange => 480f;
   private static int Duration => Speeds.Length - 1;
   private static float[] Speeds => _speeds ??= Unloadable.New(new float[15] {
     100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
@@ -31,6 +32,8 @@ public sealed class ChargeDash : OriAbility {
 
   private ushort _npcId = ushort.MaxValue;
   private sbyte _direction;
+  
+  private Vector2 StartDirection;
 
   /// <summary>
   /// Check if <paramref name="npc"/> is <see cref="Target"/>.
@@ -69,14 +72,16 @@ public sealed class ChargeDash : OriAbility {
   public override bool RefreshCondition() => !input.charge.Current;
 
   private void Start() {
-    float tempDist = 720f * 720f;
+    player.manaRegenDelay = (int)player.maxRegenDelay;
+    float tempDist = MaxRange*MaxRange*4;
     for (int n = 0; n < Main.maxNPCs; n++) {
       NPC npc = Main.npc[n];
-      if (!npc.active || npc.friendly || !Collision.CanHitLine(player.Center, player.width, player.height, npc.Center, 16, 16)) {
-        continue;
-          }
+      if (!npc.active || npc.friendly || 
+        (player.Center - npc.Center).LengthSquared() > MaxRange*MaxRange ||
+        !Collision.CanHitLine(player.Center, player.width, player.height, npc.Center, 16, 16)
+      ) continue;
 
-      float dist = (player.position - npc.position).LengthSquared();
+      float dist = (Main.MouseWorld - npc.Center).LengthSquared();
       if (dist >= tempDist) continue;
       tempDist = dist;
       Target = npc;
@@ -84,6 +89,12 @@ public sealed class ChargeDash : OriAbility {
     _direction = Target is null
       ? (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction)
       : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
+    if (Target is not null) {
+      Vector2 dir = Target.Center - player.Center;
+      dir.Y -= 32f;
+      dir.Normalize();
+      StartDirection = dir;
+    }
     PlaySound("Ori/ChargeDash/seinChargeDash" + _rand.NextNoRepeat(3), 0.5f);
     NewAbilityProjectile<ChargeDashProjectile>(damage: 50);
   }
@@ -100,7 +111,7 @@ public sealed class ChargeDash : OriAbility {
       // Force player position to same as target's, and reduce speed.
       player.position = target.position;
       player.position.Y -= 32f;
-      player.velocity = player.velocity.Normalized() * Speeds[^1];
+      player.velocity = StartDirection * Speeds[^1];
       RestoreAirJumps();
     }
     else if (Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
