@@ -65,11 +65,8 @@ public sealed class AirJump : OriAbility, ILevelable {
       }
       return;
     }
-    if (IsGrounded || abilities.bash || abilities.launch || OnWall) {
-      currentCount = 0;
-      if (IsGrounded || abilities.bash || abilities.launch || abilities.climb) {
-        SetState(AbilityState.Inactive);
-      }
+    if (IsGrounded || abilities.bash || abilities.launch || abilities.climb) {
+      SetState(AbilityState.Inactive);
     }
     if (Active) {
       SetState(AbilityState.Ending);

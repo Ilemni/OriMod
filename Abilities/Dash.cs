@@ -33,6 +33,9 @@ public sealed class Dash : OriAbility, ILevelable {
   private static int Duration => Speeds.Length - 1;
 
   private sbyte _direction;
+  
+  internal ushort currentCount;
+  private int MaxDashes => 1;
 
   private readonly RandomChar _rand = new();
 
@@ -40,6 +43,7 @@ public sealed class Dash : OriAbility, ILevelable {
     _direction = (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction);
     PlaySound("Ori/Dash/seinDash" + _rand.NextNoRepeat(3), 0.2f);
     player.pulley = false;
+    currentCount++;
   }
 
   public override void ReadPacket(BinaryReader r) {
@@ -65,7 +69,7 @@ public sealed class Dash : OriAbility, ILevelable {
     if (IsLocal) netUpdate = true;
   }
 
-  public override bool RefreshCondition() => abilities.bash || OnWall || IsGrounded || player.mount.Active;
+  public override bool RefreshCondition() => currentCount < MaxDashes || player.mount.Active;
 
   public override void PreUpdate() {
     if (abilities.chargeDash) {

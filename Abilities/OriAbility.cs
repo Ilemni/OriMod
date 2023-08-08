@@ -11,6 +11,7 @@ public abstract class OriAbility : Ability<OriAbilityManager> {
 
   protected bool OnWall => oPlayer.OnWall;
   protected bool IsGrounded => oPlayer.IsGrounded;
+  protected void RestoreAirJumps() => oPlayer.RestoreAirJumps();
 
   protected void PlaySound(string path, float volume = 1, float pitch = 0)
     => oPlayer.PlaySound(path, volume, pitch);

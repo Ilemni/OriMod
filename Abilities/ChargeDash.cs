@@ -101,6 +101,7 @@ public sealed class ChargeDash : OriAbility {
       player.position = target.position;
       player.position.Y -= 32f;
       player.velocity = player.velocity.Normalized() * Speeds[^1];
+      RestoreAirJumps();
     }
     else if (Math.Abs(player.velocity.Y) < Math.Abs(player.velocity.X)) {
       // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.

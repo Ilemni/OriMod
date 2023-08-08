@@ -85,7 +85,7 @@ public sealed class Stomp : OriAbility, ILevelable {
 
   internal void EndStomp() {
     PlaySound("Ori/Stomp/seinStompImpact" + _randEnd.NextNoRepeat(3), 0.9f);
-    abilities.airJump.currentCount = 0;
+    RestoreAirJumps();
     player.velocity = Vector2.Zero;
     Vector2 position = new(player.position.X, player.position.Y + 32);
     for (int i = 0; i < 25; i++) {

@@ -640,6 +640,8 @@ public sealed class OriPlayer : ModPlayer {
       IsGrounded = CheckGrounded();
       OnWall = CheckOnWall();
 
+      if (IsGrounded || OnWall) RestoreAirJumps();
+
       // Footstep effects
       if (Main.dedServ || !IsGrounded) return;
       bool doDust = false;
@@ -700,6 +702,14 @@ public sealed class OriPlayer : ModPlayer {
       Player.position.Y + (Player.gravDir < 0f ? -1f : 2f)
     ).ToTileCoordinates();
     return WorldGen.SolidTile(p.X, p.Y + 1) && WorldGen.SolidTile(p.X, p.Y + 2);
+  }
+
+  /// <summary>
+  /// Refreshes your airborne abilities, allowing you to jump and dash again before touching the ground.
+  /// </summary>
+  public void RestoreAirJumps() {
+    abilities.airJump.currentCount = 0;
+    abilities.dash.currentCount = 0;
   }
 
   public override void FrameEffects() {

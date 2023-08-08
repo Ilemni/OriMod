@@ -155,6 +155,7 @@ public sealed class Launch : OriAbility {
       }
 
       SetState(AbilityState.Starting);
+      RestoreAirJumps();
       CurrentChain = 1;
     }
     else if (!InUse) return;

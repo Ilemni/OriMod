@@ -337,6 +337,7 @@ public sealed class Bash : OriAbility, ILevelable {
       bool didBash = Start();
       if (didBash) {
         SetState(AbilityState.Starting);
+        RestoreAirJumps();
       }
       else if (!abilities.launch.CanUse) {
         PlayLocalSound("Ori/Bash/bashNoTargetB", 0.35f);
