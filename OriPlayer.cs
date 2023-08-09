@@ -710,6 +710,7 @@ public sealed class OriPlayer : ModPlayer {
   public void RestoreAirJumps() {
     abilities.airJump.currentCount = 0;
     abilities.dash.currentCount = 0;
+    abilities.launch.CurrentChain = 0;
   }
 
   public override void FrameEffects() {

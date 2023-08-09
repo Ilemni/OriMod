@@ -33,7 +33,7 @@ public sealed class Launch : OriAbility {
     !abilities.chargeJump && !abilities.climb &&
     !abilities.dash && !abilities.stomp && !abilities.wallChargeJump;
 
-  private ushort CurrentChain { get; set; }
+  public ushort CurrentChain { get; set; }
 
   private ushort MaxChain =>
     Level switch {
@@ -195,8 +195,6 @@ public sealed class Launch : OriAbility {
   }
 
   public override void UpdateCooldown() {
-    if (!IsGrounded && !abilities.bash) return;
-    EndCooldown();
-    CurrentChain = 0;
+    if (CurrentChain == 0) EndCooldown();
   }
 }
