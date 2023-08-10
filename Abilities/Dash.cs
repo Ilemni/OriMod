@@ -1,6 +1,7 @@
 using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
+using System;
 using System.IO;
 using Terraria;
 using Terraria.ModLoader;
@@ -86,7 +87,7 @@ public sealed class Dash : OriAbility, ILevelable {
     UpdateCooldown();
     if (abilities.airJump || input.jump.JustPressed) {
       SetState(AbilityState.Inactive);
-      player.velocity.X = Speeds[24] * _direction; // Rip hyperspeed dash-jump
+      player.velocity.X = Math.Min(Speeds[24], Math.Abs(player.velocity.X)) * _direction; // Rip hyperspeed dash-jump
       StartCooldown(); //force = true
     }
     else if (stateTime > Duration || OnWall || abilities.bash) {
