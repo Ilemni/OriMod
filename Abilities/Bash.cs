@@ -23,7 +23,7 @@ public sealed class Bash : OriAbility, ILevelable {
   int ILevelable.MaxLevel => 3;
 
   public override bool CanUse => base.CanUse && Inactive && !player.mount.Active &&
-    !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump && !abilities.climb && !abilities.dash &&
+    !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump && !abilities.climb &&
     !abilities.launch && !abilities.stomp && !abilities.wallChargeJump;
 
   public override void OnRefreshed() => abilities.RefreshParticles(Color.LightYellow);
@@ -73,12 +73,14 @@ public sealed class Bash : OriAbility, ILevelable {
       switch (Level) {
         case 0: return 0;
         case 1:
-        case 2: return 30;
-        case 3: return 24;
+        case 2: return 20;
+        case 3: return 15;
         default: return 10 + Level * 14 / 255;
       }
     }
   }
+  
+  public override int Cooldown => MinBashDuration;
 
   private int MaxBashDuration {
     get {
@@ -91,6 +93,19 @@ public sealed class Bash : OriAbility, ILevelable {
       }
     }
   }
+
+  private int MaxBufferDuration {
+    get {
+      switch (Level) {
+        case 0: return 0;
+        case 1:
+        case 2: return 20;
+        case 3: return 30;
+        default: return Level * 10;
+      }
+    }
+  }
+  private int BufferDuration = 0;
 
   private int BashDamage {
     get {
@@ -262,7 +277,7 @@ public sealed class Bash : OriAbility, ILevelable {
       player.position.Y -= 1f;
     }
 
-    oPlayer.immuneTimer = 5;
+    oPlayer.immuneTimer = 20;
 
     BashTarget.IsBashed = false;
     if (IsLocal && Level >= 2 && isNpc) {
@@ -295,7 +310,13 @@ public sealed class Bash : OriAbility, ILevelable {
           break;
       }
 
-      if (BashEntity != null) BashAngle = BashEntity.AngleTo(Main.MouseWorld);
+      if (BashEntity != null) {
+        if (OriMod.ConfigClient.bashMode == "Target") {
+          BashAngle = BashEntity.AngleTo(Main.MouseWorld);
+        } else {
+          BashAngle = player.AngleTo(Main.MouseWorld);
+        }
+      }
     }
     // Allow only quick heal and quick mana
     player.controlJump = false;
@@ -311,7 +332,6 @@ public sealed class Bash : OriAbility, ILevelable {
     player.controlTorch = false;
     player.controlUseItem = false;
     player.controlUseTile = false;
-    oPlayer.immuneTimer = 2;
     player.buffImmune[BuffID.CursedInferno] = true;
     player.buffImmune[BuffID.Dazed] = true;
     player.buffImmune[BuffID.Frozen] = true;
@@ -333,14 +353,18 @@ public sealed class Bash : OriAbility, ILevelable {
   }
 
   public override void PreUpdate() {
-    if (CanUse && input.bash.JustPressed) {
+    if (input.bash.Current) BufferDuration++;
+    if (input.bash.JustPressed) BufferDuration = 0;
+    if (CanUse && input.bash.Current && !input.charge.Current && BufferDuration <= MaxBufferDuration) {
       bool didBash = Start();
       if (didBash) {
         SetState(AbilityState.Starting);
         RestoreAirJumps();
       }
-      else if (!abilities.launch.CanUse) {
+      else if (BufferDuration == MaxBufferDuration) {
         PlayLocalSound("Ori/Bash/bashNoTargetB", 0.35f);
+        StartCooldown();
+        EndCooldown(); // Make particles
       }
     }
     else if (InUse) {
@@ -360,6 +384,7 @@ public sealed class Bash : OriAbility, ILevelable {
       if (stateTime <= MaxBashDuration && input.bash.Current &&
           BashEntity is not null && BashEntity.active) return;
       End();
+      StartCooldown();
       SetState(AbilityState.Inactive);
     }
   }

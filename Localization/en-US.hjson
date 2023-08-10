@@ -147,6 +147,16 @@ Mods: {
 						when inventory, menu or dialogue are open.
 						'''
 				}
+
+				bashMode: {
+					Label: Bash Targeting Mode
+					Tooltip:
+						'''
+						Determines whether bash should aim from
+						the player or the bashed target.
+						Default: Target 
+						'''
+				}
 			}
 		}
 

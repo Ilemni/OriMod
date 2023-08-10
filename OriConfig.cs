@@ -54,6 +54,11 @@ public class OriConfigClient1 : ModConfig {
   [DefaultValue("Mouse"), OptionStrings(new[] { "WASD", "Mouse" })]
   public string burrowControls;
 
+  [LocalizedLabel(nameof(bashMode))]
+  [LocalizedTooltip(nameof(bashMode))]
+  [DefaultValue("Target"), OptionStrings(new[] { "Target", "Player" })]
+  public string bashMode;
+
   [LocalizedLabel(nameof(blockControlsInMenu))]
   [LocalizedTooltip(nameof(blockControlsInMenu))]
   [DefaultValue("false")]

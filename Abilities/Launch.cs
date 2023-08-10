@@ -149,7 +149,7 @@ public sealed class Launch : OriAbility {
   }
 
   public override void PreUpdate() {
-    if (CanUse && input.bash.JustPressed && IsLocal) {
+    if (CanUse && input.charge.Current && input.bash.JustPressed && IsLocal) {
       if (CurrentChain == 0) {
         PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
       }

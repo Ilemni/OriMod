@@ -148,6 +148,16 @@ Mods: {
 						когда открыты инвентарь, меню или диалоги.
 						'''
 				}
+
+				bashMode: {
+					// Label: Bash Targeting Mode
+					/* Tooltip:
+						'''
+						Determines whether bash should aim from
+						the player or the bash target.
+						Default: Target 
+						''' */
+				}
 			}
 		}
 
