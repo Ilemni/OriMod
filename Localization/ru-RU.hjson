@@ -154,7 +154,7 @@ Mods: {
 					/* Tooltip:
 						'''
 						Determines whether bash should aim from
-						the player or the bash target.
+						the player or the bashed target.
 						Default: Target 
 						''' */
 				}

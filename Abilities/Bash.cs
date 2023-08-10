@@ -363,8 +363,7 @@ public sealed class Bash : OriAbility, ILevelable {
       }
       else if (BufferDuration == MaxBufferDuration) {
         PlayLocalSound("Ori/Bash/bashNoTargetB", 0.35f);
-        StartCooldown();
-        EndCooldown(); // Make particles
+        abilities.RefreshParticles(Color.LightYellow);
       }
     }
     else if (InUse) {
