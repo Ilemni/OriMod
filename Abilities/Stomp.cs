@@ -130,23 +130,25 @@ public sealed class Stomp : OriAbility, ILevelable {
         }
       }
       if (Starting) {
-          _currentHoldDown = 0;
+        _currentHoldDown = 0;
       }
     }
     else if (Starting) {
       if (stateTime > StartDuration) {
-          SetState(AbilityState.Active);
+        SetState(AbilityState.Active);
       }
       if (abilities.airJump.state == AbilityState.Active) {
-          SetState(AbilityState.Inactive);
+        SetState(AbilityState.Inactive);
+        StartCooldown();
       }
     }
     else if (Active) {
       if ((stateTime > MinDuration && !player.controlDown) || abilities.airJump) {
-          SetState(AbilityState.Inactive);
+        SetState(AbilityState.Inactive);
+        StartCooldown();
       }
       if (IsGrounded) {
-          EndStomp();
+        EndStomp();
       }
     }
   }
