@@ -556,9 +556,13 @@ public sealed class OriPlayer : ModPlayer {
       LowerGravityTo(0.35f);
       Player.jumpSpeedBoost += 2f;
 
-      Player.runAcceleration = IsGrounded ? 0.5f : 0.3f;
-      Player.runSlowdown = IsGrounded ? 1f : 0.5f;
-
+      if (IsGrounded) {
+        Player.runAcceleration = Math.Min(MathF.Pow(Player.runAcceleration,3f)*980f,0.5f);
+        Player.runSlowdown = Math.Min(MathF.Pow(Player.runSlowdown,2f)*25f,1f);
+      } else {
+        Player.runAcceleration = 0.3f;
+        Player.runSlowdown = 0.5f;
+      }
       #endregion
 
       if (IsLocal && OriMod.ConfigClient.smoothCamera) {
