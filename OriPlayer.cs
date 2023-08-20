@@ -557,8 +557,8 @@ public sealed class OriPlayer : ModPlayer {
       Player.jumpSpeedBoost += 2f;
 
       if (IsGrounded) {
-        Player.runAcceleration = Math.Min(MathF.Pow(Player.runAcceleration,3f)*980f,0.5f);
-        Player.runSlowdown = Math.Min(MathF.Pow(Player.runSlowdown,2f)*25f,1f);
+        Player.runAcceleration = Math.Max(Math.Min(MathF.Pow(Player.runAcceleration,3f)*980f,0.5f),Player.runAcceleration);
+        Player.runSlowdown = Math.Max(Math.Min(MathF.Pow(Player.runSlowdown,2f)*25f,1f),Player.runSlowdown);
       } else {
         Player.runAcceleration = 0.3f;
         Player.runSlowdown = 0.5f;
