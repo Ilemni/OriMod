@@ -235,7 +235,7 @@ public sealed class OriPlayer : ModPlayer {
   internal int immuneTimer {
     get => Player.immuneTime;
     set {
-      Player.immuneTime = value;
+      if (Player.immuneTime < value) Player.immuneTime = value;
       Player.immune = true;
       Player.immuneNoBlink = true;
     }
