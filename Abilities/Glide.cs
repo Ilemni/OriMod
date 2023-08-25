@@ -19,8 +19,8 @@ public sealed class Glide : OriAbility, ILevelable {
   public override bool Unlocked => Level > 0;
 
   public override bool CanUse =>
-    base.CanUse && !Ending && player.velocity.Y * Math.Sign(player.gravDir) > 0 && !player.mount.Active &&
-    !abilities.airJump && !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump &&
+    base.CanUse && !Ending && !player.mount.Active &&
+    !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump &&
     !abilities.climb && !abilities.dash && !abilities.launch && !abilities.stomp && !abilities.wallChargeJump &&
     !abilities.wallJump;
 
@@ -63,11 +63,11 @@ public sealed class Glide : OriAbility, ILevelable {
   }
 
   public override void PreUpdate() {
-    if (!InUse && CanUse && !OnWall && input.glide.Current) {
+    if (!InUse && CanUse && !IsGrounded && !OnWall && input.glide.Current) {
       SetState(AbilityState.Starting);
       return;
     }
-    if (abilities.dash || abilities.airJump || abilities.burrow || abilities.launch) {
+    if (abilities.dash || abilities.burrow || abilities.launch) {
       SetState(AbilityState.Inactive);
       return;
     }
@@ -83,7 +83,7 @@ public sealed class Glide : OriAbility, ILevelable {
         SetState(AbilityState.Inactive);
       }
     }
-    else if (player.velocity.Y * player.gravDir < 0 || OnWall || IsGrounded || !input.glide.Current) {
+    else if (OnWall || IsGrounded || !input.glide.Current) {
       SetState(AbilityState.Ending);
     }
   }
