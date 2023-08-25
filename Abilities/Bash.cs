@@ -1,5 +1,6 @@
 using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
+using OriMod.Dusts;
 using OriMod.NPCs;
 using OriMod.Projectiles;
 using OriMod.Utilities;
@@ -80,7 +81,6 @@ public sealed class Bash : OriAbility, ILevelable {
     }
   }
   
-  public override int Cooldown => MinBashDuration;
 
   private int MaxBashDuration {
     get {
@@ -99,13 +99,34 @@ public sealed class Bash : OriAbility, ILevelable {
       switch (Level) {
         case 0: return 0;
         case 1:
-        case 2: return 20;
-        case 3: return 30;
-        default: return Level * 10;
+        case 2: return 40;
+        case 3: return 60;
+        default: return Level * 20;
       }
     }
   }
   private int BufferDuration = 0;
+
+  private int MaxStress {
+    get {
+      switch (Level) {
+        case 0: return 0;
+        case 1:
+        case 2: return 240;
+        case 3: return 360;
+        default: return Level * 120;
+      }
+    }
+  }
+  private int _currentStress = 0;
+  private int CurrentStress {
+    get => _currentStress;
+    set { 
+      _currentStress = Math.Clamp(value,0,MaxStress);
+    }
+  }
+  private int LastStress = 0;
+  private int StressParticleTimer = 0;
 
   private int BashDamage {
     get {
@@ -277,7 +298,7 @@ public sealed class Bash : OriAbility, ILevelable {
       player.position.Y -= 1f;
     }
 
-    oPlayer.immuneTimer = 20;
+    if (LastStress < MaxStress/1.33) oPlayer.immuneTimer = 20;
 
     BashTarget.IsBashed = false;
     if (IsLocal && Level >= 2 && isNpc) {
@@ -350,12 +371,27 @@ public sealed class Bash : OriAbility, ILevelable {
     player.buffImmune[BuffID.WitheredArmor] = true;
     player.buffImmune[BuffID.WitheredWeapon] = true;
     player.buffImmune[BuffID.WindPushed] = true;
+    if (LastStress < MaxStress/2) oPlayer.immuneTimer = 2;
   }
 
   public override void PreUpdate() {
     if (input.bash.Current) BufferDuration++;
-    if (input.bash.JustPressed) BufferDuration = 0;
+    if (input.bash.JustPressed) {
+      BufferDuration = 0;
+      LastStress = CurrentStress;
+      CurrentStress += 40;
+    }
+
+    StressParticleTimer++;
+    if (StressParticleTimer > 8-(CurrentStress/MaxStress*5)) {
+      StressParticleTimer = 0;
+      for (int i = 0; i < CurrentStress/(MaxStress/4); i++) {
+        Dust.NewDust(player.Center, 12, 12, ModContent.DustType<AbilityRefreshedDust>(), newColor: Color.LightYellow);
+      }
+    }
+
     if (CanUse && input.bash.Current && !input.charge.Current && BufferDuration <= MaxBufferDuration) {
+      CurrentStress += 3;
       bool didBash = Start();
       if (didBash) {
         SetState(AbilityState.Starting);
@@ -379,12 +415,14 @@ public sealed class Bash : OriAbility, ILevelable {
         PlayLocalSound("Ori/Bash/seinBashLoopA", 0.5f);
       }
       oPlayer.Animations?.Update();
+      CurrentStress += 1;
 
       if (stateTime <= MaxBashDuration && input.bash.Current &&
           BashEntity is not null && BashEntity.active) return;
       End();
-      StartCooldown();
       SetState(AbilityState.Inactive);
+    } else {
+      CurrentStress -= 1;
     }
   }
 }
