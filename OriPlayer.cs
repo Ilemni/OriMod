@@ -560,8 +560,8 @@ public sealed class OriPlayer : ModPlayer {
         Player.runAcceleration = Math.Max(Math.Min(MathF.Pow(Player.runAcceleration,3f)*980f,0.5f),Player.runAcceleration);
         Player.runSlowdown = Math.Max(Math.Min(MathF.Pow(Player.runSlowdown,2f)*25f,1f),Player.runSlowdown);
       } else {
-        Player.runAcceleration = 0.3f;
-        Player.runSlowdown = 0.5f;
+        Player.runAcceleration = (Player.runAcceleration > 0.01 && Player.runAcceleration < 0.3) ? 0.3f : Player.runAcceleration;
+        Player.runSlowdown = (Player.runAcceleration > 0.01 && Player.runAcceleration < 0.5) ? 0.5f : Player.runAcceleration;;
       }
       #endregion
 
