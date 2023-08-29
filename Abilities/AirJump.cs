@@ -57,7 +57,10 @@ public sealed class AirJump : OriAbility, ILevelable {
       currentCount++;
       _gravityDirection = (sbyte)player.gravDir;
 
-      if (MaxJumps != 1 && currentCount == MaxJumps) {
+      if (abilities.glide) {
+        PlaySound("Ori/Glide/seinGlideStart" + _rand.NextNoRepeat(3), 0.8f);
+      }
+      else if (MaxJumps != 1 && currentCount == MaxJumps) {
         PlaySound("Ori/TripleJump/seinTripleJumps" + _rand.NextNoRepeat(5), 0.6f);
       }
       else {
