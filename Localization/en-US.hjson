@@ -157,6 +157,15 @@ Mods: {
 						Default: Target 
 						'''
 				}
+
+				flashMode: {
+					Label: Damage Flash Mode
+					Tooltip:
+						'''
+						Determines what color the player should flash after taking damage.
+						Default: Transparent
+						'''
+				}
 			}
 		}
 

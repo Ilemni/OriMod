@@ -91,6 +91,11 @@ public class OriConfigClient1 : ModConfig {
   [DefaultValue(typeof(float), "0.65")]
   public float dyeLerp;
 
+  [LocalizedLabel(nameof(flashMode))]
+  [LocalizedTooltip(nameof(flashMode))]
+  [DefaultValue("Transparent"), OptionStrings(new[] { "Transparent", "Red", "Disabled" })]
+  public string flashMode;
+
   public override void OnLoaded() {
     OriMod.ConfigClient = this;
   }
