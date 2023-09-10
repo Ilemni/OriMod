@@ -150,22 +150,29 @@ Mods: {
 				}
 
 				bashMode: {
-					// Label: Bash Targeting Mode
-					/* Tooltip:
+					Label: 
 						'''
-						Determines whether bash should aim from
-						the player or the bashed target.
-						Default: Target 
-						''' */
+						Режим "Удара"
+						'''
+					Tooltip:
+						'''
+						Должен ли "удар" целиться
+						от игрока (Player)
+						или от цели (Target) "удара"
+						По умолчанию: От цели
+						'''
 				}
 
 				flashMode: {
-					// Label: Damage Flash Mode
-					/* Tooltip:
+					Label: Тип мигания при уроне
+					Tooltip:
 						'''
-						Determines what color the player should flash after taking damage.
-						Default: Transparent
-						''' */
+						Каким цветом будет мигать игрок при получении урона
+						(Transparent - прозрачный, 
+						Red - красный, 
+						Disabled - не мигать)
+						По умолчанию: Прозрачный	 
+						'''
 				}
 			}
 		}
@@ -233,7 +240,7 @@ Mods: {
 			Feather.DisplayName: Перо (Планер)
 			Charge.DisplayName: Заряд прыжка/рывка
 			Burrow.DisplayName: Бурение
-			// Stomp.DisplayName: Stomp
+			Stomp.DisplayName: Топот
 		}
 
 		Tiles.SpiritSapling.MapEntry: Саженец Древа Духов
