@@ -60,7 +60,6 @@ public sealed class WallJump : OriAbility, ILevelable {
   public override void UpdateUsing() {
     player.velocity.X = WallJumpVelocity.X * -_wallDirection;
     player.direction = _wallDirection;
-    oPlayer.UnrestrictedMovement = true;
   }
 
   public override void PreUpdate() {

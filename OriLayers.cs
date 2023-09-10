@@ -35,7 +35,9 @@ internal static class OriLayers {
       bool isTransformStart = !oPlayer.IsOri && oPlayer.Transforming;
 
       DrawData data = oPlayer.Animations.playerAnim.GetDrawData(drawInfo);
-      bool doFlash = player.immune && oPlayer.immuneTimer == 0;
+      bool doFlash = player.immune && !player.immuneNoBlink && OriMod.ConfigClient.flashMode != "Disabled";
+      Color flashColor = Color.Transparent;
+      if (OriMod.ConfigClient.flashMode == "Red") flashColor = Color.Red;
       if (oPlayer.armor_dye != player.dye[1].netID) {
         oPlayer.dye_shader = GameShaders.Armor.GetShaderFromItemId(player.dye[1].netID);
         oPlayer.armor_dye = player.dye[1].netID;
@@ -44,7 +46,7 @@ internal static class OriLayers {
       Color sprCol = Color.Lerp(oPlayer.SpriteColorPrimary, shColor,
         (!dyeEn || shColor == Color.White) ? 0 : oPlayer.DyeColorBlend);
       data.color = doFlash
-          ? Color.Lerp(sprCol, Color.Red, player.immuneAlpha / 255f)
+          ? Color.Lerp(sprCol, flashColor, player.immuneAlpha / 255f)
           : isTransformStart ? Color.White : sprCol;
       data.shader = dyeEn ? player.dye[1].dye : 0;
       data.origin.Y += 5 * player.gravDir;
@@ -55,7 +57,7 @@ internal static class OriLayers {
       // Secondary color layer, only used when IsOri is true (i.e. not during transform start)
       if (oPlayer.IsOri) {
         data.color = doFlash
-          ? Color.Lerp(oPlayer.SpriteColorSecondary, Color.Red, player.immuneAlpha / 255f)
+          ? Color.Lerp(oPlayer.SpriteColorSecondary, flashColor, player.immuneAlpha / 255f)
           : oPlayer.SpriteColorSecondary;
 
         data.texture = OriTextures.Instance.playerSecondary;

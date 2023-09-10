@@ -111,7 +111,7 @@ public sealed class ChargeJump : OriAbility, ILevelable {
       }
       else {
         _currentGrace--;
-        if (_currentGrace < 0) {
+        if (_currentGrace < 0 || !input.charge.Current) {
           _currentCharge = 0;
           PlaySound("Ori/ChargeDash/seinChargeDashUncharge", 0.6f, .3f);
         }

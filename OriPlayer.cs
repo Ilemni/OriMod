@@ -189,18 +189,6 @@ public sealed class OriPlayer : ModPlayer {
   private int _carpet_remaining = -1;
 
   /// <summary>
-  /// When true, the player will not be slowed down (sets <see cref="Player.runSlowdown"/> to 0 every frame).
-  /// </summary>
-  public bool UnrestrictedMovement {
-    get => _unrestrictedMovement;
-    set {
-      if (value == _unrestrictedMovement) return;
-      _netUpdate = true;
-      _unrestrictedMovement = value;
-    }
-  }
-
-  /// <summary>
   /// Info about if this player has a <see cref="Projectiles.Minions.Sein"/> minion summoned. Used to prevent having more than one Sein summoned per player.
   /// </summary>
   public bool SeinMinionActive {
@@ -244,7 +232,14 @@ public sealed class OriPlayer : ModPlayer {
   /// <summary>
   /// When greater than 0, sets <see cref="Player.immune"/> to true.
   /// </summary>
-  internal int immuneTimer;
+  internal int immuneTimer {
+    get => Player.immuneTime;
+    set {
+      if (Player.immuneTime < value) Player.immuneTime = value;
+      Player.immune = true;
+      Player.immuneNoBlink = true;
+    }
+  }
 
   private readonly RandomChar _randJump = new();
   private readonly RandomChar _randHurt = new();
@@ -310,7 +305,6 @@ public sealed class OriPlayer : ModPlayer {
 
   private OriAnimationController _anim;
   private bool _isOri;
-  private bool _unrestrictedMovement;
   private bool _seinMinionActive;
   private int _seinMinionId;
   private int _seinMinionType;
@@ -410,7 +404,6 @@ public sealed class OriPlayer : ModPlayer {
   internal void ResetData() {
     IsOri = false;
     HasTransformedOnce = false;
-    UnrestrictedMovement = false;
     SeinMinionActive = false;
     SeinMinionType = 0;
     abilities.ResetAllAbilities();
@@ -439,12 +432,6 @@ public sealed class OriPlayer : ModPlayer {
 
     if (Transforming) {
       immuneTimer = 2;
-    }
-
-    if (immuneTimer > 1) {
-      immuneTimer--;
-      Player.immune = true;
-      Player.immuneNoBlink = true;
     }
 
     if (Main.netMode != NetmodeID.Server) {
@@ -564,17 +551,18 @@ public sealed class OriPlayer : ModPlayer {
     if (IsOri && !Transforming) {
       #region Default Spirit Run Speeds
 
-      Player.runAcceleration = 0.5f;
       Player.maxRunSpeed += 2f;
       Player.noFallDmg = true;
       LowerGravityTo(0.35f);
       Player.jumpSpeedBoost += 2f;
-      if (IsGrounded || Player.controlLeft || Player.controlRight) {
-        UnrestrictedMovement = false;
+
+      if (IsGrounded) {
+        Player.runAcceleration = Math.Max(Math.Min(MathF.Pow(Player.runAcceleration,3f)*980f,0.5f),Player.runAcceleration);
+        Player.runSlowdown = Math.Max(Math.Min(MathF.Pow(Player.runSlowdown,2f)*25f,1f),Player.runSlowdown);
+      } else {
+        Player.runAcceleration = (Player.runAcceleration > 0.01 && Player.runAcceleration < 0.3) ? 0.3f : Player.runAcceleration;
+        Player.runSlowdown = (Player.runAcceleration > 0.01 && Player.runAcceleration < 0.5) ? 0.5f : Player.runAcceleration;;
       }
-
-      Player.runSlowdown = UnrestrictedMovement ? 0 : 1;
-
       #endregion
 
       if (IsLocal && OriMod.ConfigClient.smoothCamera) {
@@ -656,6 +644,8 @@ public sealed class OriPlayer : ModPlayer {
       IsGrounded = CheckGrounded();
       OnWall = CheckOnWall();
 
+      if (IsGrounded || OnWall) RestoreAirJumps();
+
       // Footstep effects
       if (Main.dedServ || !IsGrounded) return;
       bool doDust = false;
@@ -718,6 +708,15 @@ public sealed class OriPlayer : ModPlayer {
     return WorldGen.SolidTile(p.X, p.Y + 1) && WorldGen.SolidTile(p.X, p.Y + 2);
   }
 
+  /// <summary>
+  /// Refreshes your airborne abilities, allowing you to jump and dash again before touching the ground.
+  /// </summary>
+  public void RestoreAirJumps() {
+    abilities.airJump.currentCount = 0;
+    abilities.dash.currentCount = 0;
+    abilities.launch.CurrentChain = 0;
+  }
+
   public override void FrameEffects() {
     if (!IsOri) {
       return;
@@ -736,12 +735,6 @@ public sealed class OriPlayer : ModPlayer {
 
     modifiers.DisableDust();
     modifiers.DisableSound();
-  }
-
-  public override void OnHurt(Player.HurtInfo info) {
-    if (!IsOri) return;
-
-    UnrestrictedMovement = true;
   }
 
   public override void PostHurt(Player.HurtInfo info) {

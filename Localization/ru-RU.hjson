@@ -148,6 +148,25 @@ Mods: {
 						когда открыты инвентарь, меню или диалоги.
 						'''
 				}
+
+				bashMode: {
+					// Label: Bash Targeting Mode
+					/* Tooltip:
+						'''
+						Determines whether bash should aim from
+						the player or the bashed target.
+						Default: Target 
+						''' */
+				}
+
+				flashMode: {
+					// Label: Damage Flash Mode
+					/* Tooltip:
+						'''
+						Determines what color the player should flash after taking damage.
+						Default: Transparent
+						''' */
+				}
 			}
 		}
 
@@ -214,6 +233,7 @@ Mods: {
 			Feather.DisplayName: Перо (Планер)
 			Charge.DisplayName: Заряд прыжка/рывка
 			Burrow.DisplayName: Бурение
+			// Stomp.DisplayName: Stomp
 		}
 
 		Tiles.SpiritSapling.MapEntry: Саженец Древа Духов

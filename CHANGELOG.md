@@ -1,3 +1,50 @@
+# v3.2.1.0
+
+## Feature update
+
+Reduced acceleration/slowdown while in the air
+Reduced traction on ice
+Stomp and Bash won't break target dummies
+Using an ability medallion while at or above its max level resets the ability to level zero
+Fixed damage flash
+Most abilities that recharge air jump now also recharge dash and launch
+
+#### Sein
+Damage multipliers are now applied properly
+Deals 1.4x damage when fired manually
+Summoning Sein when your minion slots are full won't despawn older minions
+
+#### Bash
+Can be buffered; hold bash to grab the next target that comes in range
+Launch is now activated with charge + bash
+Can be released sooner, and has longer immunity after release
+Added stress system; use bash too often, and it stops giving iframes
+Added config option for whether bash should aim from the bashed entity or the player
+
+#### Charge Dash
+Resets your velocity on contact with enemy, no more launching into space
+Costs slightly more mana, activates mana regen cooldown
+Targets the enemy closest to the mouse instead of the player
+
+#### Stomp
+Added keybind
+Disabled wings while stomping
+
+#### Glide
+Starts and ends much faster
+Can be used while moving upwards
+Air jump has a different animation if used while gliding
+
+#### Dash
+Can be cancelled with a jump from the ground
+Resets your velocity when cancelled
+
+#### Burrow
+Fast burrow is now activated by holding burrow instead of left click
+Slows down on sharp turns, or while not holding a direction
+
+---
+
 # v3.2.0.2
 
 ## Bugfix

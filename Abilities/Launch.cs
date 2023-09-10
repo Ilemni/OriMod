@@ -33,7 +33,7 @@ public sealed class Launch : OriAbility {
     !abilities.chargeJump && !abilities.climb &&
     !abilities.dash && !abilities.stomp && !abilities.wallChargeJump;
 
-  private ushort CurrentChain { get; set; }
+  public ushort CurrentChain { get; set; }
 
   private ushort MaxChain =>
     Level switch {
@@ -145,17 +145,17 @@ public sealed class Launch : OriAbility {
 
   private void End() {
     player.velocity = LaunchDirection * 10;
-    oPlayer.UnrestrictedMovement = true;
     StartCooldown();
   }
 
   public override void PreUpdate() {
-    if (CanUse && input.bash.JustPressed && IsLocal) {
+    if (CanUse && input.charge.Current && input.bash.JustPressed && IsLocal) {
       if (CurrentChain == 0) {
         PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
       }
 
       SetState(AbilityState.Starting);
+      RestoreAirJumps();
       CurrentChain = 1;
     }
     else if (!InUse) return;
@@ -195,8 +195,6 @@ public sealed class Launch : OriAbility {
   }
 
   public override void UpdateCooldown() {
-    if (!IsGrounded && !abilities.bash) return;
-    EndCooldown();
-    CurrentChain = 0;
+    if (CurrentChain == 0) EndCooldown();
   }
 }

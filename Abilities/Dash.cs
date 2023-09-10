@@ -1,6 +1,7 @@
 using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
+using System;
 using System.IO;
 using Terraria;
 using Terraria.ModLoader;
@@ -33,6 +34,9 @@ public sealed class Dash : OriAbility, ILevelable {
   private static int Duration => Speeds.Length - 1;
 
   private sbyte _direction;
+  
+  internal ushort currentCount;
+  private int MaxDashes => 1;
 
   private readonly RandomChar _rand = new();
 
@@ -40,6 +44,7 @@ public sealed class Dash : OriAbility, ILevelable {
     _direction = (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction);
     PlaySound("Ori/Dash/seinDash" + _rand.NextNoRepeat(3), 0.2f);
     player.pulley = false;
+    currentCount++;
   }
 
   public override void ReadPacket(BinaryReader r) {
@@ -62,13 +67,10 @@ public sealed class Dash : OriAbility, ILevelable {
     }
     player.velocity.X = Speeds[stateTime] * 0.5f * _direction;
     player.velocity.Y = 0.25f * (stateTime + 1) * player.gravDir;
-    if (stateTime > 20) {
-      player.runSlowdown = 26f;
-    }
     if (IsLocal) netUpdate = true;
   }
 
-  public override bool RefreshCondition() => abilities.bash || OnWall || IsGrounded || player.mount.Active;
+  public override bool RefreshCondition() => currentCount < MaxDashes || player.mount.Active;
 
   public override void PreUpdate() {
     if (abilities.chargeDash) {
@@ -83,9 +85,9 @@ public sealed class Dash : OriAbility, ILevelable {
     }
     if (!InUse) return;
     UpdateCooldown();
-    if (abilities.airJump) {
+    if (abilities.airJump || input.jump.JustPressed) {
       SetState(AbilityState.Inactive);
-      player.velocity.X = Speeds[24] * _direction; // Rip hyperspeed dash-jump
+      player.velocity.X = Math.Min(Speeds[24], Math.Abs(player.velocity.X)) * _direction; // Rip hyperspeed dash-jump
       StartCooldown(); //force = true
     }
     else if (stateTime > Duration || OnWall || abilities.bash) {

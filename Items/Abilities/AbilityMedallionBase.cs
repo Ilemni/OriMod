@@ -29,17 +29,6 @@ public abstract class AbilityMedallionBase : ModItem {
   }
 
   /// <summary>
-  /// Returns <see langword="true"/> if the player does not have the <see cref="Ability"/> this Item represents upgraded to the <see cref="Ability.Level"/> this Item upgrades to.
-  /// </summary>
-  /// <param name="player">The <see cref="Player"/> using the item.</param>
-  /// <returns><see langword="true"/> if the player does not have the <see cref="Ability"/> at this <see cref="Level"/>; otherwise, <see langword="false"/>.</returns>
-  public override bool CanUseItem(Player player) {
-    // Can only use the item if the ability to be unlocked has not been unlocked
-    OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-    return oPlayer.abilities[Id].Level < Level;
-  }
-
-  /// <summary>
   /// Increases the level of <paramref name="player"/>'s <see cref="Ability"/> this Item represents to by 1.
   /// <para>By increasing by 1, the player can level it multiple times if they skip one, rather than having their level skip.</para>
   /// </summary>
@@ -49,7 +38,7 @@ public abstract class AbilityMedallionBase : ModItem {
     OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
     Ability ability = oPlayer.abilities[Id];
     if (ability is ILevelable levelable) {
-      levelable.Level++;
+      levelable.Level = levelable.Level < Level ? levelable.Level + 1 : 0;
       if (player.whoAmI == Main.myPlayer) {
         string key = $"Mods.OriMod.Lore.{ability.GetType().Name}.{levelable.Level}";
         if (Language.Exists(key)) {
@@ -59,9 +48,9 @@ public abstract class AbilityMedallionBase : ModItem {
       string strStart = player.whoAmI == Main.myPlayer ? "You" : $"{player.name} has";
       if (!Main.dedServ)
         Main.NewText(
-          levelable.Level == 1
-            ? $"{strStart} unlocked {NiceName(ability)}!"
-            : $"{strStart} upgraded {NiceName(ability)} to Level {levelable.Level}!", Color.LightGreen);
+          levelable.Level == 1 ? $"{strStart} unlocked {NiceName(ability)}!" :
+          levelable.Level == 0 ? $"{strStart} forgot {NiceName(ability)}!" : 
+          $"{strStart} upgraded {NiceName(ability)} to Level {levelable.Level}!", Color.LightGreen);
       return true;
     }
 

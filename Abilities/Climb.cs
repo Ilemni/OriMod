@@ -47,7 +47,7 @@ public sealed class Climb : OriAbility, ILevelable {
     if (IsCharging) {
       player.velocity.Y = 0;
     }
-    else if (player.controlUp) {
+    else if (player.controlUp || input.jump.Current) {
       player.velocity.Y += player.velocity.Y < (player.gravDir > 0 ? -2 : 4) ? 1 : -1;
     }
     else if (player.controlDown) {
@@ -58,6 +58,7 @@ public sealed class Climb : OriAbility, ILevelable {
     }
 
     player.gravity = 0;
+    player.jump = 0;
     player.runAcceleration = 0;
     player.maxRunSpeed = 0;
     player.direction = wallDirection;
@@ -68,7 +69,7 @@ public sealed class Climb : OriAbility, ILevelable {
   }
 
   public override void UpdateEnding() {
-    player.velocity.X = wallDirection * 5f;
+    player.velocity.X = wallDirection * 3f;
     player.velocity.Y = -player.gravDir * 4f;
   }
 
@@ -102,10 +103,10 @@ public sealed class Climb : OriAbility, ILevelable {
         SetState(AbilityState.Inactive);
       }
     }
-    else if (!input.climb.Current || (!CanUse && !player.controlUp)) {
+    else if (!input.climb.Current || (!CanUse && !(player.controlUp || input.jump.Current))) {
       SetState(AbilityState.Inactive);
     }
-    else if (!CanUse && player.controlUp) {
+    else if (!CanUse && (player.controlUp || input.jump.Current)) {
       // Climb over top of things
       SetState(AbilityState.Ending);
     }

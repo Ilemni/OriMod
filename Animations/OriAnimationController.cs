@@ -78,7 +78,11 @@ public class OriAnimationController : AnimationController {
       return;
     }
     if (abilities.airJump) {
-      PlayTrack("AirJump", rotation: FrameTime * 0.6f * player.gravDir * player.direction);
+      if (abilities.glide) {
+        PlayTrack("GlideStart", frameIndex: abilities.airJump.Active ? 0 : null);
+      } else {
+        PlayTrack("AirJump", rotation: FrameTime * 0.6f * player.gravDir * player.direction);
+      }
       return;
     }
     if (abilities.burrow) {

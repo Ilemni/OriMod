@@ -85,7 +85,7 @@ public sealed class Stomp : OriAbility, ILevelable {
 
   internal void EndStomp() {
     PlaySound("Ori/Stomp/seinStompImpact" + _randEnd.NextNoRepeat(3), 0.9f);
-    abilities.airJump.currentCount = 0;
+    RestoreAirJumps();
     player.velocity = Vector2.Zero;
     Vector2 position = new(player.position.X, player.position.Y + 32);
     for (int i = 0; i < 25; i++) {
@@ -106,6 +106,7 @@ public sealed class Stomp : OriAbility, ILevelable {
       player.controlLeft = false;
       player.controlRight = false;
     }
+    player.controlJump = false;
     player.controlHook = false;
     player.controlMount = false;
     player.controlThrow = false;
@@ -120,7 +121,7 @@ public sealed class Stomp : OriAbility, ILevelable {
         if (input.stomp.JustPressed) {
           _currentHoldDown = 1;
         }
-        if (_currentHoldDown >= 1 && input.stomp.Current && IsLocal) {
+        if (_currentHoldDown >= 1 && player.controlDown && input.stomp.Current && IsLocal) {
           _currentHoldDown++;
           if (_currentHoldDown > HoldDownDelay) {
             _currentHoldDown = 0;
@@ -129,20 +130,25 @@ public sealed class Stomp : OriAbility, ILevelable {
         }
       }
       if (Starting) {
-          _currentHoldDown = 0;
+        _currentHoldDown = 0;
       }
     }
     else if (Starting) {
       if (stateTime > StartDuration) {
-          SetState(AbilityState.Active);
+        SetState(AbilityState.Active);
+      }
+      if (abilities.airJump.state == AbilityState.Active) {
+        SetState(AbilityState.Inactive);
+        StartCooldown();
       }
     }
     else if (Active) {
       if ((stateTime > MinDuration && !player.controlDown) || abilities.airJump) {
-          SetState(AbilityState.Inactive);
+        SetState(AbilityState.Inactive);
+        StartCooldown();
       }
       if (IsGrounded) {
-          EndStomp();
+        EndStomp();
       }
     }
   }

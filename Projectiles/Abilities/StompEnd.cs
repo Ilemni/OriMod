@@ -57,6 +57,7 @@ public sealed class StompEnd : OriAbilityProjectile {
   }
 
   private void ModifyHitAny(Entity target) {
+    if (target is NPC npc && npc.immortal) return; // Don't knockback target dummies
     Vector2 vector = target.Center - aPlayer.Player.Center;
     float dist = target.Distance(aPlayer.Player.Center);
     float kb = Knockback * (160.0f - dist) / 160.0f;

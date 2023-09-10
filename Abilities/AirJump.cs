@@ -57,7 +57,10 @@ public sealed class AirJump : OriAbility, ILevelable {
       currentCount++;
       _gravityDirection = (sbyte)player.gravDir;
 
-      if (MaxJumps != 1 && currentCount == MaxJumps) {
+      if (abilities.glide) {
+        PlaySound("Ori/Glide/seinGlideStart" + _rand.NextNoRepeat(3), 0.8f);
+      }
+      else if (MaxJumps != 1 && currentCount == MaxJumps) {
         PlaySound("Ori/TripleJump/seinTripleJumps" + _rand.NextNoRepeat(5), 0.6f);
       }
       else {
@@ -65,11 +68,8 @@ public sealed class AirJump : OriAbility, ILevelable {
       }
       return;
     }
-    if (IsGrounded || abilities.bash || abilities.launch || OnWall) {
-      currentCount = 0;
-      if (IsGrounded || abilities.bash || abilities.launch || abilities.climb) {
-        SetState(AbilityState.Inactive);
-      }
+    if (IsGrounded || abilities.bash || abilities.launch || abilities.climb) {
+      SetState(AbilityState.Inactive);
     }
     if (Active) {
       SetState(AbilityState.Ending);

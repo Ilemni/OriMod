@@ -147,6 +147,25 @@ Mods: {
 						when inventory, menu or dialogue are open.
 						'''
 				}
+
+				bashMode: {
+					Label: Bash Targeting Mode
+					Tooltip:
+						'''
+						Determines whether bash should aim from
+						the player or the bashed target.
+						Default: Target 
+						'''
+				}
+
+				flashMode: {
+					Label: Damage Flash Mode
+					Tooltip:
+						'''
+						Determines what color the player should flash after taking damage.
+						Default: Transparent
+						'''
+				}
 			}
 		}
 
@@ -213,6 +232,7 @@ Mods: {
 			Feather.DisplayName: Feather (Glide)
 			Charge.DisplayName: Charge
 			Burrow.DisplayName: Burrow
+			Stomp.DisplayName: Stomp
 		}
 
 		Tiles.SpiritSapling.MapEntry: Spirit Sapling
