@@ -844,7 +844,9 @@ public sealed class OriPlayer : ModPlayer {
     PlayerDrawLayers.WaistAcc.Hide();
     PlayerDrawLayers.WebbedDebuffBack.Hide();
 
-    if (OnWall || Transforming || abilities.stomp || abilities.airJump || abilities.burrow || abilities.chargeJump ||
+    if (OnWall || Transforming || abilities.stomp || 
+        (abilities.airJump && !abilities.glide) || 
+        abilities.burrow || abilities.chargeJump ||
         abilities.wallChargeJump) {
       PlayerDrawLayers.HeldItem.Hide();
       PlayerDrawLayers.Wings.Hide();
