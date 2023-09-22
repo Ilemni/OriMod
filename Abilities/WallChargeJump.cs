@@ -31,7 +31,7 @@ public sealed class WallChargeJump : OriAbility {
   private static float[] _speeds;
   private static float MaxAngle => 0.65f;
 
-  public bool CanCharge => base.CanUse && abilities.climb.IsCharging;
+  public bool CanCharge => base.CanUse && abilities.climb.IsCharging && !player.shimmering;
   public bool Charged => _currentCharge >= MaxCharge;
   private int _currentCharge;
 

@@ -9,6 +9,8 @@ public abstract class OriAbility : Ability<OriAbilityManager> {
   private OriPlayer _oPlayer;
   private OriInput _input;
 
+  public override bool CanUse => base.CanUse && !player.shimmering;
+
   protected bool OnWall => oPlayer.OnWall;
   protected bool IsGrounded => oPlayer.IsGrounded;
   protected void RestoreAirJumps() => oPlayer.RestoreAirJumps();

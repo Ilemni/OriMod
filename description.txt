@@ -40,6 +40,7 @@ Reduced traction on ice
 Stomp and Bash won't break target dummies
 Using an ability medallion while at or above its max level resets the ability to level zero
 Fixed damage flash
+Fixed some abilities work in shimmered state
 Most abilities that recharge air jump now also recharge dash and launch
 
 Sein:

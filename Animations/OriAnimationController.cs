@@ -212,7 +212,7 @@ public class OriAnimationController : AnimationController {
     }
 
     // Generic/misc movement
-    if (oPlayer.OnWall && !oPlayer.IsGrounded) {
+    if (oPlayer.OnWall && !oPlayer.IsGrounded && !player.shimmering) {
       PlayTrack("WallSlide");
       return;
     }
