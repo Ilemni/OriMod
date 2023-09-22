@@ -6,9 +6,11 @@ Reduced acceleration/slowdown while in the air
 Reduced traction on ice
 Stomp and Bash won't break target dummies
 Using an ability medallion while at or above its max level resets the ability to level zero
-Fixed damage flash
+Damage flash was altered and config option is added
 Fixed some abilities work in shimmered state
 Most abilities that recharge air jump now also recharge dash and launch
+Rocket boots and flying carpet now work after Air Jumps 
+Updated recipe groups (terragrim is now accepted for sapling recipe)
 
 #### Sein
 Damage multipliers are now applied properly
@@ -43,15 +45,6 @@ Resets your velocity when cancelled
 #### Burrow
 Fast burrow is now activated by holding burrow instead of left click
 Slows down on sharp turns, or while not holding a direction
-
----
-
-# v3.2.0.2
-
-## Bugfix
-
-Rocket boots and flying carpet now work after Air Jumps 
-Updated recipe groups (terragrim is now accepted for sapling recipe)
 
 ---
 
