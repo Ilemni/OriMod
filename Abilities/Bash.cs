@@ -99,7 +99,7 @@ public sealed class Bash : OriAbility, ILevelable {
       switch (Level) {
         case 0: return 0;
         case 1:
-        case 2: return 40;
+        case 2: return 25;
         case 3: return 60;
         default: return Level * 20;
       }
