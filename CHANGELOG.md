@@ -2,50 +2,50 @@
 
 ## Feature update
 
-Reduced acceleration/slowdown while in the air
-Reduced traction on ice
-Stomp and Bash won't break target dummies
-Using an ability medallion while at or above its max level resets the ability to level zero
-Damage flash was altered and config option is added
-Fixed some abilities work in shimmered state
-Most abilities that recharge air jump now also recharge dash and launch
-Rocket boots and flying carpet now work after Air Jumps 
-Updated recipe groups (terragrim is now accepted for sapling recipe)
+- Reduced acceleration/slowdown while in the air
+- Reduced traction on ice
+- Stomp and Bash won't break target dummies
+- Using an ability medallion while at or above its max level resets the ability to level zero
+- Damage flash was altered and config option is added
+- Fixed some abilities work in shimmered state
+- Most abilities that recharge air jump now also recharge dash and launch
+- Rocket boots and flying carpet now work after Air Jumps 
+- Updated recipe groups (terragrim is now accepted for sapling recipe)
 
 #### Sein
-Damage multipliers are now applied properly
-Deals 1.4x damage when fired manually
-Summoning Sein when your minion slots are full won't despawn older minions
+- Damage multipliers are now applied properly
+- Deals 1.4x damage when fired manually
+- Summoning Sein when your minion slots are full won't despawn older minions
 
 #### Bash
-Can be buffered; hold bash to grab the next target that comes in range
-Launch is now activated with charge + bash
-Can be released sooner, and has longer immunity after release
-Added stress system; use bash too often, and it stops giving iframes
-Added config option for whether bash should aim from the bashed entity or the player
+- Can be buffered; hold bash to grab the next target that comes in range
+- Launch is now activated with charge + bash
+- Can be released sooner, and has longer immunity after release
+- Added stress system; use bash too often, and it stops giving iframes
+- Added config option for whether bash should aim from the bashed entity or the player
 
 #### Charge Dash
-Resets your velocity on contact with enemy, no more launching into space
-Costs slightly more mana, activates mana regen cooldown
-Targets the enemy closest to the mouse instead of the player
+- Resets your velocity on contact with enemy, no more launching into space
+- Costs slightly more mana, activates mana regen cooldown
+- Targets the enemy closest to the mouse instead of the player
 
 #### Stomp
-Added keybind
-Disabled wings while stomping
+- Added keybind
+- Disabled wings while stomping
 
 #### Glide
-Starts and ends much faster
-Can be used while moving upwards
-Air jump has a different animation if used while gliding
+- Starts and ends much faster
+- Can be used while moving upwards
+- Air jump has a different animation if used while gliding
 
 #### Dash
-Can be cancelled with a jump from the ground
-Resets your velocity when cancelled
+- Can be cancelled with a jump from the ground
+- Resets your velocity when cancelled
 
 #### Burrow
-Fast burrow is now activated by holding burrow instead of left click
-Slows down on sharp turns, or while not holding a direction
-Burrow indicator is hidden when HUD is hidden
+- Fast burrow is now activated by holding burrow instead of left click
+- Slows down on sharp turns, or while not holding a direction
+- Burrow indicator is hidden when HUD is hidden
 
 ---
 
@@ -53,9 +53,9 @@ Burrow indicator is hidden when HUD is hidden
 
 ## Bugfix
 
-Added dim light to tier 1 spirit orb
-Fixed portable stool visual offset
-Fixed jump sounds played during transformation
+- Added dim light to tier 1 spirit orb
+- Fixed portable stool visual offset
+- Fixed jump sounds played during transformation
 
 ---
 
@@ -63,19 +63,19 @@ Fixed jump sounds played during transformation
 
 ## Feature update 
 
-Added Ori dye support, place dye to chestplate slot!
-Added option to block ability controls when any menu is open
-Refactored code, now uses AnimLib's abilities code
-Improved ability netsync
-Got rid of obsolete features in recipe groups
-Corrected dash ability lv2 and lv3 descriptions
-Reduced charge dash cooldown on lv3
-Disabled active cursor on sappling
-Fixed spirit sappling placement silent exception
-Fixed trail, burrow indicator and bash arrow rotating with player
-Fixed infinite Launch looping and windup cancellation
-Fixed inputs net sync
-Fixed wings and various jump, mount or hook items working during transformation
+- Added Ori dye support, place dye to chestplate slot!
+- Added option to block ability controls when any menu is open
+- Refactored code, now uses AnimLib's abilities code
+- Improved ability netsync
+- Got rid of obsolete features in recipe groups
+- Corrected dash ability lv2 and lv3 descriptions
+- Reduced charge dash cooldown on lv3
+- Disabled active cursor on sappling
+- Fixed spirit sappling placement silent exception
+- Fixed trail, burrow indicator and bash arrow rotating with player
+- Fixed infinite Launch looping and windup cancellation
+- Fixed inputs net sync
+- Fixed wings and various jump, mount or hook items working during transformation
 
 ---
 
