@@ -234,7 +234,7 @@ public sealed class Burrow : OriAbility, ILevelable {
   /// Draw breath meter to screen
   /// </summary>
   internal void DrawEffects(ref PlayerDrawSet drawInfo) {
-    if (_breath >= MaxDuration) return;
+    if (_breath >= MaxDuration || Main.hideUI) return;
 
     Vector2 baseDrawPosition = player.Right - Main.screenPosition;
     baseDrawPosition.X += 48;

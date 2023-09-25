@@ -45,6 +45,7 @@ Resets your velocity when cancelled
 #### Burrow
 Fast burrow is now activated by holding burrow instead of left click
 Slows down on sharp turns, or while not holding a direction
+Burrow indicator is hidden when HUD is hidden
 
 ---
 
