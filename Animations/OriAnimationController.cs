@@ -221,7 +221,8 @@ public class OriAnimationController : AnimationController {
       PlayTrack(player.velocity.Y * player.gravDir < 0 ? "Jump" : "Falling");
       return;
     }
-    if (Math.Abs(player.velocity.X) > 0.2f) {
+    if (Math.Abs(player.velocity.X) > 0.2f && 
+      (player.controlLeft || player.controlRight)) {
       // Movement deadzone recommended for running animations
       // Else subtle movements such as sandstorm can cause a running animation
       // Animation speed is also determined by player speed, as it should be
