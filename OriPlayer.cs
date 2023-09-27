@@ -50,7 +50,7 @@ public sealed class OriPlayer : ModPlayer {
 
   private AnimCharacter _character;
   public AnimCharacter character =>
-    _character ??= this.GetAnimCharacter<OriAnimationController, OriAbilityManager>();
+    _character ??= this.GetAnimCharacter();
 
   /// <summary>
   /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
