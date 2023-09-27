@@ -332,6 +332,7 @@ Mods: {
 					Unlocks Bash
 					Allows you to Bash on enemies, launching you
 					and your target in opposite directions!
+					(has a stress system, read description for patch v3.2.1.0)
 					'''
 			}
 
@@ -342,6 +343,7 @@ Mods: {
 					Upgrades Bash to Level 2
 					Allows you to Bash 
 					projectiles, and deal damage to foes!
+					(has a stress system, read description for patch v3.2.1.0)
 					'''
 			}
 
@@ -352,6 +354,7 @@ Mods: {
 					Upgrades Bash to Level 3
 					Greatly enhances your Bashing speeds,
 					distance, and damage dealt!
+					(has a stress system, read description for patch v3.2.1.0)
 					'''
 			}
 
@@ -361,6 +364,7 @@ Mods: {
 					'''
 					Unlocks Burrow
 					Allows you to burrow through the ground!
+					(hold burrow key to speed up)
 					'''
 			}
 
@@ -370,6 +374,7 @@ Mods: {
 					'''
 					Upgrades Burrow to Level 2
 					Allows you to burrow through tougher terrain!
+					(hold burrow key to speed up)
 					'''
 			}
 
@@ -379,6 +384,7 @@ Mods: {
 					'''
 					Upgrades Burrow to Level 3
 					Allows you to burrow through all terrain!
+					(hold burrow key to speed up)
 					'''
 			}
 
@@ -406,6 +412,7 @@ Mods: {
 					'''
 					Upgrades Charge Jump to Level 3
 					Allows you to Launch yourself through the air!
+					(press charge and bash keys simultaneously)
 					'''
 			}
 
@@ -415,6 +422,7 @@ Mods: {
 					'''
 					Upgrades Charge Jump to Level 4
 					Allows for powerful chains of Launches in the air!
+					(press charge and bash keys simultaneously)
 					'''
 			}
 
@@ -443,6 +451,7 @@ Mods: {
 					Upgrades Dash to Level 2
 					Allows you to Dash in the air!
 					Allows you to quickly Dash into enemies, dealing damage!
+					(Press charge and dash for semi-homing attack)
 					'''
 			}
 
@@ -452,6 +461,7 @@ Mods: {
 					'''
 					Upgrades Dash to Level 3
 					Allows you to perform dashes more rapidly!
+					(Press charge and dash for semi-homing attack)
 					'''
 			}
 
@@ -471,6 +481,7 @@ Mods: {
 					Unlocks Stomp
 					Allows you to slam into the ground,
 					creating a shockwave to damage nearby enemies!
+					(press down and stomp hotkey simultaneously)
 					'''
 			}
 
@@ -481,6 +492,7 @@ Mods: {
 					Upgrades Stomp to Level 2
 					Enhances your stomping capabilities
 					for even more damage, pushing enemies far back!
+					(press down and stomp hotkey simultaneously)
 					'''
 			}
 
@@ -490,6 +502,7 @@ Mods: {
 					'''
 					Upgrades Stomp to Level 3
 					Further enhances the power of Stomp!
+					(press down and stomp hotkey simultaneously)
 					'''
 			}
 
