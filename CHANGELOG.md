@@ -11,6 +11,7 @@
 - Most abilities that recharge air jump now also recharge dash and launch
 - Rocket boots and flying carpet now work after Air Jumps 
 - Updated recipe groups (terragrim is now accepted for sapling recipe)
+- Fixed incorrect liquid walking detection
 
 #### Sein
 - Damage multipliers are now applied properly

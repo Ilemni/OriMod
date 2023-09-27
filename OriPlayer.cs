@@ -691,7 +691,7 @@ public sealed class OriPlayer : ModPlayer {
     if (Player.fireWalk || Player.waterWalk || Player.waterWalk2) {
       Tile tile = Main.tile[pos.X, pos.Y];
       bool testBlock = tile.LiquidAmount > 0 && Main.tile[pos.X, pos.Y - 1].LiquidAmount == 0;
-      if (testBlock && tile.LiquidType == LiquidID.Lava ? Player.fireWalk : Player.waterWalk || Player.waterWalk2) {
+      if (testBlock && (tile.LiquidType == LiquidID.Lava ? Player.fireWalk : (Player.waterWalk || Player.waterWalk2))) {
         return true;
       }
     }
