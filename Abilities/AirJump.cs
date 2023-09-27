@@ -33,6 +33,7 @@ public sealed class AirJump : OriAbility, ILevelable {
     _gravityDirection = r.ReadSByte();
     player.position = r.ReadVector2();
     player.velocity = r.ReadVector2();
+    currentCount = r.ReadUInt16();
   }
 
   public override void WritePacket(ModPacket packet) {
@@ -40,6 +41,7 @@ public sealed class AirJump : OriAbility, ILevelable {
     packet.Write(_gravityDirection);
     packet.WriteVector2(player.position);
     packet.WriteVector2(player.velocity);
+    packet.Write(currentCount);
   }
 
   private readonly RandomChar _rand = new();
@@ -77,6 +79,7 @@ public sealed class AirJump : OriAbility, ILevelable {
     else if (Ending) {
       if (stateTime > EndDuration || player.velocity.Y * player.gravDir > 0) {
         SetState(AbilityState.Inactive);
+        if (currentCount == MaxJumps) return;
       }
     }
     // Other than activation, Air Jump is deterministic and requires no additional syncing
