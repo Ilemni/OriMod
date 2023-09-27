@@ -168,6 +168,8 @@ public sealed class Bash : OriAbility, ILevelable {
 
     private readonly RandomChar _rand = new();
 
+  private bool _S_bashed = false;
+
   public override void ReadPacket(BinaryReader r) {
     if (!InUse) return;
     if (Starting) {
@@ -180,6 +182,9 @@ public sealed class Bash : OriAbility, ILevelable {
     BashAngle = r.ReadSingle();
     player.position = r.ReadVector2();
     player.velocity = r.ReadVector2();
+    CurrentStress = r.ReadInt32();
+    LastStress = r.ReadInt32();
+    BufferDuration = r.ReadInt32();
   }
 
   public override void WritePacket(ModPacket packet) {
@@ -193,6 +198,9 @@ public sealed class Bash : OriAbility, ILevelable {
     packet.Write(BashAngle);
     packet.WriteVector2(player.position);
     packet.WriteVector2(player.velocity);
+    packet.Write(CurrentStress);
+    packet.Write(LastStress);
+    packet.Write(BufferDuration);
   }
 
     /// <summary>
@@ -391,7 +399,7 @@ public sealed class Bash : OriAbility, ILevelable {
     }
 
     if (CanUse && input.bash.Current && !input.charge.Current && BufferDuration <= MaxBufferDuration) {
-      CurrentStress += 3;
+      CurrentStress += 3; 
       bool didBash = Start();
       if (didBash) {
         SetState(AbilityState.Starting);
@@ -417,12 +425,17 @@ public sealed class Bash : OriAbility, ILevelable {
       oPlayer.Animations?.Update();
       CurrentStress += 1;
 
-      if (stateTime <= MaxBashDuration && input.bash.Current &&
-          BashEntity is not null && BashEntity.active) return;
+      if (!IsLocal) _S_bashed = true;
+      if ((stateTime <= MaxBashDuration && input.bash.Current &&
+          BashEntity is not null && BashEntity.active) || !IsLocal) return;
       End();
       SetState(AbilityState.Inactive);
     } else {
       CurrentStress -= 1;
+      if (_S_bashed && !IsLocal) { 
+        End();
+        _S_bashed = false;
+      }
     }
   }
 }
