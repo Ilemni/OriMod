@@ -1,3 +1,9 @@
+# v3.2.1.1
+
+## Bugfix
+
+- Fixed bash no target was played in incorrect time
+
 # v3.2.1.0
 
 ## Feature update

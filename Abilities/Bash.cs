@@ -399,6 +399,8 @@ public sealed class Bash : OriAbility, ILevelable {
     }
 
     if (CanUse && input.bash.Current && !input.charge.Current && BufferDuration <= MaxBufferDuration) {
+      if(BufferDuration == 0)
+        PlayLocalSound("Ori/Bash/bashNoTargetB", 0.35f);
       CurrentStress += 3; 
       bool didBash = Start();
       if (didBash) {
@@ -406,7 +408,6 @@ public sealed class Bash : OriAbility, ILevelable {
         RestoreAirJumps();
       }
       else if (BufferDuration == MaxBufferDuration) {
-        PlayLocalSound("Ori/Bash/bashNoTargetB", 0.35f);
         abilities.RefreshParticles(Color.LightYellow);
       }
     }
