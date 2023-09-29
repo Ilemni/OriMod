@@ -53,8 +53,7 @@ public sealed class AirJump : OriAbility, ILevelable {
 
   public override void PreUpdate() {
     if (CanUse && input.jump.JustPressed && IsLocal) {
-      if (player.canJumpAgain_Blizzard || player.canJumpAgain_Cloud || player.canJumpAgain_Fart || 
-        player.canJumpAgain_Sail || player.canJumpAgain_Sandstorm || player.mount.Active) return;
+      if (player.AnyExtraJumpUsable() || player.mount.Active) return;
       SetState(AbilityState.Active);
       currentCount++;
       _gravityDirection = (sbyte)player.gravDir;

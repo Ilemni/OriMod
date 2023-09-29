@@ -60,7 +60,7 @@ public sealed class Dash : OriAbility, ILevelable {
   }
 
   public override void UpdateActive() {
-    if (player.controlJump && (player.canJumpAgain_Blizzard || player.canJumpAgain_Cloud || player.canJumpAgain_Fart || player.canJumpAgain_Sail || player.canJumpAgain_Sandstorm)) {
+    if (player.controlJump && player.AnyExtraJumpUsable()) {
       SetState(AbilityState.Inactive);
       StartCooldown();
       return;
