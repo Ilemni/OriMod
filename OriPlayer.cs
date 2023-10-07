@@ -545,6 +545,9 @@ public sealed class OriPlayer : ModPlayer {
       _carpet_remaining = Player.carpetTime;
       Player.carpetTime = 0;
     }
+
+    Player.GetJumpState<DummyJump>().Enable();
+    Player.GetJumpState<DummyJump>().Available = false;
   }
 
   public void PostUpdatePhysics() {
@@ -712,10 +715,15 @@ public sealed class OriPlayer : ModPlayer {
   /// Refreshes your airborne abilities, allowing you to jump and dash again before touching the ground.
   /// </summary>
   public void RestoreAirJumps() {
+    Player.RefreshExtraJumps();
+  }
+
+  public override void OnExtraJumpRefreshed(ExtraJump jump) {
     abilities.airJump.currentCount = 0;
     abilities.dash.currentCount = 0;
     abilities.launch.CurrentChain = 0;
   }
+
 
   public override void FrameEffects() {
     if (!IsOri) {
@@ -873,4 +881,13 @@ public sealed class OriPlayer : ModPlayer {
   public override void OnRespawn() {
     abilities.DisableAllAbilities();
   }
+}
+
+/// <summary>
+/// Dummy <see cref="ExtraJump"/>, forces <see cref="OriPlayer.OnExtraJumpRefreshed"/> to be called even if there's no other enabled double jumps
+/// </summary>
+public class DummyJump : ExtraJump
+{
+  public override Position GetDefaultPosition() => AfterBottleJumps;
+  public override float GetDurationMultiplier(Player player) => 0f;
 }
