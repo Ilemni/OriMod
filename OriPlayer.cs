@@ -298,6 +298,7 @@ public sealed class OriPlayer : ModPlayer {
     : multiplayerPlayerLight;
 
   private Color _lightColor = new(0.2f, 0.4f, 0.4f);
+  private float _lightStrength = 1f;
 
   #endregion
 
@@ -372,7 +373,7 @@ public sealed class OriPlayer : ModPlayer {
   /// Emits a white dust speck from the player.
   /// </summary>
   internal void CreatePlayerDust() {
-    if (Main.dedServ || _playerDustTimer > 0 || !Animations.GraphicsEnabledCompat) {
+    if (Main.dedServ || _playerDustTimer > 0 || !Animations.GraphicsEnabledCompat || _lightStrength < 0.1f) {
       return;
     }
 
@@ -637,7 +638,11 @@ public sealed class OriPlayer : ModPlayer {
 
     if (IsOri) {
       if (DoPlayerLight && !abilities.burrow.Active) {
-        Lighting.AddLight(Player.Center, _lightColor.ToVector3());
+        if (Main.dontStarveWorld) _lightStrength -= 0.004f;
+        Lighting.AddLight(Player.Center, _lightColor.ToVector3()*_lightStrength);
+        Vector3 TileLight = Lighting.GetColor(Player.Center.ToTileCoordinates()).ToVector3();
+        float Brightness = TileLight.X + TileLight.Y + TileLight.Z;
+        _lightStrength = Math.Min(Math.Max(_lightStrength,Brightness/2),1f);
       }
 
       if (!Main.dedServ && !Transforming && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
@@ -663,7 +668,7 @@ public sealed class OriPlayer : ModPlayer {
         FootstepManager.Instance.PlayFootstepFromPlayer(Player, out SoundStyle _);
       }
 
-      if (doDust) {
+      if (doDust && _lightStrength > 0.1f) {
         Vector2 dustPos = Player.Bottom + new Vector2(Player.direction == -1 ? -4 : 2, -2);
         for (int i = 0; i < 4; i++) {
           Dust dust = Main.dust[
