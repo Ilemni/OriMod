@@ -575,6 +575,7 @@ public sealed class OriPlayer : ModPlayer {
 
       // Reduce gravity when clinging on wall
       if (OnWall) {
+        Player.blockExtraJumps = true;
         // Either grounded or falling, not climbing
         if ((IsGrounded || Player.velocity.Y * Player.gravDir < 0) && !abilities.climb && !abilities.airJump) {
           LowerGravityTo(0.1f);
