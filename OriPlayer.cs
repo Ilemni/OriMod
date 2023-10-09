@@ -184,7 +184,7 @@ public sealed class OriPlayer : ModPlayer {
   private int _rocket_boots_remaining = -1;
 
   /// <summary>
-  /// Used for temporary storing of Carped remaining time for airjump
+  /// Used for temporary storing of Carpet remaining time for airjump
   /// </summary>
   private int _carpet_remaining = -1;
 
@@ -538,11 +538,11 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void PostUpdateEquips() {
-    if(abilities.airJump.CanUse || abilities.airJump.InUse) {
+    if(abilities.airJump.CanUse || abilities.airJump.InUse || OnWall) {
       _rocket_boots_remaining = Player.rocketTime;
       Player.rocketTime = 0;
     }
-    if (abilities.airJump.InUse) {
+    if (abilities.airJump.InUse || OnWall) {
       _carpet_remaining = Player.carpetTime;
       Player.carpetTime = 0;
     }
@@ -728,6 +728,9 @@ public sealed class OriPlayer : ModPlayer {
     abilities.airJump.currentCount = 0;
     abilities.dash.currentCount = 0;
     abilities.launch.CurrentChain = 0;
+    Player.canCarpet = true;
+    Player.rocketTime = Player.rocketTimeMax;
+    Player.wingTime = Player.wingTimeMax;
   }
 
 
