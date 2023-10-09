@@ -166,6 +166,15 @@ Mods: {
 						Default: Transparent
 						'''
 				}
+
+				airJumpCondition: {
+					Label: Conditional Air Jump
+					Tooltip:
+						'''
+						Disable air jump while holding Down, or only enable it while holding Up
+						Allows for more precise air control when paired with wings
+						'''
+				}
 			}
 		}
 

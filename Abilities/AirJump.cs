@@ -19,7 +19,8 @@ public sealed class AirJump : OriAbility, ILevelable {
   public override bool CanUse => base.CanUse && !IsGrounded && !OnWall &&
     currentCount < MaxJumps && !player.mount.Active &&
     !abilities.bash && !abilities.burrow && !abilities.climb && !abilities.chargeJump && !abilities.launch &&
-    !abilities.wallChargeJump;
+    !abilities.wallChargeJump && !(OriMod.ConfigClient.airJumpCondition == "Not Down" && player.controlDown) &&
+    !(OriMod.ConfigClient.airJumpCondition == "Only Up" && !player.controlUp);
 
   private static float JumpVelocity => 8.8f;
   private static int EndDuration => 32;

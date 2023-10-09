@@ -32,6 +32,9 @@ public class OriConfigClient1 : ModConfig {
   [DefaultValue(false)]
   public bool softCrouch;
 
+  [DefaultValue("Default"), OptionStrings(new[] { "Default", "Not Down", "Only Up" })]
+  public string airJumpCondition;
+
   [DefaultValue(true)]
   public bool smoothCamera;
 

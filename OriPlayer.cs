@@ -538,7 +538,7 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void PostUpdateEquips() {
-    if(abilities.airJump.CanUse || abilities.airJump.InUse || OnWall) {
+    if (abilities.airJump.CanUse || abilities.airJump.InUse || OnWall) {
       _rocket_boots_remaining = Player.rocketTime;
       Player.rocketTime = 0;
     }
