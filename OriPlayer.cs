@@ -899,4 +899,5 @@ public class DummyJump : ExtraJump
 {
   public override Position GetDefaultPosition() => AfterBottleJumps;
   public override float GetDurationMultiplier(Player player) => 0f;
+  public override bool CanStart(Player player) => false;
 }

@@ -601,6 +601,11 @@ Mods: {
 				DisplayName: Саженец Древа Духов
 				Tooltip: Подарок Древа Духов.
 			}
+
+			HotAshItem: {
+				// DisplayName: Hot Ashes
+				// Tooltip: Makes an updraft to ride while gliding
+			}
 		}
 
 		Projectiles: {

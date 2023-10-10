@@ -1,7 +1,10 @@
 using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
+using OriMod.Tiles;
 using OriMod.Utilities;
 using System;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
 
@@ -58,6 +61,21 @@ public sealed class Glide : OriAbility, ILevelable {
 
   public override void UpdateUsing() {
     player.maxFallSpeed = MathHelper.Clamp(player.gravity * 5, 1f, 2f);
+
+    for (int i = 0; i < 45; i++) {
+      if (player.gravDir < 0f) break;
+
+      Tile tile = Main.tile[player.Center.ToTileCoordinates() + new Point(0,(int)(player.gravDir*i))];
+      if (!tile.HasTile || !Main.tileSolid[tile.TileType]) continue;
+
+      if (i < 45 && tile.TileType == ModContent.TileType<HotAshTile>()) {
+        player.maxFallSpeed = Math.Max(-4f + i/(35f/4f),-2f) + 0.001f;
+        RestoreAirJumps();
+      }
+
+      break;
+    }
+
     player.runSlowdown = RunSlowdown;
     player.runAcceleration = RunAcceleration;
   }
