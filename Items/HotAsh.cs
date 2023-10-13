@@ -22,7 +22,7 @@ public class HotAshItem : ModItem {
       .Register();
     CreateRecipe()
       .AddIngredient(ItemID.Wood, 30)
-      .AddIngredient(ItemID.Torch, 5)
+      .AddIngredient(ItemID.LivingFireBlock, 1)
       .AddTile(TileID.Hellforge)
       .Register();
   }
