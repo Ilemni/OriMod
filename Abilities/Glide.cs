@@ -62,15 +62,18 @@ public sealed class Glide : OriAbility, ILevelable {
   public override void UpdateUsing() {
     player.maxFallSpeed = MathHelper.Clamp(player.gravity * 5, 1f, 2f);
 
+    Tile tile = Main.tile[player.Center.ToTileCoordinates()];
     for (int i = 0; i < 45; i++) {
       if (player.gravDir < 0f) break;
 
-      Tile tile = Main.tile[player.Center.ToTileCoordinates() + new Point(0,(int)(player.gravDir*i))];
+      tile = Main.tile[player.Center.ToTileCoordinates() + new Point(0,(int)(player.gravDir*i))];
       if (!OriUtils.IsSolid(tile,true)) continue;
 
       if (i < 45 && tile.TileType == ModContent.TileType<HotAshTile>()) {
-        player.maxFallSpeed = Math.Max(-4f + i/(35f/4f),-2f) + 0.001f;
+        player.maxFallSpeed = -2f;
         RestoreAirJumps();
+        tile = Main.tile[player.Center.ToTileCoordinates() + new Point(0,(int)(player.gravDir*-1))];
+        if (i == 44 || OriUtils.IsSolid(tile,true)) player.maxFallSpeed = 0.001f;
       }
 
       break;
