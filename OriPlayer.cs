@@ -15,6 +15,7 @@ using Terraria.GameInput;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 using Terraria.ModLoader.IO;
 
 namespace OriMod;
@@ -678,6 +679,8 @@ public sealed class OriPlayer : ModPlayer {
     }
   }
 
+  private static Type starlight_river_base_platform = null;
+
   private bool CheckGrounded() {
     float vel = Player.velocity.Y * Player.gravDir;
     if (vel < 0 || vel > 0.01f || abilities.climb) {
@@ -693,6 +696,19 @@ public sealed class OriPlayer : ModPlayer {
       bool testBlock = tile.LiquidAmount > 0 && Main.tile[pos.X, pos.Y - 1].LiquidAmount == 0;
       if (testBlock && (tile.LiquidType == LiquidID.Lava ? Player.fireWalk : (Player.waterWalk || Player.waterWalk2))) {
         return true;
+      }
+    }
+
+    if (starlight_river_base_platform is not null) {
+      var PlayerRect = new Rectangle((int)Player.position.X, (int)Player.position.Y + Player.height, Player.width, 1);
+      foreach (NPC npc in Main.npc) {
+        if (npc.active && starlight_river_base_platform.IsInstanceOfType(npc.ModNPC)) {
+          var NPCRect = new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width,
+            8 + (Player.velocity.Y > 0 ? (int)Player.velocity.Y : 0) + (int)Math.Abs(npc.velocity.Y));
+
+          if (PlayerRect.Intersects(NPCRect) && Player.position.Y <= npc.position.Y)
+            return true;
+        }
       }
     }
 
@@ -868,6 +884,18 @@ public sealed class OriPlayer : ModPlayer {
     OriMod.ConfigClient.playerColor = SpriteColorPrimary;
     OriMod.ConfigClient.playerColorSecondary = SpriteColorSecondary;
     OriMod.ConfigClient.dyeLerp = DyeColorBlend;
+
+    if(IsLocal) {
+      try {
+        starlight_river_base_platform =
+          AssemblyManager.GetLoadableTypes(
+            ModLoader.Mods.First(x => x.Name=="StarlightRiver").Code)
+          .First(x => x.FullName=="StarlightRiver.Content.NPCs.BaseTypes.MovingPlatform");
+      }
+      catch {
+        starlight_river_base_platform = null;
+      }
+    }
   }
 
   public override void OnRespawn() {
