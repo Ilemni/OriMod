@@ -75,11 +75,6 @@ public sealed class OriPlayer : ModPlayer {
   private bool wasMounted;
 
   /// <summary>
-  /// Stored between <see cref="PreHurt(bool, bool, ref int, ref int, ref bool, ref bool, ref bool, ref bool, ref PlayerDeathReason)"/> and <see cref="PostHurt(bool, bool, double, int, bool)"/>, determines if custom hurt sounds are played.
-  /// </summary>
-  private bool _useCustomHurtSound;
-
-  /// <summary>
   /// When set to true, uses custom movement and player sprites.
   /// <para>External mods that attempt to be compatible with this one will need to use this property.</para>
   /// </summary>
