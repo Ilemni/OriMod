@@ -881,14 +881,12 @@ public sealed class OriPlayer : ModPlayer {
     OriMod.ConfigClient.dyeLerp = DyeColorBlend;
 
     if(IsLocal) {
-      try {
-        starlight_river_base_platform =
-          AssemblyManager.GetLoadableTypes(
-            ModLoader.Mods.First(x => x.Name=="StarlightRiver").Code)
-          .First(x => x.FullName=="StarlightRiver.Content.NPCs.BaseTypes.MovingPlatform");
-      }
-      catch {
-        starlight_river_base_platform = null;
+      var mods = ModLoader.Mods.Where(x => x.Name == "StarlightRiver");
+      foreach(var mod in mods)
+      {
+        starlight_river_base_platform = AssemblyManager.GetLoadableTypes(mod.Code)
+          .FirstOrDefault(x => x.FullName == "StarlightRiver.Content.NPCs.BaseTypes.MovingPlatform", null);
+        if (starlight_river_base_platform is not null) break;
       }
     }
   }
