@@ -839,7 +839,7 @@ public sealed class OriPlayer : ModPlayer {
     PlayerDrawLayers.FinchNest.Hide();
     PlayerDrawLayers.FrontAccBack.Hide();
     PlayerDrawLayers.FrontAccFront.Hide();
-    PlayerDrawLayers.FrozenOrWebbedDebuff.Hide();
+    //PlayerDrawLayers.FrozenOrWebbedDebuff.Hide();
     PlayerDrawLayers.HairBack.Hide();
     PlayerDrawLayers.HandOnAcc.Hide();
     PlayerDrawLayers.Head.Hide();
@@ -859,7 +859,7 @@ public sealed class OriPlayer : ModPlayer {
     PlayerDrawLayers.Tails.Hide();
     PlayerDrawLayers.Torso.Hide();
     PlayerDrawLayers.WaistAcc.Hide();
-    PlayerDrawLayers.WebbedDebuffBack.Hide();
+    //PlayerDrawLayers.WebbedDebuffBack.Hide();
 
     if (OnWall || Transforming || abilities.stomp || 
         (abilities.airJump && !abilities.glide) || 

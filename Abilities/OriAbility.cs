@@ -9,7 +9,7 @@ public abstract class OriAbility : Ability<OriAbilityManager> {
   private OriPlayer _oPlayer;
   private OriInput _input;
 
-  public override bool CanUse => base.CanUse && !player.shimmering;
+  public override bool CanUse => base.CanUse && !player.shimmering && !player.frozen && !player.stoned && !player.webbed;
 
   protected bool OnWall => oPlayer.OnWall;
   protected bool IsGrounded => oPlayer.IsGrounded;
