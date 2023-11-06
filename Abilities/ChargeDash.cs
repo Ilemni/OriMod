@@ -18,7 +18,7 @@ public sealed class ChargeDash : OriAbility {
   public override ILevelable levelableDependency => abilities.dash;
 
   public override bool CanUse => base.CanUse && !IsOnCooldown && !InUse && !OnWall && !player.mount.Active &&
-    !abilities.bash && !abilities.burrow && !abilities.launch && !abilities.lookUp && !abilities.stomp;
+    !abilities.bash && !abilities.burrow && !abilities.launch && !abilities.stomp && !abilities.chargeJump && !abilities.wallChargeJump;
   public override int Cooldown => levelableDependency.Level >= 3 ? 60 : 90;
   public override void OnRefreshed() => abilities.RefreshParticles(Color.LightBlue);
 

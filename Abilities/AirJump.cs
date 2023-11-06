@@ -17,7 +17,7 @@ public sealed class AirJump : OriAbility, ILevelable {
   public int MaxLevel => 4;
 
   public override bool CanUse => base.CanUse && !IsGrounded && !OnWall &&
-    currentCount < MaxJumps && !player.mount.Active &&
+    currentCount < MaxJumps && !player.mount.Active && !(abilities.chargeJump.Charged && abilities.chargeJump.Grace) &&
     !abilities.bash && !abilities.burrow && !abilities.climb && !abilities.chargeJump && !abilities.launch &&
     !abilities.wallChargeJump && !(OriMod.ConfigClient.airJumpCondition == "Not Down" && player.controlDown) &&
     !(OriMod.ConfigClient.airJumpCondition == "Only Up" && !player.controlUp);

@@ -22,7 +22,7 @@ public sealed class Dash : OriAbility, ILevelable {
   public override bool Unlocked => Level > 0;
 
   public override bool CanUse => base.CanUse && !InUse && !IsOnCooldown && !OnWall && !player.mount.Active && (Level >= 2 || IsGrounded) &&
-    !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.launch && !abilities.stomp;
+    !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.launch && !abilities.stomp && !abilities.chargeJump && !abilities.wallChargeJump;
   public override int Cooldown => Level >= 3 ? 0 : 60;
   public override void OnRefreshed() => abilities.RefreshParticles(Color.White);
 
@@ -41,6 +41,7 @@ public sealed class Dash : OriAbility, ILevelable {
   private readonly RandomChar _rand = new();
 
   internal void StartDash() {
+    SetState(AbilityState.Active);
     _direction = (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction);
     PlaySound("Ori/Dash/seinDash" + _rand.NextNoRepeat(3), 0.2f);
     player.pulley = false;
@@ -78,8 +79,10 @@ public sealed class Dash : OriAbility, ILevelable {
       return;
     }
 
-    if (CanUse && input.dash.JustPressed && !(abilities.burrow.CanUse && input.burrow.JustPressed)) {
-      SetState(AbilityState.Active);
+    if (CanUse && input.dash.JustPressed && 
+      !(abilities.chargeDash.CanUse && input.charge.Current) && 
+      !(abilities.burrow.CanUse && input.burrow.JustPressed))
+    {
       StartDash();
       return;
     }
