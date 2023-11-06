@@ -30,7 +30,8 @@ public sealed class Bash : OriAbility, ILevelable {
   public override void OnRefreshed() => abilities.RefreshParticles(Color.LightYellow);
 
   private static List<short> CannotBashNpc => _cannotBashNpc ??= Unloadable.New( new List<short> {
-    NPCID.BlazingWheel, NPCID.SpikeBall, NPCID.DD2EterniaCrystal, NPCID.DD2LanePortal
+    NPCID.BlazingWheel, NPCID.SpikeBall, NPCID.DD2EterniaCrystal, NPCID.DD2LanePortal,
+    NPCID.LunarTowerNebula, NPCID.LunarTowerSolar, NPCID.LunarTowerStardust, NPCID.LunarTowerVortex
   }, () => _cannotBashNpc = null);
 
   private static List<short> CannotBashProj => _cannotBashProj ??= Unloadable.New(new List<short> {
@@ -203,25 +204,25 @@ public sealed class Bash : OriAbility, ILevelable {
     packet.Write(BufferDuration);
   }
 
-    /// <summary>
-    /// Filter to determine if this <see cref="NPC"/> can be bashed. Returns <see langword="true"/> if the NPC should be bashed.
-    /// <para>Excludes friendly NPCs, bosses, specific NPCs, and NPCs that are already being Bashed.</para>
-    /// </summary>
-    /// <param name="npc"><see cref="NPC"/> to check.</param>
-    /// <returns><see langword="true"/> if the NPC should be bashed, otherwise <see langword="false"/>.</returns>
-    private static bool BashNpcFilter(NPC npc) =>
-      !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBashNpc.Contains((short)npc.type) && !npc.GetGlobalNPC<OriNpc>().IsBashed;
+  /// <summary>
+  /// Filter to determine if this <see cref="NPC"/> can be bashed. Returns <see langword="true"/> if the NPC should be bashed.
+  /// <para>Excludes friendly NPCs, bosses, specific NPCs, and NPCs that are already being Bashed.</para>
+  /// </summary>
+  /// <param name="npc"><see cref="NPC"/> to check.</param>
+  /// <returns><see langword="true"/> if the NPC should be bashed, otherwise <see langword="false"/>.</returns>
+  private static bool BashNpcFilter(NPC npc) =>
+    !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBashNpc.Contains((short)npc.type) && !npc.GetGlobalNPC<OriNpc>().IsBashed;
 
-    /// <summary>
-    /// Filter to determine if this <see cref="Projectile"/> can be bashed. Returns true if the projectile should be bashed.
-    /// <para>Excludes friendly if disallowed, 0 damage projectiles, minions, sentries, traps, grapples, and projectiles that are already being Bashed.</para>
-    /// </summary>
-    /// <param name="proj">Projectile to check for bashing.</param>
-    /// <returns><see langword="true"/> if the projectile should be bashed, otherwise <see langword="false"/>.</returns>
-    private static bool BashProjFilter(Projectile proj) =>
-      !proj.friendly && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type) && !proj.GetGlobalProjectile<OriProjectile>().IsBashed;
+  /// <summary>
+  /// Filter to determine if this <see cref="Projectile"/> can be bashed. Returns true if the projectile should be bashed.
+  /// <para>Excludes non-hostile, 0 damage projectiles, minions, sentries, traps, grapples, and projectiles that are already being Bashed.</para>
+  /// </summary>
+  /// <param name="proj">Projectile to check for bashing.</param>
+  /// <returns><see langword="true"/> if the projectile should be bashed, otherwise <see langword="false"/>.</returns>
+  private static bool BashProjFilter(Projectile proj) =>
+    proj.hostile && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type) && !proj.GetGlobalProjectile<OriProjectile>().IsBashed;
 
-    private void SetTarget(bool isNpc, ushort id) {
+  private void SetTarget(bool isNpc, ushort id) {
     if (id == ushort.MaxValue) {
       SetTarget(null);
     }
