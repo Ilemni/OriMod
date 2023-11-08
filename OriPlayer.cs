@@ -180,7 +180,7 @@ public sealed class OriPlayer : ModPlayer {
   private int _rocket_boots_remaining = -1;
 
   /// <summary>
-  /// Used for temporary storing of Carped remaining time for airjump
+  /// Used for temporary storing of Carpet remaining time for airjump
   /// </summary>
   private int _carpet_remaining = -1;
 
@@ -294,6 +294,7 @@ public sealed class OriPlayer : ModPlayer {
     : multiplayerPlayerLight;
 
   private Color _lightColor = new(0.2f, 0.4f, 0.4f);
+  private float _lightStrength = 1f;
 
   #endregion
 
@@ -368,7 +369,7 @@ public sealed class OriPlayer : ModPlayer {
   /// Emits a white dust speck from the player.
   /// </summary>
   internal void CreatePlayerDust() {
-    if (Main.dedServ || _playerDustTimer > 0 || !Animations.GraphicsEnabledCompat) {
+    if (Main.dedServ || _playerDustTimer > 0 || !Animations.GraphicsEnabledCompat || _lightStrength < 0.1f) {
       return;
     }
 
@@ -533,14 +534,17 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void PostUpdateEquips() {
-    if(abilities.airJump.CanUse || abilities.airJump.InUse) {
+    if (abilities.airJump.CanUse || abilities.airJump.InUse || OnWall) {
       _rocket_boots_remaining = Player.rocketTime;
       Player.rocketTime = 0;
     }
-    if (abilities.airJump.InUse) {
+    if (abilities.airJump.InUse || OnWall) {
       _carpet_remaining = Player.carpetTime;
       Player.carpetTime = 0;
     }
+
+    Player.GetJumpState<DummyJump>().Enable();
+    Player.GetJumpState<DummyJump>().Available = false;
   }
 
   public void PostUpdatePhysics() {
@@ -568,6 +572,7 @@ public sealed class OriPlayer : ModPlayer {
 
       // Reduce gravity when clinging on wall
       if (OnWall) {
+        Player.blockExtraJumps = true;
         // Either grounded or falling, not climbing
         if ((IsGrounded || Player.velocity.Y * Player.gravDir < 0) && !abilities.climb && !abilities.airJump) {
           LowerGravityTo(0.1f);
@@ -629,7 +634,11 @@ public sealed class OriPlayer : ModPlayer {
 
     if (IsOri) {
       if (DoPlayerLight && !abilities.burrow.Active) {
-        Lighting.AddLight(Player.Center, _lightColor.ToVector3());
+        if (Main.dontStarveWorld) _lightStrength -= 0.004f;
+        Lighting.AddLight(Player.Center, _lightColor.ToVector3()*_lightStrength);
+        Vector3 TileLight = Lighting.GetColor(Player.Center.ToTileCoordinates()).ToVector3();
+        float Brightness = TileLight.X + TileLight.Y + TileLight.Z;
+        _lightStrength = Math.Min(Math.Max(_lightStrength,Brightness/2),1f);
       }
 
       if (!Main.dedServ && !Transforming && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
@@ -655,7 +664,7 @@ public sealed class OriPlayer : ModPlayer {
         FootstepManager.Instance.PlayFootstepFromPlayer(Player, out SoundStyle _);
       }
 
-      if (doDust) {
+      if (doDust && _lightStrength > 0.1f) {
         Vector2 dustPos = Player.Bottom + new Vector2(Player.direction == -1 ? -4 : 2, -2);
         for (int i = 0; i < 4; i++) {
           Dust dust = Main.dust[
@@ -723,10 +732,18 @@ public sealed class OriPlayer : ModPlayer {
   /// Refreshes your airborne abilities, allowing you to jump and dash again before touching the ground.
   /// </summary>
   public void RestoreAirJumps() {
+    Player.RefreshExtraJumps();
+  }
+
+  public override void OnExtraJumpRefreshed(ExtraJump jump) {
     abilities.airJump.currentCount = 0;
     abilities.dash.currentCount = 0;
     abilities.launch.CurrentChain = 0;
+    Player.canCarpet = true;
+    Player.rocketTime = Player.rocketTimeMax;
+    Player.wingTime = Player.wingTimeMax;
   }
+
 
   public override void FrameEffects() {
     if (!IsOri) {
@@ -833,7 +850,7 @@ public sealed class OriPlayer : ModPlayer {
     PlayerDrawLayers.FinchNest.Hide();
     PlayerDrawLayers.FrontAccBack.Hide();
     PlayerDrawLayers.FrontAccFront.Hide();
-    PlayerDrawLayers.FrozenOrWebbedDebuff.Hide();
+    //PlayerDrawLayers.FrozenOrWebbedDebuff.Hide();
     PlayerDrawLayers.HairBack.Hide();
     PlayerDrawLayers.HandOnAcc.Hide();
     PlayerDrawLayers.Head.Hide();
@@ -853,7 +870,7 @@ public sealed class OriPlayer : ModPlayer {
     PlayerDrawLayers.Tails.Hide();
     PlayerDrawLayers.Torso.Hide();
     PlayerDrawLayers.WaistAcc.Hide();
-    PlayerDrawLayers.WebbedDebuffBack.Hide();
+    //PlayerDrawLayers.WebbedDebuffBack.Hide();
 
     if (OnWall || Transforming || abilities.stomp || 
         (abilities.airJump && !abilities.glide) || 
@@ -894,4 +911,14 @@ public sealed class OriPlayer : ModPlayer {
   public override void OnRespawn() {
     abilities.DisableAllAbilities();
   }
+}
+
+/// <summary>
+/// Dummy <see cref="ExtraJump"/>, forces <see cref="OriPlayer.OnExtraJumpRefreshed"/> to be called even if there's no other enabled double jumps
+/// </summary>
+public class DummyJump : ExtraJump
+{
+  public override Position GetDefaultPosition() => AfterBottleJumps;
+  public override float GetDurationMultiplier(Player player) => 0f;
+  public override bool CanStart(Player player) => false;
 }

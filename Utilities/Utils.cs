@@ -36,6 +36,27 @@ public static class OriUtils {
     return vect;
   }
 
+  
+  /// <summary>
+  /// Checks if the given tile is solid.
+  /// </summary>
+  /// <param name="tile">The <see cref="Tile"/> to check.</param>
+  /// <param name="asLiquid">If <see langword="true"/>, bubble blocks are considered solid, and open grates are considered not solid </param>
+  public static bool IsSolid(Tile tile, bool asLiquid = false) {
+    bool result = false;
+    
+    bool bubbleSolid = Main.tileSolid[379];
+    Liquid.tilesIgnoreWater(asLiquid);
+    Main.tileSolid[379] = asLiquid;
+
+    if (tile.HasUnactuatedTile && Main.tileSolid[tile.TileType] && !Main.tileSolidTop[tile.TileType]) result = true;
+
+    Main.tileSolid[379] = bubbleSolid;
+    Liquid.tilesIgnoreWater(false);
+
+    return result;
+  }
+
   /// <summary>
   /// Checks if any active <see cref="NPC"/>s are bosses.
   /// </summary>

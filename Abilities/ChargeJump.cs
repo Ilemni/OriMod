@@ -20,15 +20,15 @@ public sealed class ChargeJump : OriAbility, ILevelable {
   int ILevelable.MaxLevel => 5;
 
   public override bool CanUse => base.CanUse && !InUse && Charged &&
-    !abilities.burrow && !abilities.chargeDash && !abilities.climb &&
-    !abilities.dash && !abilities.launch &&
+    !abilities.burrow && !abilities.climb && !abilities.launch &&
     !abilities.stomp && !abilities.wallChargeJump;
 
   public override int Cooldown => 120;
   public override void OnRefreshed() => abilities.RefreshParticles(Color.Blue);
 
-  private bool CanCharge => base.CanUse && !InUse && IsGrounded && input.charge.Current;
-  private bool Charged => _currentCharge >= MaxCharge;
+  private bool CanCharge => base.CanUse && input.charge.Current;
+  public bool Charged => _currentCharge >= MaxCharge;
+  public bool Grace => _currentGrace > 0;
 
   /// <summary>
   /// Coyote jump, how long to allow CJumping when no longer valid to do so.
@@ -96,23 +96,26 @@ public sealed class ChargeJump : OriAbility, ILevelable {
 
       _currentCharge++;
       if (_currentCharge > MaxCharge) {
+        _currentCharge = MaxCharge;
         PlaySound("Ori/ChargeJump/seinChargeJumpChargeB", 0.6f, .2f);
       }
+    } else {
+      if (!CanCharge && !Grace) _currentCharge--;
+      if (_currentCharge < 0) _currentCharge = 0;
     }
 
-    if (CanUse && input.jump.JustPressed) {
+    if (CanUse && Grace && input.charge.Current && input.jump.JustPressed) {
       StartChargeJump();
       SetState(AbilityState.Active);
     }
     else if (Charged) {
       UpdateCharged();
-      if (CanCharge) {
+      if (IsGrounded && CanCharge) {
         _currentGrace = MaxGrace;
       }
       else {
         _currentGrace--;
-        if (_currentGrace < 0 || !input.charge.Current) {
-          _currentCharge = 0;
+        if (_currentGrace == 0) {
           PlaySound("Ori/ChargeDash/seinChargeDashUncharge", 0.6f, .3f);
         }
       }

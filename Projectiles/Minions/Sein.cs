@@ -161,6 +161,8 @@ public abstract class Sein : Minion {
   /// </summary>
   private int _currentShotsFired = 1;
 
+  private float _lightStrength = 1f;
+
   /// <summary>
   /// Coordinates relative to the player's center.
   /// </summary>
@@ -435,7 +437,12 @@ public abstract class Sein : Minion {
     TickCooldown();
     VerifyNoNaNs();
 
-    Lighting.AddLight(Projectile.Center, _data.color.ToVector3() * _data.lightStrength);
+    if (Main.dontStarveWorld) _lightStrength -= 0.004f;
+    Lighting.AddLight(Projectile.Center, _data.color.ToVector3() * _data.lightStrength * _lightStrength);
+    Vector3 TileLight = Lighting.GetColor(Projectile.Center.ToTileCoordinates()).ToVector3();
+    float Brightness = TileLight.X + TileLight.Y + TileLight.Z;
+    _lightStrength = Math.Min(Math.Max(_lightStrength,Brightness/3),1f);
+
     if (Player.whoAmI != Main.myPlayer) {
       return;
     }
