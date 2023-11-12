@@ -1,3 +1,9 @@
+# v3.2.2.0
+
+## Feature update
+
+- Fixed missing tail and hoovie tips
+
 # v3.2.1.1
 
 ## Bugfix
