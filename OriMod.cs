@@ -140,6 +140,7 @@ public sealed class OriMod : Mod {
   public override void PostSetupContent() {
     FootstepManager.Initialize();
     TileCollection.Initialize();
+    OriTextures.Initialize();
   }
 
   public override void Unload() {

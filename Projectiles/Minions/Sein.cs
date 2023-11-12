@@ -474,7 +474,7 @@ public abstract class Sein : Minion {
 
   public override void PostDraw(Color lightColor) {
     Vector2 pos = Projectile.BottomRight - Main.screenPosition;
-    Texture2D tex = OriTextures.Instance.sein.texture;
+    Texture2D tex = OriTextures.Instance.sein.Value;
     Vector2 orig = new Vector2(tex.Width, tex.Width) * 0.5f;
     for (int i = 0; i < 3; i++) {
       Color color = _data.color;

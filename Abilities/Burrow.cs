@@ -240,7 +240,7 @@ public sealed class Burrow : OriAbility, ILevelable {
     baseDrawPosition.X += 48;
     baseDrawPosition.Y += player.gravDir >= 0 ? 16 : 112;
 
-    Texture2D texture = OriTextures.Instance.burrowTimer.texture;
+    Texture2D texture = OriTextures.Instance.burrowTimer.Value;
     Vector2 origin = texture.Size() / 2;
     Color color = Color.White * (InUse ? 1 : 0.6f);
     SpriteEffects effect = player.gravDir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;

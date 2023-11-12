@@ -59,8 +59,9 @@ internal static class OriLayers {
         data.color = doFlash
           ? Color.Lerp(oPlayer.SpriteColorSecondary, flashColor, player.immuneAlpha / 255f)
           : oPlayer.SpriteColorSecondary;
-
-        data.texture = OriTextures.Instance.playerSecondary;
+        var second_tex = OriTextures.Instance.playerSecondary;
+        if (!second_tex.IsLoaded) second_tex.Wait();
+        data.texture = second_tex.Value;
         data.shader = player.dye[1].dye;
         drawInfo.DrawDataCache.Add(data);
       }

@@ -905,6 +905,11 @@ public sealed class OriPlayer : ModPlayer {
           .FirstOrDefault(x => x.FullName == "StarlightRiver.Content.NPCs.BaseTypes.MovingPlatform", null);
         if (starlight_river_base_platform is not null) break;
       }
+      if(!Main.dedServ) {
+        OriTextures.Instance.burrowTimer.Wait();
+        OriTextures.Instance.trail.Wait();
+        OriTextures.Instance.sein.Wait();
+      }
     }
   }
 
