@@ -173,12 +173,14 @@ Mods: {
 				}
 
 				airJumpCondition: {
-					// Label: Conditional Air Jump
-					/* Tooltip:
+					Label: Условия дополнительных прыжков
+					Tooltip:
 						'''
-						Disable air jump while holding Down, or only enable it while holding Up
-						Allows for more precise air control when paired with wings
-						''' */
+						Позволяет отключить прыжки в воздухе при зажатой клавише "вниз" ("Not Down")
+						Или включить только при удержании клавиши "вверх" ("Only Up")
+						(По умолчанию - "Default")
+						Позволяет точнее управлять движениями в воздухе с крыльями
+						'''
 				}
 			}
 		}
@@ -603,8 +605,8 @@ Mods: {
 			}
 
 			HotAshItem: {
-				// DisplayName: Hot Ashes
-				// Tooltip: Makes an updraft to ride while gliding
+				DisplayName: Горячие угли
+				Tooltip: Создают восходящий поток для планирования
 			}
 		}
 

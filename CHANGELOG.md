@@ -2,7 +2,32 @@
 
 ## Feature update
 
+### Abilities changes
+- Any state that restores ori abilities, like bashing or wall sliding, now also restores non-ori extra jumps
+- When non-ori extra jumps are restored, by grappling or by other mods, ori abilities are restored too
+- Wall Jump won't activate non-ori air jumps
+- Wings, rocket boots, and carpet are restored with other air jumps
+- Rocket boots and flying carpet are disabled while sliding on a wall
+- Added config option to change Air Jump activation conditions
+- Dash and charge dash can't be used while charge jumping
+- Charge jump can be used during dashes
+- Air jump won't activate at the same time as charge jump
+- Charge dash activates before dash while on the ground
+- Charge jump can be charged in the air
+
+### New features
+Added a new hot ashes tile that makes updrafts for gliding
+
+### Fixes
 - Fixed missing tail and hoovie tips
+- Beware, on The Constant seed, your light fades over time
+- Added compatibility for Starlight river platforms
+- Abilities now are disabled while webbed/frozen/stoned
+- Bash now can't bash lunar pillars
+- Bash now can't bash non-hostile projectiles, like nimbus rod clouds
+
+### Misc
+Textures are async loaded now, so slow disks won't slow other mods loading
 
 # v3.2.1.1
 
