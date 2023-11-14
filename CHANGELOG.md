@@ -20,8 +20,6 @@ Added a new hot ashes tile that makes updrafts for gliding
 
 ### Fixes
 - Fixed missing tail and hoovie tips
-- Beware, on The Constant seed, your light fades over time
-- Added compatibility for Starlight river platforms
 - Abilities now are disabled while webbed/frozen/stoned
 - Bash now can't bash lunar pillars
 - Bash now can't bash non-hostile projectiles, like nimbus rod clouds
@@ -29,7 +27,9 @@ Added a new hot ashes tile that makes updrafts for gliding
 - Portable stool now is displayed properly near walls
 
 ### Misc
-Textures are async loaded now, so slow disks won't slow other mods loading
+- Beware, on The Constant seed, your light fades over time
+- Added compatibility for Starlight river platforms
+- Textures are async loaded now, so slow disks won't slow other mods loading
 
 # v3.2.1.1
 
