@@ -25,6 +25,8 @@ Added a new hot ashes tile that makes updrafts for gliding
 - Abilities now are disabled while webbed/frozen/stoned
 - Bash now can't bash lunar pillars
 - Bash now can't bash non-hostile projectiles, like nimbus rod clouds
+- Portable stool now can't be used during climbing
+- Portable stool now is displayed properly near walls
 
 ### Misc
 Textures are async loaded now, so slow disks won't slow other mods loading

@@ -523,6 +523,9 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void UpdateEquips() {
+    if(abilities.climb || abilities.wallChargeJump) {
+      Player.portableStoolInfo.HasAStool = false;
+    }
     if(_rocket_boots_remaining != -1) {
       Player.rocketTime = _rocket_boots_remaining;
       _rocket_boots_remaining = -1;
@@ -883,7 +886,7 @@ public sealed class OriPlayer : ModPlayer {
       PlayerDrawLayers.LeinforsHairShampoo.Hide();
       //PlayerDrawLayers.EyebrellaCloud.Hide();
       PlayerDrawLayers.SolarShield.Hide();
-      PlayerDrawLayers.PortableStool.Hide();
+      //PlayerDrawLayers.PortableStool.Hide();
     }
 
     #endregion
