@@ -25,6 +25,7 @@ Added a new hot ashes tile that makes updrafts for gliding
 - Bash now can't bash non-hostile projectiles, like nimbus rod clouds
 - Portable stool now can't be used during climbing
 - Portable stool now is displayed properly near walls
+- Fixed dye wasn't disabled by options for secondary color
 
 ### Misc
 - Beware, on The Constant seed, your light fades over time

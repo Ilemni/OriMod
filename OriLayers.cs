@@ -62,7 +62,7 @@ internal static class OriLayers {
         var second_tex = OriTextures.Instance.playerSecondary;
         if (!second_tex.IsLoaded) second_tex.Wait();
         data.texture = second_tex.Value;
-        data.shader = player.dye[1].dye;
+        data.shader = dyeEn ? player.dye[1].dye : 0;
         drawInfo.DrawDataCache.Add(data);
       }
 
