@@ -26,10 +26,12 @@ public class SpiritSapling : ModItem {
     CreateRecipe()
       .AddIngredient(ItemID.Wood, 10)
       .AddRecipeGroup(OriRecipeGroups.EnchantedItems)
+      .DisableDecraft()
       .Register();
     CreateRecipe()
       .AddIngredient(ItemID.Wood, 10)
       .AddRecipeGroup(OriRecipeGroups.MovementAccessories, 3)
+      .DisableDecraft()
       .Register();
   }
 }

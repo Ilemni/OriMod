@@ -26,6 +26,7 @@ Added a new hot ashes tile that makes updrafts for gliding
 - Portable stool now can't be used during climbing
 - Portable stool now is displayed properly near walls
 - Fixed dye wasn't disabled by options for secondary color
+- Disabled spirit sapling shimmering
 
 ### Misc
 - Beware, on The Constant seed, your light fades over time
