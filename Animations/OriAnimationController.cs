@@ -48,6 +48,13 @@ public class OriAnimationController : AnimationController {
       return;
     }
 
+    //Bed sleeping
+    if(player.sleeping.isSleeping)
+    {
+      PlayTrack("Sleeping");
+      return;
+    }
+
     // Handle some "special" movement
     // Todo, consider dedicated sprites to these actions, i.e. mounted, pulley, grapple
     if (player.pulley || player.mount.Active) {
