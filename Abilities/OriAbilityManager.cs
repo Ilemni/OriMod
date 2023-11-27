@@ -100,7 +100,8 @@ namespace OriMod.Abilities {
 
 
     public override bool CanUseAnyAbilities() {
-      if (player.dead || oPlayer.Transforming) {
+      if (player.dead || oPlayer.Transforming || 
+        player.frozen || player.stoned || player.webbed || player.shimmering) {
         return false;
       }
       bool mountActive = player.mount?.Active ?? false;
