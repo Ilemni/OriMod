@@ -31,7 +31,8 @@ public sealed class Bash : OriAbility, ILevelable {
 
   private static List<short> CannotBashNpc => _cannotBashNpc ??= Unloadable.New( new List<short> {
     NPCID.BlazingWheel, NPCID.SpikeBall, NPCID.DD2EterniaCrystal, NPCID.DD2LanePortal,
-    NPCID.LunarTowerNebula, NPCID.LunarTowerSolar, NPCID.LunarTowerStardust, NPCID.LunarTowerVortex
+    NPCID.LunarTowerNebula, NPCID.LunarTowerSolar, NPCID.LunarTowerStardust, NPCID.LunarTowerVortex,
+    NPCID.CultistTablet, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsTail
   }, () => _cannotBashNpc = null);
 
   private static List<short> CannotBashProj => _cannotBashProj ??= Unloadable.New(new List<short> {
