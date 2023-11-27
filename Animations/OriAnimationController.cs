@@ -53,7 +53,7 @@ public class OriAnimationController : AnimationController {
     // Handle some "special" movement
     // Todo, consider dedicated sprites to these actions, i.e. mounted, pulley, grapple
     if (player.pulley || player.mount.Active) {
-      PlayTrack("Idle");
+      PlayTrack("Idle", speed: player.webbed ? 0.3f : 1.0f);
       return;
     }
     if (oPlayer.IsGrappling) {
@@ -220,7 +220,7 @@ public class OriAnimationController : AnimationController {
     }
     if (!oPlayer.IsGrounded) {
       // Probably the best way to check for jumping vs falling
-      PlayTrack(player.velocity.Y * player.gravDir < 0 ? "Jump" : "Falling");
+      PlayTrack(player.velocity.Y * player.gravDir < 0 ? "Jump" : "Falling", frameIndex: player.webbed ? 1 : null);
       return;
     }
     if (Math.Abs(player.velocity.X) > 0.2f && 
