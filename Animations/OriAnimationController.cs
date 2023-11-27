@@ -10,6 +10,8 @@ namespace OriMod.Animations;
 /// Container for various <see cref="Animation"/>s and data to be attached to an <see cref="OriPlayer"/>. Manages advancement of frames.
 /// </summary>
 public class OriAnimationController : AnimationController {
+  public override bool PreUpdate() => base.PreUpdate() && !player.frozen && !player.stoned;
+
   public override void Initialize() {
     playerAnim = GetAnimation<PlayerAnim>();
     bashAnim = GetAnimation<BashAnim>();
@@ -213,7 +215,7 @@ public class OriAnimationController : AnimationController {
 
     // Generic/misc movement
     if (oPlayer.OnWall && !oPlayer.IsGrounded && !player.shimmering) {
-      PlayTrack("WallSlide");
+      PlayTrack("WallSlide", speed: player.webbed ? 0.3f : 1.0f);
       return;
     }
     if (!oPlayer.IsGrounded) {
@@ -229,6 +231,6 @@ public class OriAnimationController : AnimationController {
       PlayTrack("Running", speed: (int)Math.Abs(player.velocity.X) * 0.45f);
       return;
     }
-    PlayTrack(oPlayer.OnWall ? "IdleAgainst" : "Idle");
+    PlayTrack(oPlayer.OnWall ? "IdleAgainst" : "Idle", speed: player.webbed ? 0.3f : 1.0f);
   }
 }
