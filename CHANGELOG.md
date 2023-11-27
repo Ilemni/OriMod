@@ -21,7 +21,7 @@ Added a new hot ashes tile that makes updrafts for gliding
 ### Fixes
 - Fixed missing tail and hoovie tips
 - Abilities now are disabled while webbed/frozen/stoned
-- Bash now can't bash lunar pillars
+- Bash now can't bash lunar pillars, lunar tablet and eater of worlds parts
 - Bash now can't bash non-hostile projectiles, like nimbus rod clouds
 - Portable stool now can't be used during climbing
 - Portable stool now is displayed properly near walls
@@ -32,6 +32,7 @@ Added a new hot ashes tile that makes updrafts for gliding
 - Beware, on The Constant seed, your light fades over time
 - Added compatibility for Starlight river platforms
 - Textures are async loaded now, so slow disks won't slow other mods loading
+- Animations now are slowed down on webbed debuff and paused on shimmering, stoned or frozen debuff
 
 # v3.2.1.1
 
