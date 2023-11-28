@@ -18,6 +18,7 @@ Mods: {
 					Gameplay: Gameplay
 					Controls: Controls
 					Aesthetics: Aesthetics
+					Experimental: Experimental
 				}
 
 				playerLight: {
@@ -173,6 +174,15 @@ Mods: {
 						'''
 						Disable air jump while holding Down, or only enable it while holding Up
 						Allows for more precise air control when paired with wings
+						'''
+				}
+
+				eChargeDashHoming: {
+					Label: Charge Dash Homing
+					Tooltip:
+						'''
+						Not recommended due to non-intuitive behavior
+						Enables semi-homing of charge dash
 						'''
 				}
 			}
@@ -460,7 +470,6 @@ Mods: {
 					Upgrades Dash to Level 2
 					Allows you to Dash in the air!
 					Allows you to quickly Dash into enemies, dealing damage!
-					(Press charge and dash for semi-homing attack)
 					'''
 			}
 
@@ -470,7 +479,6 @@ Mods: {
 					'''
 					Upgrades Dash to Level 3
 					Allows you to perform dashes more rapidly!
-					(Press charge and dash for semi-homing attack)
 					'''
 			}
 

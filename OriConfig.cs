@@ -70,6 +70,10 @@ public class OriConfigClient1 : ModConfig {
   [DefaultValue("Transparent"), OptionStrings(new[] { "Transparent", "Red", "Disabled" })]
   public string flashMode;
 
+  [Header($"{HeaderPath}.Experimental")]
+  [DefaultValue(typeof(bool), "false")]
+  public bool eChargeDashHoming;
+
   public override void OnLoaded() {
     OriMod.ConfigClient = this;
   }

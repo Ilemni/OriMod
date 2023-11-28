@@ -72,21 +72,23 @@ public sealed class ChargeDash : OriAbility {
   public override bool RefreshCondition() => !input.charge.Current;
 
   private void Start() {
-    player.manaRegenDelay = (int)player.maxRegenDelay;
-    float tempDist = MaxRange*MaxRange*4;
-    for (int n = 0; n < Main.maxNPCs; n++) {
-      NPC npc = Main.npc[n];
-      if (!npc.active || npc.friendly || 
-        (player.Center - npc.Center).LengthSquared() > MaxRange*MaxRange ||
-        !Collision.CanHitLine(player.Center, player.width, player.height, npc.Center, 16, 16)
-      ) continue;
+    if(IsLocal && OriMod.ConfigClient.eChargeDashHoming) {
+      player.manaRegenDelay = (int)player.maxRegenDelay;
+      float tempDist = MaxRange*MaxRange*4;
+      for (int n = 0; n < Main.maxNPCs; n++) {
+        NPC npc = Main.npc[n];
+        if (!npc.active || npc.friendly || 
+          (player.Center - npc.Center).LengthSquared() > MaxRange*MaxRange ||
+          !Collision.CanHitLine(player.Center, player.width, player.height, npc.Center, 16, 16)
+        ) continue;
 
-      float dist = (Main.MouseWorld - npc.Center).LengthSquared();
-      if (dist >= tempDist) continue;
-      tempDist = dist;
-      Target = npc;
+        float dist = (Main.MouseWorld - npc.Center).LengthSquared();
+        if (dist >= tempDist) continue;
+        tempDist = dist;
+        Target = npc;
+      }
     }
-    _direction = Target is null
+    _direction = !(IsLocal && OriMod.ConfigClient.eChargeDashHoming) || Target is null
       ? (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction)
       : (sbyte)(player.direction = player.position.X - Target.position.X < 0 ? 1 : -1);
     if (Target is not null) {
@@ -95,6 +97,7 @@ public sealed class ChargeDash : OriAbility {
       dir.Normalize();
       StartDirection = dir;
     }
+    
     PlaySound("Ori/ChargeDash/seinChargeDash" + _rand.NextNoRepeat(3), 0.5f);
     NewAbilityProjectile<ChargeDashProjectile>(damage: 50);
   }

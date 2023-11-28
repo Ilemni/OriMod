@@ -14,6 +14,8 @@
 - Air jump won't activate at the same time as charge jump
 - Charge dash activates before dash while on the ground
 - Charge jump can be charged in the air
+- Charge dash homing is temporary disabled due to known problems
+- Added confing option to enable charge dash homing anyway
 
 ### New features
 Added a new hot ashes tile that makes updrafts for gliding
