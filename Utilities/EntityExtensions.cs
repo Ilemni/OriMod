@@ -27,9 +27,7 @@ public static class EntityExtensions {
     else {
       distance *= distance; // Squared for DistanceSquared
     }
-    if (distanceSquaredCheck is null) {
-      distanceSquaredCheck = (e1, e2) => OriUtils.DistanceBetweenTwoEntitiesSquared(e1, e2);
-    }
+    distanceSquaredCheck ??= OriUtils.DistanceBetweenTwoEntitiesSquared;
 
     // Search for closest entity
     int id = -1;

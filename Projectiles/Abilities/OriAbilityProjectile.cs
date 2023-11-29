@@ -1,7 +1,6 @@
 using AnimLib;
 using AnimLib.Projectiles;
 using OriMod.Abilities;
-using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Projectiles.Abilities; 

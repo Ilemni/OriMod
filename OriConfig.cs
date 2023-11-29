@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Terraria;
 using Terraria.ModLoader.Config;
+// ReSharper disable UnassignedField.Global
 
 namespace OriMod;
 

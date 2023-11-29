@@ -45,7 +45,7 @@ public sealed class SeinData {
 
         // If value is specified in constructor, use it
         // If value is unspecified, use value of previous upgrade
-        if (newVal.ToString() == defVal.ToString()) {
+        if (newVal?.ToString() == defVal?.ToString()) {
           newVal = oldVal;
         }
         field.SetValue(newSein, newVal);

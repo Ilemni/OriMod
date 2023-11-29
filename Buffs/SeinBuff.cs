@@ -7,7 +7,7 @@ namespace OriMod.Buffs;
 /// Buff that would keep the <see cref="Projectiles.Minions.Sein"/> minion active.
 /// </summary>
 public abstract class SeinBuff : ModBuff {
-  public override string Texture => @"OriMod/Buffs/SeinBuff";
+  public override string Texture => "OriMod/Buffs/SeinBuff";
        
   public override void SetStaticDefaults() {
     Main.buffNoSave[Type] = true;

@@ -107,7 +107,7 @@ public sealed class Bash : OriAbility, ILevelable {
       }
     }
   }
-  private int BufferDuration = 0;
+  private int BufferDuration;
 
   private int MaxStress {
     get {
@@ -120,15 +120,13 @@ public sealed class Bash : OriAbility, ILevelable {
       }
     }
   }
-  private int _currentStress = 0;
+  private int _currentStress;
   private int CurrentStress {
     get => _currentStress;
-    set { 
-      _currentStress = Math.Clamp(value,0,MaxStress);
-    }
+    set => _currentStress = Math.Clamp(value,0,MaxStress);
   }
-  private int LastStress = 0;
-  private int StressParticleTimer = 0;
+  private int LastStress;
+  private int StressParticleTimer;
 
   private int BashDamage {
     get {
@@ -170,7 +168,7 @@ public sealed class Bash : OriAbility, ILevelable {
 
     private readonly RandomChar _rand = new();
 
-  private bool _S_bashed = false;
+  private bool _S_bashed;
 
   public override void ReadPacket(BinaryReader r) {
     if (!InUse) return;
@@ -312,7 +310,7 @@ public sealed class Bash : OriAbility, ILevelable {
 
     BashTarget.IsBashed = false;
     if (IsLocal && Level >= 2 && isNpc) {
-      player.ApplyDamageToNPC(npc, BashDamage, 0, 1, false);
+      player.ApplyDamageToNPC(npc, BashDamage, 0, 1);
     }
 
     StartCooldown();
@@ -341,12 +339,10 @@ public sealed class Bash : OriAbility, ILevelable {
           break;
       }
 
-      if (BashEntity != null) {
-        if (OriMod.ConfigClient.bashMode == "Target") {
-          BashAngle = BashEntity.AngleTo(Main.MouseWorld);
-        } else {
-          BashAngle = player.AngleTo(Main.MouseWorld);
-        }
+      if (BashEntity != null)
+      {
+        BashAngle = OriMod.ConfigClient.bashMode == "Target" ? 
+          BashEntity.AngleTo(Main.MouseWorld) : player.AngleTo(Main.MouseWorld);
       }
     }
     // Allow only quick heal and quick mana

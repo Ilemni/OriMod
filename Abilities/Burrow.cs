@@ -163,12 +163,8 @@ public sealed class Burrow : OriAbility, ILevelable {
         holdNeutral = true;
       }
 
-      if (input.burrow.Current) {
-        currentSpeed = OriUtils.Lerp(currentSpeed, FastSpeed, 0.09f);
-      }
-      else {
-        currentSpeed = OriUtils.Lerp(currentSpeed, BaseSpeed * (holdNeutral ? 0.2f : 1f), 0.09f);
-      }
+      currentSpeed = OriUtils.Lerp(currentSpeed,
+        input.burrow.Current ? FastSpeed : BaseSpeed * (holdNeutral ? 0.2f : 1f), 0.09f);
 
       if (newVel == Vector2.Zero) {
         newVel = velocity;
@@ -264,8 +260,10 @@ public sealed class Burrow : OriAbility, ILevelable {
 
       Rectangle rect = texture.Frame(3, 5, frameX, frameY);
 
-      DrawData data = new(texture, currentDrawPosition, rect, color, 0, origin, 1, effect);
-      data.ignorePlayerRotation = true;
+      DrawData data = new(texture, currentDrawPosition, rect, color, 0, origin, 1, effect)
+        {
+          ignorePlayerRotation = true
+        };
       drawInfo.DrawDataCache.Add(data);
     }
   }

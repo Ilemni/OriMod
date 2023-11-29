@@ -309,13 +309,13 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
   private static Tile GetTile(Vector2 vector) => GetTile(vector.ToTileCoordinates());
 
   /// <summary>
-  /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for footstep sounds.
+  /// Shorthand for <see cref="SoundWrapper.PlaySound(int,int,string,out Terraria.Audio.SoundStyle,float,float)"/>, for footstep sounds.
   /// </summary>
   private static SlotId PlayFootstep(string path, int x, int y, float volume, out SoundStyle style)
     => SoundWrapper.PlaySound(x, y, "Ori/Footsteps/" + path, out style, volume);
 
   /// <summary>
-  /// Shorthand for <see cref="Main.PlaySound(int, int, int, int, float, float)"/>, for landing sounds.
+  /// Shorthand for <see cref="SoundWrapper.PlaySound(int,int,string,out Terraria.Audio.SoundStyle,float,float)"/>, for landing sounds.
   /// </summary>
   private static SlotId PlayLanding(string path, int x, int y, float volume, out SoundStyle style)
     => SoundWrapper.PlaySound(x, y, "Ori/Land/" + path, out style, volume, 0.1f);

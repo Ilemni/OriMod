@@ -7,13 +7,9 @@ using Terraria.ModLoader.IO;
 
 namespace OriMod {
   /// <summary>
-  /// IDs for each <see cref="Abilities.Ability"/>.
+  /// IDs for each <see cref="Ability"/>.
   /// </summary>
   public static class AbilityId {
-    /// <summary>
-    /// ID for <see cref="Abilities.SoulLink"/>.
-    /// </summary>
-    public const byte SoulLink = 0;
     /// <summary>
     /// ID for <see cref="Abilities.WallJump"/>.
     /// </summary>

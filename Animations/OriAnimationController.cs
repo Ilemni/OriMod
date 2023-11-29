@@ -189,7 +189,7 @@ public class OriAnimationController : AnimationController {
       }
 
       if (!abilities.wallChargeJump.Charged) {
-        PlayTrack("WallChargeJumpCharge", frameIndex: !abilities.wallChargeJump.IsOnCooldown ? null : (int?)0);
+        PlayTrack("WallChargeJumpCharge", frameIndex: !abilities.wallChargeJump.IsOnCooldown ? null : 0);
         return;
       }
 

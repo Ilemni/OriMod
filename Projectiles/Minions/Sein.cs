@@ -184,6 +184,7 @@ public abstract class Sein : Minion {
   /// </summary>
   /// <param name="path">Path of the sound effect to play. Relative to the Spirit Flame folder.</param>
   /// <param name="volume">Volume to play the sound at.</param>
+  /// <param name="style">Out of sound style struct</param>
   private SlotId PlaySpiritFlameSound(string path, float volume, out SoundStyle style) =>
     SoundWrapper.PlaySound(Projectile.Center, "Ori/SpiritFlame/" + path, out style, volume);
 
@@ -485,7 +486,7 @@ public abstract class Sein : Minion {
 
       color.A = (byte)(i == 0 ? 255 : i == 1 ? 200 : 175);
       Rectangle sourceRect = new(0, i * tex.Height / 3, tex.Width, tex.Width);
-      Main.EntitySpriteDraw(tex, pos, sourceRect, color, Projectile.rotation, orig, Projectile.scale, SpriteEffects.None, 0);
+      Main.EntitySpriteDraw(tex, pos, sourceRect, color, Projectile.rotation, orig, Projectile.scale, SpriteEffects.None);
     }
   }
 

@@ -1,5 +1,3 @@
-using rail;
-using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -16,13 +14,13 @@ public class HotAshItem : ModItem {
 
   public override void AddRecipes() {
     CreateRecipe()
-      .AddIngredient(ItemID.AshBlock, 1)
-      .AddIngredient(ItemID.LivingFireBlock, 1)
+      .AddIngredient(ItemID.AshBlock)
+      .AddIngredient(ItemID.LivingFireBlock)
       .AddTile(TileID.Hellforge)
       .Register();
     CreateRecipe()
       .AddIngredient(ItemID.Wood, 30)
-      .AddIngredient(ItemID.LivingFireBlock, 1)
+      .AddIngredient(ItemID.LivingFireBlock)
       .AddTile(TileID.Hellforge)
       .Register();
   }

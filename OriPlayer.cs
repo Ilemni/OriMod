@@ -564,7 +564,7 @@ public sealed class OriPlayer : ModPlayer {
         Player.runSlowdown = Math.Max(Math.Min(MathF.Pow(Player.runSlowdown,2f)*25f,1f),Player.runSlowdown);
       } else {
         Player.runAcceleration = (Player.runAcceleration > 0.01 && Player.runAcceleration < 0.3) ? 0.3f : Player.runAcceleration;
-        Player.runSlowdown = (Player.runAcceleration > 0.01 && Player.runAcceleration < 0.5) ? 0.5f : Player.runAcceleration;;
+        Player.runSlowdown = (Player.runAcceleration > 0.01 && Player.runAcceleration < 0.5) ? 0.5f : Player.runAcceleration;
       }
       #endregion
 
@@ -686,7 +686,7 @@ public sealed class OriPlayer : ModPlayer {
     }
   }
 
-  private static Type starlight_river_base_platform = null;
+  private static Type starlight_river_base_platform;
 
   private bool CheckGrounded() {
     float vel = Player.velocity.Y * Player.gravDir;

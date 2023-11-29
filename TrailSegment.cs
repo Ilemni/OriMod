@@ -78,8 +78,10 @@ public class TrailSegment {
     Color color = _oPlayer.SpriteColorPrimary * alpha;
     Vector2 origin = new(rect.Width / 2f, rect.Height / 2f + 5 * _oPlayer.Player.gravDir);
 
-    DrawData data = new(OriTextures.Instance.trail.Value, pos, rect, color, _rotation, origin, 1, _effect, 0);
-    data.ignorePlayerRotation = true;
+    DrawData data = new(OriTextures.Instance.trail.Value, pos, rect, color, _rotation, origin, 1, _effect)
+      {
+        ignorePlayerRotation = true
+      };
     return data;
   }
 

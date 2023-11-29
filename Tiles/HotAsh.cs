@@ -37,7 +37,7 @@ public class HotAshTile : ModTile {
       return;
     }
 
-    Dust wind = Dust.NewDustPerfect(position,ModContent.DustType<WindDust>(),new Vector2(0,-1.6f),0,Color.White,1);
+    Dust wind = Dust.NewDustPerfect(position,ModContent.DustType<WindDust>(),new Vector2(0,-1.6f),0,Color.White);
     wind.position.Y -= y*16;
   }
 }

@@ -9,7 +9,7 @@ namespace OriMod.Dusts;
 public class SpiritFlameDustTrail : ModDust {
   private int AlphaRate => 1;
 
-  public override string Texture => @"OriMod/Dusts/SFDust1";
+  public override string Texture => "OriMod/Dusts/SFDust1";
 
   public override void OnSpawn(Dust dust) {
     dust.alpha = 0;

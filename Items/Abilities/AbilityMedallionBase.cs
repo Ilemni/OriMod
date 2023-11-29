@@ -63,17 +63,17 @@ public abstract class AbilityMedallionBase : ModItem {
   public abstract override void AddRecipes();
 
   /// <summary>
-  /// Gets a <see cref="ModRecipe"/> that uses the ingredient <see cref="AbilityMedallionEmpty"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
+  /// Gets a <see cref="Recipe"/> that uses the ingredient <see cref="AbilityMedallionEmpty"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
   /// <para>These are standard recipes to all <see cref="AbilityMedallionBase"/> types.</para>
   /// </summary>
-  /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
+  /// <returns>A <see cref="Recipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
   protected Recipe GetAbilityRecipe() => GetAbilityRecipe<AbilityMedallionEmpty>();
 
   /// <summary>
-  /// Gets a <see cref="ModRecipe"/> that uses the ingredient <typeparamref name="T"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
+  /// Gets a <see cref="Recipe"/> that uses the ingredient <typeparamref name="T"/>, crafting station <see cref="Tiles.SpiritSapling"/>, and sets the result.
   /// <para>This is intended for leveled Medallions, where <typeparamref name="T"/> is the previous level's Medallion.</para>
   /// </summary>
-  /// <returns>A <see cref="ModRecipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
+  /// <returns>A <see cref="Recipe"/> set with ingredients and tiles common across all <see cref="AbilityMedallionBase"/> items.</returns>
   /// 
 
   protected Recipe GetAbilityRecipe<T>() where T : ModItem => 
