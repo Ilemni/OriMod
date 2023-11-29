@@ -1,12 +1,6 @@
 Ori and the Blind Forest / Ori and the Will of the Wisps
 crossover pack.
 
-[b]If you experience crash at startup with something about "method which doesn't exist in any base class", 
-make sure that AnimLib is 0.3+ version (as for OriMod 3.2), if it isn't try restarting the game, 
-if it doesn't update it, try deleting it through mod management, closing the game, 
-unsubscribing from OriMod and AnimLib, then resubscribing to them, 
-making sure that game have downloaded these mods (~8mb download) and then launching the game again, should help.[/b]
-
 You can leave suggestions and bugs reports in our [url=https://discord.gg/cTwGGkg7DG] discord [/url]
 
 --- Summary ---
