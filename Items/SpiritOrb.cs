@@ -51,10 +51,10 @@ public abstract class SpiritOrb : ModItem {
     Item.UseSound = SoundID.Item44;
 
     SeinData data = SeinData.All[SeinType - 1];
-    Item.damage = data.damage;
-    Item.rare = data.rarity;
-    Item.value = data.value;
-    Item.color = data.color;
+    Item.damage = data.Damage;
+    Item.rare = data.Rarity;
+    Item.value = data.Value;
+    Item.color = data.Color;
   }
 
   public override bool AltFunctionUse(Player player) => true;

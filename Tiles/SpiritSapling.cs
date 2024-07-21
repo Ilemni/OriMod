@@ -19,7 +19,7 @@ public class SpiritSapling : ModTile {
     Main.tileLavaDeath[Type] = true;
     TileObjectData.newTile.CopyFrom(TileObjectData.Style2x2);
     TileObjectData.newTile.Origin = new Point16(0, 1);
-    TileObjectData.newTile.CoordinateHeights = new[] { 16, 18 };
+    TileObjectData.newTile.CoordinateHeights = [16, 18];
     TileObjectData.newTile.StyleHorizontal = true;
     TileObjectData.newAlternate.CopyFrom(TileObjectData.newTile);
     TileObjectData.addTile(Type);

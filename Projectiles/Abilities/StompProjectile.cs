@@ -21,12 +21,12 @@ public sealed class StompProjectile : OriAbilityProjectile {
   protected override void Behavior() {
     base.Behavior();
     // Height is stretched based on velocity.
-    Projectile.height = Math.Max(56, (int)(aPlayer.Player.velocity.Y * 2));
+    Projectile.height = Math.Max(56, (int)(APlayer.Player.velocity.Y * 2));
     Projectile.position.Y += 10;
   }
 
   public override void OnHitNPC(NPC target, NPC.HitInfo modifiers, int damageDone) {
-    Stomp stomp = abilities.stomp;
+    Stomp stomp = Abilities.Stomp;
     if (target.life > 0 && stomp.InUse) {
       stomp.EndStomp();
     }

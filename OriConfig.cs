@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Terraria;
 using Terraria.ModLoader.Config;
 // ReSharper disable UnassignedField.Global
+// ReSharper disable InconsistentNaming
 
 namespace OriMod;
 
@@ -21,10 +22,10 @@ public class OriConfigClient1 : ModConfig {
 
   [DefaultValue(true)]
   public bool playerLight;
- 
+
   [DefaultValue(false)]
   public bool globalPlayerLight;
-  
+
   [Header($"{HeaderPath}.Controls")]
 
   [DefaultValue(0)]
@@ -33,7 +34,7 @@ public class OriConfigClient1 : ModConfig {
   [DefaultValue(false)]
   public bool softCrouch;
 
-  [DefaultValue("Default"), OptionStrings(new[] { "Default", "Not Down", "Only Up" })]
+  [DefaultValue("Default"), OptionStrings(["Default", "Not Down", "Only Up"])]
   public string airJumpCondition;
 
   [DefaultValue(true)]
@@ -42,10 +43,10 @@ public class OriConfigClient1 : ModConfig {
   [JsonIgnore]
   internal bool BurrowToMouse => burrowControls == "Mouse";
 
-  [DefaultValue("Mouse"), OptionStrings(new[] { "WASD", "Mouse" })]
+  [DefaultValue("Mouse"), OptionStrings(["WASD", "Mouse"])]
   public string burrowControls;
 
-  [DefaultValue("Target"), OptionStrings(new[] { "Target", "Player" })]
+  [DefaultValue("Target"), OptionStrings(["Target", "Player"])]
   public string bashMode;
 
   [DefaultValue("false")]
@@ -68,7 +69,7 @@ public class OriConfigClient1 : ModConfig {
   [DefaultValue(typeof(float), "0.65")]
   public float dyeLerp;
 
-  [DefaultValue("Transparent"), OptionStrings(new[] { "Transparent", "Red", "Disabled" })]
+  [DefaultValue("Transparent"), OptionStrings(["Transparent", "Red", "Disabled"])]
   public string flashMode;
 
   [Header($"{HeaderPath}.Experimental")]

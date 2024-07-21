@@ -17,7 +17,7 @@ internal class PlayerSyncOnConnect : ModSystem {
     if (msgType == MessageID.FinishedConnectingToServer && Main.netMode == NetmodeID.Server) {
       foreach (Player pl in Main.player) {
         if (pl.active && remoteClient != pl.whoAmI)
-          ModNetHandler.Instance.oriPlayerHandler.SendOriState(remoteClient, pl.whoAmI);
+          ModNetHandler.Instance.OriPlayerHandler.SendOriState(remoteClient, pl.whoAmI);
       }
     }
     return false;

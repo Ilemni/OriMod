@@ -21,10 +21,10 @@ public sealed class Dash : OriAbility, ILevelable {
   int ILevelable.MaxLevel => 3;
   public override bool Unlocked => Level > 0;
 
-  public override bool CanUse => base.CanUse && !InUse && !IsOnCooldown && !OnWall && !player.mount.Active && (Level >= 2 || IsGrounded) &&
-    !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.launch && !abilities.stomp && !abilities.chargeJump && !abilities.wallChargeJump;
+  public override bool CanUse => base.CanUse && !InUse && !IsOnCooldown && !OnWall && !Player.mount.Active && (Level >= 2 || IsGrounded) &&
+    !Abilities.Bash && !Abilities.Burrow && !Abilities.ChargeDash && !Abilities.Launch && !Abilities.Stomp && !Abilities.ChargeJump && !Abilities.WallChargeJump;
   public override int Cooldown => Level >= 3 ? 0 : 60;
-  public override void OnRefreshed() => abilities.RefreshParticles(Color.White);
+  public override void OnRefreshed() => Abilities.RefreshParticles(Color.White);
 
   private static float[] Speeds => _speeds ??= Unloadable.New(new float[25] {
     50f, 50f, 50f, 49.9f, 49.6f, 49f, 48f, 46.7f, 44.9f, 42.4f, 39.3f, 35.4f, 28.6f, 20f,
@@ -35,65 +35,65 @@ public sealed class Dash : OriAbility, ILevelable {
 
   private sbyte _direction;
   
-  internal ushort currentCount;
+  internal ushort CurrentCount;
   private int MaxDashes => 1;
 
   private readonly RandomChar _rand = new();
 
   internal void StartDash() {
     SetState(AbilityState.Active);
-    _direction = (sbyte)(player.controlLeft ? -1 : player.controlRight ? 1 : player.direction);
+    _direction = (sbyte)(Player.controlLeft ? -1 : Player.controlRight ? 1 : Player.direction);
     PlaySound("Ori/Dash/seinDash" + _rand.NextNoRepeat(3), 0.2f);
-    player.pulley = false;
-    currentCount++;
+    Player.pulley = false;
+    CurrentCount++;
   }
 
   public override void ReadPacket(BinaryReader r) {
     _direction = r.ReadSByte();
-    player.position = r.ReadVector2();
-    player.velocity = r.ReadVector2();
+    Player.position = r.ReadVector2();
+    Player.velocity = r.ReadVector2();
   }
 
   public override void WritePacket(ModPacket packet) {
     packet.Write(_direction);
-    packet.WriteVector2(player.position);
-    packet.WriteVector2(player.velocity);
+    packet.WriteVector2(Player.position);
+    packet.WriteVector2(Player.velocity);
   }
 
   public override void UpdateActive() {
-    if (player.controlJump && player.AnyExtraJumpUsable()) {
+    if (Player.controlJump && Player.AnyExtraJumpUsable()) {
       SetState(AbilityState.Inactive);
       StartCooldown();
       return;
     }
-    player.velocity.X = Speeds[stateTime] * 0.5f * _direction;
-    player.velocity.Y = 0.25f * (stateTime + 1) * player.gravDir;
-    if (IsLocal) netUpdate = true;
+    Player.velocity.X = Speeds[StateTime] * 0.5f * _direction;
+    Player.velocity.Y = 0.25f * (StateTime + 1) * Player.gravDir;
+    if (IsLocal) NetUpdate = true;
   }
 
-  public override bool RefreshCondition() => currentCount < MaxDashes || player.mount.Active;
+  public override bool RefreshCondition() => CurrentCount < MaxDashes || Player.mount.Active;
 
   public override void PreUpdate() {
-    if (abilities.chargeDash) {
+    if (Abilities.ChargeDash) {
       SetState(AbilityState.Inactive);
       return;
     }
 
-    if (CanUse && input.dash.JustPressed && 
-      !(abilities.chargeDash.CanUse && input.charge.Current) && 
-      !(abilities.burrow.CanUse && input.burrow.JustPressed))
+    if (CanUse && Input.Dash.JustPressed && 
+      !(Abilities.ChargeDash.CanUse && Input.Charge.Current) && 
+      !(Abilities.Burrow.CanUse && Input.Burrow.JustPressed))
     {
       StartDash();
       return;
     }
     if (!InUse) return;
     UpdateCooldown();
-    if (abilities.airJump || input.jump.JustPressed) {
+    if (Abilities.AirJump || Input.Jump.JustPressed) {
       SetState(AbilityState.Inactive);
-      player.velocity.X = Math.Min(Speeds[24], Math.Abs(player.velocity.X)) * _direction; // Rip hyperspeed dash-jump
+      Player.velocity.X = Math.Min(Speeds[24], Math.Abs(Player.velocity.X)) * _direction; // Rip hyperspeed dash-jump
       StartCooldown(); //force = true
     }
-    else if (stateTime > Duration || OnWall || abilities.bash) {
+    else if (StateTime > Duration || OnWall || Abilities.Bash) {
       SetState(AbilityState.Inactive);
       StartCooldown(); //force = true
     }

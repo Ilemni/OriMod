@@ -4,13 +4,13 @@ using Microsoft.Xna.Framework.Graphics;
 using OriMod.Abilities;
 using System;
 
-namespace OriMod.Animations; 
+namespace OriMod.Animations;
 
 /// <summary>
 /// Container for various <see cref="Animation"/>s and data to be attached to an <see cref="OriPlayer"/>. Manages advancement of frames.
 /// </summary>
 public class OriAnimationController : AnimationController {
-  public override bool PreUpdate() => base.PreUpdate() && !player.frozen && !player.stoned;
+  public override bool PreUpdate() => base.PreUpdate() && !Player.frozen && !Player.stoned;
 
   public override void Initialize() {
     PlayerAnim = AddAnimation(OriTextures.Instance.PlayerSprites);
@@ -26,7 +26,7 @@ public class OriAnimationController : AnimationController {
   /// </summary>
   public override AnimationOptions Update() {
     OriPlayer oPlayer = Player.GetModPlayer<OriPlayer>();
-    OriAbilityManager abilities = oPlayer.abilities;
+    OriAbilityManager abilities = oPlayer.Abilities;
 
     // Transformation
     if (oPlayer.Transforming) {
@@ -49,51 +49,51 @@ public class OriAnimationController : AnimationController {
 
     // Abilities
     // Start with simple cases
-    if (abilities.bash) {
+    if (abilities.Bash) {
       return new AnimationOptions("Bash");
     }
-    if (abilities.chargeJump.Active) {
+    if (abilities.ChargeJump.Active) {
       return new AnimationOptions("ChargeJump");
     }
-    if (abilities.wallJump) {
+    if (abilities.WallJump) {
       return new AnimationOptions("WallJump");
     }
-    if (abilities.airJump) {
-      return abilities.glide.InUse
-        ? new AnimationOptions("GlideStart", frameIndex: abilities.airJump.Active ? 0 : null)
+    if (abilities.AirJump) {
+      return abilities.Glide.InUse
+        ? new AnimationOptions("GlideStart", frameIndex: abilities.AirJump.Active ? 0 : null)
         : new AnimationOptions("AirJump", rotation: FrameTime * 0.6f * Player.gravDir * Player.direction);
     }
-    if (abilities.burrow) {
-      float rad = (float)Math.Atan2(abilities.burrow.velocity.X, -abilities.burrow.velocity.Y * Player.gravDir);
+    if (abilities.Burrow) {
+      float rad = (float)Math.Atan2(abilities.Burrow.Velocity.X, -abilities.Burrow.Velocity.Y * Player.gravDir);
       return new AnimationOptions("Burrow", rotation: rad * Player.gravDir);
     }
-    if (abilities.dash || abilities.chargeDash) {
+    if (abilities.Dash || abilities.ChargeDash) {
       return new AnimationOptions("Dash", frameIndex: Math.Abs(Player.velocity.X) < 12f ? 1 : 0);
     }
-    if (abilities.wallChargeJump) {
-      return new AnimationOptions("Dash", frameIndex: 0, rotation: abilities.wallChargeJump.Angle * Player.gravDir * abilities.wallChargeJump.XDirection);
+    if (abilities.WallChargeJump) {
+      return new AnimationOptions("Dash", frameIndex: 0, rotation: abilities.WallChargeJump.Angle * Player.gravDir * abilities.WallChargeJump.XDirection);
     }
 
     // Switch expressions for animations with start/mid/end segments
 
-    if (abilities.glide) {
-      return abilities.glide.state switch {
+    if (abilities.Glide) {
+      return abilities.Glide.State switch {
         AbilityState.Starting => new AnimationOptions("GlideStart"),
         AbilityState.Ending => new AnimationOptions("GlideStart", isReversed: true),
         _ => new AnimationOptions("Glide")
       };
     }
 
-    if (abilities.crouch) {
-      return abilities.crouch.state switch {
+    if (abilities.Crouch) {
+      return abilities.Crouch.State switch {
         AbilityState.Starting => new AnimationOptions("CrouchStart"),
         AbilityState.Ending => new AnimationOptions("CrouchStart", isReversed: true),
         _ => new AnimationOptions("Crouch")
       };
     }
 
-    if (abilities.lookUp) {
-      return abilities.lookUp.state switch {
+    if (abilities.LookUp) {
+      return abilities.LookUp.State switch {
         AbilityState.Starting => new AnimationOptions("LookUpStart"),
         AbilityState.Ending => new AnimationOptions("LookUpStart", isReversed: true),
         _ => new AnimationOptions("LookUp")
@@ -102,42 +102,42 @@ public class OriAnimationController : AnimationController {
 
     // More complex animations
 
-    if (abilities.stomp) {
-      return abilities.stomp.state == AbilityState.Starting
+    if (abilities.Stomp) {
+      return abilities.Stomp.State == AbilityState.Starting
         ? new AnimationOptions("AirJump", rotation: FrameTime * 0.8f)
         : new AnimationOptions("ChargeJump", speed: 2, rotation: (float)Math.PI, loopCount: 0, isPingPong: true);
     }
 
-    if (abilities.launch) {
-      if (abilities.launch.Active) {
+    if (abilities.Launch) {
+      if (abilities.Launch.Active) {
         // Launch angle needs to be offset by 90 degrees since it uses Stomp animation
         // Disable SpriteEffects as launching should not be flipped
-        return new AnimationOptions("ChargeJump", speed:0.67f, rotation: abilities.launch.LaunchAngle + (float)Math.PI / 2 * Player.gravDir, loopCount:0, isPingPong:true, effects: SpriteEffects.None);
+        return new AnimationOptions("ChargeJump", speed:0.67f, rotation: abilities.Launch.LaunchAngle + (float)Math.PI / 2 * Player.gravDir, loopCount:0, isPingPong:true, effects: SpriteEffects.None);
       }
 
-      int ct = abilities.launch.stateTime;
+      int ct = abilities.Launch.StateTime;
       float acceleration = ct * (ct < 5 ? 0.05f : ct < 20 ? 0.03f : 0.02f);
       // Somewhat accelerating speed of rotation
       return new AnimationOptions("AirJump", rotation: SpriteRotation + acceleration * Player.direction);
     }
 
-    if (abilities.climb) {
-      if (abilities.climb.Ending) {
+    if (abilities.Climb) {
+      if (abilities.Climb.Ending) {
         return new AnimationOptions("Jump", frameIndex: 0);
       }
-      if (!abilities.climb.IsCharging) {
+      if (!abilities.Climb.IsCharging) {
         return Math.Abs(Player.velocity.Y) < 0.1f
           ? new AnimationOptions("ClimbIdle")
           : new AnimationOptions(Player.velocity.Y * Player.gravDir < 0 ? "Climb" : "WallSlide", speed: Math.Abs(Player.velocity.Y) * 0.4f);
       }
 
-      if (!abilities.wallChargeJump.Charged) {
-        return new AnimationOptions("WallChargeJumpCharge", frameIndex: !abilities.wallChargeJump.IsOnCooldown ? null : 0);
+      if (!abilities.WallChargeJump.Charged) {
+        return new AnimationOptions("WallChargeJumpCharge", frameIndex: !abilities.WallChargeJump.IsOnCooldown ? null : 0);
       }
 
       // Aim angle determines frame of sprite.
       // 0 is middle (pointing straight left/right), 1-2 pointing downward, 3-4 pointing upward
-      int frame = abilities.wallChargeJump.Angle switch {
+      int frame = abilities.WallChargeJump.Angle switch {
         < -0.46f => 2,
         < -0.17f => 1,
         > 0.46f => 4,

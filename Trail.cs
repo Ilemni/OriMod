@@ -43,7 +43,7 @@ public class Trail {
   /// </summary>
   private int _index;
 
-  internal bool hasDrawnThisFrame;
+  internal bool HasDrawnThisFrame;
 
   /// <summary>
   /// Number of segments in a trail.

@@ -20,13 +20,13 @@ public sealed class ChargeJump : OriAbility, ILevelable {
   int ILevelable.MaxLevel => 5;
 
   public override bool CanUse => base.CanUse && !InUse && Charged &&
-    !abilities.burrow && !abilities.climb && !abilities.launch &&
-    !abilities.stomp && !abilities.wallChargeJump;
+    !Abilities.Burrow && !Abilities.Climb && !Abilities.Launch &&
+    !Abilities.Stomp && !Abilities.WallChargeJump;
 
   public override int Cooldown => 120;
-  public override void OnRefreshed() => abilities.RefreshParticles(Color.Blue);
+  public override void OnRefreshed() => Abilities.RefreshParticles(Color.Blue);
 
-  private bool CanCharge => base.CanUse && input.charge.Current;
+  private bool CanCharge => base.CanUse && Input.Charge.Current;
   public bool Charged => _currentCharge >= MaxCharge;
   public bool Grace => _currentGrace > 0;
 
@@ -53,37 +53,37 @@ public sealed class ChargeJump : OriAbility, ILevelable {
   private void StartChargeJump() {
     PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _rand.NextNoRepeat(3));
     _currentCharge = 0;
-    Projectile.NewProjectileDirect(player.GetSource_FromThis(), player.Center, Vector2.Zero,
-      ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, player.whoAmI, 0, 1);
+    Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero,
+      ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, Player.whoAmI, 0, 1);
     StartCooldown();
-    abilities.climb.SetState(AbilityState.Inactive);
+    Abilities.Climb.SetState(AbilityState.Inactive);
   }
 
   private void UpdateCharged() {
     if (Main.rand.NextFloat() < 0.7f) {
-      Dust.NewDust(player.Center, 12, 12, ModContent.DustType<AbilityRefreshedDust>(), newColor: Color.Blue);
+      Dust.NewDust(Player.Center, 12, 12, ModContent.DustType<AbilityRefreshedDust>(), newColor: Color.Blue);
     }
   }
 
   public override void UpdateActive() {
-    float speed = Speeds[stateTime] * 0.35f;
-    player.velocity.Y = speed * -player.gravDir;
-    oPlayer.immuneTimer = 12;
+    float speed = Speeds[StateTime] * 0.35f;
+    Player.velocity.Y = speed * -Player.gravDir;
+    oPlayer.ImmuneTimer = 12;
 
-    if (IsLocal) netUpdate = true;
+    if (IsLocal) NetUpdate = true;
   }
 
   public override void UpdateUsing() {
-    player.controlJump = false;
+    Player.controlJump = false;
   }
 
   public override void UpdateCooldown() {
-    if (abilities.burrow) return;
+    if (Abilities.Burrow) return;
     base.UpdateCooldown();
   }
 
   public override void PreUpdate() {
-    if (abilities.burrow) {
+    if (Abilities.Burrow) {
       _currentCharge = 0;
       _currentGrace = 0;
       return;
@@ -104,7 +104,7 @@ public sealed class ChargeJump : OriAbility, ILevelable {
       if (_currentCharge < 0) _currentCharge = 0;
     }
 
-    if (CanUse && Grace && input.charge.Current && input.jump.JustPressed) {
+    if (CanUse && Grace && Input.Charge.Current && Input.Jump.JustPressed) {
       StartChargeJump();
       SetState(AbilityState.Active);
     }
@@ -121,18 +121,18 @@ public sealed class ChargeJump : OriAbility, ILevelable {
       }
     }
 
-    if (Active && stateTime >= Duration) {
+    if (Active && StateTime >= Duration) {
       SetState(AbilityState.Inactive);
     }
   }
 
   public override void ReadPacket(BinaryReader r) {
-    player.position = r.ReadVector2();
-    player.velocity = r.ReadVector2();
+    Player.position = r.ReadVector2();
+    Player.velocity = r.ReadVector2();
   }
 
   public override void WritePacket(ModPacket packet) {
-    packet.WriteVector2(player.position);
-    packet.WriteVector2(player.velocity);
+    packet.WriteVector2(Player.position);
+    packet.WriteVector2(Player.velocity);
   }
 }

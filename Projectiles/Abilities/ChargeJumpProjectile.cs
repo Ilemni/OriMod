@@ -21,7 +21,7 @@ public sealed class ChargeJumpProjectile : OriAbilityProjectile {
   }
 
   protected override void CheckAbilityActive() {
-    if (abilities.chargeJump || abilities.wallChargeJump) {
+    if (Abilities.ChargeJump || Abilities.WallChargeJump) {
       Projectile.timeLeft = 2;
     }
   }
@@ -29,7 +29,7 @@ public sealed class ChargeJumpProjectile : OriAbilityProjectile {
   protected override void Behavior() {
     base.Behavior();
     // Stretch projectile size based on velocity
-    Vector2 vel = aPlayer.Player.velocity;
+    Vector2 vel = APlayer.Player.velocity;
     Projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 2.5f, 96, 250);
     Projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 2.5f, 96, 250);
   }

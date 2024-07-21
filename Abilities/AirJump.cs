@@ -17,52 +17,52 @@ public sealed class AirJump : OriAbility, ILevelable {
   public int MaxLevel => 4;
 
   public override bool CanUse => base.CanUse && !IsGrounded && !OnWall &&
-    currentCount < MaxJumps && !player.mount.Active && !(abilities.chargeJump.Charged && abilities.chargeJump.Grace) &&
-    !abilities.bash && !abilities.burrow && !abilities.climb && !abilities.chargeJump && !abilities.launch &&
-    !abilities.wallChargeJump && !(OriMod.ConfigClient.airJumpCondition == "Not Down" && player.controlDown) &&
-    !(OriMod.ConfigClient.airJumpCondition == "Only Up" && !player.controlUp);
+    CurrentCount < MaxJumps && !Player.mount.Active && !(Abilities.ChargeJump.Charged && Abilities.ChargeJump.Grace) &&
+    !Abilities.Bash && !Abilities.Burrow && !Abilities.Climb && !Abilities.ChargeJump && !Abilities.Launch &&
+    !Abilities.WallChargeJump && !(OriMod.ConfigClient.airJumpCondition == "Not Down" && Player.controlDown) &&
+    !(OriMod.ConfigClient.airJumpCondition == "Only Up" && !Player.controlUp);
 
   private static float JumpVelocity => 8.8f;
   private static int EndDuration => 32;
   private int MaxJumps => Level;
 
-  internal ushort currentCount;
+  internal ushort CurrentCount;
   private sbyte _gravityDirection;
 
   public override void ReadPacket(BinaryReader r) {
-    cooldownLeft = r.ReadInt32();
+    CooldownLeft = r.ReadInt32();
     _gravityDirection = r.ReadSByte();
-    player.position = r.ReadVector2();
-    player.velocity = r.ReadVector2();
-    currentCount = r.ReadUInt16();
+    Player.position = r.ReadVector2();
+    Player.velocity = r.ReadVector2();
+    CurrentCount = r.ReadUInt16();
   }
 
   public override void WritePacket(ModPacket packet) {
-    packet.Write(cooldownLeft);
+    packet.Write(CooldownLeft);
     packet.Write(_gravityDirection);
-    packet.WriteVector2(player.position);
-    packet.WriteVector2(player.velocity);
-    packet.Write(currentCount);
+    packet.WriteVector2(Player.position);
+    packet.WriteVector2(Player.velocity);
+    packet.Write(CurrentCount);
   }
 
   private readonly RandomChar _rand = new();
 
   public override void UpdateActive() {
-    float newVel = -JumpVelocity * ((float)(EndDuration - stateTime) / EndDuration) * _gravityDirection;
-    player.velocity.Y = newVel;
+    float newVel = -JumpVelocity * ((float)(EndDuration - StateTime) / EndDuration) * _gravityDirection;
+    Player.velocity.Y = newVel;
   }
 
   public override void PreUpdate() {
-    if (CanUse && input.jump.JustPressed && IsLocal) {
-      if (player.AnyExtraJumpUsable() || player.mount.Active) return;
+    if (CanUse && Input.Jump.JustPressed && IsLocal) {
+      if (Player.AnyExtraJumpUsable() || Player.mount.Active) return;
       SetState(AbilityState.Active);
-      currentCount++;
-      _gravityDirection = (sbyte)player.gravDir;
+      CurrentCount++;
+      _gravityDirection = (sbyte)Player.gravDir;
 
-      if (abilities.glide) {
+      if (Abilities.Glide) {
         PlaySound("Ori/Glide/seinGlideStart" + _rand.NextNoRepeat(3), 0.8f);
       }
-      else if (MaxJumps != 1 && currentCount == MaxJumps) {
+      else if (MaxJumps != 1 && CurrentCount == MaxJumps) {
         PlaySound("Ori/TripleJump/seinTripleJumps" + _rand.NextNoRepeat(5), 0.6f);
       }
       else {
@@ -70,19 +70,19 @@ public sealed class AirJump : OriAbility, ILevelable {
       }
       return;
     }
-    if (IsGrounded || abilities.bash || abilities.launch || abilities.climb) {
+    if (IsGrounded || Abilities.Bash || Abilities.Launch || Abilities.Climb) {
       SetState(AbilityState.Inactive);
     }
     if (Active) {
       SetState(AbilityState.Ending);
     }
     else if (Ending) {
-      if (stateTime > EndDuration || player.velocity.Y * player.gravDir > 0) {
+      if (StateTime > EndDuration || Player.velocity.Y * Player.gravDir > 0) {
         SetState(AbilityState.Inactive);
-        if (currentCount == MaxJumps) return;
+        if (CurrentCount == MaxJumps) return;
       }
     }
     // Other than activation, Air Jump is deterministic and requires no additional syncing
-    netUpdate = false;
+    NetUpdate = false;
   }
 }

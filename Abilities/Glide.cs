@@ -21,10 +21,10 @@ public sealed class Glide : OriAbility, ILevelable {
   public override bool Unlocked => Level > 0;
 
   public override bool CanUse =>
-    base.CanUse && !Ending && !player.mount.Active &&
-    !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.chargeJump &&
-    !abilities.climb && !abilities.dash && !abilities.launch && !abilities.stomp && !abilities.wallChargeJump &&
-    !abilities.wallJump;
+    base.CanUse && !Ending && !Player.mount.Active &&
+    !Abilities.Bash && !Abilities.Burrow && !Abilities.ChargeDash && !Abilities.ChargeJump &&
+    !Abilities.Climb && !Abilities.Dash && !Abilities.Launch && !Abilities.Stomp && !Abilities.WallChargeJump &&
+    !Abilities.WallJump;
 
   private static float RunSlowdown => 0.125f;
   private static float RunAcceleration => 0.2f;
@@ -39,70 +39,70 @@ public sealed class Glide : OriAbility, ILevelable {
   private bool _oldRight;
 
   public override void UpdateStarting() {
-    if (stateTime == 0) {
+    if (StateTime == 0) {
       PlaySound("Ori/Glide/seinGlideStart" + _randStart.NextNoRepeat(3), 0.8f);
     }
   }
 
   public override void UpdateActive() {
-    if (player.controlLeft != _oldLeft || player.controlRight != _oldRight) {
+    if (Player.controlLeft != _oldLeft || Player.controlRight != _oldRight) {
       PlaySound("Ori/Glide/seinGlideMoveLeftRight" + _randActive.NextNoRepeat(5), 0.45f);
     }
-    _oldLeft = player.controlLeft;
-    _oldRight = player.controlRight;
+    _oldLeft = Player.controlLeft;
+    _oldRight = Player.controlRight;
   }
 
   public override void UpdateEnding() {
-    if (stateTime == 0) {
+    if (StateTime == 0) {
       PlaySound("Ori/Glide/seinGlideEnd" + _randEnd.NextNoRepeat(3), 0.8f);
     }
   }
 
   public override void UpdateUsing() {
-    player.maxFallSpeed = MathHelper.Clamp(player.gravity * 5, 1f, 2f);
+    Player.maxFallSpeed = MathHelper.Clamp(Player.gravity * 5, 1f, 2f);
 
     for (int i = 0; i < 45; i++) {
-      if (player.gravDir < 0f) break;
+      if (Player.gravDir < 0f) break;
 
-      Tile tile = Main.tile[player.Center.ToTileCoordinates() + new Point(0,(int)(player.gravDir*i))];
+      Tile tile = Main.tile[Player.Center.ToTileCoordinates() + new Point(0,(int)(Player.gravDir*i))];
       if (!OriUtils.IsSolid(tile,true)) continue;
 
       if (tile.TileType == ModContent.TileType<HotAshTile>()) {
-        player.maxFallSpeed = -2f;
+        Player.maxFallSpeed = -2f;
         RestoreAirJumps();
-        tile = Main.tile[player.Center.ToTileCoordinates() + new Point(0,(int)(player.gravDir*-1))];
-        if (i == 44 || OriUtils.IsSolid(tile,true)) player.maxFallSpeed = 0.001f;
+        tile = Main.tile[Player.Center.ToTileCoordinates() + new Point(0,(int)(Player.gravDir*-1))];
+        if (i == 44 || OriUtils.IsSolid(tile,true)) Player.maxFallSpeed = 0.001f;
       }
 
       break;
     }
 
-    player.runSlowdown = RunSlowdown;
-    player.runAcceleration = RunAcceleration;
+    Player.runSlowdown = RunSlowdown;
+    Player.runAcceleration = RunAcceleration;
   }
 
   public override void PreUpdate() {
-    if (!InUse && CanUse && !IsGrounded && !OnWall && input.glide.Current) {
+    if (!InUse && CanUse && !IsGrounded && !OnWall && Input.Glide.Current) {
       SetState(AbilityState.Starting);
       return;
     }
-    if (abilities.dash || abilities.burrow || abilities.launch) {
+    if (Abilities.Dash || Abilities.Burrow || Abilities.Launch) {
       SetState(AbilityState.Inactive);
       return;
     }
 
     if (!InUse) return;
     if (Starting) {
-      if (stateTime > StartDuration) {
+      if (StateTime > StartDuration) {
         SetState(AbilityState.Active);
       }
     }
     else if (Ending) {
-      if (stateTime > EndDuration) {
+      if (StateTime > EndDuration) {
         SetState(AbilityState.Inactive);
       }
     }
-    else if (OnWall || IsGrounded || !input.glide.Current) {
+    else if (OnWall || IsGrounded || !Input.Glide.Current) {
       SetState(AbilityState.Ending);
     }
   }

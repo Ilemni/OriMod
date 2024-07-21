@@ -16,7 +16,7 @@ internal class ModNetHandler : SingleInstance<ModNetHandler> {
   private const byte OriState = 1;
 
   /// <inheritdoc cref="OriPlayerPacketHandler"/>
-  internal readonly OriPlayerPacketHandler oriPlayerHandler = new(OriState);
+  internal readonly OriPlayerPacketHandler OriPlayerHandler = new(OriState);
 
   /// <summary>
   /// Sends the received <see cref="ModPacket"/> to the desired <see cref="PacketHandler"/> based on data read from <paramref name="reader"/>.
@@ -27,7 +27,7 @@ internal class ModNetHandler : SingleInstance<ModNetHandler> {
     byte packetClass = reader.ReadByte();
     switch (packetClass) {
       case OriState:
-        oriPlayerHandler.HandlePacket(reader, fromWho);
+        OriPlayerHandler.HandlePacket(reader, fromWho);
         break;
       default:
         OriMod.Error("UnknownPacket", args: packetClass);

@@ -23,23 +23,23 @@ public abstract class SpiritFlame : ModProjectile {
   private SeinData _data;
 
   /// <summary>
-  /// Current homing strength of the projectile. Increases over time by <see cref="SeinData.homingIncreaseRate"/>.
+  /// Current homing strength of the projectile. Increases over time by <see cref="SeinData.HomingIncreaseRate"/>.
   /// <para>0 = no homing; 1 = full homing.</para>
   /// </summary>
   private float _lerp;
 
   /// <summary>
-  /// Elapsed time for <see cref="SeinData.homingIncreaseDelay"/>.
+  /// Elapsed time for <see cref="SeinData.HomingIncreaseDelay"/>.
   /// </summary>
   private int _currentLerpDelay;
 
   /// <summary>
-  /// Current speed of the projectile. Increases over time by <see cref="SeinData.projectileSpeedIncreaseRate"/>.
+  /// Current speed of the projectile. Increases over time by <see cref="SeinData.ProjectileSpeedIncreaseRate"/>.
   /// </summary>
   private float _speed;
   private float SpeedSquared => _speed * _speed;
   /// <summary>
-  /// Elapsed time for <see cref="SeinData.projectileSpeedIncreaseDelay"/>.
+  /// Elapsed time for <see cref="SeinData.ProjectileSpeedIncreaseDelay"/>.
   /// </summary>
   private int _currentAccelerationDelay;
 
@@ -61,11 +61,11 @@ public abstract class SpiritFlame : ModProjectile {
     _dustType = ModContent.DustType<SpiritFlameDustTrail>();
 
     _data = SeinData.All[SpiritFlameType - 1];
-    Projectile.knockBack = _data.knockback;
-    Projectile.width = _data.spiritFlameWidth;
-    Projectile.height = _data.spiritFlameHeight;
-    _lerp = _data.homingStrengthStart;
-    _speed = _data.projectileSpeedStart;
+    Projectile.knockBack = _data.Knockback;
+    Projectile.width = _data.SpiritFlameWidth;
+    Projectile.height = _data.SpiritFlameHeight;
+    _lerp = _data.HomingStrengthStart;
+    _speed = _data.ProjectileSpeedStart;
   }
 
   /// <summary>
@@ -75,12 +75,12 @@ public abstract class SpiritFlame : ModProjectile {
 
   private void CreateDust() {
     Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, _dustType);
-    dust.scale = _data.dustScale;
+    dust.scale = _data.DustScale;
     dust.velocity = (_targetPosition - Projectile.Center).LengthSquared() >= SpeedSquared ? Projectile.velocity * 0.01f : Vector2.Zero;
 
     dust.rotation = (float)(Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) - Math.PI / 180 * 270);
     dust.position = Projectile.Center;
-    dust.color = Color.Lerp(_data.color.Brightened(), Color.White, 0.85f);
+    dust.color = Color.Lerp(_data.Color.Brightened(), Color.White, 0.85f);
     dust.color.A = 230;
   }
 
@@ -126,7 +126,7 @@ public abstract class SpiritFlame : ModProjectile {
   }
 
   public override void AI() {
-    Lighting.AddLight(Projectile.Center, _data.color.ToVector3() * _data.lightStrength);
+    Lighting.AddLight(Projectile.Center, _data.Color.ToVector3() * _data.LightStrength);
     CreateDust();
 
     // Update target position until it dies
@@ -146,10 +146,10 @@ public abstract class SpiritFlame : ModProjectile {
     }
 
     // Increase homing strength over time
-    TickTimerOrValue(ref _currentLerpDelay, _data.homingIncreaseDelay, ref _lerp, 1, _data.homingIncreaseRate);
+    TickTimerOrValue(ref _currentLerpDelay, _data.HomingIncreaseDelay, ref _lerp, 1, _data.HomingIncreaseRate);
 
     // Increase speed over time
-    TickTimerOrValue(ref _currentAccelerationDelay, _data.projectileSpeedIncreaseDelay, ref _speed, 30, _data.projectileSpeedIncreaseRate);
+    TickTimerOrValue(ref _currentAccelerationDelay, _data.ProjectileSpeedIncreaseDelay, ref _speed, 30, _data.ProjectileSpeedIncreaseRate);
 
     Projectile.velocity = Vector2.Lerp(Projectile.velocity.Normalized(), offset.Normalized(), _lerp) * _speed;
   }

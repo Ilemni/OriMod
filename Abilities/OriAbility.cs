@@ -4,8 +4,10 @@ namespace OriMod.Abilities;
 
 public abstract class OriAbility : Ability<OriAbilityManager> {
 
-  protected OriPlayer oPlayer => _oPlayer ??= abilities.oPlayer;
-  protected OriInput input => _input ??= oPlayer.input;
+
+  // ReSharper disable once InconsistentNaming
+  protected OriPlayer oPlayer => _oPlayer ??= Abilities.oPlayer;
+  protected OriInput Input => _input ??= oPlayer.Input;
   private OriPlayer _oPlayer;
   private OriInput _input;
 

@@ -13,31 +13,31 @@ public sealed class StompEnd : OriAbilityProjectile {
   public override int Id => AbilityId.Stomp;
 
   private float Knockback =>
-    level switch {
+    Level switch {
       1 => 16,
       2 => 30,
-      _ => 10 + level * 12
+      _ => 10 + Level * 12
     };
 
   private int MaxPenetrate =>
-    level switch {
+    Level switch {
       1 => 8,
       2 => 20,
-      _ => level * 10
+      _ => Level * 10
     };
 
   private int Width =>
-    level switch {
+    Level switch {
       1 => 600,
       2 => 660,
-      _ => 400 + level * 100
+      _ => 400 + Level * 100
     };
 
   private int Height =>
-    level switch {
+    Level switch {
       1 => 320,
       2 => 360,
-      _ => 240 + level * 60
+      _ => 240 + Level * 60
     };
 
   public override void SetDefaults() {
@@ -58,8 +58,8 @@ public sealed class StompEnd : OriAbilityProjectile {
 
   private void ModifyHitAny(Entity target) {
     if (target is NPC npc && npc.immortal) return; // Don't knockback target dummies
-    Vector2 vector = target.Center - aPlayer.Player.Center;
-    float dist = target.Distance(aPlayer.Player.Center);
+    Vector2 vector = target.Center - APlayer.Player.Center;
+    float dist = target.Distance(APlayer.Player.Center);
     float kb = Knockback * (160.0f - dist) / 160.0f;
     if (kb < 6) {
       kb = 6;

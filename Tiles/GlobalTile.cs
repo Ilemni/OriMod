@@ -21,15 +21,15 @@ public sealed class OriTile : GlobalTile {
     float dist = Vector2.Distance(playerPos, new Vector2(i, j)) - InnerRange;
     dist = Utils.Clamp((OuterRange - dist) / OuterRange, 0, 1);
     drawColor = Color.Lerp(orig, Color.White,
-      (oPlayer.abilities.burrow.CanBurrow(Main.tile[i, j]) ? 0.8f : 0.4f) * dist);
+      (oPlayer.Abilities.Burrow.CanBurrow(Main.tile[i, j]) ? 0.8f : 0.4f) * dist);
     drawColor.A = orig.A;
   }
 
   public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref TileDrawInfo drawInfo) {
     OriPlayer oPlayer = OriPlayer.Local;
-    if (!oPlayer.abilities.burrow) return;
+    if (!oPlayer.Abilities.Burrow) return;
     BurrowEffects(i, j, ref drawInfo.finalColor, oPlayer);
-    if (!oPlayer.debugMode) return;
+    if (!oPlayer.DebugMode) return;
     Point pos = new(i, j);
     if (Burrow.InnerHitbox.Points.Contains(pos)) {
       drawInfo.finalColor = Color.Red;

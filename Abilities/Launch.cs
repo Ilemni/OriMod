@@ -21,17 +21,17 @@ namespace OriMod.Abilities;
 /// </remarks>
 public sealed class Launch : OriAbility {
   public override int Id => AbilityId.Launch;
-  public override int Level => Math.Max(0, levelableDependency.Level - 2);
-  public override ILevelable levelableDependency => abilities.chargeJump;
+  public override int Level => Math.Max(0, LevelableDependency.Level - 2);
+  public override ILevelable LevelableDependency => Abilities.ChargeJump;
   public override bool Unlocked => Level > 0;
 
   /// <summary>
   /// Bash restrictions, plus in air and bash failed
   /// </summary>
-  public override bool CanUse => base.CanUse && Inactive && !IsGrounded && !player.mount.Active &&
-    !abilities.bash && !abilities.burrow && !abilities.chargeDash &&
-    !abilities.chargeJump && !abilities.climb &&
-    !abilities.dash && !abilities.stomp && !abilities.wallChargeJump;
+  public override bool CanUse => base.CanUse && Inactive && !IsGrounded && !Player.mount.Active &&
+    !Abilities.Bash && !Abilities.Burrow && !Abilities.ChargeDash &&
+    !Abilities.ChargeJump && !Abilities.Climb &&
+    !Abilities.Dash && !Abilities.Stomp && !Abilities.WallChargeJump;
 
   public ushort CurrentChain { get; set; }
 
@@ -71,15 +71,15 @@ public sealed class Launch : OriAbility {
   public override void ReadPacket(BinaryReader r) {
     CurrentChain = r.ReadUInt16();
     LaunchAngle = r.ReadSingle();
-    player.position = r.ReadVector2();
-    player.velocity = r.ReadVector2();
+    Player.position = r.ReadVector2();
+    Player.velocity = r.ReadVector2();
   }
 
   public override void WritePacket(ModPacket packet) {
     packet.Write(CurrentChain);
     packet.Write(LaunchAngle);
-    packet.WriteVector2(player.position);
-    packet.WriteVector2(player.velocity);
+    packet.WriteVector2(Player.position);
+    packet.WriteVector2(Player.velocity);
   }
 
   public override void UpdateUsing() {
@@ -89,67 +89,67 @@ public sealed class Launch : OriAbility {
         LaunchAngle = angle;
       }
 
-      player.velocity *= 0.86f;
-      player.gravity = 0;
-      player.runSlowdown = 0;
+      Player.velocity *= 0.86f;
+      Player.gravity = 0;
+      Player.runSlowdown = 0;
     }
 
     if (IsLocal) {
-      netUpdate = true;
+      NetUpdate = true;
     }
 
-    player.maxFallSpeed = LaunchSpeed;
+    Player.maxFallSpeed = LaunchSpeed;
     // Allow only quick heal and quick mana
-    player.controlJump = false;
-    player.controlUp = false;
-    player.controlDown = false;
-    player.controlLeft = false;
-    player.controlRight = false;
-    player.controlHook = false;
-    player.controlInv = false;
-    player.controlMount = false;
-    player.controlSmart = false;
-    player.controlThrow = false;
-    player.controlTorch = false;
-    player.controlUseItem = false;
-    player.controlUseTile = false;
-    player.buffImmune[BuffID.CursedInferno] = true;
-    player.buffImmune[BuffID.Dazed] = true;
-    player.buffImmune[BuffID.Frozen] = true;
-    player.buffImmune[BuffID.Frostburn] = true;
-    player.buffImmune[BuffID.MoonLeech] = true;
-    player.buffImmune[BuffID.Obstructed] = true;
-    player.buffImmune[BuffID.OnFire] = true;
-    player.buffImmune[BuffID.Poisoned] = true;
-    player.buffImmune[BuffID.ShadowFlame] = true;
-    player.buffImmune[BuffID.Silenced] = true;
-    player.buffImmune[BuffID.Slow] = true;
-    player.buffImmune[BuffID.Stoned] = true;
-    player.buffImmune[BuffID.Suffocation] = true;
-    player.buffImmune[BuffID.Venom] = true;
-    player.buffImmune[BuffID.Weak] = true;
-    player.buffImmune[BuffID.WitheredArmor] = true;
-    player.buffImmune[BuffID.WitheredWeapon] = true;
-    player.buffImmune[BuffID.WindPushed] = true;
+    Player.controlJump = false;
+    Player.controlUp = false;
+    Player.controlDown = false;
+    Player.controlLeft = false;
+    Player.controlRight = false;
+    Player.controlHook = false;
+    Player.controlInv = false;
+    Player.controlMount = false;
+    Player.controlSmart = false;
+    Player.controlThrow = false;
+    Player.controlTorch = false;
+    Player.controlUseItem = false;
+    Player.controlUseTile = false;
+    Player.buffImmune[BuffID.CursedInferno] = true;
+    Player.buffImmune[BuffID.Dazed] = true;
+    Player.buffImmune[BuffID.Frozen] = true;
+    Player.buffImmune[BuffID.Frostburn] = true;
+    Player.buffImmune[BuffID.MoonLeech] = true;
+    Player.buffImmune[BuffID.Obstructed] = true;
+    Player.buffImmune[BuffID.OnFire] = true;
+    Player.buffImmune[BuffID.Poisoned] = true;
+    Player.buffImmune[BuffID.ShadowFlame] = true;
+    Player.buffImmune[BuffID.Silenced] = true;
+    Player.buffImmune[BuffID.Slow] = true;
+    Player.buffImmune[BuffID.Stoned] = true;
+    Player.buffImmune[BuffID.Suffocation] = true;
+    Player.buffImmune[BuffID.Venom] = true;
+    Player.buffImmune[BuffID.Weak] = true;
+    Player.buffImmune[BuffID.WitheredArmor] = true;
+    Player.buffImmune[BuffID.WitheredWeapon] = true;
+    Player.buffImmune[BuffID.WindPushed] = true;
   }
 
   public override void UpdateActive() {
-    if (stateTime == 0) {
+    if (StateTime == 0) {
       NewAbilityProjectile<LaunchProjectile>(damage: 70);
     }
 
-    player.pulley = false;
-    player.velocity = LaunchDirection * LaunchSpeed;
-    oPlayer.immuneTimer = 5;
+    Player.pulley = false;
+    Player.velocity = LaunchDirection * LaunchSpeed;
+    oPlayer.ImmuneTimer = 5;
   }
 
   private void End() {
-    player.velocity = LaunchDirection * 10;
+    Player.velocity = LaunchDirection * 10;
     StartCooldown();
   }
 
   public override void PreUpdate() {
-    if (CanUse && input.charge.Current && input.bash.JustPressed && IsLocal) {
+    if (CanUse && Input.Charge.Current && Input.Bash.JustPressed && IsLocal) {
       if (CurrentChain == 0) {
         PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
       }
@@ -167,7 +167,7 @@ public sealed class Launch : OriAbility {
     }
 
     if (Starting) {
-      if (stateTime > MaxLaunchDuration || (stateTime >= MinLaunchDuration && !input.bash.Current)) {
+      if (StateTime > MaxLaunchDuration || (StateTime >= MinLaunchDuration && !Input.Bash.Current)) {
         SetState(AbilityState.Active);
       }
 
@@ -181,8 +181,8 @@ public sealed class Launch : OriAbility {
 
     // Post-ending state depends on player input
     // Maybe too sensitive to rely on input packet
-    if (!IsLocal || stateTime <= EndDuration) return;
-    if (CurrentChain < MaxChain && input.bash.Current) {
+    if (!IsLocal || StateTime <= EndDuration) return;
+    if (CurrentChain < MaxChain && Input.Bash.Current) {
       CurrentChain++;
       SetState(AbilityState.Starting);
       PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), Level == 3 ? 0.15f : 0.35f);

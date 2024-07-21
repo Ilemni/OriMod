@@ -16,7 +16,7 @@ public sealed class LaunchProjectile : OriAbilityProjectile {
   }
 
   protected override void CheckAbilityActive() {
-    if (ability.Active) {
+    if (Ability.Active) {
       Projectile.timeLeft = 10;
     }
   }

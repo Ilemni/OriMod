@@ -1,7 +1,7 @@
 using AnimLib.Abilities;
 using System;
 
-namespace OriMod.Abilities; 
+namespace OriMod.Abilities;
 
 /// <summary>
 /// Ability for looking up. Pairs with the ability <see cref="ChargeJump"/>.
@@ -10,31 +10,31 @@ namespace OriMod.Abilities;
 public sealed class LookUp : OriAbility {
   public override int Id => AbilityId.LookUp;
 
-  public override bool CanUse => base.CanUse && IsGrounded && Math.Abs(player.velocity.X) < 0.8f && !player.mount.Active &&
-    !abilities.bash && !abilities.burrow && !abilities.chargeDash && !abilities.climb && !abilities.crouch && !abilities.dash;
+  public override bool CanUse => base.CanUse && IsGrounded && Math.Abs(Player.velocity.X) < 0.8f && !Player.mount.Active &&
+    !Abilities.Bash && !Abilities.Burrow && !Abilities.ChargeDash && !Abilities.Climb && !Abilities.Crouch && !Abilities.Dash;
 
   private static int StartDuration => 12;
   private static int EndDuration => 8;
 
   public override void PreUpdate() {
     if (!InUse) {
-      if (CanUse && (player.controlUp || abilities.oPlayer.input.charge.Current)) {
+      if (CanUse && (Player.controlUp || Abilities.oPlayer.Input.Charge.Current)) {
         SetState(AbilityState.Starting);
       }
     }
     else if (!CanUse) {
       SetState(AbilityState.Inactive);
     }
-    else if (!(player.controlUp || abilities.oPlayer.input.charge.Current) && !Ending) {
+    else if (!(Player.controlUp || Abilities.oPlayer.Input.Charge.Current) && !Ending) {
       SetState(Active ? AbilityState.Ending : AbilityState.Inactive);
     }
     else if (Starting) {
-      if (stateTime > StartDuration) {
+      if (StateTime > StartDuration) {
         SetState(AbilityState.Active);
       }
     }
     else if (Ending) {
-      if (stateTime > EndDuration) {
+      if (StateTime > EndDuration) {
         SetState(AbilityState.Inactive);
       }
     }

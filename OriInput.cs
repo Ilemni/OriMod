@@ -12,15 +12,15 @@ namespace OriMod;
 /// Net-synced player input, specific to this mod's controls.
 /// </summary>
 public sealed class OriInput : IEnumerable<Input> {
-  public readonly Input jump = new(() => PlayerInput.Triggers.Current.Jump && !OriPlayer.Local.controls_blocked);
-  public readonly Input bash = new(() => OriMod.bashKey.Current && !OriPlayer.Local.controls_blocked);
-  public readonly Input dash = new(() => OriMod.dashKey.Current && !OriPlayer.Local.controls_blocked);
-  public readonly Input climb = new(() => OriMod.climbKey.Current && !OriPlayer.Local.controls_blocked);
-  public readonly Input glide = new(() => OriMod.featherKey.Current && !OriPlayer.Local.controls_blocked);
-  public readonly Input stomp = new(() => OriMod.stompKey.Current && !OriPlayer.Local.controls_blocked);
-  public readonly Input charge = new(() => OriMod.chargeKey.Current && !OriPlayer.Local.controls_blocked);
-  public readonly Input burrow = new(() => OriMod.burrowKey.Current && !OriPlayer.Local.controls_blocked);
-  public readonly Input leftClick = new(() => PlayerInput.Triggers.Current.MouseLeft && !OriPlayer.Local.controls_blocked);
+  public readonly Input Jump = new(() => PlayerInput.Triggers.Current.Jump && !OriPlayer.Local.ControlsBlocked);
+  public readonly Input Bash = new(() => OriMod.bashKey.Current && !OriPlayer.Local.ControlsBlocked);
+  public readonly Input Dash = new(() => OriMod.dashKey.Current && !OriPlayer.Local.ControlsBlocked);
+  public readonly Input Climb = new(() => OriMod.climbKey.Current && !OriPlayer.Local.ControlsBlocked);
+  public readonly Input Glide = new(() => OriMod.featherKey.Current && !OriPlayer.Local.ControlsBlocked);
+  public readonly Input Stomp = new(() => OriMod.stompKey.Current && !OriPlayer.Local.ControlsBlocked);
+  public readonly Input Charge = new(() => OriMod.chargeKey.Current && !OriPlayer.Local.ControlsBlocked);
+  public readonly Input Burrow = new(() => OriMod.burrowKey.Current && !OriPlayer.Local.ControlsBlocked);
+  public readonly Input LeftClick = new(() => PlayerInput.Triggers.Current.MouseLeft && !OriPlayer.Local.ControlsBlocked);
 
   /// <summary>
   /// Read and updates the player's inputs.
@@ -54,15 +54,15 @@ public sealed class OriInput : IEnumerable<Input> {
   IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
   public IEnumerator<Input> GetEnumerator() {
-    yield return jump;
-    yield return bash;
-    yield return dash;
-    yield return climb;
-    yield return glide;
-    yield return stomp;
-    yield return charge;
-    yield return burrow;
-    yield return leftClick;
+    yield return Jump;
+    yield return Bash;
+    yield return Dash;
+    yield return Climb;
+    yield return Glide;
+    yield return Stomp;
+    yield return Charge;
+    yield return Burrow;
+    yield return LeftClick;
   }
 
   public void ResetInputChangedState() {

@@ -36,7 +36,7 @@ public abstract class AbilityMedallionBase : ModItem {
   /// <returns><see langword="true"/> if the ability can be leveled. If this returns <see langword="false"/>, this <see cref="AbilityMedallionBase"/> or the <see cref="Ability"/> must be fixed.</returns>
   public override bool? UseItem(Player player) {
     OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-    Ability ability = oPlayer.abilities[Id];
+    Ability ability = oPlayer.Abilities[Id];
     if (ability is ILevelable levelable) {
       levelable.Level = levelable.Level < Level ? levelable.Level + 1 : 0;
       if (player.whoAmI == Main.myPlayer) {

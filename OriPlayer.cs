@@ -8,7 +8,6 @@ using OriMod.Networking;
 using OriMod.Utilities;
 using System;
 using System.Linq;
-using JetBrains.Annotations;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -25,7 +24,7 @@ namespace OriMod;
 /// <see cref="ModPlayer"/> class for <see cref="OriMod"/>. Contains Ori data for a player, such as abilities and animations.
 /// </summary>
 public sealed class OriPlayer : ModPlayer {
-  private const string abilitiesTagName = "AnimLibAbilities";
+  private const string AbilitiesTagName = "AnimLibAbilities";
 
   #region Variables
 
@@ -39,16 +38,16 @@ public sealed class OriPlayer : ModPlayer {
   /// <summary>
   /// Net-synced controls of this player.
   /// </summary>
-  internal OriInput input { get; private set; }
+  internal OriInput Input { get; private set; }
 
-  internal bool controls_blocked;
+  internal bool ControlsBlocked;
 
   private AnimCharacterWrapper<OriAnimationController, OriAbilityManager> _characterWrapper;
 
   internal AnimCharacterWrapper<OriAnimationController, OriAbilityManager> CharacterWrapper =>
     _characterWrapper ??= this.GetAnimCharacter().GetWrapped<OriAnimationController, OriAbilityManager>();
 
-  public AnimCharacter character => CharacterWrapper.Character;
+  public AnimCharacter Character => CharacterWrapper.Character;
 
   /// <summary>
   /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
@@ -58,33 +57,33 @@ public sealed class OriPlayer : ModPlayer {
   /// <summary>
   /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
   /// </summary>
-  internal OriAbilityManager abilities => CharacterWrapper.AbilityManager;
+  internal OriAbilityManager Abilities => CharacterWrapper.AbilityManager;
 
   /// <summary>
   /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
   /// </summary>
-  internal Trail trail { get; private set; }
+  internal Trail Trail { get; private set; }
 
   /// <summary>
   /// Whether this <see cref="OriPlayer"/> instance should sync with multiplayer this frame.
   /// </summary>
   private bool _netUpdate = true;
 
-  internal bool debugMode;
+  internal bool DebugMode;
 
-  private bool wasMounted;
+  private bool _wasMounted;
 
   /// <summary>
   /// When set to true, uses custom movement and player sprites.
   /// <para>External mods that attempt to be compatible with this one will need to use this property.</para>
   /// </summary>
   public bool IsOri {
-    get => character.IsActive && (!Transforming || transformTimer >= TransformStartDuration - 10);
+    get => Character.IsActive && (!Transforming || TransformTimer >= TransformStartDuration - 10);
     set {
       if (value == _isOri) return;
       _netUpdate = true;
-      if (value) character.TryEnable();
-      else character.TryDisable();
+      if (value) Character.TryEnable();
+      else Character.TryDisable();
       _isOri = value;
     }
   }
@@ -97,12 +96,12 @@ public sealed class OriPlayer : ModPlayer {
   /// <summary>
   /// Stores previous armor dye item ID, from armor dye slot, used for armor shader update.
   /// </summary>
-  internal int armor_dye;
+  internal int ArmorDye;
 
   /// <summary>
   /// Current dye_shader data, used for dye shader base color extraction.
   /// </summary>
-  internal ArmorShaderData dye_shader;
+  internal ArmorShaderData DyeShader;
 
   #region Transformation
 
@@ -115,7 +114,7 @@ public sealed class OriPlayer : ModPlayer {
     internal set {
       if (value == _transforming) return;
       _netUpdate = true;
-      if (value) character.TryEnable();
+      if (value) Character.TryEnable();
       _transforming = value;
     }
   }
@@ -123,7 +122,7 @@ public sealed class OriPlayer : ModPlayer {
   /// <summary>
   /// Frames since a transformation began.
   /// </summary>
-  internal float transformTimer;
+  internal float TransformTimer;
 
   /// <summary>
   /// Whether the player has been Ori before during this session. Used to hasten subsequent transformations.
@@ -177,12 +176,12 @@ public sealed class OriPlayer : ModPlayer {
   /// <summary>
   /// Used for temporary storing of Rocket boots remaining time for airjump
   /// </summary>
-  private int _rocket_boots_remaining = -1;
+  private int _rocketBootsRemaining = -1;
 
   /// <summary>
   /// Used for temporary storing of Carpet remaining time for airjump
   /// </summary>
-  private int _carpet_remaining = -1;
+  private int _carpetRemaining = -1;
 
   /// <summary>
   /// Info about if this player has a <see cref="Projectiles.Minions.Sein"/> minion summoned. Used to prevent having more than one Sein summoned per player.
@@ -228,7 +227,7 @@ public sealed class OriPlayer : ModPlayer {
   /// <summary>
   /// When greater than 0, sets <see cref="Player.immune"/> to true.
   /// </summary>
-  internal int immuneTimer {
+  internal int ImmuneTimer {
     get => Player.immuneTime;
     set {
       if (Player.immuneTime < value) Player.immuneTime = value;
@@ -284,14 +283,14 @@ public sealed class OriPlayer : ModPlayer {
   /// <summary>
   /// Whether the multiplayer client instance of this <see cref="OriPlayer"/> uses light.
   /// </summary>
-  internal bool multiplayerPlayerLight = false;
+  internal bool MultiplayerPlayerLight = false;
 
   /// <summary>
   /// Whether this <see cref="OriPlayer"/> instance uses light.
   /// </summary>
   private bool DoPlayerLight => IsLocal || OriMod.ConfigClient.globalPlayerLight
     ? OriMod.ConfigClient.playerLight
-    : multiplayerPlayerLight;
+    : MultiplayerPlayerLight;
 
   private Color _lightColor = new(0.2f, 0.4f, 0.4f);
   private float _lightStrength = 1f;
@@ -330,7 +329,7 @@ public sealed class OriPlayer : ModPlayer {
   /// </summary>
   /// <param name="msg">Message to print.</param>
   internal void Debug(string msg) {
-    if (debugMode && IsLocal) {
+    if (DebugMode && IsLocal) {
       Main.NewText(msg);
     }
   }
@@ -341,7 +340,7 @@ public sealed class OriPlayer : ModPlayer {
   internal void BeginTransformation() {
     Transforming = true;
     _transformDirection = (sbyte)Player.direction;
-    transformTimer = 0;
+    TransformTimer = 0;
   }
 
   /// <summary>
@@ -379,8 +378,8 @@ public sealed class OriPlayer : ModPlayer {
     dust.scale = Main.rand.NextFloat(0.7f, 0.9f);
     dust.noGravity = false;
     _playerDustTimer = Transforming ? Main.rand.Next(3, 8)
-      : abilities.dash || abilities.chargeDash ? Main.rand.Next(2, 4)
-      : abilities.burrow ? Main.rand.Next(6, 10)
+      : Abilities.Dash || Abilities.ChargeDash ? Main.rand.Next(2, 4)
+      : Abilities.Burrow ? Main.rand.Next(6, 10)
       : Main.rand.Next(10, 15);
   }
 
@@ -403,22 +402,22 @@ public sealed class OriPlayer : ModPlayer {
     HasTransformedOnce = false;
     SeinMinionActive = false;
     SeinMinionType = 0;
-    abilities.ResetAllAbilities();
+    Abilities.ResetAllAbilities();
   }
 
   #endregion
 
   public override void Initialize() {
-    input = new OriInput();
+    Input = new OriInput();
 
     if (!Main.dedServ) {
-      trail = new Trail(this);
+      Trail = new Trail(this);
     }
   }
 
   public override void ResetEffects() {
     if (Transforming) {
-      transformTimer += HasTransformedOnce ? RepeatedTransformRate : 1;
+      TransformTimer += HasTransformedOnce ? RepeatedTransformRate : 1;
     }
 
     if (IsOri) {
@@ -428,11 +427,11 @@ public sealed class OriPlayer : ModPlayer {
     }
 
     if (Transforming) {
-      immuneTimer = 2;
+      ImmuneTimer = 2;
     }
 
     if (Main.netMode != NetmodeID.Server) {
-      trail.hasDrawnThisFrame = false;
+      Trail.HasDrawnThisFrame = false;
     }
   }
 
@@ -447,92 +446,92 @@ public sealed class OriPlayer : ModPlayer {
 
   public override void SendClientChanges(ModPlayer clientPlayer) {
     if (_netUpdate) {
-      ModNetHandler.Instance.oriPlayerHandler.SendOriState(255, Player.whoAmI);
+      ModNetHandler.Instance.OriPlayerHandler.SendOriState(255, Player.whoAmI);
       _netUpdate = false;
     }
   }
 
   public override void SaveData(TagCompound tag) {
     tag["OriSet"] = IsOri;
-    tag["Debug"] = debugMode;
+    tag["Debug"] = DebugMode;
     tag["Color1"] = SpriteColorPrimary;
     tag["Color2"] = SpriteColorSecondary;
     tag["DyeColLerp"] = DyeColorBlend;
 
     //Backward compatibility don't pay attention
     //TODO: Remove old save data once ready
-    abilities.OldSave(tag);
+    Abilities.OldSave(tag);
 
-    tag[abilitiesTagName] = abilities.Save();
+    tag[AbilitiesTagName] = Abilities.Save();
   }
 
   public override void LoadData(TagCompound tag) {
     IsOri = tag.GetBool("OriSet");
-    debugMode = tag.GetBool("Debug");
+    DebugMode = tag.GetBool("Debug");
     _spriteColorPrimary = tag.TryGet("Color1", out Color color1) ? color1 : OriMod.ConfigClient.playerColor;
     _spriteColorSecondary = tag.TryGet("Color2", out Color color2) ? color2 : OriMod.ConfigClient.playerColorSecondary;
     _dyeColorBlend = tag.TryGet("DyeColLerp", out float blend) ? blend : OriMod.ConfigClient.dyeLerp;
 
     //Backward compatibility don't pay attention
-    abilities.OldLoad(tag);
+    Abilities.OldLoad(tag);
 
     //This is current version
-    if (tag.ContainsKey(abilitiesTagName))
-      abilities.Load(tag.GetCompound(abilitiesTagName));
+    if (tag.ContainsKey(AbilitiesTagName))
+      Abilities.Load(tag.GetCompound(AbilitiesTagName));
 
     //Backward compatibility don't pay attention
-    if (abilities.oldAbility is not null) {
-      foreach (Ability ability in abilities) {
+    if (Abilities.OldAbility is not null) {
+      foreach (Ability ability in Abilities) {
         if (ability is ILevelable { Level: 0 } levelable) {
-          levelable.Level = abilities.oldAbility[ability.Id];
+          levelable.Level = Abilities.OldAbility[ability.Id];
         }
       }
 
-      abilities.oldAbility = null;
+      Abilities.OldAbility = null;
     }
     //Backward compatibility don't pay attention
   }
 
   public override void ProcessTriggers(TriggersSet triggersSet) {
     if (IsLocal) {
-      controls_blocked = OriMod.ConfigClient.blockControlsInMenu && InMenu;
+      ControlsBlocked = OriMod.ConfigClient.blockControlsInMenu && InMenu;
     }
 
-    input.Update(out bool doNetUpdate);
+    Input.Update(out bool doNetUpdate);
     if (doNetUpdate) _netUpdate = true;
   }
 
   public override void PostUpdateMiscEffects() {
     IsGrappling = Player.grappling[0] > -1;
     if (Player.HasBuff(BuffID.TheTongue) || IsGrappling) {
-      abilities.DisableAllAbilities();
+      Abilities.DisableAllAbilities();
     }
   }
 
   public override void UpdateEquips() {
-    if (abilities.climb || abilities.wallChargeJump) {
+    if (Abilities.Climb || Abilities.WallChargeJump) {
       Player.portableStoolInfo.HasAStool = false;
     }
 
-    if (_rocket_boots_remaining != -1) {
-      Player.rocketTime = _rocket_boots_remaining;
-      _rocket_boots_remaining = -1;
+    if (_rocketBootsRemaining != -1) {
+      Player.rocketTime = _rocketBootsRemaining;
+      _rocketBootsRemaining = -1;
     }
 
-    if (_carpet_remaining != -1) {
-      Player.carpetTime = _carpet_remaining;
-      _carpet_remaining = -1;
+    if (_carpetRemaining != -1) {
+      Player.carpetTime = _carpetRemaining;
+      _carpetRemaining = -1;
     }
   }
 
   public override void PostUpdateEquips() {
-    if (abilities.airJump.CanUse || abilities.airJump.InUse || OnWall) {
-      _rocket_boots_remaining = Player.rocketTime;
+    if (Abilities.AirJump.CanUse || Abilities.AirJump.InUse || OnWall) {
+      _rocketBootsRemaining = Player.rocketTime;
       Player.rocketTime = 0;
     }
 
-    if (abilities.airJump.InUse || OnWall) {
-      _carpet_remaining = Player.carpetTime;
+    if (Abilities.AirJump.InUse || OnWall) {
+      _carpetRemaining = Player.carpetTime;
       Player.carpetTime = 0;
     }
 
@@ -571,13 +570,13 @@ public sealed class OriPlayer : ModPlayer {
       if (OnWall) {
         Player.blockExtraJumps = true;
         // Either grounded or falling, not climbing
-        if ((IsGrounded || Player.velocity.Y * Player.gravDir < 0) && !abilities.climb && !abilities.airJump) {
+        if ((IsGrounded || Player.velocity.Y * Player.gravDir < 0) && !Abilities.Climb && !Abilities.AirJump) {
           LowerGravityTo(0.1f);
           Player.maxFallSpeed = 6f;
           Player.jumpSpeedBoost -= 6f;
         }
         // Sliding upward on wall, not stomping
-        else if (!IsGrounded && Player.velocity.Y * Player.gravDir > 0 && !abilities.stomp && !abilities.airJump) {
+        else if (!IsGrounded && Player.velocity.Y * Player.gravDir > 0 && !Abilities.Stomp && !Abilities.AirJump) {
           LowerGravityTo(0.1f);
           Player.maxFallSpeed = 6f;
         }
@@ -594,21 +593,21 @@ public sealed class OriPlayer : ModPlayer {
     Player.controlMount = false;
     Player.controlHook = false;
     Player.controlUseItem = false;
-    if (transformTimer < TransformStartDuration - 10) {
+    if (TransformTimer < TransformStartDuration - 10) {
       // Starting
-      Player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - transformTimer));
+      Player.velocity = new Vector2(0, -0.0003f * (TransformStartDuration * 1.5f - TransformTimer));
       Player.gravity = 0;
       CreatePlayerDust();
     }
-    else if (transformTimer < TransformStartDuration) {
+    else if (TransformTimer < TransformStartDuration) {
       // Near end of start
       Player.gravity = 9f;
       IsOri = true;
     }
-    else if (transformTimer >= TransformEndDuration ||
-      HasTransformedOnce && transformTimer > TransformEndEarlyDuration) {
+    else if (TransformTimer >= TransformEndDuration ||
+      HasTransformedOnce && TransformTimer > TransformEndEarlyDuration) {
       // End transformation
-      transformTimer = 0;
+      TransformTimer = 0;
       Transforming = false;
       IsOri = true;
     }
@@ -630,7 +629,7 @@ public sealed class OriPlayer : ModPlayer {
     }
 
     if (IsOri) {
-      if (DoPlayerLight && !abilities.burrow.Active) {
+      if (DoPlayerLight && !Abilities.Burrow.Active) {
         if (Main.dontStarveWorld) _lightStrength -= 0.004f;
         Lighting.AddLight(Player.Center, _lightColor.ToVector3() * _lightStrength);
         Vector3 tileLight = Lighting.GetColor(Player.Center.ToTileCoordinates()).ToVector3();
@@ -638,7 +637,7 @@ public sealed class OriPlayer : ModPlayer {
         _lightStrength = Math.Min(Math.Max(_lightStrength, brightness / 2), 1f);
       }
 
-      if (!Main.dedServ && !Transforming && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
+      if (!Main.dedServ && !Transforming && Animations.GraphicsEnabledCompat && Input.Jump.JustPressed && IsGrounded && !Abilities.Burrow) {
         PlaySound("Ori/Jump/seinJumpsGrass" + _randJump.NextNoRepeat(5), 0.6f);
       }
 
@@ -676,15 +675,15 @@ public sealed class OriPlayer : ModPlayer {
     }
 
     if (!IsLocal) {
-      input.ResetInputChangedState();
+      Input.ResetInputChangedState();
     }
   }
 
-  private static Type starlight_river_base_platform;
+  private static Type _starlightRiverBasePlatform;
 
   private bool CheckGrounded() {
     float vel = Player.velocity.Y * Player.gravDir;
-    if (vel < 0 || vel > 0.01f || abilities.climb) {
+    if (vel < 0 || vel > 0.01f || Abilities.Climb) {
       return false;
     }
 
@@ -700,10 +699,10 @@ public sealed class OriPlayer : ModPlayer {
       }
     }
 
-    if (starlight_river_base_platform is not null) {
+    if (_starlightRiverBasePlatform is not null) {
       Rectangle playerRect = new((int)Player.position.X, (int)Player.position.Y + Player.height, Player.width, 1);
       foreach (NPC npc in Main.npc) {
-        if (!npc.active || !starlight_river_base_platform.IsInstanceOfType(npc.ModNPC)) {
+        if (!npc.active || !_starlightRiverBasePlatform.IsInstanceOfType(npc.ModNPC)) {
           continue;
         }
 
@@ -735,9 +734,9 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void OnExtraJumpRefreshed(ExtraJump jump) {
-    abilities.airJump.currentCount = 0;
-    abilities.dash.currentCount = 0;
-    abilities.launch.CurrentChain = 0;
+    Abilities.AirJump.CurrentCount = 0;
+    Abilities.Dash.CurrentCount = 0;
+    Abilities.Launch.CurrentChain = 0;
     Player.canCarpet = true;
     Player.rocketTime = Player.rocketTimeMax;
     Player.wingTime = Player.wingTimeMax;
@@ -755,7 +754,7 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override bool FreeDodge(Player.HurtInfo info) =>
-    IsOri && (abilities.stomp || abilities.chargeDash || abilities.chargeJump);
+    IsOri && (Abilities.Stomp || Abilities.ChargeDash || Abilities.ChargeJump);
 
   public override void ModifyHurt(ref Player.HurtModifiers modifiers) {
     if (!IsOri) return;
@@ -805,7 +804,7 @@ public sealed class OriPlayer : ModPlayer {
 
   public override void HideDrawLayers(PlayerDrawSet drawInfo) {
     if (Player.mount.Active) {
-      wasMounted = true;
+      _wasMounted = true;
     }
 
     if (Main.dedServ || !Animations.GraphicsEnabledCompat) return;
@@ -821,15 +820,15 @@ public sealed class OriPlayer : ModPlayer {
     }
 
     if (!Player.mount.Active) {
-      if (wasMounted) trail.DecayAllSegments();
-      wasMounted = false;
+      if (_wasMounted) Trail.DecayAllSegments();
+      _wasMounted = false;
     }
 
-    if (abilities.burrow || Player.mount.Active) {
+    if (Abilities.Burrow || Player.mount.Active) {
       OriLayers.OriTrail.Hide();
     }
 
-    if (!abilities.bash && !abilities.launch.Starting) {
+    if (!Abilities.Bash && !Abilities.Launch.Starting) {
       OriLayers.BashArrow.Hide();
     }
 
@@ -869,10 +868,10 @@ public sealed class OriPlayer : ModPlayer {
     PlayerDrawLayers.WaistAcc.Hide();
     //PlayerDrawLayers.WebbedDebuffBack.Hide();
 
-    if (OnWall || Transforming || abilities.stomp ||
-        (abilities.airJump && !abilities.glide) ||
-        abilities.burrow || abilities.chargeJump ||
-        abilities.wallChargeJump) {
+    if (OnWall || Transforming || Abilities.Stomp ||
+        (Abilities.AirJump && !Abilities.Glide) ||
+        Abilities.Burrow || Abilities.ChargeJump ||
+        Abilities.WallChargeJump) {
       PlayerDrawLayers.HeldItem.Hide();
       PlayerDrawLayers.Wings.Hide();
       PlayerDrawLayers.Backpacks.Hide();
@@ -900,18 +899,18 @@ public sealed class OriPlayer : ModPlayer {
 
     Mod mod = ModLoader.Mods.FirstOrDefault(x => x.Name == "StarlightRiver");
     if (mod is not null) {
-      starlight_river_base_platform = AssemblyManager.GetLoadableTypes(mod.Code)
+      _starlightRiverBasePlatform = AssemblyManager.GetLoadableTypes(mod.Code)
         .FirstOrDefault(x => x.FullName == "StarlightRiver.Content.NPCs.BaseTypes.MovingPlatform", null);
     }
 
     if (!Main.dedServ) {
-      OriTextures.Instance.burrowTimer.Wait();
-      OriTextures.Instance.sein.Wait();
+      OriTextures.Instance.BurrowTimer.Wait();
+      OriTextures.Instance.Sein.Wait();
     }
   }
 
   public override void OnRespawn() {
-    abilities.DisableAllAbilities();
+    Abilities.DisableAllAbilities();
   }
 }
 

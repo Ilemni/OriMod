@@ -44,12 +44,12 @@ internal static class OriLayers {
       bool doFlash = player.immune && !player.immuneNoBlink && OriMod.ConfigClient.flashMode != "Disabled";
       Color flashColor = Color.Transparent;
       if (OriMod.ConfigClient.flashMode == "Red") flashColor = Color.Red;
-      if (oPlayer.armor_dye != player.dye[1].netID) {
-        oPlayer.dye_shader = GameShaders.Armor.GetShaderFromItemId(player.dye[1].netID);
-        oPlayer.armor_dye = player.dye[1].netID;
+      if (oPlayer.ArmorDye != player.dye[1].netID) {
+        oPlayer.DyeShader = GameShaders.Armor.GetShaderFromItemId(player.dye[1].netID);
+        oPlayer.ArmorDye = player.dye[1].netID;
       }
 
-      Color shaderColor = oPlayer.dye_shader?.GetColor() ?? Color.White;
+      Color shaderColor = oPlayer.DyeShader?.GetColor() ?? Color.White;
       Color spriteColor = Color.Lerp(oPlayer.SpriteColorPrimary, shaderColor,
         !dyeEn || shaderColor == Color.White ? 0 : oPlayer.DyeColorBlend);
       Color dataColor = doFlash
@@ -77,15 +77,15 @@ internal static class OriLayers {
         drawInfo.DrawDataCache.Add(data);
       }
 
-      if (oPlayer.abilities.glide) {
+      if (oPlayer.Abilities.Glide) {
         data.texture = playerAnim.GetTexture("Feather");
         data.sourceRect = playerAnim.GetRect("Feather");
         data.color = Color.White;
         drawInfo.DrawDataCache.Add(data);
       }
 
-      if (oPlayer.IsLocal && oPlayer.abilities.burrow.Unlocked) {
-        oPlayer.abilities.burrow.DrawEffects(ref drawInfo);
+      if (oPlayer.IsLocal && oPlayer.Abilities.Burrow.Unlocked) {
+        oPlayer.Abilities.Burrow.DrawEffects(ref drawInfo);
       }
     }
 
@@ -110,12 +110,12 @@ internal static class OriLayers {
 
     protected override void Draw(ref PlayerDrawSet drawInfo) {
       Player player = drawInfo.drawPlayer;
-      Trail trail = player.GetModPlayer<OriPlayer>().trail;
-      if (trail.hasDrawnThisFrame) {
+      Trail trail = player.GetModPlayer<OriPlayer>().Trail;
+      if (trail.HasDrawnThisFrame) {
         return;
       }
 
-      trail.hasDrawnThisFrame = true;
+      trail.HasDrawnThisFrame = true;
       trail.UpdateSegments();
       if (!player.dead && !player.invis) {
         trail.ResetNextSegment();
@@ -145,7 +145,7 @@ internal static class OriLayers {
 
     protected override void Draw(ref PlayerDrawSet drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      OriAbilityManager abilities = oPlayer.abilities;
+      OriAbilityManager abilities = oPlayer.Abilities;
       AnimSpriteSheet arrowSpriteSheet = OriTextures.Instance.Arrow;
       const string layer = "Arrow";
       AnimTextureAtlas atlas = arrowSpriteSheet.Atlases[layer];
@@ -153,16 +153,16 @@ internal static class OriLayers {
       Vector2 pos;
       float rotation;
       Rectangle rect;
-      Ability ab = abilities.bash ? abilities.bash : abilities.launch;
-      if (abilities.bash) {
-        pos = abilities.bash.BashEntity.Center;
-        rotation = abilities.bash.BashAngle;
-        rect = arrowSpriteSheet.GetRectFromTimer(layer, nameof(Bash), ab.stateTime);
+      Ability ab = abilities.Bash ? abilities.Bash : abilities.Launch;
+      if (abilities.Bash) {
+        pos = abilities.Bash.BashEntity.Center;
+        rotation = abilities.Bash.BashAngle;
+        rect = arrowSpriteSheet.GetRectFromTimer(layer, nameof(Bash), ab.StateTime);
       }
       else {
         pos = oPlayer.Player.Center;
-        rotation = abilities.launch.LaunchAngle;
-        rect = arrowSpriteSheet.GetRectFromTimer(layer, nameof(Launch), ab.stateTime);
+        rotation = abilities.Launch.LaunchAngle;
+        rect = arrowSpriteSheet.GetRectFromTimer(layer, nameof(Launch), ab.StateTime);
       }
 
       pos -= Main.screenPosition;

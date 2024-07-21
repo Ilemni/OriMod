@@ -15,76 +15,76 @@ public sealed class Climb : OriAbility, ILevelable {
   int ILevelable.MaxLevel => 1;
   public override bool Unlocked => Level > 0;
 
-  public override bool CanUse => base.CanUse && OnWall && !IsGrounded && !player.mount.Active &&
-    !abilities.bash && !abilities.burrow && !abilities.launch && !abilities.stomp && !abilities.wallChargeJump &&
-    !abilities.wallJump;
+  public override bool CanUse => base.CanUse && OnWall && !IsGrounded && !Player.mount.Active &&
+    !Abilities.Bash && !Abilities.Burrow && !Abilities.Launch && !Abilities.Stomp && !Abilities.WallChargeJump &&
+    !Abilities.WallJump;
 
   internal bool IsCharging {
     get => _isCharging;
     private set {
       if (value == _isCharging) return;
       _isCharging = value;
-      netUpdate = true;
+      NetUpdate = true;
     }
   }
   private bool _isCharging;
 
-  internal sbyte wallDirection;
+  internal sbyte WallDirection;
   // Prevent flip gravity when climbing upwards
   private bool _disableUp;
 
   public override void ReadPacket(BinaryReader r) {
-    wallDirection = r.ReadSByte();
+    WallDirection = r.ReadSByte();
     IsCharging = r.ReadBoolean();
   }
 
   public override void WritePacket(ModPacket packet) {
-    packet.Write(wallDirection);
+    packet.Write(WallDirection);
     packet.Write(IsCharging);
   }
 
   public override void UpdateActive() {
     if (IsCharging) {
-      player.velocity.Y = 0;
+      Player.velocity.Y = 0;
     }
-    else if (player.controlUp || input.jump.Current) {
-      player.velocity.Y += player.velocity.Y < (player.gravDir > 0 ? -2 : 4) ? 1 : -1;
+    else if (Player.controlUp || Input.Jump.Current) {
+      Player.velocity.Y += Player.velocity.Y < (Player.gravDir > 0 ? -2 : 4) ? 1 : -1;
     }
-    else if (player.controlDown) {
-      player.velocity.Y += player.velocity.Y < (player.gravDir > 0 ? 4 : -2) ? 1 : -1;
+    else if (Player.controlDown) {
+      Player.velocity.Y += Player.velocity.Y < (Player.gravDir > 0 ? 4 : -2) ? 1 : -1;
     }
     else {
-      player.velocity.Y *= Math.Abs(player.velocity.Y) > 1 ? 0.35f : 0;
+      Player.velocity.Y *= Math.Abs(Player.velocity.Y) > 1 ? 0.35f : 0;
     }
 
-    player.gravity = 0;
-    player.jump = 0;
-    player.runAcceleration = 0;
-    player.maxRunSpeed = 0;
-    player.direction = wallDirection;
-    player.velocity.X = 0;
-    player.controlLeft = false;
-    player.controlRight = false;
-    player.controlDown = false;
+    Player.gravity = 0;
+    Player.jump = 0;
+    Player.runAcceleration = 0;
+    Player.maxRunSpeed = 0;
+    Player.direction = WallDirection;
+    Player.velocity.X = 0;
+    Player.controlLeft = false;
+    Player.controlRight = false;
+    Player.controlDown = false;
   }
 
   public override void UpdateEnding() {
-    player.velocity.X = wallDirection * 3f;
-    player.velocity.Y = -player.gravDir * 4f;
+    Player.velocity.X = WallDirection * 3f;
+    Player.velocity.Y = -Player.gravDir * 4f;
   }
 
   public override void UpdateUsing() {
-    if (player.controlUp) {
+    if (Player.controlUp) {
       _disableUp = true;
     }
   }
 
   public override void PostUpdateAbilities() {
     if (!_disableUp) return;
-    if (!player.controlUp) {
+    if (!Player.controlUp) {
       _disableUp = false;
     }
-    player.controlUp = false;
+    Player.controlUp = false;
   }
 
   public override void PreUpdate() {
@@ -92,24 +92,24 @@ public sealed class Climb : OriAbility, ILevelable {
       return;
     }
     if (!InUse) {
-      if (CanUse && input.climb.Current) {
+      if (CanUse && Input.Climb.Current) {
         SetState(AbilityState.Active);
-        wallDirection = (sbyte)player.direction;
+        WallDirection = (sbyte)Player.direction;
       }
     }
     else if (Ending) {
-      int maxTime = player.gravDir >= 1 ? 7 : 9;
-      if (stateTime >= maxTime) {
+      int maxTime = Player.gravDir >= 1 ? 7 : 9;
+      if (StateTime >= maxTime) {
         SetState(AbilityState.Inactive);
       }
     }
-    else if (!input.climb.Current || (!CanUse && !(player.controlUp || input.jump.Current))) {
+    else if (!Input.Climb.Current || (!CanUse && !(Player.controlUp || Input.Jump.Current))) {
       SetState(AbilityState.Inactive);
     }
-    else if (!CanUse && (player.controlUp || input.jump.Current)) {
+    else if (!CanUse && (Player.controlUp || Input.Jump.Current)) {
       // Climb over top of things
       SetState(AbilityState.Ending);
     }
-    IsCharging = Active && abilities.wallChargeJump.Unlocked && (wallDirection == 1 ? player.controlLeft : player.controlRight);
+    IsCharging = Active && Abilities.WallChargeJump.Unlocked && (WallDirection == 1 ? Player.controlLeft : Player.controlRight);
   }
 }

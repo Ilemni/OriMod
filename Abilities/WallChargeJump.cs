@@ -15,8 +15,8 @@ namespace OriMod.Abilities;
 /// </summary>
 public sealed class WallChargeJump : OriAbility {
   public override int Id => AbilityId.WallChargeJump;
-  public override bool Unlocked => abilities.climb.Unlocked && levelableDependency.Level >= 2;
-  public override ILevelable levelableDependency => abilities.chargeJump;
+  public override bool Unlocked => Abilities.Climb.Unlocked && LevelableDependency.Level >= 2;
+  public override ILevelable LevelableDependency => Abilities.ChargeJump;
 
   public override bool CanUse => base.CanUse && Charged && CanCharge;
 
@@ -31,7 +31,7 @@ public sealed class WallChargeJump : OriAbility {
   private static float[] _speeds;
   private static float MaxAngle => 0.65f;
 
-  public bool CanCharge => base.CanUse && abilities.climb.IsCharging && !player.shimmering;
+  public bool CanCharge => base.CanUse && Abilities.Climb.IsCharging && !Player.shimmering;
   public bool Charged => _currentCharge >= MaxCharge;
   private int _currentCharge;
 
@@ -43,7 +43,7 @@ public sealed class WallChargeJump : OriAbility {
     set {
       if (Math.Abs(value - _angle) < 0.01f) return;
       _angle = value;
-      netUpdate = true;
+      NetUpdate = true;
     }
   }
   
@@ -56,17 +56,17 @@ public sealed class WallChargeJump : OriAbility {
   private void Start() {
     PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _randChar.NextNoRepeat(3), 0.8f);
     _currentCharge = 0;
-    Projectile.NewProjectile(player.GetSource_FromThis(), player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f,
-      player.whoAmI, 0, 1);
+    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f,
+      Player.whoAmI, 0, 1);
     StartCooldown();
     // TODO: multiplayer sync of direction
     // Currently it is very, very incorrect to use mouse position for multiplayer clients
-    player.velocity = _direction * Speeds[0] * 0.5f;
+    Player.velocity = _direction * Speeds[0] * 0.5f;
   }
 
   private void UpdateCharged() {
     if (Main.rand.NextFloat() < 0.7f) {
-      Dust.NewDust(player.Center, 12, 12, ModContent.DustType<AbilityRefreshedDust>(), newColor: Color.Blue);
+      Dust.NewDust(Player.Center, 12, 12, ModContent.DustType<AbilityRefreshedDust>(), newColor: Color.Blue);
     }
   }
 
@@ -74,32 +74,32 @@ public sealed class WallChargeJump : OriAbility {
     _currentCharge = r.ReadInt32();
     _direction = r.ReadVector2();
     Angle = r.ReadSingle();
-    player.position = r.ReadVector2();
-    player.velocity = r.ReadVector2();
+    Player.position = r.ReadVector2();
+    Player.velocity = r.ReadVector2();
   }
 
   public override void WritePacket(ModPacket packet) {
     packet.Write(_currentCharge);
     packet.WriteVector2(_direction);
     packet.Write(Angle);
-    packet.WriteVector2(player.position);
-    packet.WriteVector2(player.velocity);
+    packet.WriteVector2(Player.position);
+    packet.WriteVector2(Player.velocity);
   }
 
   public override void UpdateActive() {
-    float speed = Speeds[stateTime] * 0.5f;
-    player.velocity = _direction * speed;
-    player.direction = Math.Sign(player.velocity.X);
-    player.maxFallSpeed = Math.Abs(player.velocity.Y);
-    player.controlJump = false;
-    player.controlLeft = false;
-    player.controlRight = false;
+    float speed = Speeds[StateTime] * 0.5f;
+    Player.velocity = _direction * speed;
+    Player.direction = Math.Sign(Player.velocity.X);
+    Player.maxFallSpeed = Math.Abs(Player.velocity.Y);
+    Player.controlJump = false;
+    Player.controlLeft = false;
+    Player.controlRight = false;
 
-    if (IsLocal) netUpdate = true;
+    if (IsLocal) NetUpdate = true;
   }
 
   public override void PreUpdate() {
-    if (abilities.burrow) {
+    if (Abilities.Burrow) {
       _currentCharge = 0;
       return;
     }
@@ -111,13 +111,13 @@ public sealed class WallChargeJump : OriAbility {
       }
 
       _currentCharge++;
-      netUpdate = true;
+      NetUpdate = true;
       if (_currentCharge > MaxCharge) {
         PlayLocalSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
       }
     }
 
-    if (CanUse && input.jump.JustPressed) {
+    if (CanUse && Input.Jump.JustPressed) {
       Start();
       SetState(AbilityState.Active);
     }
@@ -125,7 +125,7 @@ public sealed class WallChargeJump : OriAbility {
       UpdateCharged();
       if (IsLocal) {
         _direction = OriUtils.GetMouseDirection(oPlayer, out float angle,
-          new Vector2(-abilities.climb.wallDirection, player.gravDir), MaxAngle);
+          new Vector2(-Abilities.Climb.WallDirection, Player.gravDir), MaxAngle);
         Angle = angle;
         if (!CanCharge) {
           _currentCharge = 0;
@@ -134,8 +134,8 @@ public sealed class WallChargeJump : OriAbility {
       }
     }
 
-    if (!Active || stateTime <= Duration) return;
+    if (!Active || StateTime <= Duration) return;
     SetState(AbilityState.Inactive);
-    netUpdate = false; // Deterministic
+    NetUpdate = false; // Deterministic
   }
 }

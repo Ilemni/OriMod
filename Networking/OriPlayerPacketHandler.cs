@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Networking; 
+namespace OriMod.Networking;
 
 /// <summary>
 /// Sends and receives <see cref="ModPacket"/>s that handle the <see cref="OriPlayer"/> state.
@@ -20,25 +20,25 @@ internal class OriPlayerPacketHandler : PacketHandler {
     bool transforming = flags[1];
     bool seinMinionActive = flags[3];
     bool mpcPlayerLight = flags[4];
-    bool controls_blocked = flags[5];
+    bool controlsBlocked = flags[5];
     ushort transformTimer = transforming ? reader.ReadUInt16() : (ushort)0;
     byte seinMinionType = seinMinionActive ? reader.ReadByte() : (byte)0;
     Color spriteColorPrimary = reader.ReadRGB();
-    Color spriteColorSecondary = reader.ReadRGBA();
+    Color spriteColorSecondary = reader.ReadRgba();
     float dyeLerp = reader.ReadSingle();
 
     fromPlayer.IsOri = oriSet;
     fromPlayer.Transforming = transforming;
-    fromPlayer.transformTimer = transformTimer;
+    fromPlayer.TransformTimer = transformTimer;
     fromPlayer.SeinMinionType = seinMinionType;
     fromPlayer.SeinMinionActive = seinMinionActive;
-    fromPlayer.multiplayerPlayerLight = mpcPlayerLight;
+    fromPlayer.MultiplayerPlayerLight = mpcPlayerLight;
     fromPlayer.SpriteColorPrimary = spriteColorPrimary;
     fromPlayer.SpriteColorSecondary = spriteColorSecondary;
     fromPlayer.DyeColorBlend = dyeLerp;
-    fromPlayer.controls_blocked = controls_blocked;
+    fromPlayer.ControlsBlocked = controlsBlocked;
 
-    fromPlayer.input.ReadPacket(reader);
+    fromPlayer.Input.ReadPacket(reader);
 
     if (Main.netMode == NetmodeID.Server) {
       SendOriState(-1, fromWho);
@@ -59,13 +59,13 @@ internal class OriPlayerPacketHandler : PacketHandler {
       [0] = fromPlayer.IsOri,
       [1] = fromPlayer.Transforming,
       [3] = fromPlayer.SeinMinionActive,
-      [4] = fromPlayer.multiplayerPlayerLight,
-      [5] = fromPlayer.controls_blocked
+      [4] = fromPlayer.MultiplayerPlayerLight,
+      [5] = fromPlayer.ControlsBlocked
     };
 
     packet.Write(flags);
     if (fromPlayer.Transforming) {
-      packet.Write((ushort)fromPlayer.transformTimer);
+      packet.Write((ushort)fromPlayer.TransformTimer);
     }
 
     if (fromPlayer.SeinMinionActive) {
@@ -73,10 +73,10 @@ internal class OriPlayerPacketHandler : PacketHandler {
     }
 
     packet.WriteRGB(fromPlayer.SpriteColorPrimary);
-    packet.WriteRGBA(fromPlayer.SpriteColorSecondary);
+    packet.WriteRgba(fromPlayer.SpriteColorSecondary);
     packet.Write(fromPlayer.DyeColorBlend);
 
-    fromPlayer.input.WritePacket(packet);
+    fromPlayer.Input.WritePacket(packet);
 
     packet.Send(toWho, fromWho);
   }

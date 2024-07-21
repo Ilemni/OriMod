@@ -1,4 +1,3 @@
-using AnimLib;
 using AnimLib.Projectiles;
 using OriMod.Abilities;
 using Terraria.ModLoader;
@@ -12,8 +11,8 @@ namespace OriMod.Projectiles.Abilities;
     /// <summary>
     /// THe <see cref="OriPlayer"/> that this <see cref="AbilityProjectile"/> belongs to.
     /// </summary>
-  public OriAbilityManager abilities => _abilities ??=
-    AnimLibMod.GetAbilityManager<OriAbilityManager>(aPlayer.Player.GetModPlayer<OriPlayer>());
+  public OriAbilityManager Abilities => _abilities ??=
+    APlayer.Player.GetModPlayer<OriPlayer>().Abilities;
     private OriAbilityManager _abilities;
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
 
@@ -41,7 +40,7 @@ namespace OriMod.Projectiles.Abilities;
     /// <para>Defaults to keeping timeLeft above 0 if ability is in use.</para>
     /// </summary>
     protected virtual void CheckAbilityActive() {
-      if (ability.InUse) {
+      if (Ability.InUse) {
         Projectile.timeLeft = 2;
       }
     }
@@ -51,6 +50,6 @@ namespace OriMod.Projectiles.Abilities;
     /// <para>Defaults to setting projectile center to player center.</para>
     /// </summary>
     protected virtual void Behavior() {
-      Projectile.Center = aPlayer.Player.Center;
+      Projectile.Center = APlayer.Player.Center;
   }
 }

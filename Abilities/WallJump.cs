@@ -21,8 +21,8 @@ public sealed class WallJump : OriAbility, ILevelable {
   public override bool Unlocked => Level > 0;
 
   public override bool CanUse => base.CanUse && OnWall &&
-    !IsGrounded && !InUse && !player.mount.Active &&
-    !abilities.wallChargeJump.Charged;
+    !IsGrounded && !InUse && !Player.mount.Active &&
+    !Abilities.WallChargeJump.Charged;
 
   private static readonly Vector2 WallJumpVelocity = new(4, -7.2f);
   private static int EndTime => 12;
@@ -35,48 +35,48 @@ public sealed class WallJump : OriAbility, ILevelable {
   public override void ReadPacket(BinaryReader r) {
     _wallDirection = r.ReadSByte();
     _gravDirection = r.ReadSByte();
-    player.position = r.ReadVector2();
-    player.velocity = r.ReadVector2();
+    Player.position = r.ReadVector2();
+    Player.velocity = r.ReadVector2();
   }
 
   public override void WritePacket(ModPacket packet) {
     packet.Write(_wallDirection);
     packet.Write(_gravDirection);
-    packet.WriteVector2(player.position);
-    packet.WriteVector2(player.velocity);
+    packet.WriteVector2(Player.position);
+    packet.WriteVector2(Player.velocity);
   }
 
   public override void UpdateActive() {
-    player.velocity.Y = WallJumpVelocity.Y * _gravDirection;
+    Player.velocity.Y = WallJumpVelocity.Y * _gravDirection;
     PlaySound("Ori/WallJump/seinWallJumps" + _rand.NextNoRepeat(5), 0.75f);
   }
 
   public override void UpdateEnding() {
     if (OnWall) {
-      player.velocity.Y -= _gravDirection;
+      Player.velocity.Y -= _gravDirection;
     }
   }
 
   public override void UpdateUsing() {
-    player.velocity.X = WallJumpVelocity.X * -_wallDirection;
-    player.direction = _wallDirection;
+    Player.velocity.X = WallJumpVelocity.X * -_wallDirection;
+    Player.direction = _wallDirection;
   }
 
   public override void PreUpdate() {
-    if (CanUse && input.jump.JustPressed && IsLocal) {
+    if (CanUse && Input.Jump.JustPressed && IsLocal) {
       SetState(AbilityState.Active);
       if (IsLocal) {
-        _wallDirection = (sbyte)player.direction;
-        _gravDirection = (sbyte)player.gravDir;
+        _wallDirection = (sbyte)Player.direction;
+        _gravDirection = (sbyte)Player.gravDir;
       }
-      abilities.climb.SetState(AbilityState.Inactive);
+      Abilities.Climb.SetState(AbilityState.Inactive);
     }
     else if (Active) {
       SetState(AbilityState.Ending);
     }
     else if (Ending) {
-      if (IsGrounded || stateTime > EndTime ||
-          (stateTime > EndTime * 0.5f && (player.controlRight || player.controlLeft))) {
+      if (IsGrounded || StateTime > EndTime ||
+          (StateTime > EndTime * 0.5f && (Player.controlRight || Player.controlLeft))) {
         SetState(AbilityState.Inactive);
       }
     }

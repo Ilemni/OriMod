@@ -200,8 +200,8 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
     string mat = sound.ToString();
     int x = (int)player.Bottom.X, y = (int)player.Bottom.Y;
 
-    SlotId Footstep(int randLength, float volume, out SoundStyle _st)
-      => PlayFootstep($"{mat}/{mat}{_rand.NextNoRepeat(randLength)}", x, y, volume, out _st);
+    SlotId Footstep(int randLength, float volume, out SoundStyle st)
+      => PlayFootstep($"{mat}/{mat}{_rand.NextNoRepeat(randLength)}", x, y, volume, out st);
 
     switch (sound) {
       case FootstepSound.Grass:
@@ -241,8 +241,8 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
     string mat = sound.ToString();
     int x = (int)player.Bottom.X, y = (int)player.Bottom.Y;
 
-    SlotId Landing(int randLength, float volume, out SoundStyle _st)
-      => PlayLanding($"{mat}/seinLands{mat}{_rand.NextNoRepeat(randLength)}", x, y, volume, out _st);
+    SlotId Landing(int randLength, float volume, out SoundStyle st)
+      => PlayLanding($"{mat}/seinLands{mat}{_rand.NextNoRepeat(randLength)}", x, y, volume, out st);
 
     switch (sound) {
       case FootstepSound.Grass:

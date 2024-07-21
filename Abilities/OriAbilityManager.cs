@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
@@ -79,57 +80,58 @@ namespace OriMod.Abilities {
   /// </summary>
   public sealed class OriAbilityManager : AbilityManager {
 
-    public WallJump wallJump { get; private set; }
-    public AirJump airJump { get; private set; }
-    public Bash bash { get; private set; }
-    public Stomp stomp { get; private set; }
-    public Glide glide { get; private set; }
-    public Climb climb { get; private set; }
-    public ChargeJump chargeJump { get; private set; }
-    public WallChargeJump wallChargeJump { get; private set; }
-    public Dash dash { get; private set; }
-    public ChargeDash chargeDash { get; private set; }
-    public LookUp lookUp { get; private set; }
-    public Crouch crouch { get; private set; }
-    public Burrow burrow { get; private set; }
-    public Launch launch { get; private set; }
+    public WallJump WallJump { get; private set; }
+    public AirJump AirJump { get; private set; }
+    public Bash Bash { get; private set; }
+    public Stomp Stomp { get; private set; }
+    public Glide Glide { get; private set; }
+    public Climb Climb { get; private set; }
+    public ChargeJump ChargeJump { get; private set; }
+    public WallChargeJump WallChargeJump { get; private set; }
+    public Dash Dash { get; private set; }
+    public ChargeDash ChargeDash { get; private set; }
+    public LookUp LookUp { get; private set; }
+    public Crouch Crouch { get; private set; }
+    public Burrow Burrow { get; private set; }
+    public Launch Launch { get; private set; }
 
 
     public override bool CanUseAnyAbilities() {
-      if (player.dead || oPlayer.Transforming || 
-        player.frozen || player.stoned || player.webbed || player.shimmering) {
+      if (Player.dead || oPlayer.Transforming ||
+        Player.frozen || Player.stoned || Player.webbed || Player.shimmering) {
         return false;
       }
-      bool mountActive = player.mount?.Active ?? false;
+      bool mountActive = Player.mount?.Active ?? false;
       return !mountActive;
     }
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public OriPlayer oPlayer { get; private set; }
 
     public override void PhysicsPreUpdate() => oPlayer.PostUpdatePhysics();
 
     public override void Initialize() {
-      wallJump = (WallJump)this[AbilityId.WallJump];
-      airJump = (AirJump)this[AbilityId.AirJump];
-      bash = (Bash)this[AbilityId.Bash];
-      stomp = (Stomp)this[AbilityId.Stomp];
-      glide = (Glide)this[AbilityId.Glide];
-      climb = (Climb)this[AbilityId.Climb];
-      chargeJump = (ChargeJump)this[AbilityId.ChargeJump];
-      wallChargeJump = (WallChargeJump)this[AbilityId.WallChargeJump];
-      dash = (Dash)this[AbilityId.Dash];
-      chargeDash = (ChargeDash)this[AbilityId.ChargeDash];
-      lookUp = (LookUp)this[AbilityId.LookUp];
-      crouch = (Crouch)this[AbilityId.Crouch];
-      burrow = (Burrow)this[AbilityId.Burrow];
-      launch = (Launch)this[AbilityId.Launch];
-      oPlayer = player.GetModPlayer<OriPlayer>();
+      WallJump = (WallJump)this[AbilityId.WallJump];
+      AirJump = (AirJump)this[AbilityId.AirJump];
+      Bash = (Bash)this[AbilityId.Bash];
+      Stomp = (Stomp)this[AbilityId.Stomp];
+      Glide = (Glide)this[AbilityId.Glide];
+      Climb = (Climb)this[AbilityId.Climb];
+      ChargeJump = (ChargeJump)this[AbilityId.ChargeJump];
+      WallChargeJump = (WallChargeJump)this[AbilityId.WallChargeJump];
+      Dash = (Dash)this[AbilityId.Dash];
+      ChargeDash = (ChargeDash)this[AbilityId.ChargeDash];
+      LookUp = (LookUp)this[AbilityId.LookUp];
+      Crouch = (Crouch)this[AbilityId.Crouch];
+      Burrow = (Burrow)this[AbilityId.Burrow];
+      Launch = (Launch)this[AbilityId.Launch];
+      oPlayer = Player.GetModPlayer<OriPlayer>();
     }
 
     internal void RefreshParticles(Color col) {
-      int dust_type = ModContent.DustType<AbilityRefreshedDust>();
+      int dustType = ModContent.DustType<AbilityRefreshedDust>();
       for (int i = 0; i < 10; i++) {
-        Dust.NewDust(player.Center, 12, 12, dust_type, newColor: col);
+        Dust.NewDust(Player.Center, 12, 12, dustType, newColor: col);
       }
     }
 
@@ -146,14 +148,14 @@ namespace OriMod.Abilities {
     //Backward compatibility don't pay attention
     public void OldLoad(TagCompound tag) {
       if (!tag.ContainsKey("AbilityLevels")) {
-        oldAbility = null;
+        OldAbility = null;
         return;
       }
-      oldAbility = tag.GetByteArray("AbilityLevels");
+      OldAbility = tag.GetByteArray("AbilityLevels");
     }
 
     //Backward compatibility don't pay attention
-    internal byte[] oldAbility;
+    internal byte[] OldAbility;
   }
 
 }

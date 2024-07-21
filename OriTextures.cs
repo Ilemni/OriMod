@@ -29,6 +29,6 @@ internal class OriTextures : SingleInstance<OriTextures> {
   internal readonly AnimTextureAtlas Trail;
   internal readonly AnimTextureAtlas Feather;
 
-  internal readonly Asset<Texture2D> burrowTimer = ModContent.Request<Texture2D>("OriMod/PlayerEffects/BurrowTimer");
-  internal readonly Asset<Texture2D> sein = ModContent.Request<Texture2D>("OriMod/Projectiles/Minions/Sein_Glow");
+  internal readonly Asset<Texture2D> BurrowTimer = ModContent.Request<Texture2D>("OriMod/PlayerEffects/BurrowTimer");
+  internal readonly Asset<Texture2D> Sein = ModContent.Request<Texture2D>("OriMod/Projectiles/Minions/Sein_Glow");
 }
