@@ -83,8 +83,8 @@
             <item><see cref="F:Terraria.DataStructures.DrawData.position"/> is the center of the <see cref="F:Terraria.ModLoader.PlayerDrawInfo.drawPlayer"/>, in screen-space. (recommended)</item>
             <item><see cref="F:Terraria.DataStructures.DrawData.sourceRect"/> is <see cref="P:AnimLib.Animations.Animation.CurrentTile"/> (recommended)</item>
             <item><see cref="F:Terraria.DataStructures.DrawData.rotation"/> is <see cref="F:Terraria.Entity.direction"/> <see langword="*"/> <see cref="P:AnimLib.Animations.AnimationController.SpriteRotation"/> (recommended)</item>
-            <item><see cref="F:Terraria.DataStructures.DrawData.origin"/> is half of <see cref="P:AnimLib.Animations.Animation.CurrentTile"/>'s size, plus (5 * <see cref="F:Terraria.Player.gravDir"/>) on the Y axis. Feel free to modify this.</item>
-            <item><see cref="F:Terraria.DataStructures.DrawData.effect"/> is based on <see cref="F:Terraria.Entity.direction"/> and <see cref="F:Terraria.Player.gravDir"/>. (recommended)</item>
+            <item><see cref="F:Terraria.DataStructures.DrawData.origin"/> is half of <see cref="P:AnimLib.Animations.Animation.CurrentTile"/>'s size, plus (5 * <see cref="F:player.gravDir"/>) on the Y axis. Feel free to modify this.</item>
+            <item><see cref="F:Terraria.DataStructures.DrawData.effect"/> is based on <see cref="F:Terraria.Entity.direction"/> and <see cref="F:player.gravDir"/>. (recommended)</item>
             </list>
             </summary>
             <remarks>
@@ -298,7 +298,7 @@
         </member>
         <member name="T:AnimLib.Animations.AnimationSource">
             <summary>
-            Contains all animation data for a single animation set. This animation data is used for all players. 
+            Contains all animation data for a single animation set. This animation data is used for all players.
             <see cref="T:AnimLib.Animations.AnimationSource"/>s from all mods are collected and created during <see cref="M:AnimLib.AnimLibMod.PostSetupContent"/>.
             After initialization, values should not be modified.
             <para>To get your <see cref="T:AnimLib.Animations.AnimationSource"/> instance, use <see cref="M:AnimLib.AnimLibMod.GetAnimationSource``1(Terraria.ModLoader.Mod)"/>.</para>
@@ -654,7 +654,7 @@
             <summary>
             Gets the <see cref="T:AnimLib.Animations.AnimationController"/> of the given type from the given <see cref="T:Terraria.ModLoader.ModPlayer"/>.
             Use this if you want your code to use values such as the current track and frame.
-            <para>This <strong>cannot</strong> be used during the <see cref="M:Terraria.ModLoader.ModPlayer.Initialize"/> method.</para>
+            <para>This <strong>cannot</strong> be used during the <see cref="M:Terraria.ModLoader.Modplayer.Initialize"/> method.</para>
             </summary>
             <typeparam name="T">Type of <see cref="T:AnimLib.Animations.AnimationController"/> to get.</typeparam>
             <param name="modPlayer">The <see cref="T:Terraria.ModLoader.ModPlayer"/>.</param>
@@ -665,7 +665,7 @@
             <summary>
             Gets the <see cref="T:AnimLib.Animations.AnimationController"/> of the given type from the given <see cref="T:Terraria.Player"/>.
             Use this if you want your code to use values such as the current track and frame.
-            <para>This <strong>cannot</strong> be used during the <see cref="M:Terraria.ModLoader.ModPlayer.Initialize"/> method.</para>
+            <para>This <strong>cannot</strong> be used during the <see cref="M:Terraria.ModLoader.Modplayer.Initialize"/> method.</para>
             </summary>
             <typeparam name="T">Type of <see cref="T:AnimLib.Animations.AnimationController"/> to get.</typeparam>
             <param name="player">The <see cref="T:Terraria.Player"/>.</param>
@@ -726,21 +726,21 @@
             Main <see cref="T:Terraria.ModLoader.ModPlayer"/> class for <see cref="T:AnimLib.AnimLibMod"/>, contains and updates <see cref="T:AnimLib.Animations.AnimationController"/>.
             </summary>
         </member>
-        <member name="M:AnimLib.AnimPlayer.Initialize">
+        <member name="M:AnimLib.Animplayer.Initialize">
             <summary>
             Constructs and collects all <see cref="T:AnimLib.Animations.AnimationController"/>s across all mods onto this <see cref="T:Terraria.Player"/>.
             </summary>
         </member>
-        <member name="M:AnimLib.AnimPlayer.PostUpdate">
+        <member name="M:AnimLib.Animplayer.PostUpdate">
             <summary>
             Updates all <see cref="T:AnimLib.Animations.AnimationController"/>s on this <see cref="T:Terraria.Player"/>.
             </summary>
         </member>
-        <member name="M:AnimLib.AnimPlayer.GetAnimationController``1">
+        <member name="M:AnimLib.Animplayer.GetAnimationController``1">
             <summary>
             Gets the <see cref="T:AnimLib.Animations.AnimationController"/> of the given type from this <see cref="T:AnimLib.AnimPlayer"/>.
             Use this if you want your code to use values such as the current track and frame.
-            <para>This <strong>cannot</strong> be used during the <see cref="M:Terraria.ModLoader.ModPlayer.Initialize"/> method.</para>
+            <para>This <strong>cannot</strong> be used during the <see cref="M:Terraria.ModLoader.Modplayer.Initialize"/> method.</para>
             </summary>
             <typeparam name="T">Type of <see cref="T:AnimLib.Animations.AnimationController"/> to get.</typeparam>
             <returns>An <see cref="T:AnimLib.Animations.AnimationController"/> of type <typeparamref name="T"/>.</returns>
@@ -751,10 +751,10 @@
             <para><strong><see cref="T:AnimLib.Animations.AnimationSource"/></strong></para>
             <para>On <see cref="M:Terraria.ModLoader.Mod.Load"/>, all <see cref="T:AnimLib.Animations.AnimationSource"/>s are constructed.</para>
             <para>On <see cref="M:Terraria.ModLoader.Mod.PostSetupContent"/>, all <see cref="T:AnimLib.Animations.AnimationSource"/>s have their Textures assigned.</para>
-            
+
             <para><strong><see cref="T:AnimLib.Animations.AnimationController"/></strong></para>
             <para>On <see cref="M:Terraria.ModLoader.Mod.Load"/>, all <see cref="T:System.Type"/>s of <see cref="T:AnimLib.Animations.AnimationController"/> are collected.</para>
-            <para>On <see cref="M:Terraria.ModLoader.ModPlayer.Initialize"/>, all <see cref="T:AnimLib.Animations.AnimationController"/>s are constructed and added to the <see cref="T:AnimLib.AnimPlayer"/>.</para>
+            <para>On <see cref="M:Terraria.ModLoader.Modplayer.Initialize"/>, all <see cref="T:AnimLib.Animations.AnimationController"/>s are constructed and added to the <see cref="T:AnimLib.AnimPlayer"/>.</para>
             </summary>
         </member>
         <member name="P:AnimLib.Internal.AnimLoader.UseAnimations">
@@ -769,7 +769,7 @@
         </member>
         <member name="F:AnimLib.Internal.AnimLoader._animationControllerTypes">
             <summary>
-            Collection of all <see cref="T:System.Type"/>s of <see cref="T:AnimLib.Animations.AnimationController"/>, collected during <see cref="M:Terraria.ModLoader.Mod.Load"/> and constructed during <see cref="M:Terraria.ModLoader.ModPlayer.Initialize"/>.
+            Collection of all <see cref="T:System.Type"/>s of <see cref="T:AnimLib.Animations.AnimationController"/>, collected during <see cref="M:Terraria.ModLoader.Mod.Load"/> and constructed during <see cref="M:Terraria.ModLoader.Modplayer.Initialize"/>.
             </summary>
         </member>
         <member name="M:AnimLib.Internal.AnimLoader.Load">

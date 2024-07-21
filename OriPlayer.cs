@@ -8,6 +8,7 @@ using OriMod.Networking;
 using OriMod.Utilities;
 using System;
 using System.Linq;
+using JetBrains.Annotations;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -24,7 +25,7 @@ namespace OriMod;
 /// <see cref="ModPlayer"/> class for <see cref="OriMod"/>. Contains Ori data for a player, such as abilities and animations.
 /// </summary>
 public sealed class OriPlayer : ModPlayer {
-  public const string abilitiesTagName = "AnimLibAbilities";
+  private const string abilitiesTagName = "AnimLibAbilities";
 
   #region Variables
 
@@ -36,29 +37,28 @@ public sealed class OriPlayer : ModPlayer {
   private bool InMenu => Main.ingameOptionsWindow || Main.inFancyUI || Player.talkNPC >= 0 || Player.sign >= 0 || Main.clothesWindow || Main.playerInventory;
 
   /// <summary>
-  /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
-  /// </summary>
-  internal OriAbilityManager abilities =>
-    _abilities ??= AnimLibMod.GetAbilityManager<OriAbilityManager>(this);
-  private OriAbilityManager _abilities;
-
-  /// <summary>
   /// Net-synced controls of this player.
   /// </summary>
   internal OriInput input { get; private set; }
 
   internal bool controls_blocked;
 
-  private AnimCharacter _character;
-  public AnimCharacter character =>
-    _character ??= this.GetAnimCharacter();
+  private AnimCharacterWrapper<OriAnimationController, OriAbilityManager> _characterWrapper;
+
+  internal AnimCharacterWrapper<OriAnimationController, OriAbilityManager> CharacterWrapper =>
+    _characterWrapper ??= this.GetAnimCharacter().GetWrapped<OriAnimationController, OriAbilityManager>();
+
+  public AnimCharacter character => CharacterWrapper.Character;
 
   /// <summary>
   /// Container for all <see cref="Animation"/>s on this OriPlayer instance.
   /// </summary>
-  internal OriAnimationController Animations =>
-    Main.dedServ ? null :
-      _anim ??= AnimLibMod.GetAnimationController<OriAnimationController>(Player.GetModPlayer<OriPlayer>());
+  internal OriAnimationController Animations => CharacterWrapper.AnimationController;
+
+  /// <summary>
+  /// Manager for all <see cref="Ability"/>s on this OriPlayer instance.
+  /// </summary>
+  internal OriAbilityManager abilities => CharacterWrapper.AbilityManager;
 
   /// <summary>
   /// Manager for all <see cref="TrailSegment"/>s on this OriPlayer instance.
@@ -66,7 +66,7 @@ public sealed class OriPlayer : ModPlayer {
   internal Trail trail { get; private set; }
 
   /// <summary>
-  /// Whether or not this <see cref="OriPlayer"/> instance should sync with multiplayer this frame.
+  /// Whether this <see cref="OriPlayer"/> instance should sync with multiplayer this frame.
   /// </summary>
   private bool _netUpdate = true;
 
@@ -282,12 +282,12 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   /// <summary>
-  /// Whether or not the multiplayer client instance of this <see cref="OriPlayer"/> uses light.
+  /// Whether the multiplayer client instance of this <see cref="OriPlayer"/> uses light.
   /// </summary>
   internal bool multiplayerPlayerLight = false;
 
   /// <summary>
-  /// Whether or not this <see cref="OriPlayer"/> instance uses light.
+  /// Whether this <see cref="OriPlayer"/> instance uses light.
   /// </summary>
   private bool DoPlayerLight => IsLocal || OriMod.ConfigClient.globalPlayerLight
     ? OriMod.ConfigClient.playerLight
@@ -453,40 +453,25 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void SaveData(TagCompound tag) {
-    TagCompound _tag = new() {
-      ["OriSet"] = IsOri,
-      ["Debug"] = debugMode,
-      ["Color1"] = SpriteColorPrimary,
-      ["Color2"] = SpriteColorSecondary,
-      ["DyeColLerp"] = DyeColorBlend
-    };
+    tag["OriSet"] = IsOri;
+    tag["Debug"] = debugMode;
+    tag["Color1"] = SpriteColorPrimary;
+    tag["Color2"] = SpriteColorSecondary;
+    tag["DyeColLerp"] = DyeColorBlend;
 
     //Backward compatibility don't pay attention
     //TODO: Remove old save data once ready
-    abilities.OldSave(_tag);
+    abilities.OldSave(tag);
 
-    _tag[abilitiesTagName] = abilities.Save();
-
-    foreach (var v in _tag) tag.Add(v);
+    tag[abilitiesTagName] = abilities.Save();
   }
 
   public override void LoadData(TagCompound tag) {
     IsOri = tag.GetBool("OriSet");
     debugMode = tag.GetBool("Debug");
-    if (tag.ContainsKey("Color1")) {
-      SpriteColorPrimary = tag.Get<Color>("Color1");
-      SpriteColorSecondary = tag.Get<Color>("Color2");
-    }
-    else {
-      _spriteColorPrimary = OriMod.ConfigClient.playerColor;
-      _spriteColorSecondary = OriMod.ConfigClient.playerColorSecondary;
-    }
-    if (tag.ContainsKey("DyeColLerp")) {
-      DyeColorBlend = tag.GetFloat("DyeColLerp");
-    }
-    else {
-      _dyeColorBlend = OriMod.ConfigClient.dyeLerp;
-    }
+    _spriteColorPrimary = tag.TryGet("Color1", out Color color1) ? color1 : OriMod.ConfigClient.playerColor;
+    _spriteColorSecondary = tag.TryGet("Color2", out Color color2) ? color2 : OriMod.ConfigClient.playerColorSecondary;
+    _dyeColorBlend = tag.TryGet("DyeColLerp", out float blend) ? blend : OriMod.ConfigClient.dyeLerp;
 
     //Backward compatibility don't pay attention
     abilities.OldLoad(tag);
@@ -498,10 +483,11 @@ public sealed class OriPlayer : ModPlayer {
     //Backward compatibility don't pay attention
     if (abilities.oldAbility is not null) {
       foreach (Ability ability in abilities) {
-        if (ability is ILevelable levelable && levelable.Level == 0) {
+        if (ability is ILevelable { Level: 0 } levelable) {
           levelable.Level = abilities.oldAbility[ability.Id];
         }
       }
+
       abilities.oldAbility = null;
     }
     //Backward compatibility don't pay attention
@@ -511,6 +497,7 @@ public sealed class OriPlayer : ModPlayer {
     if (IsLocal) {
       controls_blocked = OriMod.ConfigClient.blockControlsInMenu && InMenu;
     }
+
     input.Update(out bool doNetUpdate);
     if (doNetUpdate) _netUpdate = true;
   }
@@ -523,14 +510,16 @@ public sealed class OriPlayer : ModPlayer {
   }
 
   public override void UpdateEquips() {
-    if(abilities.climb || abilities.wallChargeJump) {
+    if (abilities.climb || abilities.wallChargeJump) {
       Player.portableStoolInfo.HasAStool = false;
     }
-    if(_rocket_boots_remaining != -1) {
+
+    if (_rocket_boots_remaining != -1) {
       Player.rocketTime = _rocket_boots_remaining;
       _rocket_boots_remaining = -1;
     }
-    if(_carpet_remaining != -1) {
+
+    if (_carpet_remaining != -1) {
       Player.carpetTime = _carpet_remaining;
       _carpet_remaining = -1;
     }
@@ -541,13 +530,15 @@ public sealed class OriPlayer : ModPlayer {
       _rocket_boots_remaining = Player.rocketTime;
       Player.rocketTime = 0;
     }
+
     if (abilities.airJump.InUse || OnWall) {
       _carpet_remaining = Player.carpetTime;
       Player.carpetTime = 0;
     }
 
-    Player.GetJumpState<DummyJump>().Enable();
-    Player.GetJumpState<DummyJump>().Available = false;
+    ExtraJumpState dummyJump = Player.GetJumpState<DummyJump>();
+    dummyJump.Enable();
+    dummyJump.Available = false;
   }
 
   public void PostUpdatePhysics() {
@@ -560,12 +551,15 @@ public sealed class OriPlayer : ModPlayer {
       Player.jumpSpeedBoost += 2f;
 
       if (IsGrounded) {
-        Player.runAcceleration = Math.Max(Math.Min(MathF.Pow(Player.runAcceleration,3f)*980f,0.5f),Player.runAcceleration);
-        Player.runSlowdown = Math.Max(Math.Min(MathF.Pow(Player.runSlowdown,2f)*25f,1f),Player.runSlowdown);
-      } else {
-        Player.runAcceleration = (Player.runAcceleration > 0.01 && Player.runAcceleration < 0.3) ? 0.3f : Player.runAcceleration;
-        Player.runSlowdown = (Player.runAcceleration > 0.01 && Player.runAcceleration < 0.5) ? 0.5f : Player.runAcceleration;
+        Player.runAcceleration = Math.Max(Math.Min(MathF.Pow(Player.runAcceleration, 3f) * 980f, 0.5f),
+          Player.runAcceleration);
+        Player.runSlowdown = Math.Max(Math.Min(MathF.Pow(Player.runSlowdown, 2f) * 25f, 1f), Player.runSlowdown);
       }
+      else {
+        Player.runAcceleration = Player.runAcceleration is > 0.01f and < 0.3f ? 0.3f : Player.runAcceleration;
+        Player.runSlowdown = Player.runAcceleration is > 0.01f and < 0.5f ? 0.5f : Player.runAcceleration;
+      }
+
       #endregion
 
       if (IsLocal && OriMod.ConfigClient.smoothCamera) {
@@ -638,10 +632,10 @@ public sealed class OriPlayer : ModPlayer {
     if (IsOri) {
       if (DoPlayerLight && !abilities.burrow.Active) {
         if (Main.dontStarveWorld) _lightStrength -= 0.004f;
-        Lighting.AddLight(Player.Center, _lightColor.ToVector3()*_lightStrength);
-        Vector3 TileLight = Lighting.GetColor(Player.Center.ToTileCoordinates()).ToVector3();
-        float Brightness = TileLight.X + TileLight.Y + TileLight.Z;
-        _lightStrength = Math.Min(Math.Max(_lightStrength,Brightness/2),1f);
+        Lighting.AddLight(Player.Center, _lightColor.ToVector3() * _lightStrength);
+        Vector3 tileLight = Lighting.GetColor(Player.Center.ToTileCoordinates()).ToVector3();
+        float brightness = tileLight.X + tileLight.Y + tileLight.Z;
+        _lightStrength = Math.Min(Math.Max(_lightStrength, brightness / 2), 1f);
       }
 
       if (!Main.dedServ && !Transforming && Animations.GraphicsEnabledCompat && input.jump.JustPressed && IsGrounded && !abilities.burrow) {
@@ -661,7 +655,7 @@ public sealed class OriPlayer : ModPlayer {
         doDust = true;
         FootstepManager.Instance.PlayLandingFromPlayer(Player, out SoundStyle _);
       }
-      else if (Animations.TrackName == "Running" && (Animations.FrameIndex == 4 || Animations.FrameIndex == 9)
+      else if (Animations.TagName == "Running" && Animations.FrameIndex is 4 or 9
                && Animations.GraphicsEnabledCompat) {
         doDust = true;
         FootstepManager.Instance.PlayFootstepFromPlayer(Player, out SoundStyle _);
@@ -701,21 +695,23 @@ public sealed class OriPlayer : ModPlayer {
     if (Player.fireWalk || Player.waterWalk || Player.waterWalk2) {
       Tile tile = Main.tile[pos.X, pos.Y];
       bool testBlock = tile.LiquidAmount > 0 && Main.tile[pos.X, pos.Y - 1].LiquidAmount == 0;
-      if (testBlock && (tile.LiquidType == LiquidID.Lava ? Player.fireWalk : (Player.waterWalk || Player.waterWalk2))) {
+      if (testBlock && (tile.LiquidType == LiquidID.Lava ? Player.fireWalk : Player.waterWalk || Player.waterWalk2)) {
         return true;
       }
     }
 
     if (starlight_river_base_platform is not null) {
-      var PlayerRect = new Rectangle((int)Player.position.X, (int)Player.position.Y + Player.height, Player.width, 1);
+      Rectangle playerRect = new((int)Player.position.X, (int)Player.position.Y + Player.height, Player.width, 1);
       foreach (NPC npc in Main.npc) {
-        if (npc.active && starlight_river_base_platform.IsInstanceOfType(npc.ModNPC)) {
-          var NPCRect = new Rectangle((int)npc.position.X, (int)npc.position.Y, npc.width,
-            8 + (Player.velocity.Y > 0 ? (int)Player.velocity.Y : 0) + (int)Math.Abs(npc.velocity.Y));
-
-          if (PlayerRect.Intersects(NPCRect) && Player.position.Y <= npc.position.Y)
-            return true;
+        if (!npc.active || !starlight_river_base_platform.IsInstanceOfType(npc.ModNPC)) {
+          continue;
         }
+
+        Rectangle npcRect = new((int)npc.position.X, (int)npc.position.Y, npc.width,
+          8 + (Player.velocity.Y > 0 ? (int)Player.velocity.Y : 0) + (int)Math.Abs(npc.velocity.Y));
+
+        if (playerRect.Intersects(npcRect) && Player.position.Y <= npc.position.Y)
+          return true;
       }
     }
 
@@ -793,7 +789,10 @@ public sealed class OriPlayer : ModPlayer {
       }
     }
 
-    if (!genGore) return true;
+    if (!genGore) {
+      return true;
+    }
+
     genGore = false;
     for (int i = 0; i < 15; i++) {
       Dust dust = Dust.NewDustDirect(Player.position, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0,
@@ -811,32 +810,27 @@ public sealed class OriPlayer : ModPlayer {
 
     if (Main.dedServ || !Animations.GraphicsEnabledCompat) return;
     if (!IsOri && !Transforming) {
-      OriLayers.playerSprite.Hide();
-      OriLayers.trailLayer.Hide();
-      OriLayers.featherSprite.Hide();
-      OriLayers.bashArrow.Hide();
+      OriLayers.OriSprite.Hide();
+      OriLayers.OriTrail.Hide();
+      OriLayers.BashArrow.Hide();
       return;
     }
 
-    if (Player.dead || Player.invis || !Animations.playerAnim.Valid) {
-      OriLayers.playerSprite.Hide();
+    if (Player.dead || Player.invis) {
+      OriLayers.OriSprite.Hide();
     }
 
-    if(!Player.mount.Active) {
+    if (!Player.mount.Active) {
       if (wasMounted) trail.DecayAllSegments();
       wasMounted = false;
     }
 
-    if (!Animations.playerAnim.Valid || abilities.burrow || Player.mount.Active) {
-      OriLayers.trailLayer.Hide();
-    }
-
-    if (!abilities.glide) {
-      OriLayers.featherSprite.Hide();
+    if (abilities.burrow || Player.mount.Active) {
+      OriLayers.OriTrail.Hide();
     }
 
     if (!abilities.bash && !abilities.launch.Starting) {
-      OriLayers.bashArrow.Hide();
+      OriLayers.BashArrow.Hide();
     }
 
     #region Disable vanilla layers
@@ -875,8 +869,8 @@ public sealed class OriPlayer : ModPlayer {
     PlayerDrawLayers.WaistAcc.Hide();
     //PlayerDrawLayers.WebbedDebuffBack.Hide();
 
-    if (OnWall || Transforming || abilities.stomp || 
-        (abilities.airJump && !abilities.glide) || 
+    if (OnWall || Transforming || abilities.stomp ||
+        (abilities.airJump && !abilities.glide) ||
         abilities.burrow || abilities.chargeJump ||
         abilities.wallChargeJump) {
       PlayerDrawLayers.HeldItem.Hide();
@@ -900,19 +894,19 @@ public sealed class OriPlayer : ModPlayer {
     OriMod.ConfigClient.playerColorSecondary = SpriteColorSecondary;
     OriMod.ConfigClient.dyeLerp = DyeColorBlend;
 
-    if(IsLocal) {
-      var mods = ModLoader.Mods.Where(x => x.Name == "StarlightRiver");
-      foreach(var mod in mods)
-      {
-        starlight_river_base_platform = AssemblyManager.GetLoadableTypes(mod.Code)
-          .FirstOrDefault(x => x.FullName == "StarlightRiver.Content.NPCs.BaseTypes.MovingPlatform", null);
-        if (starlight_river_base_platform is not null) break;
-      }
-      if(!Main.dedServ) {
-        OriTextures.Instance.burrowTimer.Wait();
-        OriTextures.Instance.trail.Wait();
-        OriTextures.Instance.sein.Wait();
-      }
+    if (!IsLocal) {
+      return;
+    }
+
+    Mod mod = ModLoader.Mods.FirstOrDefault(x => x.Name == "StarlightRiver");
+    if (mod is not null) {
+      starlight_river_base_platform = AssemblyManager.GetLoadableTypes(mod.Code)
+        .FirstOrDefault(x => x.FullName == "StarlightRiver.Content.NPCs.BaseTypes.MovingPlatform", null);
+    }
+
+    if (!Main.dedServ) {
+      OriTextures.Instance.burrowTimer.Wait();
+      OriTextures.Instance.sein.Wait();
     }
   }
 
@@ -924,8 +918,7 @@ public sealed class OriPlayer : ModPlayer {
 /// <summary>
 /// Dummy <see cref="ExtraJump"/>, forces <see cref="OriPlayer.OnExtraJumpRefreshed"/> to be called even if there's no other enabled double jumps
 /// </summary>
-public class DummyJump : ExtraJump
-{
+public class DummyJump : ExtraJump {
   public override Position GetDefaultPosition() => AfterBottleJumps;
   public override float GetDurationMultiplier(Player player) => 0f;
   public override bool CanStart(Player player) => false;

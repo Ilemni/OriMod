@@ -83,22 +83,22 @@ public class Input {
   public Input(Func<bool> func) => _func = func ?? throw new ArgumentNullException(nameof(func));
 
   /// <summary>
-  /// Whether or not the key is currently pressed.
+  /// Whether the key is currently pressed.
   /// </summary>
   public bool Current { get; private set; }
 
   /// <summary>
-  /// Whether or not this is the first frame this key was pressed down.
+  /// Whether this is the first frame this key was pressed down.
   /// </summary>
   public bool JustPressed => Current && _changed;
 
   /// <summary>
-  /// Whether or not this is the first frame this kew was not pressed down.
+  /// Whether this is the first frame this kew was not pressed down.
   /// </summary>
   public bool JustReleased => !Current && _changed;
 
   /// <summary>
-  /// Whether or not the value of <see cref="Current"/> during this frame is different from the previous frame.
+  /// Whether the value of <see cref="Current"/> during this frame is different from the previous frame.
   /// </summary>
   private bool _changed;
 

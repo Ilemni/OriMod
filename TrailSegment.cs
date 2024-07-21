@@ -1,4 +1,3 @@
-using AnimLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Animations;
@@ -19,7 +18,7 @@ public class TrailSegment {
 
   private readonly OriPlayer _oPlayer;
   private Vector2 _position;
-  private PointByte _tile;
+  private Rectangle _tile;
   private byte _timeLeft;
   private float _startAlpha = 1;
   private float _rotation;
@@ -33,7 +32,7 @@ public class TrailSegment {
     OriAnimationController anim = _oPlayer.Animations;
 
     _position = player.Center;
-    _tile = anim.playerAnim.CurrentFrame.tile;
+    _tile = anim.PlayerAnim.GetRect("AfterImage");
     _rotation = anim.SpriteRotation;
 
     _startAlpha = player.velocity.LengthSquared() * 0.005f;
@@ -72,13 +71,12 @@ public class TrailSegment {
   /// </summary>
   public DrawData GetDrawData() {
     Vector2 pos = _position - Main.screenPosition;
-    PointByte spriteSize = PlayerAnim.Instance.spriteSize;
-    Rectangle rect = new(_tile.x * spriteSize.x, _tile.y * spriteSize.y, spriteSize.x, spriteSize.y);
     float alpha = _startAlpha * _timeLeft / Trail.Count;
     Color color = _oPlayer.SpriteColorPrimary * alpha;
+    Rectangle rect = _tile;
     Vector2 origin = new(rect.Width / 2f, rect.Height / 2f + 5 * _oPlayer.Player.gravDir);
 
-    DrawData data = new(OriTextures.Instance.trail.Value, pos, rect, color, _rotation, origin, 1, _effect)
+    DrawData data = new(OriTextures.Instance.Trail.Texture, pos, rect, color, _rotation, origin, 1, _effect)
       {
         ignorePlayerRotation = true
       };
