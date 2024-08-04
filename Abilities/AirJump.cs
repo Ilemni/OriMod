@@ -45,7 +45,7 @@ public sealed class AirJump : OriAbility, ILevelable {
     packet.Write(CurrentCount);
   }
 
-  private readonly RandomChar _rand = new();
+  private RandomChar _rand;
 
   public override void UpdateActive() {
     float newVel = -JumpVelocity * ((float)(EndDuration - StateTime) / EndDuration) * _gravityDirection;

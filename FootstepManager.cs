@@ -1,4 +1,4 @@
-﻿using AnimLib;
+using AnimLib;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using ReLogic.Utilities;
@@ -148,7 +148,7 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
   /// </summary>
   private readonly FootstepSound[] _tileFootstepSounds;
 
-  private readonly RandomChar _rand = new();
+  private RandomChar _rand;
 
   /// <summary>
   /// For external mods, attempts to get a sound based on their name.

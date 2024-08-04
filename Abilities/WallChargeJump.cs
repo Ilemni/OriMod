@@ -51,10 +51,10 @@ public sealed class WallChargeJump : OriAbility {
   private Vector2 _direction;
   public float XDirection => _direction.X < 0 ? -1 : 1;
 
-  private readonly RandomChar _randChar = new();
+  private RandomChar _rand = new();
 
   private void Start() {
-    PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _randChar.NextNoRepeat(3), 0.8f);
+    PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _rand.NextNoRepeat(3), 0.8f);
     _currentCharge = 0;
     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f,
       Player.whoAmI, 0, 1);

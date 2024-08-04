@@ -236,8 +236,8 @@ public sealed class OriPlayer : ModPlayer {
     }
   }
 
-  private readonly RandomChar _randJump = new();
-  private readonly RandomChar _randHurt = new();
+  private RandomChar _randJump;
+  private RandomChar _randHurt;
 
   #region Aesthetics
 

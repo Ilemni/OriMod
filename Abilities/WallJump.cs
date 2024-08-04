@@ -30,7 +30,7 @@ public sealed class WallJump : OriAbility, ILevelable {
   private sbyte _wallDirection;
   private sbyte _gravDirection;
 
-  private readonly RandomChar _rand = new();
+  private RandomChar _rand;
 
   public override void ReadPacket(BinaryReader r) {
     _wallDirection = r.ReadSByte();

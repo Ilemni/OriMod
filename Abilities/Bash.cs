@@ -166,7 +166,7 @@ public sealed class Bash : OriAbility, ILevelable {
   /// </summary>
   public Entity BashEntity { get; private set; }
 
-    private readonly RandomChar _rand = new();
+  private RandomChar _rand;
 
   private bool _sBashed;
 

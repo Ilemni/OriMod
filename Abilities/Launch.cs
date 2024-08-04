@@ -66,7 +66,7 @@ public sealed class Launch : OriAbility {
 
   public float LaunchAngle { get; private set; }
   private Vector2 LaunchDirection => new((float)Math.Cos(LaunchAngle), (float)Math.Sin(LaunchAngle));
-  private readonly RandomChar _rand = new();
+  private RandomChar _rand;
 
   public override void ReadPacket(BinaryReader r) {
     CurrentChain = r.ReadUInt16();

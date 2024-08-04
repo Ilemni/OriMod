@@ -89,7 +89,7 @@ public abstract class Sein : Minion {
   /// </summary>
   private string _spiritFlameSound;
 
-  private readonly RandomChar _rand = new();
+  private RandomChar _rand;
 
   /// <summary>
   /// Damage multiplier for when the player manually fires Spirit Flame.

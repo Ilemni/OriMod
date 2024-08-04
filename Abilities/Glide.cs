@@ -31,9 +31,9 @@ public sealed class Glide : OriAbility, ILevelable {
   private static int StartDuration => 5;
   private static int EndDuration => 5;
 
-  private readonly RandomChar _randStart = new();
-  private readonly RandomChar _randActive = new();
-  private readonly RandomChar _randEnd = new();
+  private RandomChar _randStart;
+  private RandomChar _randActive;
+  private RandomChar _randEnd;
 
   private bool _oldLeft;
   private bool _oldRight;

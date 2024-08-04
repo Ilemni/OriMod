@@ -48,7 +48,7 @@ public sealed class ChargeJump : OriAbility, ILevelable {
   private int _currentCharge;
   private int _currentGrace;
 
-  private readonly RandomChar _rand = new();
+  private RandomChar _rand;
 
   private void StartChargeJump() {
     PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _rand.NextNoRepeat(3));

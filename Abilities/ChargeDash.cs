@@ -50,7 +50,7 @@ public sealed class ChargeDash : OriAbility {
     set => _npcId = (ushort)(value?.whoAmI ?? ushort.MaxValue);
   }
 
-  private readonly RandomChar _rand = new();
+  private RandomChar _rand;
 
   public override void ReadPacket(BinaryReader r) {
     _npcId = r.ReadUInt16();

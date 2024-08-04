@@ -38,7 +38,7 @@ public sealed class Dash : OriAbility, ILevelable {
   internal ushort CurrentCount;
   private int MaxDashes => 1;
 
-  private readonly RandomChar _rand = new();
+  private RandomChar _rand;
 
   internal void StartDash() {
     SetState(AbilityState.Active);

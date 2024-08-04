@@ -52,9 +52,9 @@ public sealed class Stomp : OriAbility, ILevelable {
 
   private int _currentHoldDown;
 
-  private readonly RandomChar _randStart = new();
-  private readonly RandomChar _randActive = new();
-  private readonly RandomChar _randEnd = new();
+  private RandomChar _randStart;
+  private RandomChar _randActive;
+  private RandomChar _randEnd;
 
   public override void UpdateStarting() {
     if (StateTime == 0) {
