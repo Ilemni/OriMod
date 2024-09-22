@@ -27,12 +27,12 @@ public sealed partial class OriMod : Mod {
   /// <summary>
   /// Singleton instance of this mod.
   /// </summary>
-  public static OriMod instance;
+  public static OriMod instance = null!; // Instance constructor
 
   /// <summary>
   /// <inheritdoc cref="OriConfigClient1"/>
   /// </summary>
-  public static OriConfigClient1 ConfigClient { get; internal set; }
+  public static OriConfigClient1 ConfigClient { get; internal set; } = null!; // ModConfig.OnLoaded()
 
   /// <summary>
   /// GitHub profile that the mod's repository is stored on.
@@ -48,36 +48,12 @@ public sealed partial class OriMod : Mod {
 
   internal static ILog Log => instance.Logger;
 
-  /// <summary>
-  /// Gets localized text with key <c>Mods.OriMod.<paramref name="key"/></c>.
-  /// </summary>
-  /// <param name="key">Key in lang file.</param>
-  internal static LocalizedText GetText(string key) => Language.GetText($"Mods.OriMod.{key}");
-
-  /// <summary>
-  /// Gets localized text with key <c>Mods.OriMod.Error.<paramref name="key"/></c>.
-  /// </summary>
-  /// <param name="key">Key in lang file, that would start with <c>Error.</c></param>
-  private static LocalizedText GetErrorText(string key) => Language.GetText($"Mods.OriMod.Error.{key}");
-
-  /// <summary>
-  /// Shows an error in chat and in the logger, with key <c>Mods.OriMod.Error.<paramref name="key"/></c>.
-  /// </summary>
-  /// <param name="key">Key in lang file, that would start with <c>Error.</c></param>
-  /// <param name="log">Whether or not to write to logger.</param>
-  internal static void Error(string key, bool log = true) => PrintError(GetErrorText(key).Value, log);
-
   /// <summary> Shows an error in chat and in the logger, using default localized text. Has formatting.</summary>
   /// <param name="key">Key in lang file, that would start with <c>Error.</c></param>
-  /// <param name="log">Whether or not to write to logger.</param>
+  /// <param name="log">Whether to write to logger.</param>
   /// <param name="args">Formatting args.</param>
-  internal static void Error(string key, bool log = true, params object[] args) =>
-    PrintError(GetErrorText(key).Format(args), log);
-
-  /// <summary> Shows an error in chat and in the logger, using a string literal.</summary>
-  /// <param name="text">String literal to print.</param>
-  /// <param name="log">Whether or not to write to logger.</param>
-  private static void PrintError(string text, bool log = true) {
+  internal static void Error(string key, bool log = true, params object[] args) {
+    string text = Language.GetText($"Mods.OriMod.Error.{key}").Format(args);
     if (log) {
       Log.Error(text);
     }
@@ -90,37 +66,37 @@ public sealed partial class OriMod : Mod {
   /// <summary>
   /// Key used for controlling <see cref="Abilities.Bash"/>.
   /// </summary>
-  public static ModKeybind bashKey;
+  public static ModKeybind bashKey = null!; // Load()
 
   /// <summary>
   /// Key used for activating <see cref="Abilities.Dash"/> and <see cref="Abilities.ChargeDash"/>.
   /// </summary>
-  public static ModKeybind dashKey;
+  public static ModKeybind dashKey = null!; // Load()
 
   /// <summary>
   /// Key used for controlling <see cref="Abilities.Climb"/>.
   /// </summary>
-  public static ModKeybind climbKey;
+  public static ModKeybind climbKey = null!; // Load()
 
   /// <summary>
   /// Key used for controlling <see cref="Abilities.Glide"/>.
   /// </summary>
-  public static ModKeybind featherKey;
+  public static ModKeybind featherKey = null!; // Load()
 
   /// <summary>
   /// Key used for the charging of <see cref="Abilities.ChargeDash"/> and <see cref="Abilities.ChargeJump"/>.
   /// </summary>
-  public static ModKeybind chargeKey;
+  public static ModKeybind chargeKey = null!; // Load()
 
   /// <summary>
   /// Key used for activating <see cref="Abilities.Burrow"/>.
   /// </summary>
-  public static ModKeybind burrowKey;
+  public static ModKeybind burrowKey = null!; // Load()
 
     /// <summary>
   /// Key used for activating <see cref="Abilities.Stomp"/>.
   /// </summary>
-  public static ModKeybind stompKey;
+  public static ModKeybind stompKey = null!; // Load()
 
   public override void Load() {
     //SoulLinkKey = RegisterKeybind(instance, "SoulLink", "E");
@@ -139,25 +115,20 @@ public sealed partial class OriMod : Mod {
     SeinData.Load();
   }
 
-  public override void PostSetupContent() {
-    FootstepManager.Initialize();
-    TileCollection.Initialize();
-    if(!Main.dedServ) OriTextures.Initialize();
-  }
-
   public override void Unload() {
-    Unloadable.Unload();
-    instance = null;
+    SoundInfo.Unload();
 
-    bashKey = null;
-    dashKey = null;
-    climbKey = null;
-    featherKey = null;
-    chargeKey = null;
-    burrowKey = null;
-    stompKey = null;
+    instance = null!;
+
+    bashKey = null!;
+    dashKey = null!;
+    climbKey = null!;
+    featherKey = null!;
+    chargeKey = null!;
+    burrowKey = null!;
+    stompKey = null!;
     //SoulLinkKey = null;
-    ConfigClient = null;
+    ConfigClient = null!;
   }
 
   public override void HandlePacket(BinaryReader reader, int fromWho) {
@@ -169,6 +140,6 @@ public sealed partial class OriMod : Mod {
       fromWho = reader.ReadUInt16();
     }
 
-    ModNetHandler.Instance.HandlePacket(reader, fromWho);
+    ModNetHandler.HandlePacket(reader, fromWho);
   }
 }

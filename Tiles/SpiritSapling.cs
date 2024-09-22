@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using OriMod.Abilities;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
@@ -31,31 +32,34 @@ public sealed class SpiritSapling : ModTile {
   }
 
   public override bool RightClick(int i, int j) {
-    OriPlayer oPlayer = OriPlayer.Local;
-    Player player = oPlayer.Player;
+    Player player = Main.LocalPlayer;
+    OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
 
     Main.mouseRightRelease = false;
-    if (oPlayer.Transforming) {
+    if (oPlayer.ActiveState is Transform) {
       return false;
     }
+
     if (!oPlayer.IsOri) {
-      oPlayer.BeginTransformation();
-      if (!oPlayer.HasTransformedOnce) {
-        oPlayer.PlaySound("AbilityPedestal/abilityPedestalMusic", 0.25f);
+      OriCharacter character = oPlayer.Character;
+      character.TryEnable();
+      if (character.IsActive) {
+        character.Move.TriggerState<Transform>();
       }
+      return true;
     }
-    else {
-      oPlayer.IsOri = false;
-      oPlayer.PlaySound("SavePoints/checkpointSpawnSound");
-      
-      Vector2 pos = player.position;
-      pos.Y += 4;
-      pos.X -= 2;
-      for (int m = 0; m < 100; m++) {
-        Dust dust = Dust.NewDustDirect(pos, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, new Color(255, 255, 255));
-        dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
-      }
+
+    oPlayer.IsOri = false;
+    SoundWrapper.Play(player, "SavePoints/checkpointSpawnSound");
+
+    Vector2 pos = player.position;
+    pos.Y += 4;
+    pos.X -= 2;
+    for (int m = 0; m < 100; m++) {
+      Dust dust = Dust.NewDustDirect(pos, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, new Color(255, 255, 255));
+      dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
     }
+
     return true;
   }
 }

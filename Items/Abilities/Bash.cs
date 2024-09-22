@@ -1,14 +1,12 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
 
-namespace OriMod.Items.Abilities; 
+namespace OriMod.Items.Abilities;
 
 /// <summary>
 /// Medallion that grants <see cref="Bash"/> Level 1.
 /// </summary>
-public class BashLevel1 : AbilityMedallionBase {
-  public override byte Id => AbilityId.Bash;
-
+public sealed class BashLevel1() : AbilityMedallionBase<Bash>(1) {
   public override void AddRecipes() {
     GetAbilityRecipe()
       .AddRecipeGroup(OriRecipeGroups.HardmodeBars1, 16)
@@ -20,10 +18,7 @@ public class BashLevel1 : AbilityMedallionBase {
 /// <summary>
 /// Medallion that grants <see cref="Bash"/> Level 2: Bashing Projectiles.
 /// </summary>
-public class BashLevel2 : AbilityMedallionBase {
-  public override byte Id => AbilityId.Bash;
-  public override byte Level => 2;
-
+public sealed class BashLevel2() : AbilityMedallionBase<Bash>(2) {
   public override void AddRecipes() {
     GetAbilityRecipe<BashLevel1>()
       .AddIngredient(ItemID.SpectreBar, 10)
@@ -35,10 +30,7 @@ public class BashLevel2 : AbilityMedallionBase {
 /// <summary>
 /// Medallion that grants <see cref="Bash"/> Level 3: Ultra Bash.
 /// </summary>
-public class BashLevel3 : AbilityMedallionBase {
-  public override byte Id => AbilityId.Bash;
-  public override byte Level => 3;
-
+public sealed class BashLevel3() : AbilityMedallionBase<Bash>(3) {
   public override void AddRecipes() {
     GetAbilityRecipe<BashLevel2>()
       .AddRecipeGroup(OriRecipeGroups.LunarFragments, 20)

@@ -1,42 +1,53 @@
-using AnimLib.Abilities;
 using System;
+using AnimLib.Animations;
+using Terraria;
 
 namespace OriMod.Abilities;
 
 /// <summary>
-/// Ability for looking up. Pairs with the ability <see cref="ChargeJump"/>.
-/// <para>This ability on its own is entirely visual, and is always unlocked.</para>
+/// StateMachine for the player looking upwards. Pairs with the ability <see cref="ChargeJump"/>.
 /// </summary>
-public sealed class LookUp : OriAbility {
-  public override int Id => AbilityId.LookUp;
-
-  public override bool CanUse => base.CanUse && IsGrounded && Math.Abs(Player.velocity.X) < 0.8f && !Player.mount.Active &&
-    !Abilities.Bash && !Abilities.Burrow && !Abilities.ChargeDash && !Abilities.Climb && !Abilities.Crouch && !Abilities.Dash;
+public sealed class LookUp(Player player) : OriState(player) {
+  public override bool CanEnter() => base.CanEnter() && OriPlayer.IsGrounded &&
+    Player is { controlLeft: false, controlRight: false } && Math.Abs(Player.velocity.X) < 0.8f;
 
   private static int StartDuration => 12;
   private static int EndDuration => 8;
 
-  public override void PreUpdate() {
-    if (!InUse) {
-      if (CanUse && (Player.controlUp || Abilities.oPlayer.Input.Charge.Current)) {
-        SetState(AbilityState.Starting);
+  internal bool Starting => ActiveTime < StartDuration;
+
+  internal bool Ending => _endingTime > 0;
+
+  private int _endingTime;
+
+  protected override void OnPreUpdate() {
+    if (!CanEnter()) {
+      CancelState();
+      return;
+    }
+
+    if (!IsLocal) {
+      return;
+    }
+
+    if (!(Player.controlUp || OriPlayer.Input.Charge.Current)) {
+      if (Starting) {
+        CancelState();
+        return;
+      }
+
+      _endingTime++;
+      if (_endingTime > EndDuration) {
+        CancelState();
       }
     }
-    else if (!CanUse) {
-      SetState(AbilityState.Inactive);
-    }
-    else if (!(Player.controlUp || Abilities.oPlayer.Input.Charge.Current) && !Ending) {
-      SetState(Active ? AbilityState.Ending : AbilityState.Inactive);
-    }
-    else if (Starting) {
-      if (StateTime > StartDuration) {
-        SetState(AbilityState.Active);
-      }
-    }
-    else if (Ending) {
-      if (StateTime > EndDuration) {
-        SetState(AbilityState.Inactive);
-      }
+    else {
+      _endingTime = 0;
     }
   }
+
+  protected override AnimationOptions? GetAnimationOptions() =>
+    Starting ? new AnimationOptions("LookUpStart") :
+    Ending ? new AnimationOptions("LookUpStart", isReversed: true) :
+    new AnimationOptions("LookUp");
 }

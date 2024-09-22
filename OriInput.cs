@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 
@@ -12,43 +9,30 @@ namespace OriMod;
 /// Net-synced player input, specific to this mod's controls.
 /// </summary>
 public sealed class OriInput : IEnumerable<Input> {
-  public readonly Input Jump = new(() => PlayerInput.Triggers.Current.Jump && !OriPlayer.Local.ControlsBlocked);
-  public readonly Input Bash = new(() => OriMod.bashKey.Current && !OriPlayer.Local.ControlsBlocked);
-  public readonly Input Dash = new(() => OriMod.dashKey.Current && !OriPlayer.Local.ControlsBlocked);
-  public readonly Input Climb = new(() => OriMod.climbKey.Current && !OriPlayer.Local.ControlsBlocked);
-  public readonly Input Glide = new(() => OriMod.featherKey.Current && !OriPlayer.Local.ControlsBlocked);
-  public readonly Input Stomp = new(() => OriMod.stompKey.Current && !OriPlayer.Local.ControlsBlocked);
-  public readonly Input Charge = new(() => OriMod.chargeKey.Current && !OriPlayer.Local.ControlsBlocked);
-  public readonly Input Burrow = new(() => OriMod.burrowKey.Current && !OriPlayer.Local.ControlsBlocked);
-  public readonly Input LeftClick = new(() => PlayerInput.Triggers.Current.MouseLeft && !OriPlayer.Local.ControlsBlocked);
+  public Input Jump { get; } = new OriTriggerSetInput(nameof(PlayerInput.Triggers.Current.Jump));
+  public Input Bash { get; } = new OriModKeyInput(OriMod.bashKey);
+  public Input Dash { get; } = new OriModKeyInput(OriMod.dashKey);
+  public Input Climb { get; } = new OriModKeyInput(OriMod.climbKey);
+  public Input Glide { get; } = new OriModKeyInput(OriMod.featherKey);
+  public Input Stomp { get; } = new OriModKeyInput(OriMod.stompKey);
+  public Input Charge { get; } = new OriModKeyInput(OriMod.chargeKey);
+  public Input Burrow { get; } = new OriModKeyInput(OriMod.burrowKey);
+  public Input LeftClick { get; } = new OriTriggerSetInput(nameof(PlayerInput.Triggers.Current.MouseLeft));
 
   /// <summary>
   /// Read and updates the player's inputs.
+  /// Returns <see langword="true"/> if any net-synced control was changed; otherwise, <see langword="false"/>
   /// </summary>
-  /// <param name="netUpdate"><see langword="true"/> if this would invoke a net update; otherwise, <see langword="false"/></param>
-  public void Update(out bool netUpdate) {
-    netUpdate = false;
+  public void Update() {
     foreach (Input input in this) {
-      input.Update(out bool hasChanged);
-      netUpdate |= hasChanged;
+      input.UpdateInputValue();
     }
   }
 
-  public void ReadPacket(BinaryReader reader) {
-    BitVector32 value = new(reader.ReadUInt16());
-    int i = 0;
+  public void DisableAll() {
     foreach (Input input in this) {
-      input.SetInputValue(value[1 << i++]);
+      input.SetInputValue(false);
     }
-  }
-
-  public void WritePacket(ModPacket packet) {
-    BitVector32 arr = new();
-    int i = 0;
-    foreach (Input input in this) {
-      arr[1 << i++] = input.GetInputValue();
-    }
-    packet.Write((ushort)arr.Data);
   }
 
   IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -67,21 +51,15 @@ public sealed class OriInput : IEnumerable<Input> {
 
   public void ResetInputChangedState() {
     foreach (Input input in this) {
-      input.ResetChanged();
+      input.Changed = false;
     }
   }
 }
 
 /// <summary>
-/// Simplistic OriMod input for syncing between clients
+/// Abstract class for OriMod input, for syncing between clients
 /// </summary>
-public class Input {
-  /// <summary>
-  /// Create a new <see cref="Input"/> where the read input value is <paramref name="func"/>.
-  /// </summary>
-  /// <param name="func">Function to detect a button press as pressed or not</param>
-  public Input(Func<bool> func) => _func = func ?? throw new ArgumentNullException(nameof(func));
-
+public abstract class Input {
   /// <summary>
   /// Whether the key is currently pressed.
   /// </summary>
@@ -90,35 +68,42 @@ public class Input {
   /// <summary>
   /// Whether this is the first frame this key was pressed down.
   /// </summary>
-  public bool JustPressed => Current && _changed;
+  public bool JustPressed => Current && Changed;
 
   /// <summary>
-  /// Whether this is the first frame this kew was not pressed down.
+  /// Whether this is the first frame this key was not pressed down.
   /// </summary>
-  public bool JustReleased => !Current && _changed;
+  public bool JustReleased => !Current && Changed;
 
   /// <summary>
   /// Whether the value of <see cref="Current"/> during this frame is different from the previous frame.
   /// </summary>
-  private bool _changed;
+  internal bool Changed;
 
-  /// <summary>
-  /// Update the values of this input. Returns <see langword="true"/> if the values have changed.
-  /// </summary>
-  public void Update(out bool hasChanged) {
-    SetInputValue(_func());
-    hasChanged = _changed;
-  }
+  protected abstract bool ReadCurrent();
 
-  private readonly Func<bool> _func;
+  internal void UpdateInputValue() => SetInputValue(ReadCurrent());
 
   internal void SetInputValue(bool value) {
-    bool oldCurrent = Current;
+    Changed = Current != value;
     Current = value;
-    _changed = Current != oldCurrent;
   }
+}
 
-  internal bool GetInputValue() => Current;
+/// <summary>
+/// Key based on <see cref="ModKeybind"/>.
+/// </summary>
+/// <param name="key"></param>
+public sealed class OriModKeyInput(ModKeybind key) : Input {
+  private ModKeybind Key { get; } = key;
+  protected override bool ReadCurrent() => Key.Current;
+}
 
-  internal bool ResetChanged() => _changed = false;
+/// <summary>
+/// Key based on <see cref="PlayerInput"/>.
+/// </summary>
+/// <param name="key"></param>
+public sealed class OriTriggerSetInput(string key) : Input {
+  private string Key { get; } = key;
+  protected override bool ReadCurrent() => PlayerInput.Triggers.Current.KeyStatus[Key];
 }

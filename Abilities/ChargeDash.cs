@@ -1,172 +1,168 @@
-using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
-using OriMod.Utilities;
 using System;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
+using AnimLib.Animations;
+using AnimLib.Networking;
+using AnimLib.States;
 using Terraria;
-using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
 
 /// <summary>
 /// Ability for a quick and fast horizontal dash. May be used in the air.
 /// </summary>
-public sealed class ChargeDash : OriAbility {
-  public override int Id => AbilityId.ChargeDash;
-  public override bool Unlocked => LevelableDependency.Level >= 2;
-  public override ILevelable LevelableDependency => Abilities.Dash;
-
-  public override bool CanUse => base.CanUse && !IsOnCooldown && !InUse && !OnWall && !Player.mount.Active &&
-    !Abilities.Bash && !Abilities.Burrow && !Abilities.Launch && !Abilities.Stomp && !Abilities.ChargeJump && !Abilities.WallChargeJump;
-  public override int Cooldown => LevelableDependency.Level >= 3 ? 60 : 90;
-  public override void OnRefreshed() => Abilities.RefreshParticles(Color.LightBlue);
-
+public sealed class ChargeDash(Player player) : OriAbility(player) {
   private static int ManaCost => 25;
   private static float MaxRange => 480f;
+  private static float MaxRangeSquared => MaxRange * MaxRange;
   private static int Duration => Speeds.Length - 1;
-  private static float[] Speeds => _speeds ??= Unloadable.New(new float[15] {
+
+  private static readonly float[] Speeds = [
     100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
-  }, () => _speeds = null);
-  private static float[] _speeds;
+  ];
 
-  private ushort _npcId = ushort.MaxValue;
+
   private sbyte _direction;
-
   private Vector2 _startDirection;
 
-  /// <summary>
-  /// Check if <paramref name="npc"/> is <see cref="Target"/>.
-  /// </summary>
-  /// <param name="npc"><see cref="NPC"/> to check.</param>
-  /// <returns><see langword="true"/> if <paramref name="npc"/> is <see cref="Target"/>, otherwise <see langword="false"/>.</returns>
-  public bool NpcIsTarget(NPC npc) => npc.whoAmI == _npcId;
+  private SoundInfo _sound = new("Ori/ChargeDash/seinChargeDash", 3, 0.5f);
+
+  private ushort _npcId = ushort.MaxValue;
+
 
   /// <summary>
   /// Target of this Charge Dash. May be <see langword="null"/>.
   /// </summary>
-  public NPC Target {
-    get => _npcId < Main.npc.Length ? Main.npc[_npcId] : null;
-    set => _npcId = (ushort)(value?.whoAmI ?? ushort.MaxValue);
+  private NPC? Target => _npcId < Main.npc.Length ? Main.npc[_npcId] : null;
+
+  [MemberNotNullWhen(true, nameof(Target))]
+  private bool HasTarget => Target is { active: true };
+
+
+  public override int MaxCooldown => 60;
+
+  protected override bool StartCooldownOnExit => true;
+
+  protected override void OnInitialize() {
+    base.OnInitialize();
+    Parent!.GetChild<Dash>();
   }
 
-  private RandomChar _rand;
+  public override bool CanEnter() => base.CanEnter() && !OnWall && Player.CheckMana(ManaCost, blockQuickMana: true);
 
-  public override void ReadPacket(BinaryReader r) {
-    _npcId = r.ReadUInt16();
-    Player.position = r.ReadVector2();
-    Player.velocity = r.ReadVector2();
-  }
+  protected override void OnEnter(State? fromState) {
+    GetParent<MovementStates>().GetChild<Dash>().StartCooldown();
+    Player.statMana -= ManaCost;
 
-  public override void WritePacket(ModPacket packet) {
-    packet.Write(_npcId);
-    packet.WriteVector2(Player.position);
-    packet.WriteVector2(Player.velocity);
-  }
+    NPC? targetNpc = null;
 
-  //internal override void PutOnCooldown(bool force = false) {
-  //  Refreshed = false;
-  //  base.PutOnCooldown(force);
-  //}
-
-  public override bool RefreshCondition() => !Input.Charge.Current;
-
-  private void Start() {
-    if(IsLocal && OriMod.ConfigClient.eChargeDashHoming) {
+    if (IsLocal && OriMod.ConfigClient.eChargeDashHoming) {
       Player.manaRegenDelay = (int)Player.maxRegenDelay;
-      float tempDist = MaxRange*MaxRange*4;
-      for (int n = 0; n < Main.maxNPCs; n++) {
-        NPC npc = Main.npc[n];
-        if (!npc.active || npc.friendly ||
-          (Player.Center - npc.Center).LengthSquared() > MaxRange*MaxRange ||
-          !Collision.CanHitLine(Player.Center, Player.width, Player.height, npc.Center, 16, 16)
-        ) continue;
+      float closestDistFromMouse = MaxRangeSquared * 4;
+      foreach (NPC npc in Main.ActiveNPCs) {
+        if (npc.friendly ||
+            (Player.Center - npc.Center).LengthSquared() > MaxRangeSquared ||
+            !Collision.CanHitLine(Player.Center, Player.width, Player.height, npc.Center, 16, 16)) {
+          continue;
+        }
 
-        float dist = (Main.MouseWorld - npc.Center).LengthSquared();
-        if (dist >= tempDist) continue;
-        tempDist = dist;
-        Target = npc;
+        float distFromMouse = (Main.MouseWorld - npc.Center).LengthSquared();
+        if (distFromMouse >= closestDistFromMouse) {
+          continue;
+        }
+
+        closestDistFromMouse = distFromMouse;
+        targetNpc = npc;
       }
     }
-    _direction = !(IsLocal && OriMod.ConfigClient.eChargeDashHoming) || Target is null
+
+    _npcId = (ushort)(targetNpc?.whoAmI ?? ushort.MaxValue);
+
+    _direction = !(IsLocal && OriMod.ConfigClient.eChargeDashHoming) || targetNpc is null
       ? (sbyte)(Player.controlLeft ? -1 : Player.controlRight ? 1 : Player.direction)
-      : (sbyte)(Player.direction = Player.position.X - Target.position.X < 0 ? 1 : -1);
-    if (Target is not null) {
-      Vector2 dir = Target.Center - Player.Center;
+      : (sbyte)(Player.position.X - targetNpc.position.X < 0 ? 1 : -1);
+    Player.ChangeDir(_direction);
+
+    if (targetNpc is not null) {
+      Vector2 dir = targetNpc.Center - Player.Center;
       dir.Y -= 32f;
       dir.Normalize();
       _startDirection = dir;
     }
 
-    PlaySound("Ori/ChargeDash/seinChargeDash" + _rand.NextNoRepeat(3), 0.5f);
+    _sound.Play(Player);
     NewAbilityProjectile<ChargeDashProjectile>(damage: 50);
   }
 
+  internal void EndByNpcContact(NPC npc) {
+    // Force player position to same as target's, and reduce speed.
+    Player.position = npc.position;
+    Player.position.Y -= 32f;
+    Player.velocity = _startDirection * Speeds[^1];
+    RestoreAirJumps();
+    CancelState();
+  }
+
   /// <summary>
-  /// End the Charge Dash. Ending behavior depends on <paramref name="byNpcContact"/>.
+  /// End the Charge Dash.
   /// </summary>
-  /// <param name="byNpcContact">If the cause for ending is by player contact with <see cref="Target"/> (true), or for any other reason (false).</param>
-  internal void End(bool byNpcContact = false) {
-    SetState(AbilityState.Inactive);
-    StartCooldown();
-    NPC target = Target;
-    if (byNpcContact) {
-      // Force player position to same as target's, and reduce speed.
-      Player.position = target.position;
-      Player.position.Y -= 32f;
-      Player.velocity = _startDirection * Speeds[^1];
-      RestoreAirJumps();
-    }
-    else if (Math.Abs(Player.velocity.Y) < Math.Abs(Player.velocity.X)) {
+  private void End() {
+    if (Math.Abs(Player.velocity.Y) < Math.Abs(Player.velocity.X)) {
       // Reducing velocity. If intended direction is mostly flat (not moving upwards, not jumping), make it flat.
-      Vector2 newVel = target is null && !Abilities.AirJump ? new Vector2(_direction, 0) : Player.velocity;
-      newVel = newVel.Normalized() * Speeds[^1];
+      Vector2 newVel = HasTarget ? Player.velocity : new Vector2(_direction, 0);
+      newVel = newVel.SafeNormalize(default) * Speeds[^1];
       Player.velocity = newVel;
     }
-    Target = null;
+
+    _npcId = ushort.MaxValue;
+    CancelState();
   }
 
-  public override void UpdateActive() {
-    if (IsLocal) NetUpdate = true;
+  protected override void OnPreUpdate() {
+    if (ActiveTime > Duration || OnWall || Player.controlJump) {
+      End();
+    }
   }
 
-  public override void UpdateUsing() {
-    float speed = Speeds[StateTime];
+  protected override void OnUpdate() {
+    float speed = Speeds[ActiveTime];
     Player.gravity = 0;
-    NPC target = Target;
 
-    if (target?.active ?? false) {
+    if (HasTarget) {
       Player.maxFallSpeed = speed;
-      Vector2 dir = target.Center - Player.Center;
+      Vector2 dir = Target.Center - Player.Center;
       dir.Y -= 32f;
       dir.Normalize();
       Player.velocity = dir * speed;
     }
     else {
       Player.velocity.X = speed * _direction * 0.8f;
-      Player.velocity.Y = (IsGrounded ? -0.1f : 0.15f * (StateTime + 1)) * Player.gravDir;
+      Player.velocity.Y = (IsGrounded ? -0.1f : 0.15f * (ActiveTime + 1)) * Player.gravDir;
     }
 
     Player.runSlowdown = 26f;
-    oPlayer.ImmuneTimer = 12;
+    OriPlayer.SetImmune(12);
+
+    NetUpdate = true;
   }
 
-  public override void PreUpdate() {
-    if (IsLocal && CanUse && Input.Dash.JustPressed && Input.Charge.Current) {
-      if (Player.CheckMana(ManaCost, true, true)) {
-        SetState(AbilityState.Active);
-        Start();
-      }
-      else if (!Abilities.Dash) {
-        Abilities.Dash.StartDash();
-      }
-      return;
-    }
-    if (!InUse) return;
-    UpdateCooldown();
-    Abilities.Dash.StartCooldown();
-    if (StateTime > Duration || OnWall || Abilities.Bash || Abilities.Launch || Player.controlJump) {
-      End();
+  protected override void NetSync(ISync sync) {
+    if (ActiveTime == 0) {
+      sync.Sync(ref _direction);
+      sync.Sync(ref _npcId);
+      sync.SyncPositionAndVelocity(Player);
     }
   }
+
+  protected override bool CanRefresh(bool cooledDown) => !Input.Charge.Current;
+
+  protected override void OnEndCooldown() => RefreshParticles(Color.LightBlue);
+
+  protected override AnimationOptions? GetAnimationOptions() {
+    int frameIndex = Math.Abs(Player.velocity.X) < 12f ? 1 : 0;
+    return new AnimationOptions("Dash", frameIndex: frameIndex);
+  }
+
+  public bool NpcIsTarget(NPC npc) => npc.whoAmI == _npcId;
 }

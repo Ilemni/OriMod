@@ -1,6 +1,6 @@
+using System;
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
-using OriMod.Utilities;
 using Terraria;
 
 namespace OriMod.Projectiles.Abilities;
@@ -9,9 +9,7 @@ namespace OriMod.Projectiles.Abilities;
 /// Projectile hitbox for the impact of a <see cref="Stomp"/>. Deals damage to NPCs.
 /// <para>As the number of targets to hit grows, the damage dealt to the next target is reduced.</para>
 /// </summary>
-public sealed class StompEnd : OriAbilityProjectile {
-  public override int Id => AbilityId.Stomp;
-
+public sealed class StompEnd : OriAbilityProjectile<Stomp> {
   private float Knockback =>
     Level switch {
       1 => 16,
@@ -50,6 +48,7 @@ public sealed class StompEnd : OriAbilityProjectile {
   public override bool PreAI() {
     // SetDefaults called before Projectile.NewProjectile(...) sets ai fields, so we need a later hook
     if (Projectile.maxPenetrate == MaxPenetrate) return false;
+
     Projectile.penetrate = Projectile.maxPenetrate = MaxPenetrate;
     Projectile.width = Width;
     Projectile.height = Height;
@@ -57,25 +56,29 @@ public sealed class StompEnd : OriAbilityProjectile {
   }
 
   private void ModifyHitAny(Entity target) {
-    if (target is NPC npc && npc.immortal) return; // Don't knockback target dummies
-    Vector2 vector = target.Center - APlayer.Player.Center;
-    float dist = target.Distance(APlayer.Player.Center);
-    float kb = Knockback * (160.0f - dist) / 160.0f;
-    if (kb < 6) {
-      kb = 6;
-    }
-    target.velocity += vector.Normalized() * kb;
+    Vector2 playerCenter = Player.Center;
+    Vector2 direction = (target.Center - playerCenter).SafeNormalize(default);
+
+    float kb = Math.Max(6, Knockback * (160.0f - target.Distance(playerCenter)) / 160.0f);
+    float kbResist = target is NPC npc ? npc.knockBackResist : 1;
+
+    target.velocity += direction * kb * kbResist;
   }
 
   public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) {
-    float multiplier = (float)Projectile.penetrate / Projectile.maxPenetrate;
-    modifiers.FinalDamage.Scale(0.6f + 0.4f * multiplier);
+    // Damage from 100% to 60% as penetrate decreases
+    float percentPenetrateLeft = (float)Projectile.penetrate / Projectile.maxPenetrate;
+    modifiers.FinalDamage.Scale(0.6f + 0.4f * percentPenetrateLeft);
     ModifyHitAny(target);
   }
 
   public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers) {
-    float multiplier = (float)Projectile.penetrate / Projectile.maxPenetrate;
-    modifiers.FinalDamage.Scale(0.6f + 0.4f * multiplier);
-    ModifyHitAny(target);
+    // Damage from 100% to 60% as penetrate decreases
+    float percentPenetrateLeft = (float)Projectile.penetrate / Projectile.maxPenetrate;
+    modifiers.FinalDamage.Scale(0.6f + 0.4f * percentPenetrateLeft);
+    if (!target.immortal) {
+      // Don't knockback target dummies
+      ModifyHitAny(target);
+    }
   }
 }

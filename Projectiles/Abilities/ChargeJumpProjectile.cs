@@ -3,17 +3,12 @@ using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
 
-namespace OriMod.Projectiles.Abilities; 
+namespace OriMod.Projectiles.Abilities;
 
 /// <summary>
 /// Projectile hitbox for when the player is using <see cref="ChargeJump"/> and <see cref="WallChargeJump"/>.
 /// </summary>
-public sealed class ChargeJumpProjectile : OriAbilityProjectile {
-  /// <summary>
-  /// This is not used, as this <see cref="OriAbilityProjectile"/> is used by both <see cref="ChargeJump"/> and <see cref="WallChargeJump"/>.
-  /// </summary>
-  public override int Id => AbilityId.ChargeJump;
-
+public sealed class ChargeJumpProjectile : OriAbilityProjectile<ChargeJump> {
   public override void SetDefaults() {
     base.SetDefaults();
     Projectile.width = 96;
@@ -21,7 +16,7 @@ public sealed class ChargeJumpProjectile : OriAbilityProjectile {
   }
 
   protected override void CheckAbilityActive() {
-    if (Abilities.ChargeJump || Abilities.WallChargeJump) {
+    if (OriPlayer.ActiveState is ChargeJump or WallChargeJump) {
       Projectile.timeLeft = 2;
     }
   }
@@ -29,7 +24,7 @@ public sealed class ChargeJumpProjectile : OriAbilityProjectile {
   protected override void Behavior() {
     base.Behavior();
     // Stretch projectile size based on velocity
-    Vector2 vel = APlayer.Player.velocity;
+    Vector2 vel = Player.velocity;
     Projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 2.5f, 96, 250);
     Projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 2.5f, 96, 250);
   }

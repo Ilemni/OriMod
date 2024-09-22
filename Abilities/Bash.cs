@@ -1,12 +1,13 @@
-using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
 using OriMod.NPCs;
 using OriMod.Projectiles;
 using OriMod.Utilities;
 using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
+using AnimLib.Animations;
+using AnimLib.Networking;
+using AnimLib.States;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -16,253 +17,221 @@ namespace OriMod.Abilities;
 /// <summary>
 /// Ability for pushing the player and enemies in opposite directions. Iconic ability of the Ori franchise.
 /// </summary>
-public sealed class Bash : OriAbility, ILevelable {
-  public override int Id => AbilityId.Bash;
-  public override int Level => ((ILevelable)this).Level;
-  public override bool Unlocked => Level > 0;
-  int ILevelable.Level { get; set; }
-  int ILevelable.MaxLevel => 3;
+public sealed class Bash(Player player) : OriAbility(player) {
+  private static float NetAngleTolerance => 0.3f;
+  private static float NetAngleLerpValue => 0.2f;
 
-  public override bool CanUse => base.CanUse && Inactive && !Player.mount.Active &&
-    !Abilities.Burrow && !Abilities.ChargeDash && !Abilities.ChargeJump && !Abilities.Climb &&
-    !Abilities.Launch && !Abilities.Stomp && !Abilities.WallChargeJump;
+  public override int MaxLevel => 3;
 
-  public override void OnRefreshed() => Abilities.RefreshParticles(Color.LightYellow);
+  private ref BashStats Stats => ref IStats<BashStats>.Get(Level);
 
-  private static List<short> CannotBashNpc => _cannotBashNpc ??= Unloadable.New( new List<short> {
-    NPCID.BlazingWheel, NPCID.SpikeBall, NPCID.DD2EterniaCrystal, NPCID.DD2LanePortal,
-    NPCID.LunarTowerNebula, NPCID.LunarTowerSolar, NPCID.LunarTowerStardust, NPCID.LunarTowerVortex,
-    NPCID.CultistTablet, NPCID.EaterofWorldsBody, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsTail
-  }, () => _cannotBashNpc = null);
+  private bool Starting => ActiveTime < Stats.MinTime;
 
-  private static List<short> CannotBashProj => _cannotBashProj ??= Unloadable.New(new List<short> {
-    ProjectileID.FlamethrowerTrap, ProjectileID.FlamesTrap, ProjectileID.GeyserTrap, ProjectileID.SpearTrap,
-    ProjectileID.GemHookAmethyst, ProjectileID.GemHookDiamond, ProjectileID.GemHookEmerald,
-    ProjectileID.GemHookRuby, ProjectileID.GemHookSapphire, ProjectileID.GemHookTopaz,
-    ProjectileID.Hook, ProjectileID.AntiGravityHook, ProjectileID.BatHook, ProjectileID.CandyCaneHook,
-    ProjectileID.DualHookBlue, ProjectileID.DualHookRed, ProjectileID.FishHook, ProjectileID.IlluminantHook,
-    ProjectileID.LunarHookNebula, ProjectileID.LunarHookSolar, ProjectileID.LunarHookStardust, ProjectileID.LunarHookVortex,
-    ProjectileID.SlimeHook, ProjectileID.StaticHook, ProjectileID.TendonHook, ProjectileID.ThornHook, ProjectileID.TrackHook,
-    ProjectileID.WoodHook, ProjectileID.WormHook,
-  }, () => _cannotBashNpc = null);
+  private int _currentBuffer;
 
-  private static List<short> _cannotBashNpc;
-  private static List<short> _cannotBashProj;
-
-  private float BashPlayerStrength {
-    get {
-      switch (Level) {
-        case 0: return 0;
-        case 1:
-        case 2: return 15;
-        default: return 8 + Level * 4;
-      }
-    }
-  }
-
-  private float BashNpcStrength {
-    get {
-      switch (Level) {
-        case 0: return 0;
-        case 1:
-        case 2: return 12;
-        default: return 4 + Level * 4;
-      }
-    }
-  }
-
-  private int MinBashDuration {
-    get {
-      switch (Level) {
-        case 0: return 0;
-        case 1:
-        case 2: return 20;
-        case 3: return 15;
-        default: return 10 + Level * 14 / 255;
-      }
-    }
-  }
-  
-
-  private int MaxBashDuration {
-    get {
-      switch (Level) {
-        case 0: return 0;
-        case 1:
-        case 2: return 85;
-        case 3: return 105;
-        default: return 70 + Level * 10;
-      }
-    }
-  }
-
-  private int MaxBufferDuration {
-    get {
-      switch (Level) {
-        case 0: return 0;
-        case 1:
-        case 2: return 25;
-        case 3: return 60;
-        default: return Level * 20;
-      }
-    }
-  }
-  private int _bufferDuration;
-
-  private int MaxStress {
-    get {
-      switch (Level) {
-        case 0: return 0;
-        case 1:
-        case 2: return 240;
-        case 3: return 360;
-        default: return Level * 120;
-      }
-    }
-  }
   private int _currentStress;
-  private int CurrentStress {
-    get => _currentStress;
-    set => _currentStress = Math.Clamp(value,0,MaxStress);
-  }
   private int _lastStress;
   private int _stressParticleTimer;
 
-  private int BashDamage {
-    get {
-      switch (Level) {
-        case 0:
-        case 1: return 0;
-        case 2: return 20;
-        case 3: return 45;
-        default: return 20 + Level * 15;
-      }
-    }
-  }
+  private float _aimAngle;
+  private float _netAngle;
 
-  private float BashRange {
-    get {
-      switch (Level) {
-        case 0: return 0;
-        case 1:
-        case 2: return 56;
-        case 3: return 90;
-        default: return 60 + Level * 10;
-      }
-    }
-  }
+  private SoundInfo _startSound = new("Ori/Bash/seinBashStart", 1, 0.5f);
+  private SoundInfo _endSound = new("Ori/Bash/seinBashEnd", 3, 0.5f);
+
+  /// Set false at state activation, true whenever input released, prevents activation when false
+  private bool _hasReleasedBash;
+
+  private Entity? _bashEntity;
+  private IBashable? _bashTarget;
 
   private Vector2 _playerStartPos;
   private Vector2 _targetStartPos;
-  public float BashAngle { get; private set; }
+
+  [MemberNotNullWhen(true, nameof(_bashEntity), nameof(_bashTarget))]
+  private bool HasBashEntity => _bashEntity is { active: true };
 
   /// <summary>
-  /// <see cref="OriNpc"/> or <see cref="OriProjectile"/> that this player is Bashing.
+  /// Entity that this player is Bashing. Setting this also sets <see cref="_bashTarget"/>.
   /// </summary>
-  public IBashable BashTarget { get; private set; }
-
-  /// <summary>
-  /// Entity that this player is Bashing.
-  /// </summary>
-  public Entity BashEntity { get; private set; }
-
-  private RandomChar _rand;
-
-  private bool _sBashed;
-
-  public override void ReadPacket(BinaryReader r) {
-    if (!InUse) return;
-    if (Starting) {
-      _targetStartPos = r.ReadVector2();
-      _playerStartPos = r.ReadVector2();
+  [MemberNotNull(nameof(_bashEntity), nameof(_bashTarget))]
+  private void SetBashEntity(Entity value) {
+    if (value is not (NPC or Projectile)) {
+      throw new ArgumentException("Value must be of type NPC, Projectile, or null");
     }
-    bool isNpc = r.ReadBoolean();
-    ushort id = r.ReadUInt16();
-    SetTarget(isNpc, id);
-    BashAngle = r.ReadSingle();
-    Player.position = r.ReadVector2();
-    Player.velocity = r.ReadVector2();
-    CurrentStress = r.ReadInt32();
-    _lastStress = r.ReadInt32();
-    _bufferDuration = r.ReadInt32();
+
+    _bashEntity = value;
+    UpdateBashTarget();
+    System.Diagnostics.Debug.Assert(_bashTarget is not null);
   }
 
-  public override void WritePacket(ModPacket packet) {
-    if (!InUse) return;
-    if (Starting) {
-      packet.WriteVector2(_targetStartPos);
-      packet.WriteVector2(_playerStartPos);
-    }
-    packet.Write(BashEntity is NPC);
-    packet.Write((ushort)(BashEntity?.whoAmI ?? ushort.MaxValue));
-    packet.Write(BashAngle);
-    packet.WriteVector2(Player.position);
-    packet.WriteVector2(Player.velocity);
-    packet.Write(CurrentStress);
-    packet.Write(_lastStress);
-    packet.Write(_bufferDuration);
-  }
-
-  /// <summary>
-  /// Filter to determine if this <see cref="NPC"/> can be bashed. Returns <see langword="true"/> if the NPC should be bashed.
-  /// <para>Excludes friendly NPCs, bosses, specific NPCs, and NPCs that are already being Bashed.</para>
-  /// </summary>
-  /// <param name="npc"><see cref="NPC"/> to check.</param>
-  /// <returns><see langword="true"/> if the NPC should be bashed, otherwise <see langword="false"/>.</returns>
-  private static bool BashNpcFilter(NPC npc) =>
-    !npc.friendly && !npc.boss && npc.aiStyle != 37 && !CannotBashNpc.Contains((short)npc.type) && !npc.GetGlobalNPC<OriNpc>().IsBashed;
-
-  /// <summary>
-  /// Filter to determine if this <see cref="Projectile"/> can be bashed. Returns true if the projectile should be bashed.
-  /// <para>Excludes non-hostile, 0 damage projectiles, minions, sentries, traps, grapples, and projectiles that are already being Bashed.</para>
-  /// </summary>
-  /// <param name="proj">Projectile to check for bashing.</param>
-  /// <returns><see langword="true"/> if the projectile should be bashed, otherwise <see langword="false"/>.</returns>
-  private static bool BashProjFilter(Projectile proj) =>
-    proj.hostile && proj.damage != 0 && !proj.minion && !proj.sentry && !proj.trap && !CannotBashProj.Contains((short)proj.type) && !proj.GetGlobalProjectile<OriProjectile>().IsBashed;
-
-  private void SetTarget(bool isNpc, ushort id) {
-    if (id == ushort.MaxValue) {
-      SetTarget(null);
-    }
-    else if (isNpc) {
-      SetTarget(Main.npc[id]);
-    }
-    else {
-      SetTarget(Main.projectile[id]);
-    }
-  }
-
-  /// <summary>
-  /// Sets the target to be bashed to <paramref name="entity"/>. Pass in <see langword="null"/> to not bash anything.
-  /// </summary>
-  /// <param name="entity"><see cref="Entity"/> to target for bashing.</param>
-  private void SetTarget(Entity entity) {
-    BashEntity = entity;
-    BashTarget = entity switch {
+  private void UpdateBashTarget() {
+    _bashTarget = _bashEntity switch {
       NPC npc => npc.GetGlobalNPC<OriNpc>(),
-      Projectile projectile => projectile.GetGlobalProjectile<OriProjectile>(),
+      Projectile proj => proj.GetGlobalProjectile<OriProjectile>(),
       _ => null
     };
+  }
+
+  private void ClearBashEntity() {
+    _bashEntity = null;
+    _bashTarget = null;
+  }
+
+  protected override void OnInitialize() {
+    base.OnInitialize();
+    MovementStates parent = GetParent<MovementStates>();
+    parent.AddInterruptible<NoAbility>(to: this);
+    parent.AddInterruptible<AirJump>(to: this);
+    parent.AddInterruptible<Climb>(to: this);
+    parent.AddInterruptible<Crouch>(to: this);
+    parent.AddInterruptible<Dash>(to: this);
+    parent.AddInterruptible<Glide>(to: this);
+    parent.AddInterruptible<LookUp>(to: this);
+    parent.AddInterruptible<WallJump>(to: this);
+  }
+
+  protected override void NetSync(ISync sync) {
+    // _netAngle and _bashAngle are separate values to allow visual lerping when syncing from a MP client
+    // This avoids a jittery, snappy look when other clients modify the angle (i.e. move their mouse)
+    // We use a deadzone for syncing to avoid potentially spamming packets every frame
+
+    if (sync.Writing) {
+      // Send the actual bash angle value
+      _netAngle = _aimAngle;
+    }
+
+    // Starting depends on ActiveTime, which is synced in base State class
+    if (Starting) {
+      sync.Sync(ref _targetStartPos);
+      sync.Sync(ref _playerStartPos);
+    }
+    else {
+      sync.SyncPositionAndVelocity(Player);
+    }
+
+    sync.Sync(ref _netAngle);
+    sync.Sync7BitEncodedInt(ref _currentStress);
+    sync.Sync7BitEncodedInt(ref _lastStress);
+    sync.Sync7BitEncodedInt(ref _currentBuffer);
+
+    sync.SyncEntity(ref _bashEntity);
+    if (sync.Reading) {
+      UpdateBashTarget();
+    }
+
+    if (sync.Reading && Main.dedServ) {
+      // Server needs to know actual value, and doesn't need visual lerping
+      _aimAngle = _netAngle;
+    }
+  }
+
+  protected override bool StartCooldownOnEnter => true;
+
+  protected override void OnEnter(State? fromState) {
+    RestoreAirJumps();
+  }
+
+  protected override void OnExit() {
+    Player.pulley = false;
+    _endSound.Play(Player);
+
+    if (!HasBashEntity) {
+      return;
+    }
+
+    Vector2 bashVector = new((float)(0 - Math.Cos(_aimAngle)), (float)(0 - Math.Sin(_aimAngle)));
+    Vector2 playerBashVector = -bashVector * Stats.PlayerStrength;
+    Vector2 npcBashVector = bashVector * Stats.NpcStrength;
+
+    Player.velocity = playerBashVector;
+
+    // Player.position += playerBashVector * 3;
+    // Player.position += npcBashVector * 5;
+
+    if (IsGrounded) {
+      Player.position.Y -= 1f * Player.gravDir;
+    }
+
+    if (_lastStress < Stats.MaxStress / 1.33) {
+      OriPlayer.SetImmune(20);
+    }
+
+    _bashTarget.IsBashed = false;
+    if (IsLocal && _bashEntity is NPC npc) {
+      if (!npc.immortal) {
+        // Don't knockback target dummies
+        npc.velocity = npcBashVector * npc.knockBackResist;
+      }
+
+      if (Level >= 2) {
+        Player.ApplyDamageToNPC(npc, Stats.Damage, 0, 1);
+      }
+    }
+  }
+
+  protected override bool OnPreUpdateInterruptible(State activeState) {
+    if (!_hasReleasedBash) {
+      return false;
+    }
+
+    if (!IsLocal) {
+      return false;
+    }
+
+    if (Input.Bash.JustPressed) {
+      _currentBuffer = 0;
+      _lastStress = _currentStress;
+      AddStress(40);
+    }
+    else if (Input.Bash.Current) {
+      _currentBuffer++;
+    }
+    else {
+      return false;
+    }
+
+    StressDust();
+    BashStats stats = Stats;
+    if (!Input.Charge.Current && _currentBuffer <= stats.MaxBuffer) {
+      if (_currentBuffer == 0) {
+        SoundWrapper.PlayLocal(Player, "Ori/Bash/bashNoTargetB", 0.35f);
+      }
+
+      AddStress(3);
+      if (TryStart()) {
+        _hasReleasedBash = false;
+        return true;
+      }
+
+      if (_currentBuffer == stats.MaxBuffer) {
+        RefreshParticles(Color.LightYellow);
+      }
+
+      return false;
+    }
+
+    return false;
   }
 
   /// <summary>
   /// Attempt to start Bash. This will search for an <see cref="NPC"/> or <see cref="Projectile"/> to bash, and set it as target.
   /// </summary>
   /// <returns><see langword="true"/> if an <see cref="Entity"/> to bash was found and set as target, otherwise <see langword="false"/>.</returns>
-  private bool Start() {
-    SetTarget(null);
-    float currDist = BashRange;
+  private bool TryStart() {
+    ClearBashEntity();
 
     // Check for Bashing NPCs
-    bool isBashingNpc = Player.GetClosestEntity(Main.npc, ref currDist, out NPC npc, condition: BashNpcFilter);
-    if (isBashingNpc) {
-      if (npc.aiStyle == 6) {
+    float range = Stats.Range;
+    if (Player.GetClosesEntity(Main.ActiveNPCs, ref range, out NPC? npc, condition: BashNpcFilter)) {
+      if (npc.aiStyle == NPCAIStyleID.Worm) {
+        // ReSharper disable once GrammarMistakeInComment (Terraria AI field is lowercase)
         // Worm: Must bash head of worm-like rather than body (head is stored as ai[3])
         // Otherwise only part of the npc will be suspended
         npc = Main.npc[(int)npc.ai[3]];
       }
-      SetTarget(npc);
+
+      SetBashEntity(npc);
     }
     else {
       // Bash Lv2 or higher required for projectiles
@@ -270,81 +239,73 @@ public sealed class Bash : OriAbility, ILevelable {
         return false;
       }
 
-      bool isBashingProj = Player.GetClosestEntity(Main.projectile, ref currDist, out Projectile proj, condition: BashProjFilter);
-      if (!isBashingProj) {
+      if (!Player.GetClosesEntity(Main.ActiveProjectiles, ref range, out Projectile? proj, condition: BashProjFilter)) {
         return false;
       }
 
-      SetTarget(proj);
+      SetBashEntity(proj);
     }
 
-    BashTarget.IsBashed = true;
-    BashTarget.BashPosition = BashEntity.Center;
-    BashTarget.BashPlayer = oPlayer;
+    _bashTarget!.IsBashed = true;
+    _bashTarget.BashPosition = _bashEntity.Center;
+    _bashTarget.BashPlayer = OriPlayer;
 
     _playerStartPos = Player.Center;
-    _targetStartPos = BashEntity.Center;
-    PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
+    _targetStartPos = _bashEntity.Center;
+    _startSound.PlayLocal(Player);
     return true;
+
+    static bool BashNpcFilter(NPC npc) => npc.GetGlobalNPC<OriNpc>().CanBeBashed(npc);
+    static bool BashProjFilter(Projectile proj) => proj.GetGlobalProjectile<OriProjectile>().CanBeBashed(proj);
   }
 
-  private void End() {
-    Player.pulley = false;
-    PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), 0.5f);
-
-    bool isNpc = BashEntity is NPC;
-    NPC npc = (NPC)(isNpc ? BashEntity : null);
-
-    Vector2 bashVector = new((float)(0 - Math.Cos(BashAngle)), (float)(0 - Math.Sin(BashAngle)));
-    Vector2 playerBashVector = -bashVector * BashPlayerStrength;
-    Vector2 npcBashVector = bashVector * BashNpcStrength;
-    Player.velocity = playerBashVector;
-    Player.position += playerBashVector * 3;
-    if (!isNpc || !npc.immortal) BashEntity.velocity = npcBashVector; // Don't knockback target dummies
-    Player.position += npcBashVector * 5;
-    if (IsGrounded) {
-      Player.position.Y -= 1f;
+  private void StressDust() {
+    BashStats stats = Stats;
+    _stressParticleTimer++;
+    if (_stressParticleTimer <= 8 - _currentStress / stats.MaxStress * 5) {
+      return;
     }
 
-    if (_lastStress < MaxStress/1.33) oPlayer.ImmuneTimer = 20;
-
-    BashTarget.IsBashed = false;
-    if (IsLocal && Level >= 2 && isNpc) {
-      Player.ApplyDamageToNPC(npc, BashDamage, 0, 1);
+    _stressParticleTimer = 0;
+    int loopCount = _currentStress / (stats.MaxStress / 4);
+    int dustType = ModContent.DustType<AbilityRefreshedDust>();
+    Vector2 playerCenter = Player.Center;
+    for (int i = 0; i < loopCount; i++) {
+      Dust.NewDust(playerCenter, 12, 12, dustType, newColor: Color.LightYellow);
     }
-
-    StartCooldown();
-  }
-  public override void UpdateActive() {
-    if (IsLocal) NetUpdate = true;
   }
 
-  public override void UpdateUsing() {
-    if (!Ending) {
-      if (BashEntity is not null) {
-        BashEntity.Center = _targetStartPos;
-      }
-
-      Player.velocity = Vector2.Zero;
-      Player.gravity = 0;
+  protected override void OnPreUpdate() {
+    ref readonly BashStats stats = ref Stats;
+    if (ActiveTime == stats.MinTime + 4) {
+      SoundWrapper.PlayLocal(Player, "Ori/Bash/seinBashLoopA", 0.5f);
     }
-    if (IsLocal) {
-      NetUpdate = true;
-      switch (BashEntity) {
-        case NPC npc:
-          npc.netUpdate2 = true;
-          break;
-        case Projectile projectile:
-          projectile.netUpdate2 = true;
-          break;
-      }
 
-      if (BashEntity != null)
-      {
-        BashAngle = OriMod.ConfigClient.bashMode == "Target" ? 
-          BashEntity.AngleTo(Main.MouseWorld) : Player.AngleTo(Main.MouseWorld);
+    AddStress(1);
+
+    if (!IsLocal) {
+      return;
+    }
+
+    if (ActiveTime > stats.MaxTime ||
+        ActiveTime > stats.MinTime && !Input.Bash.Current ||
+        !HasBashEntity) {
+      CancelState();
+    }
+  }
+
+  protected override void OnUpdate() {
+    if (HasBashEntity) {
+      _bashEntity.Center = _targetStartPos;
+      if (IsLocal) {
+        Entity target = OriMod.ConfigClient.bashMode == "Target" ? _bashEntity : Player;
+        _aimAngle = target.AngleTo(Main.MouseWorld);
       }
     }
+
+    Player.velocity = Vector2.Zero;
+    Player.gravity = 0;
+
     // Allow only quick heal and quick mana
     Player.controlJump = false;
     Player.controlUp = false;
@@ -359,82 +320,114 @@ public sealed class Bash : OriAbility, ILevelable {
     Player.controlTorch = false;
     Player.controlUseItem = false;
     Player.controlUseTile = false;
-    Player.buffImmune[BuffID.CursedInferno] = true;
-    Player.buffImmune[BuffID.Dazed] = true;
-    Player.buffImmune[BuffID.Frozen] = true;
-    Player.buffImmune[BuffID.Frostburn] = true;
-    Player.buffImmune[BuffID.MoonLeech] = true;
-    Player.buffImmune[BuffID.Obstructed] = true;
-    Player.buffImmune[BuffID.OnFire] = true;
-    Player.buffImmune[BuffID.Poisoned] = true;
-    Player.buffImmune[BuffID.ShadowFlame] = true;
-    Player.buffImmune[BuffID.Silenced] = true;
-    Player.buffImmune[BuffID.Slow] = true;
-    Player.buffImmune[BuffID.Stoned] = true;
-    Player.buffImmune[BuffID.Suffocation] = true;
-    Player.buffImmune[BuffID.Venom] = true;
-    Player.buffImmune[BuffID.Weak] = true;
-    Player.buffImmune[BuffID.WitheredArmor] = true;
-    Player.buffImmune[BuffID.WitheredWeapon] = true;
-    Player.buffImmune[BuffID.WindPushed] = true;
-    if (_lastStress < MaxStress/2) oPlayer.ImmuneTimer = 2;
+    Player.buffImmune.AssignValueToKeys(true, stackalloc int[] {
+      BuffID.CursedInferno,
+      BuffID.Dazed,
+      BuffID.Frozen,
+      BuffID.Frostburn,
+      BuffID.MoonLeech,
+      BuffID.Obstructed,
+      BuffID.OnFire,
+      BuffID.Poisoned,
+      BuffID.ShadowFlame,
+      BuffID.Silenced,
+      BuffID.Slow,
+      BuffID.Stoned,
+      BuffID.Suffocation,
+      BuffID.Venom,
+      BuffID.Weak,
+      BuffID.WitheredArmor,
+      BuffID.WitheredWeapon,
+      BuffID.WindPushed
+    });
+    if (_lastStress < Stats.MaxStress / 2) {
+      OriPlayer.SetImmune(2);
+    }
+
+    if (IsLocal) {
+      // Determine whether to push a netupdate
+      if (Math.Abs(_aimAngle - _netAngle) > NetAngleTolerance) {
+        _netAngle = _aimAngle;
+        NetUpdate = true;
+      }
+    }
+    else {
+      // Non-local, smooth visual angle to net angle
+      _aimAngle = float.Lerp(_aimAngle, _netAngle, NetAngleLerpValue);
+    }
   }
 
-  public override void PreUpdate() {
-    if (Input.Bash.Current) _bufferDuration++;
-    if (Input.Bash.JustPressed) {
-      _bufferDuration = 0;
-      _lastStress = CurrentStress;
-      CurrentStress += 40;
+  protected override void OnPostUpdate() {
+    AddStress(-1);
+    if (!Input.Bash.Current) {
+      _hasReleasedBash = true;
     }
+  }
 
-    _stressParticleTimer++;
-    if (_stressParticleTimer > 8-(CurrentStress/MaxStress*5)) {
-      _stressParticleTimer = 0;
-      for (int i = 0; i < CurrentStress/(MaxStress/4); i++) {
-        Dust.NewDust(Player.Center, 12, 12, ModContent.DustType<AbilityRefreshedDust>(), newColor: Color.LightYellow);
-      }
-    }
+  protected override void OnEndCooldown() {
+    RefreshParticles(Color.LightYellow);
+  }
 
-    if (CanUse && Input.Bash.Current && !Input.Charge.Current && _bufferDuration <= MaxBufferDuration) {
-      if(_bufferDuration == 0)
-        PlayLocalSound("Ori/Bash/bashNoTargetB", 0.35f);
-      CurrentStress += 3; 
-      bool didBash = Start();
-      if (didBash) {
-        SetState(AbilityState.Starting);
-        RestoreAirJumps();
-      }
-      else if (_bufferDuration == MaxBufferDuration) {
-        Abilities.RefreshParticles(Color.LightYellow);
-      }
-    }
-    else if (InUse) {
-      if (Starting) {
-        if (StateTime > MinBashDuration) {
-          SetState(AbilityState.Active, true);
-        }
-        return;
-      }
+  protected override AnimationOptions? GetAnimationOptions() => new("Bash", loopCount: 1);
 
-      if (!Active) return;
-      if (StateTime == MinBashDuration + 4) {
-        PlayLocalSound("Ori/Bash/seinBashLoopA", 0.5f);
-      }
-      oPlayer.Animations?.Update();
-      CurrentStress += 1;
+  private void AddStress(int value) => _currentStress = Math.Clamp(_currentStress + value, 0, Stats.MaxStress);
 
-      if (!IsLocal) _sBashed = true;
-      if ((StateTime <= MaxBashDuration && Input.Bash.Current &&
-          BashEntity is not null && BashEntity.active) || !IsLocal) return;
-      End();
-      SetState(AbilityState.Inactive);
-    } else {
-      CurrentStress -= 1;
-      if (_sBashed && !IsLocal) { 
-        End();
-        _sBashed = false;
-      }
-    }
+  internal void GetDrawFields(AnimSpriteSheet sheet, out Vector2 position, out float rotation, out Rectangle rect) {
+    Entity target = HasBashEntity ? _bashEntity : Player;
+    position = target.Center;
+    rotation = _aimAngle;
+    rect = sheet.GetRectFromTimer("Bash", "Arrow", ActiveTime);
+  }
+
+  /// <summary>
+  /// Stats which determine Bash effects.
+  /// </summary>
+  /// <param name="Damage">Damage that Bash will apply when applying knockback</param>
+  /// <param name="Range">Max distance a NPC may be from the player to be a candidate for bashing.</param>
+  /// <param name="PlayerStrength">Strength of knockback applied to player</param>
+  /// <param name="NpcStrength">Strength of knockback applied to NPC</param>
+  /// <param name="MinTime">Min time which bash must be in state.</param>
+  /// <param name="MaxTime">Max time which bash may be in state.</param>
+  /// <param name="MaxBuffer">Max time which Bash may attempt to be entered</param>
+  /// <param name="MaxStress"></param>
+  private readonly record struct BashStats(
+    int Damage,
+    float Range,
+    float PlayerStrength,
+    float NpcStrength,
+    int MinTime,
+    int MaxTime,
+    int MaxBuffer,
+    int MaxStress) : IStats<BashStats> {
+    public static ref BashStats[] Values => ref _values;
+
+    private static BashStats[] _values = [
+      default,
+      new BashStats(
+        Damage: 0, Range: 56,
+        PlayerStrength: 15, NpcStrength: 12,
+        MinTime: 20, MaxTime: 85,
+        MaxBuffer: 25, MaxStress: 240),
+      new BashStats(
+        Damage: 20, Range: 56,
+        PlayerStrength: 15, NpcStrength: 12,
+        MinTime: 20, MaxTime: 85,
+        MaxBuffer: 25, MaxStress: 240),
+      new BashStats(Damage: 45, Range: 90,
+        PlayerStrength: 20, NpcStrength: 16,
+        MinTime: 15, MaxTime: 105,
+        MaxBuffer: 60, MaxStress: 360)
+    ];
+
+    public static BashStats CreateFromLevel(int level) => new(
+      Damage: 20 + level * 15,
+      Range: 60 + level * 10,
+      PlayerStrength: 8 + level * 4,
+      NpcStrength: 4 + level * 4,
+      MinTime: 10 + level * 14 / 255,
+      MaxTime: 70 + level * 10,
+      MaxBuffer: level * 20,
+      MaxStress: level * 120
+    );
   }
 }

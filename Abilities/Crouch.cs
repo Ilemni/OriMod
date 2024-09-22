@@ -1,32 +1,39 @@
-using AnimLib.Abilities;
+using AnimLib.Animations;
+using Terraria;
 
 namespace OriMod.Abilities;
 
 /// <summary>
-/// Ability for crouching. This ability is entirely visual, and is always unlocked.
+/// StateMachine for the player crouching. This ability is entirely visual, and is always unlocked.
 /// </summary>
-public sealed class Crouch : OriAbility {
-  public override int Id => AbilityId.Crouch;
+public sealed class Crouch(Player player) : OriState(player) {
+  public override bool CanEnter() => base.CanEnter() && IsGrounded &&
+    (OriMod.ConfigClient.softCrouch || !(Player.controlLeft || Player.controlRight));
 
-  public override bool CanUse => base.CanUse && IsGrounded && !Restricted && !Player.mount.Active &&
-    !Abilities.Bash && !Abilities.Burrow && !Abilities.ChargeDash && !Abilities.Dash && !Abilities.Launch &&
-    !Abilities.LookUp && !Abilities.Stomp;
-  private bool Restricted => OriMod.ConfigClient.softCrouch && (Player.controlLeft || Player.controlRight);
   private static int StartDuration => 10;
   private static int EndDuration => 4;
 
-  public override void UpdateUsing() {
-    if (OriMod.ConfigClient.softCrouch) return;
+  internal bool Starting => ActiveTime < StartDuration;
+
+  internal bool Ending => _endingTime > 0;
+
+  private int _endingTime;
+
+  protected override void OnUpdate() {
+    if (OriMod.ConfigClient.softCrouch) {
+      return;
+    }
+
     Player.runAcceleration = 0;
     Player.maxRunSpeed = 0;
     Player.velocity.X = 0;
     if (Player.controlLeft) {
       Player.controlLeft = false;
-      Player.direction = -1;
+      Player.ChangeDir(-1);
     }
     else if (Player.controlRight) {
       Player.controlRight = false;
-      Player.direction = 1;
+      Player.ChangeDir(1);
     }
 
     // if (PlayerInput.Triggers.JustPressed.Jump) { // TODO: Backflip
@@ -39,27 +46,31 @@ public sealed class Crouch : OriAbility {
     // }
   }
 
-  public override void PreUpdate() {
-    if (!InUse) {
-      if (CanUse && Player.controlDown) {
-        SetState(AbilityState.Starting);
+  protected override void OnPreUpdate() {
+    if (!CanEnter()) {
+      CancelState();
+      return;
+    }
+
+    if (!Player.controlDown) {
+      if (Starting) {
+        // Has not fully entered crouch. cancel crouch immediately
+        CancelState();
+        return;
+      }
+
+      _endingTime++;
+      if (_endingTime > EndDuration) {
+        CancelState();
       }
     }
-    else if (!CanUse) {
-      SetState(AbilityState.Inactive);
-    }
-    else if (!Player.controlDown && !Ending) {
-      SetState(Active ? AbilityState.Ending : AbilityState.Inactive);
-    }
-    else if (Starting) {
-      if (StateTime > StartDuration) {
-        SetState(AbilityState.Active);
-      }
-    }
-    else if (Ending) {
-      if (StateTime > EndDuration) {
-        SetState(AbilityState.Inactive);
-      }
+    else {
+      _endingTime = 0;
     }
   }
+
+  protected override AnimationOptions? GetAnimationOptions() =>
+    Starting ? new AnimationOptions("CrouchStart") :
+    Ending ? new AnimationOptions("CrouchStart", isReversed: true) :
+    new AnimationOptions("Crouch");
 }

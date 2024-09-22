@@ -1,14 +1,21 @@
-using AnimLib;
 using System.IO;
+using JetBrains.Annotations;
 using Terraria.ModLoader;
 
-namespace OriMod.Networking; 
+namespace OriMod.Networking;
 
 /// <summary>
 /// Receives all <see cref="ModPacket"/>s and distributes them to the desired <see cref="PacketHandler"/>.
 /// </summary>
-internal class ModNetHandler : SingleInstance<ModNetHandler> {
-  private ModNetHandler() { }
+[UsedImplicitly]
+internal sealed class ModNetHandler : ModSystem {
+  public override void SetStaticDefaults() {
+    OriPlayerHandler = new OriPlayerPacketHandler(OriState);
+  }
+
+  public override void Unload() {
+    OriPlayerHandler = null!;
+  }
 
   /// <summary>
   /// Type for <see cref="OriPlayerPacketHandler"/>.
@@ -16,22 +23,25 @@ internal class ModNetHandler : SingleInstance<ModNetHandler> {
   private const byte OriState = 1;
 
   /// <inheritdoc cref="OriPlayerPacketHandler"/>
-  internal readonly OriPlayerPacketHandler OriPlayerHandler = new(OriState);
+  internal static OriPlayerPacketHandler OriPlayerHandler { get; private set; } = null!; // SetStaticDefaults()
 
   /// <summary>
   /// Sends the received <see cref="ModPacket"/> to the desired <see cref="PacketHandler"/> based on data read from <paramref name="reader"/>.
   /// </summary>
   /// <param name="reader">The <see cref="BinaryReader"/> that reads the received <see cref="ModPacket"/>.</param>
   /// <param name="fromWho">The player that this packet is from.</param>
-  internal void HandlePacket(BinaryReader reader, int fromWho) {
+  internal static void HandlePacket(BinaryReader reader, int fromWho) {
     byte packetClass = reader.ReadByte();
-    switch (packetClass) {
-      case OriState:
-        OriPlayerHandler.HandlePacket(reader, fromWho);
-        break;
-      default:
+    PacketHandler? handler = packetClass switch {
+      OriState => OriPlayerHandler,
+      _ => null,
+    };
+
+    if (handler is null) {
         OriMod.Error("UnknownPacket", args: packetClass);
-        break;
+        return;
     }
+
+    handler.HandlePacket(reader, fromWho);
   }
 }

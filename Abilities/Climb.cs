@@ -1,6 +1,11 @@
-using AnimLib.Abilities;
 using System;
-using System.IO;
+using AnimLib.Animations;
+using AnimLib.Networking;
+using AnimLib.States;
+using Microsoft.Xna.Framework;
+using OriMod.Dusts;
+using OriMod.Utilities;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
@@ -8,43 +13,178 @@ namespace OriMod.Abilities;
 /// <summary>
 /// Ability for climbing on walls.
 /// </summary>
-public sealed class Climb : OriAbility, ILevelable {
-  public override int Id => AbilityId.Climb;
-  public override int Level => ((ILevelable)this).Level;
-  int ILevelable.Level { get; set; }
-  int ILevelable.MaxLevel => 1;
-  public override bool Unlocked => Level > 0;
+public sealed class Climb(Player player) : OriAbility(player) {
+  /// <summary>
+  /// Time until <see cref="IsFullyCharged"/> becomes <see langword="true"/>.
+  /// </summary>
+  private static int MaxCharge => 35;
 
-  public override bool CanUse => base.CanUse && OnWall && !IsGrounded && !Player.mount.Active &&
-    !Abilities.Bash && !Abilities.Burrow && !Abilities.Launch && !Abilities.Stomp && !Abilities.WallChargeJump &&
-    !Abilities.WallJump;
+  /// <summary>
+  /// Max angles which the player can aim for <see cref="WallChargeJump"/>.
+  /// </summary>
+  private static float MaxAimAngle => 0.65f;
 
-  internal bool IsCharging {
-    get => _isCharging;
-    private set {
-      if (value == _isCharging) return;
-      _isCharging = value;
-      NetUpdate = true;
-    }
-  }
-  private bool _isCharging;
+  private WallChargeJump _wallChargeJump = null!; // OnInitialize()
+  public override int MaxLevel => 1;
 
-  internal sbyte WallDirection;
+  /// <summary>
+  /// Whether charging is possible. Requires <see cref="WallChargeJump"/> unlocked/not on cooldown.
+  /// </summary>
+  private bool CanCharge => !_wallChargeJump.IsOnCooldown && _isCharging && !Player.shimmering;
+
+  /// <summary>
+  /// Whether fully charged, that is, <see cref="WallChargeJump"/> can be transitioned into.
+  /// </summary>
+  internal bool IsFullyCharged => _currentCharge >= MaxCharge;
+
+
+  /// <summary>
+  /// Current charge progress.
+  /// <see cref="IsFullyCharged"/> is <see langword="true"/> when this value reaches <see cref="MaxCharge"/>.
+  /// </summary>
+  private int _currentCharge;
+
+  private Vector2 _chargeJumpAimDirection;
+
+  private float _angle;
+
+  private int _wallDirection;
+  private int _gravDirection;
+
   // Prevent flip gravity when climbing upwards
   private bool _disableUp;
 
-  public override void ReadPacket(BinaryReader r) {
-    WallDirection = r.ReadSByte();
-    IsCharging = r.ReadBoolean();
+  internal bool Ending => _endingTime > 0;
+  private int _endingTime;
+
+  /// <summary>
+  /// Whether the player is intending to charge (appropriate player.controlLeft/Right is true),
+  /// and <see cref="WallChargeJump"/> is unlocked.
+  /// </summary>
+  private bool _isCharging;
+
+  protected override void OnInitialize() {
+    base.OnInitialize();
+    _wallChargeJump = GetParent<MovementStates>().GetChild<WallChargeJump>();
   }
 
-  public override void WritePacket(ModPacket packet) {
-    packet.Write(WallDirection);
-    packet.Write(IsCharging);
+  public override bool CanEnter() => base.CanEnter() && OnWall && !IsGrounded;
+
+  protected override void NetSync(ISync sync) {
+    sync.Sync7BitEncodedInt(ref _currentCharge);
+    sync.SyncSign(ref _wallDirection);
+    sync.SyncSign(ref _gravDirection);
+    sync.Sync(ref _isCharging);
+    sync.Sync(ref _angle);
+
+    if (sync.Reading) {
+      _chargeJumpAimDirection = Vector2.UnitX.RotatedBy(_angle) * new Vector2(_wallDirection, _gravDirection);
+    }
   }
 
-  public override void UpdateActive() {
-    if (IsCharging) {
+  protected override void OnEnter(State? fromState) {
+    _wallDirection = Player.direction;
+    _gravDirection = (int)Player.gravDir;
+  }
+
+  protected override void OnExit() {
+    _currentCharge = 0;
+    _endingTime = 0;
+  }
+
+  protected override void OnPreUpdate() {
+    if (!IsLocal) {
+      return;
+    }
+
+    if (Player.controlDown) {
+      CancelState();
+      return;
+    }
+
+    bool prevIsCharging = _isCharging;
+    _isCharging = _wallChargeJump.Unlocked && (_wallDirection == 1 ? Player.controlLeft : Player.controlRight);
+    if (_isCharging != prevIsCharging) {
+      NetUpdate = true;
+    }
+
+
+    if (!IsFullyCharged && CanCharge) {
+      if (_currentCharge == 0) {
+        SoundWrapper.PlayLocal(Player, "Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+      }
+
+      _currentCharge++;
+      if (IsFullyCharged) {
+        NetUpdate = true;
+        SoundWrapper.PlayLocal(Player, "Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+      }
+    }
+
+    if (IsFullyCharged) {
+      if (Main.rand.NextFloat() < 0.7f) {
+        Dust.NewDust(Player.Center, 12, 12, ModContent.DustType<AbilityRefreshedDust>(), newColor: Color.Blue);
+      }
+
+      Vector2 direction = new(-_wallDirection, _gravDirection);
+      _chargeJumpAimDirection = OriUtils.GetMouseDirection(Player, out float angle, direction, MaxAimAngle);
+      if (Math.Abs(_angle - angle) > 0.1f) {
+        _angle = angle;
+        NetUpdate = true;
+      }
+
+      if (!CanCharge) {
+        NetUpdate = true;
+        _currentCharge = 0;
+        SoundWrapper.PlayLocal(Player, "Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
+      }
+    }
+
+    if (Input.Jump.JustPressed) {
+      if (IsFullyCharged && CanCharge) {
+        _wallChargeJump.SetAimAndDirection(_angle, _chargeJumpAimDirection);
+        TriggerState<WallChargeJump>();
+        return;
+      }
+
+      if (TriggerState<WallJump>()) {
+        return;
+      }
+    }
+
+    if (Ending) {
+      _endingTime++;
+      int maxTime = Player.gravDir >= 1 ? 8 : 9;
+      if (_endingTime >= maxTime) {
+        CancelState();
+      }
+    }
+    else {
+      if (Input.Climb.Current && (CanEnter() || Player.controlUp || Input.Jump.Current)) {
+        if (!CanEnter() && (Player.controlUp || Input.Jump.Current)) {
+          // Climb over top of things
+          _endingTime = 1;
+        }
+      }
+      else {
+        CancelState();
+      }
+    }
+  }
+
+  protected override void OnUpdate() {
+    if (Player.controlUp) {
+      _disableUp = true;
+    }
+
+    if (Ending) {
+      // Clamber over ledge
+      Player.velocity.X = _wallDirection * 3.7f;
+      Player.velocity.Y = -_gravDirection * 4f;
+      return;
+    }
+
+    if (_isCharging) {
       Player.velocity.Y = 0;
     }
     else if (Player.controlUp || Input.Jump.Current) {
@@ -61,55 +201,58 @@ public sealed class Climb : OriAbility, ILevelable {
     Player.jump = 0;
     Player.runAcceleration = 0;
     Player.maxRunSpeed = 0;
-    Player.direction = WallDirection;
+    Player.ChangeDir(_wallDirection);
+    Player.gravDir = _gravDirection;
     Player.velocity.X = 0;
     Player.controlLeft = false;
     Player.controlRight = false;
     Player.controlDown = false;
-  }
-
-  public override void UpdateEnding() {
-    Player.velocity.X = WallDirection * 3f;
-    Player.velocity.Y = -Player.gravDir * 4f;
-  }
-
-  public override void UpdateUsing() {
-    if (Player.controlUp) {
-      _disableUp = true;
+    Player.controlTorch = false;
+    if (IsFullyCharged) {
+      Player.controlUseItem = false;
     }
   }
 
-  public override void PostUpdateAbilities() {
-    if (!_disableUp) return;
+  protected override void OnPostUpdate() {
+    if (!IsActive) {
+      return;
+    }
+
+    if (!_disableUp) {
+      return;
+    }
+
     if (!Player.controlUp) {
       _disableUp = false;
     }
+
     Player.controlUp = false;
   }
 
-  public override void PreUpdate() {
-    if (!IsLocal) {
-      return;
+  protected override AnimationOptions? GetAnimationOptions() {
+    if (Ending) {
+      return new AnimationOptions("Jump", frameIndex: 0);
     }
-    if (!InUse) {
-      if (CanUse && Input.Climb.Current) {
-        SetState(AbilityState.Active);
-        WallDirection = (sbyte)Player.direction;
+
+    if (!_isCharging) {
+      if (Math.Abs(Player.velocity.Y) < 0.1f) {
+        return new AnimationOptions("ClimbIdle");
       }
+
+      string tag = Player.velocity.Y * Player.gravDir < 0 ? "Climb" : "WallSlide";
+      return new AnimationOptions(tag, speed: Math.Abs(Player.velocity.Y) * 0.4f);
     }
-    else if (Ending) {
-      int maxTime = Player.gravDir >= 1 ? 7 : 9;
-      if (StateTime >= maxTime) {
-        SetState(AbilityState.Inactive);
-      }
+
+    if (!IsFullyCharged) {
+      return new AnimationOptions("WallChargeJumpCharge", frameIndex: !_wallChargeJump.IsOnCooldown ? null : 0);
     }
-    else if (!Input.Climb.Current || (!CanUse && !(Player.controlUp || Input.Jump.Current))) {
-      SetState(AbilityState.Inactive);
-    }
-    else if (!CanUse && (Player.controlUp || Input.Jump.Current)) {
-      // Climb over top of things
-      SetState(AbilityState.Ending);
-    }
-    IsCharging = Active && Abilities.WallChargeJump.Unlocked && (WallDirection == 1 ? Player.controlLeft : Player.controlRight);
+
+    return new AnimationOptions("WallChargeJumpAim", frameIndex: _angle switch {
+      < -0.46f => 2,
+      < -0.17f => 1,
+      > 0.46f => 4,
+      > 0.17f => 3,
+      _ => 0
+    });
   }
 }

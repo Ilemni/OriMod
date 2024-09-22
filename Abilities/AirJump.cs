@@ -1,7 +1,9 @@
-using AnimLib.Abilities;
-using OriMod.Utilities;
-using System.IO;
+using AnimLib.Animations;
+using AnimLib.Networking;
+using AnimLib.States;
+using JetBrains.Annotations;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
@@ -9,80 +11,119 @@ namespace OriMod.Abilities;
 /// <summary>
 /// Ability for jumping in the air.
 /// </summary>
-public sealed class AirJump : OriAbility, ILevelable {
-  public override int Id => AbilityId.AirJump;
-  public override int Level => ((ILevelable)this).Level;
-  public override bool Unlocked => Level > 0;
-  int ILevelable.Level { get; set; }
-  public int MaxLevel => 4;
-
-  public override bool CanUse => base.CanUse && !IsGrounded && !OnWall &&
-    CurrentCount < MaxJumps && !Player.mount.Active && !(Abilities.ChargeJump.Charged && Abilities.ChargeJump.Grace) &&
-    !Abilities.Bash && !Abilities.Burrow && !Abilities.Climb && !Abilities.ChargeJump && !Abilities.Launch &&
-    !Abilities.WallChargeJump && !(OriMod.ConfigClient.airJumpCondition == "Not Down" && Player.controlDown) &&
-    !(OriMod.ConfigClient.airJumpCondition == "Only Up" && !Player.controlUp);
-
+public sealed class AirJump(Player player) : OriAbility(player) {
   private static float JumpVelocity => 8.8f;
   private static int EndDuration => 32;
-  private int MaxJumps => Level;
 
-  internal ushort CurrentCount;
+  private int _currentCount;
   private sbyte _gravityDirection;
+  private ChargeJump _chargeJump = null!; // OnInitialize()
+  private SoundInfo _tripleJumpSound = new("Ori/TripleJump/seinTripleJumps", 5, 0.6f);
+  private SoundInfo _doubleJumpSound = new("Ori/DoubleJump/seinDoubleJumps", 4, 0.5f);
 
-  public override void ReadPacket(BinaryReader r) {
-    CooldownLeft = r.ReadInt32();
-    _gravityDirection = r.ReadSByte();
-    Player.position = r.ReadVector2();
-    Player.velocity = r.ReadVector2();
-    CurrentCount = r.ReadUInt16();
+  public override int MaxLevel => 4;
+  private int MaxJumps => Level;
+  private ref ExtraJumpState AirJumpExtraJumpState => ref Player.GetJumpState<ExtraAirJump>();
+
+  protected override void OnInitialize() {
+    base.OnInitialize();
+    MovementStates parent = GetParent<MovementStates>();
+    _chargeJump = parent.GetChild<ChargeJump>();
+
+    parent.AddInterruptible<NoAbility>(to: this);
+    parent.AddInterruptible<Dash>(to: this);
+    parent.AddInterruptible<Glide>(to: this);
   }
 
-  public override void WritePacket(ModPacket packet) {
-    packet.Write(CooldownLeft);
-    packet.Write(_gravityDirection);
-    packet.WriteVector2(Player.position);
-    packet.WriteVector2(Player.velocity);
-    packet.Write(CurrentCount);
+  public override bool CanEnter() {
+    return base.CanEnter() && !IsGrounded && !OnWall && _currentCount < MaxJumps &&
+      !_chargeJump.CanEnter() && !Player.AnyExtraJumpUsable() &&
+      !(OriMod.ConfigClient.AirJumpNotDown && Player.controlDown) &&
+      !(OriMod.ConfigClient.AirJumpOnlyUp && !Player.controlUp);
   }
 
-  private RandomChar _rand;
+  protected override void OnEnter(State? fromState) {
+    AirJumpExtraJumpState.Enable();
+    _currentCount++;
+    _gravityDirection = (sbyte)Player.gravDir;
 
-  public override void UpdateActive() {
-    float newVel = -JumpVelocity * ((float)(EndDuration - StateTime) / EndDuration) * _gravityDirection;
-    Player.velocity.Y = newVel;
+    if (MaxJumps == 1 || _currentCount != MaxJumps) {
+      _doubleJumpSound.Play(Player);
+    }
+    else {
+      _tripleJumpSound.Play(Player);
+    }
+
+    if (_currentCount == MaxJumps) {
+      StartCooldown();
+    }
   }
 
-  public override void PreUpdate() {
-    if (CanUse && Input.Jump.JustPressed && IsLocal) {
-      if (Player.AnyExtraJumpUsable() || Player.mount.Active) return;
-      SetState(AbilityState.Active);
-      CurrentCount++;
-      _gravityDirection = (sbyte)Player.gravDir;
+  protected override void OnExit() {
+    AirJumpExtraJumpState.Disable();
+  }
 
-      if (Abilities.Glide) {
-        PlaySound("Ori/Glide/seinGlideStart" + _rand.NextNoRepeat(3), 0.8f);
-      }
-      else if (MaxJumps != 1 && CurrentCount == MaxJumps) {
-        PlaySound("Ori/TripleJump/seinTripleJumps" + _rand.NextNoRepeat(5), 0.6f);
-      }
-      else {
-        PlaySound("Ori/DoubleJump/seinDoubleJumps" + _rand.NextNoRepeat(4), 0.5f);
-      }
+  protected override void NetSync(ISync sync) {
+    sync.Sync(ref _gravityDirection);
+    sync.SyncPositionAndVelocity(Player);
+    sync.Sync7BitEncodedInt(ref _currentCount);
+  }
+
+  protected override void OnPreUpdate() {
+    if (!IsLocal) {
       return;
     }
-    if (IsGrounded || Abilities.Bash || Abilities.Launch || Abilities.Climb) {
-      SetState(AbilityState.Inactive);
+
+    ref ExtraJumpState airJumpState = ref AirJumpExtraJumpState;
+    if (CanEnter()) {
+      airJumpState.Available = true;
     }
-    if (Active) {
-      SetState(AbilityState.Ending);
+
+    if (IsGrounded) {
+      CancelState();
+      return;
     }
-    else if (Ending) {
-      if (StateTime > EndDuration || Player.velocity.Y * Player.gravDir > 0) {
-        SetState(AbilityState.Inactive);
-        if (CurrentCount == MaxJumps) return;
-      }
+
+    if (ActiveTime <= EndDuration && !(Player.velocity.Y * Player.gravDir > 0)) {
+      return;
     }
-    // Other than activation, Air Jump is deterministic and requires no additional syncing
-    NetUpdate = false;
+
+    if (_currentCount < MaxJumps) {
+      airJumpState.Available = true;
+    }
+
+    // Prevent NoAbility transition if we can glide instead
+    // Without this, Player.controlTorch may flicker for one frame
+    if (Input.Glide.Current && TriggerState<Glide>()) {
+      return;
+    }
+
+    CancelState();
+  }
+
+  protected override void OnUpdate() {
+    float newVel = -JumpVelocity * ((float)(EndDuration - ActiveTime) / EndDuration) * _gravityDirection;
+    Player.velocity.Y = newVel;
+    Player.controlTorch = false;
+  }
+
+  protected override bool CanRefresh(bool cooledDown) => IsGrounded || OriPlayer.ActiveState is Bash or Launch or Climb;
+
+  protected override void OnEndCooldown() {
+    _currentCount = 0;
+  }
+
+  protected override AnimationOptions? GetAnimationOptions() {
+    float rotation = ActiveTime * Player.gravDir * Player.direction;
+    return new AnimationOptions("AirJump", rotation: rotation);
+  }
+
+  [UsedImplicitly]
+  private sealed class ExtraAirJump : ExtraJump {
+    public override Position GetDefaultPosition() => BeforeBottleJumps;
+    public override float GetDurationMultiplier(Player player) => 1;
+
+    public override bool CanStart(Player player) =>
+      player.GetModPlayer<OriPlayer>().Character.Move.GetChild<AirJump>().CanEnter();
   }
 }

@@ -1,9 +1,8 @@
-using AnimLib;
+﻿using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using ReLogic.Utilities;
 using Terraria;
-using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,13 +11,29 @@ namespace OriMod;
 /// <summary>
 /// This class is used to handle creation of footstep sounds.
 /// </summary>
-public sealed class FootstepManager : SingleInstance<FootstepManager> {
-  private FootstepManager() {
-    int count = TileLoader.TileCount;
-    _tileFootstepSounds = new FootstepSound[count];
+[UsedImplicitly]
+public sealed class FootstepManager : ModSystem {
+  public override void SetStaticDefaults() {
+    _tileFootstepSounds = new FootstepSound[TileLoader.TileCount];
+    _stepSounds = new SoundInfo[(byte)FootstepSound.Count];
+    _landingSounds = new SoundInfo[(byte)FootstepSound.Count];
+  }
 
-    // Vanilla tiles
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.None, TileID.Plants, TileID.Torches, TileID.Trees,
+  public override void PostSetupContent() {
+    AssignTiles();
+    AssignModTiles();
+    SetupPaths();
+  }
+
+  public override void Unload() {
+    _tileFootstepSounds = null!;
+    _stepSounds = null!;
+    _landingSounds = null!;
+  }
+
+  private static void AssignTiles() {
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.None, stackalloc ushort[] {
+      TileID.Plants, TileID.Torches, TileID.Trees,
       TileID.ClosedDoor, TileID.OpenDoor, TileID.Heart, TileID.Bottles, TileID.Saplings, TileID.Chairs, TileID.Furnaces,
       TileID.Containers, TileID.CorruptPlants, TileID.DemonAltar, TileID.Sunflower, TileID.Pots, TileID.PiggyBank,
       TileID.ShadowOrbs, TileID.CorruptThorns, TileID.Candles, TileID.Chandeliers, TileID.Jackolanterns,
@@ -68,11 +83,15 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
       TileID.SillyStreamerGreen, TileID.SillyStreamerPink, TileID.SillyBalloonMachine, TileID.Pigronata,
       TileID.PartyMonolith, TileID.PartyBundleOfBalloonTile, TileID.PartyPresent, TileID.SandDrip, TileID.DjinnLamp,
       TileID.DefendersForge, TileID.WarTable, TileID.WarTableBanner, TileID.ElderCrystalStand, TileID.Containers2,
-      TileID.FakeContainers2, TileID.Tables2);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Grass, TileID.Dirt, TileID.Grass, TileID.CorruptGrass,
+      TileID.FakeContainers2, TileID.Tables2
+    });
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Grass, stackalloc ushort[] {
+      TileID.Dirt, TileID.Grass, TileID.CorruptGrass,
       TileID.ClayBlock, TileID.Mud, TileID.JungleGrass, TileID.MushroomGrass, TileID.HallowedGrass, TileID.PineTree,
-      TileID.LeafBlock, TileID.CrimsonGrass, TileID.HayBlock, TileID.LavaMoss, TileID.LivingMahoganyLeaves);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Rock, TileID.Stone, TileID.Iron, TileID.Copper, TileID.Gold,
+      TileID.LeafBlock, TileID.CrimsonGrass, TileID.HayBlock, TileID.LavaMoss, TileID.LivingMahoganyLeaves
+    });
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Rock, stackalloc ushort[] {
+      TileID.Stone, TileID.Iron, TileID.Copper, TileID.Gold,
       TileID.Silver, TileID.Demonite, TileID.Ebonstone, TileID.Meteorite, TileID.Obsidian, TileID.Hellstone,
       TileID.Sapphire, TileID.Ruby, TileID.Emerald, TileID.Topaz, TileID.Amethyst, TileID.Diamond, TileID.Cobalt,
       TileID.Mythril, TileID.Adamantite, TileID.Pearlstone, TileID.ActiveStoneBlock, TileID.Boulder, TileID.IceBlock,
@@ -82,22 +101,32 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
       TileID.Cog, TileID.Marble, TileID.Granite, TileID.Sandstone, TileID.HardenedSand, TileID.CorruptHardenedSand,
       TileID.CrimsonHardenedSand, TileID.CorruptSandstone, TileID.CrimsonSandstone, TileID.HallowHardenedSand,
       TileID.HallowSandstone, TileID.DesertFossil, TileID.FossilOre, TileID.LunarOre, TileID.LunarBlockSolar,
-      TileID.LunarBlockVortex, TileID.LunarBlockNebula, TileID.LunarBlockStardust);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Wood, TileID.Tables, TileID.WorkBenches, TileID.Platforms,
+      TileID.LunarBlockVortex, TileID.LunarBlockNebula, TileID.LunarBlockStardust
+    });
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Wood, stackalloc ushort[] {
+      TileID.Tables, TileID.WorkBenches, TileID.Platforms,
       TileID.WoodBlock, TileID.Pianos, TileID.Dressers, TileID.Bookcases, TileID.TinkerersWorkbench, TileID.Ebonwood,
       TileID.RichMahogany, TileID.Pearlwood, TileID.Shadewood, TileID.WoodenSpikes, TileID.SpookyWood,
       TileID.DynastyWood, TileID.RedDynastyShingles, TileID.BlueDynastyShingles, TileID.BorealWood, TileID.PalmWood,
-      TileID.FishingCrate, TileID.TrapdoorClosed);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Sand, TileID.Sand, TileID.Ash, TileID.Ebonsand,
-      TileID.Pearlsand, TileID.Silt, TileID.Hive, TileID.CrispyHoneyBlock, TileID.Crimsand);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Snow, TileID.SnowBlock, TileID.RedStucco, TileID.YellowStucco,
+      TileID.FishingCrate, TileID.TrapdoorClosed
+    });
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Sand, stackalloc ushort[] {
+      TileID.Sand, TileID.Ash, TileID.Ebonsand,
+      TileID.Pearlsand, TileID.Silt, TileID.Hive, TileID.CrispyHoneyBlock, TileID.Crimsand
+    });
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Snow, stackalloc ushort[] {
+      TileID.SnowBlock, TileID.RedStucco, TileID.YellowStucco,
       TileID.GreenStucco, TileID.GrayStucco, TileID.Cloud, TileID.RainCloud, TileID.Slush, TileID.HoneyBlock,
-      TileID.SnowCloud);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Mushroom, TileID.CandyCaneBlock, TileID.GreenCandyCaneBlock,
+      TileID.SnowCloud
+    });
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Mushroom, stackalloc ushort[] {
+      TileID.CandyCaneBlock, TileID.GreenCandyCaneBlock,
       TileID.CactusBlock, TileID.MushroomBlock, TileID.SlimeBlock, TileID.FrozenSlimeBlock, TileID.BubblegumBlock,
       TileID.PumpkinBlock, TileID.Coralstone, TileID.PinkSlimeBlock, TileID.SillyBalloonPink, TileID.SillyBalloonPurple,
-      TileID.SillyBalloonGreen, TileID.SillyBalloonTile);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.LightDark, TileID.Glass, TileID.MagicalIceBlock,
+      TileID.SillyBalloonGreen, TileID.SillyBalloonTile
+    });
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.LightDark, stackalloc ushort[] {
+      TileID.Glass, TileID.MagicalIceBlock,
       TileID.Sunplate, TileID.Teleporter, TileID.AmethystGemsparkOff, TileID.TopazGemsparkOff,
       TileID.SapphireGemsparkOff, TileID.EmeraldGemsparkOff, TileID.RubyGemsparkOff, TileID.DiamondGemsparkOff,
       TileID.AmberGemsparkOff, TileID.AmethystGemspark, TileID.TopazGemspark, TileID.SapphireGemspark,
@@ -106,8 +135,10 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
       TileID.TeamBlockRed, TileID.TeamBlockRedPlatform, TileID.TeamBlockGreen, TileID.TeamBlockBlue,
       TileID.TeamBlockYellow, TileID.TeamBlockPink, TileID.TeamBlockWhite, TileID.TeamBlockGreenPlatform,
       TileID.TeamBlockBluePlatform, TileID.TeamBlockYellowPlatform, TileID.TeamBlockPinkPlatform,
-      TileID.TeamBlockWhitePlatform, TileID.SandFallBlock, TileID.SnowFallBlock);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeRock, TileID.Anvils, TileID.GrayBrick,
+      TileID.TeamBlockWhitePlatform, TileID.SandFallBlock, TileID.SnowFallBlock
+    });
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeRock, stackalloc ushort[] {
+      TileID.Anvils, TileID.GrayBrick,
       TileID.RedBrick, TileID.BlueDungeonBrick, TileID.GreenDungeonBrick, TileID.PinkDungeonBrick, TileID.GoldBrick,
       TileID.SilverBrick, TileID.CopperBrick, TileID.Spikes, TileID.ObsidianBrick, TileID.HellstoneBrick,
       TileID.PearlstoneBrick, TileID.IridescentBrick, TileID.Mudstone, TileID.CobaltBrick, TileID.MythrilBrick,
@@ -116,26 +147,36 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
       TileID.PlatinumBrick, TileID.IceBrick, TileID.LihzahrdBrick, TileID.PalladiumColumn, TileID.Titanstone,
       TileID.StoneSlab, TileID.SandStoneSlab, TileID.CopperPlating, TileID.TinPlating, TileID.ChlorophyteBrick,
       TileID.CrimtaneBrick, TileID.ShroomitePlating, TileID.MartianConduitPlating, TileID.MarbleBlock,
-      TileID.GraniteBlock, TileID.MeteoriteBrick, TileID.Fireplace, TileID.ConveyorBeltLeft, TileID.ConveyorBeltRight);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeWood, TileID.LivingWood, TileID.LivingMahogany);
+      TileID.GraniteBlock, TileID.MeteoriteBrick, TileID.Fireplace, TileID.ConveyorBeltLeft, TileID.ConveyorBeltRight
+    });
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeWood,
+      stackalloc ushort[] { TileID.LivingWood, TileID.LivingMahogany });
+  }
 
-    // Mod tiles
+  private static void AssignModTiles() {
     int missingSoundCount = 0;
-    for (int i = TileID.Count; i < count; i++) {
+    for (int i = TileID.Count; i < TileLoader.TileCount; i++) {
       if (!Main.tileSolid[i] && !Main.tileSolidTop[i]) {
         _tileFootstepSounds[i] = FootstepSound.None;
         continue;
       }
+
       string tileName = TileLoader.GetTile(i).Name;
       string name = tileName[(tileName.LastIndexOf('.') + 1)..];
       FootstepSound sound = SoundFromName(name);
       _tileFootstepSounds[i] = sound;
 
-      if (sound == FootstepSound.NoModTranslation) {
-        // Print in debug build only, or try implementing more catches for tile names to sounds
-        //OriMod.Log.Warn($"Could not get appropriate sound from mod tile name \"{name}\"");
-        missingSoundCount++;
+      if (sound != FootstepSound.NoModTranslation) {
+#if DEBUG
+        OriMod.Log.Debug($"Matched sound {tileName} to {sound}");
+#endif
+        continue;
       }
+
+#if DEBUG
+      OriMod.Log.Debug($"Could not get appropriate sound from mod tile name \"{name}\"");
+      missingSoundCount++;
+#endif
     }
 
     if (missingSoundCount > 0) {
@@ -143,44 +184,86 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
     }
   }
 
-  /// <summary>
-  /// Array of footstep sounds for a given <see cref="Tile"/>, where the index corresponds to a <see cref="Tile.type"/>
-  /// </summary>
-  private readonly FootstepSound[] _tileFootstepSounds;
+  private static void SetupPaths() {
+    AddFootstep(FootstepSound.Grass, 5, 0.15f);
+    AddFootstep(FootstepSound.Rock, 5, 0.7f);
+    AddFootstep(FootstepSound.Wood, 5, 0.2f);
+    AddFootstep(FootstepSound.Sand, 8, 0.4f);
+    AddFootstep(FootstepSound.Snow, 10, 0.45f);
+    AddFootstep(FootstepSound.Mushroom, 5, 0.15f);
+    AddFootstep(FootstepSound.LightDark, 10, 0.3f);
+    AddFootstep(FootstepSound.SpiritTreeRock, 5, 0.7f);
+    AddFootstep(FootstepSound.SpiritTreeWood, 5, 0.7f);
+    AddFootstep(FootstepSound.Water, 4, 1f);
 
-  private RandomChar _rand;
+    AddLanding(FootstepSound.Grass, 2, 1f);
+    AddLanding(FootstepSound.Rock, 3, 1f);
+    AddLanding(FootstepSound.Wood, 5, 0.15f);
+    AddLandingFromFootstep(FootstepSound.Sand);
+    AddLandingFromFootstep(FootstepSound.Snow);
+    AddLanding(FootstepSound.Mushroom, 5, 0.75f);
+    AddLandingFromFootstep(FootstepSound.LightDark);
+    AddLandingFromFootstep(FootstepSound.SpiritTreeRock);
+    AddLandingFromFootstep(FootstepSound.SpiritTreeWood);
+    AddLanding(FootstepSound.Water, 5, 0.15f);
+    return;
+
+    static void AddFootstep(FootstepSound sound, int random, float volume, float pitch = 0.1f) =>
+      _stepSounds[(byte)sound] = new SoundInfo($"Ori/Footsteps/{sound}/{sound}", random, volume, pitch);
+
+    static void AddLanding(FootstepSound sound, int random, float volume, float pitch = 0.1f) =>
+      _landingSounds[(byte)sound] = new SoundInfo($"Ori/Land/{sound}/seinLands{sound}", random, volume, pitch);
+
+    static void AddLandingFromFootstep(FootstepSound sound, float pitch = 0.2f) {
+      byte index = (byte)sound;
+      _landingSounds[index] = _stepSounds[index] with { Pitch = pitch };
+    }
+  }
 
   /// <summary>
   /// For external mods, attempts to get a sound based on their name.
   /// </summary>
-  /// <param name="name">Name of the mod tile.</param>
-  /// <returns>A <see cref="FootstepSound"/> that best represents the sound from the name, -or- <see cref="FootstepSound.NoModTranslation"/> if none could be found.</returns>
+  /// <param name="name">
+  /// Name of the mod tile.
+  /// </param>
+  /// <returns>
+  /// A <see cref="FootstepSound"/> that best represents the sound from the name, -or-
+  /// <see cref="FootstepSound.NoModTranslation"/> if none could be found.
+  /// </returns>
   private static FootstepSound SoundFromName(string name) {
     name = name.ToLower();
-    if (name is "mysterytile" or "pendingmysterytile") {
+    if (name is "mysterytile" or "pendingmysterytile" || name.StartsWith("unloaded")) {
       return FootstepSound.None;
     }
+
     if (name.Contains("brick")) {
       return FootstepSound.SpiritTreeRock;
     }
+
     if (name.Contains("living")) {
       return FootstepSound.SpiritTreeWood;
     }
+
     if (name.Contains("rock") || name.Contains("stone")) {
       return FootstepSound.Rock;
     }
+
     if (name.Contains("glass")) {
       return FootstepSound.LightDark;
     }
-    if (name.Contains("sand")) {
+
+    if (name.Contains("sand") || name.Contains("ash")) {
       return FootstepSound.Sand;
     }
+
     if (name.Contains("snow")) {
       return FootstepSound.Snow;
     }
+
     if (name.Contains("grass") || name.Contains("dirt") || name.Contains("mud")) {
       return FootstepSound.Grass;
     }
+
     if (name.Contains("wood")) {
       return FootstepSound.Wood;
     }
@@ -188,42 +271,33 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
     return FootstepSound.NoModTranslation;
   }
 
-  #region Play Footstep Methods
+  /// <summary>
+  /// Array of footstep sounds, where the index corresponds to a <see cref="Tile.type"/>
+  /// </summary>
+  private static FootstepSound[] _tileFootstepSounds = null!; // SetStaticDefaults()
+
+  /// <summary>
+  /// Sound data for footsteps.
+  /// </summary>
+  private static SoundInfo[] _stepSounds = null!; // SetStaticDefaults()
+
+  /// <summary>
+  /// Sound data for when landing from the air.
+  /// </summary>
+  private static SoundInfo[] _landingSounds = null!; // SetStaticDefaults()
+
   /// <summary>
   /// Plays a footstep sound effect from the <paramref name="player"/>.
   /// </summary>
   /// <param name="player">Player to play sound effect from.</param>
-  /// <param name="style">representing the sound that is played.</param>
   /// <returns><see cref="SlotId"/> Check this, otherwise style is default.</returns>
-  public SlotId PlayFootstepFromPlayer(Player player, out SoundStyle style) {
-    FootstepSound sound = GetSoundFromPlayerPosition(player);
-    string mat = sound.ToString();
-    int x = (int)player.Bottom.X, y = (int)player.Bottom.Y;
+  public static void PlayFootstepFromPlayer(Player player) {
+    if (Main.dedServ) {
+      return;
+    }
 
-    SlotId Footstep(int randLength, float volume, out SoundStyle st)
-      => PlayFootstep($"{mat}/{mat}{_rand.NextNoRepeat(randLength)}", x, y, volume, out st);
-
-    switch (sound) {
-      case FootstepSound.Grass:
-      case FootstepSound.Mushroom:
-        return Footstep(5, 0.15f, out style);
-      case FootstepSound.Water:
-        return Footstep(4, 1f, out style);
-      case FootstepSound.SpiritTreeRock:
-      case FootstepSound.SpiritTreeWood:
-      case FootstepSound.Rock:
-        return Footstep(5, 0.7f, out style);
-      case FootstepSound.Snow:
-        return Footstep(10, 0.45f, out style);
-      case FootstepSound.LightDark:
-        return Footstep(10, 0.3f, out style);
-      case FootstepSound.Wood:
-        return Footstep(5, 0.2f, out style);
-      case FootstepSound.Sand:
-        return Footstep(8, 0.4f, out style);
-      default:
-        style = default;
-        return SlotId.Invalid;
+    if (GetSoundFromPlayerPosition(player, out FootstepSound sound)) {
+      _stepSounds[(byte)sound].Play(player.Bottom);
     }
   }
 
@@ -234,141 +308,116 @@ public sealed class FootstepManager : SingleInstance<FootstepManager> {
   /// Not all <see cref="FootstepSound"/>s have an associated Landing sound. For those, a Footstep sound is used.
   /// </remarks>
   /// <param name="player">Player to play sound effect from.</param>
-  /// <param name="style">representing the sound that is played.</param>
   /// <returns><see cref="SlotId"/> Check this, otherwise style is default.</returns>
-  public SlotId PlayLandingFromPlayer(Player player, out SoundStyle style) {
-    FootstepSound sound = GetSoundFromPlayerPosition(player);
-    string mat = sound.ToString();
-    int x = (int)player.Bottom.X, y = (int)player.Bottom.Y;
+  public static void PlayLandingFromPlayer(Player player) {
+    if (Main.dedServ) {
+      return;
+    }
 
-    SlotId Landing(int randLength, float volume, out SoundStyle st)
-      => PlayLanding($"{mat}/seinLands{mat}{_rand.NextNoRepeat(randLength)}", x, y, volume, out st);
-
-    switch (sound) {
-      case FootstepSound.Grass:
-        return Landing(2, 1, out style);
-      case FootstepSound.Mushroom:
-        return Landing(5, 0.75f, out style);
-      case FootstepSound.SpiritTreeRock:
-      case FootstepSound.Rock:
-        mat = "Rock";
-        return Landing(3, 1f, out style);
-      case FootstepSound.Water:
-        return Landing(5, 0.15f, out style);
-      case FootstepSound.SpiritTreeWood:
-      case FootstepSound.Wood:
-        mat = "Wood";
-        return Landing(5, 0.15f, out style);
-      default:
-        return PlayFootstepFromPlayer(player, out style);
+    if (GetSoundFromPlayerPosition(player, out FootstepSound sound)) {
+      _landingSounds[(byte)sound].Play(player.Bottom);
     }
   }
+
+  private static bool GetSoundFromPlayerPosition(Player player, out FootstepSound sound) =>
+    (sound = GetSoundFromPlayerPosition(player)) is not (FootstepSound.None or FootstepSound.NoModTranslation);
 
   /// <summary>
   /// Get a <see cref="FootstepSound"/> based on where the player is standing.
   /// </summary>
   /// <param name="player"><see cref="Player"/> to get footstep sound from.</param>
   /// <returns>A <see cref="FootstepSound"/> based on <paramref name="player"/> position.</returns>
-  private FootstepSound GetSoundFromPlayerPosition(Player player) {
+  private static FootstepSound GetSoundFromPlayerPosition(Player player) {
     Vector2 testPos = player.Bottom + new Vector2(-12, 4);
-    Tile tile = GetTile(testPos);
+    Tile tile = Main.tile[testPos.ToTileCoordinates()];
 
     // Test for water
     if (tile.LiquidAmount > 0f && tile.LiquidType == LiquidID.Water) {
       return FootstepSound.Water;
     }
+
     testPos.Y -= 8;
-    tile = GetTile(testPos);
+    tile = Main.tile[testPos.ToTileCoordinates()];
     if (tile.LiquidAmount > 0f && tile.LiquidType == LiquidID.Water) {
       return FootstepSound.Water;
     }
 
     // Dry land
     testPos.Y += 12;
-    tile = GetTile(testPos);
+    tile = Main.tile[testPos.ToTileCoordinates()];
     if (tile.HasTile) {
       return _tileFootstepSounds[tile.TileType];
     }
+
     testPos.Y += 16;
-    tile = GetTile(testPos);
+    tile = Main.tile[testPos.ToTileCoordinates()];
     return tile.HasTile ? _tileFootstepSounds[tile.TileType] : FootstepSound.None;
   }
 
   /// <summary>
-  /// Get a <see cref="Tile"/> at <paramref name="point"/>.
-  /// </summary>
-  /// <param name="point">Position of the tile.</param>
-  /// <returns>A <see cref="Tile"/> at the provided position.</returns>
-  private static Tile GetTile(Point point) => Main.tile[point.X, point.Y];
-
-  /// <summary>
-  /// Get a <see cref="Tile"/> at <paramref name="vector"/>. <paramref name="vector"/> is converted to tile coordinates.
-  /// </summary>
-  /// <param name="vector">World-space position of the tile.</param>
-  /// <returns>A <see cref="Tile"/> at the provided position.</returns>
-  private static Tile GetTile(Vector2 vector) => GetTile(vector.ToTileCoordinates());
-
-  /// <summary>
-  /// Shorthand for <see cref="SoundWrapper.PlaySound(int,int,string,out Terraria.Audio.SoundStyle,float,float)"/>, for footstep sounds.
-  /// </summary>
-  private static SlotId PlayFootstep(string path, int x, int y, float volume, out SoundStyle style)
-    => SoundWrapper.PlaySound(x, y, "Ori/Footsteps/" + path, out style, volume);
-
-  /// <summary>
-  /// Shorthand for <see cref="SoundWrapper.PlaySound(int,int,string,out Terraria.Audio.SoundStyle,float,float)"/>, for landing sounds.
-  /// </summary>
-  private static SlotId PlayLanding(string path, int x, int y, float volume, out SoundStyle style)
-    => SoundWrapper.PlaySound(x, y, "Ori/Land/" + path, out style, volume, 0.1f);
-  #endregion
-
-  /// <summary>
-  /// Enum to represent footstep sounds.
+  /// Represents different footstep sounds.
   /// </summary>
   private enum FootstepSound : byte {
     /// <summary>
     /// Footsteps on grassy terrain.
     /// </summary>
-    Grass = 1,
+    Grass = 0,
+
     /// <summary>
     /// Footsteps on rocks and stones.
     /// </summary>
-    Rock = 2,
+    Rock = 1,
+
     /// <summary>
     /// Footsteps on wooden surfaces.
     /// </summary>
-    Wood = 3,
+    Wood = 2,
+
     /// <summary>
     /// Footsteps on sand and other grainy surfaces, and hive blocks.
     /// </summary>
-    Sand = 4,
+    Sand = 3,
+
     /// <summary>
     /// Footsteps on snowy terrain.
     /// </summary>
-    Snow = 5,
+    Snow = 4,
+
     /// <summary>
     /// Footsteps on mushroom terrain.
     /// </summary>
-    Mushroom = 6,
+    Mushroom = 5,
+
     /// <summary>
     /// Footsteps on glass surfaces.
     /// </summary>
-    LightDark = 7,
+    LightDark = 6,
+
     /// <summary>
     /// Footsteps on bricks.
     /// </summary>
-    SpiritTreeRock = 8,
+    SpiritTreeRock = 7,
+
     /// <summary>
     /// Footsteps on Living Wood.
     /// </summary>
-    SpiritTreeWood = 9,
+    SpiritTreeWood = 8,
+
     /// <summary>
     /// Footsteps on liquids from using water walking.
     /// </summary>
-    Water = 10,
+    Water = 9,
+
+    /// <summary>
+    /// Number of valid footstep sounds which should produce a sound.
+    /// </summary>
+    Count = 10,
+
     /// <summary>
     /// Failed attempt to convert mod tile name to a footstep sound.
     /// </summary>
     NoModTranslation = 254,
+
     /// <summary>
     /// For tiles that can never be stepped on (i.e. Banners, Torches), or should not have a sound.
     /// </summary>

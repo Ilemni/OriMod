@@ -1,90 +1,67 @@
-using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
-using OriMod.Utilities;
 using System;
-using System.IO;
+using AnimLib.Animations;
+using AnimLib.Networking;
+using AnimLib.States;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
 
 /// <summary>
 /// Ability for an air-to-ground Area of Effect attack.
 /// </summary>
-public sealed class Stomp : OriAbility, ILevelable {
-  public override int Id => AbilityId.Stomp;
-  public override int Level => ((ILevelable)this).Level;
-  int ILevelable.Level { get; set; }
-  int ILevelable.MaxLevel => 3;
-  public override bool Unlocked => Level > 0;
-
-  public override bool CanUse => base.CanUse && !IsGrounded && !InUse && !Player.mount.Active && Player.grapCount == 0 &&
-    !Abilities.Bash && !Abilities.Burrow && !Abilities.ChargeDash && !Abilities.ChargeJump && !Abilities.Climb &&
-    !Abilities.Dash && !Abilities.Glide.Active && !Abilities.Launch && !Abilities.WallChargeJump;
-  public override int Cooldown => Math.Min(30 + Level * 30, 600);
-  public override void OnRefreshed() => Abilities.RefreshParticles(Color.Orange);
-
-  private int Damage => 30 + Level * 20;
-
+public sealed class Stomp(Player player) : OriAbility(player) {
   private static float Gravity => 8f;
-  private int StartDuration =>
-    Level switch {
-      1 => 24,
-      2 => 20,
-      _ => 16
-    };
 
   private static int MinDuration => 30;
-  private float MaxFallSpeed =>
-    Level switch {
-      1 => 28,
-      2 => 36,
-      _ => 25 + Level * 5
-    };
 
   /// <summary>
   /// Minimum frames required to hold <see cref="Player.controlDown"/> before Stomp can start.
   /// </summary>
   private static int HoldDownDelay => (int)(OriMod.ConfigClient.stompHoldDownDelay * 30);
 
-  private int _currentHoldDown;
 
-  private RandomChar _randStart;
-  private RandomChar _randActive;
-  private RandomChar _randEnd;
+  private int _controlDownDuration;
+  private bool _wasControlDownLastFrame;
 
-  public override void UpdateStarting() {
-    if (StateTime == 0) {
-      Abilities.oPlayer.PlaySound("Ori/Stomp/seinStompStart" + _randStart.NextNoRepeat(3), 0.8f, 0.2f);
-    }
-    Player.velocity.X = 0;
-    Player.velocity.Y *= 0.9f;
-    Player.gravity = -0.1f;
+  private SoundInfo _startSound = new("Ori/Stomp/seinStompStart", 3, 0.8f, 0.2f);
+  private SoundInfo _endSound = new("Ori/Stomp/seinStompImpact", 3, 0.9f);
+  private SoundInfo _activeSound = new("Ori/Stomp/seinStompFall", 3, 0.8f);
+
+
+  private bool Starting => ActiveTime < Stats.StartDuration;
+
+  private bool JustPressedStomp => Input.Stomp.JustPressed || (Player.controlDown && !_wasControlDownLastFrame);
+
+
+  public override int MaxLevel => 3;
+  public override int MaxCooldown => Stats.MaxCooldown;
+  private ref StompStats Stats => ref IStats<StompStats>.Get(Level);
+
+  protected override void OnInitialize() {
+    base.OnInitialize();
+    MovementStates parent = GetParent<MovementStates>();
+
+    parent.AddInterruptible<NoAbility>(to: this);
   }
 
-  public override void UpdateActive() {
-    if (StateTime == 0) {
-      Abilities.oPlayer.PlaySound("Ori/Stomp/seinStompFall" + _randActive.NextNoRepeat(3), 0.8f);
-      NewAbilityProjectile<StompProjectile>(damage: Damage * 2);
-    }
-    if (Abilities.AirJump.Active) {
+  public override bool CanEnter() => base.CanEnter() && !IsGrounded && Player.grapCount == 0;
+
+  protected override void OnEnter(State? fromState) {
+    base.OnEnter(fromState);
+    _startSound.Play(Player);
+  }
+
+  protected override void OnExit() {
+    if (!IsGrounded) {
       return;
     }
 
-    Player.maxRunSpeed = 1f;
-    Player.runSlowdown = 8;
-    Player.gravity = Gravity;
-    Player.maxFallSpeed = MaxFallSpeed;
-    oPlayer.ImmuneTimer = 12;
-
-    if (IsLocal) NetUpdate = true;
-  }
-
-  internal void EndStomp() {
-    PlaySound("Ori/Stomp/seinStompImpact" + _randEnd.NextNoRepeat(3), 0.9f);
+    StartCooldown();
+    _endSound.Play(Player);
     RestoreAirJumps();
     Player.velocity = Vector2.Zero;
     Vector2 position = new(Player.position.X, Player.position.Y + 32);
@@ -94,74 +71,111 @@ public sealed class Stomp : OriAbility, ILevelable {
       dust.velocity *= new Vector2(6, 1.5f);
       dust.velocity.Y = -Math.Abs(dust.velocity.Y);
     }
-    StartCooldown();
-    NewAbilityProjectile<StompEnd>(damage: Damage);
-    SetState(AbilityState.Inactive);
+
+    NewAbilityProjectile<StompEnd>(damage: Stats.Damage);
   }
 
-  public override void UpdateUsing() {
+  protected override bool OnPreUpdateInterruptible(State activeState) {
+    if (!IsLocal || IsGrounded || activeState is Climb or NoAbility { ActiveChild: NoAbility.WallSlide }) {
+      return false;
+    }
+
+    if (!Input.Stomp.Current || !Player.controlDown) {
+      _controlDownDuration = 0;
+      return false;
+    }
+
+    bool justPressedStomp = JustPressedStomp;
+    _wasControlDownLastFrame = Player.controlDown;
+
+    if (_controlDownDuration == 0 && !justPressedStomp) {
+      return false;
+    }
+
+
+    _controlDownDuration++;
+    return _controlDownDuration > HoldDownDelay;
+  }
+
+  protected override void OnPreUpdate() {
+    if (Starting && Input.Jump.JustPressed) {
+      if (TriggerState<AirJump>()) {
+        return;
+      }
+    }
+
+    if (ActiveTime > MinDuration && !Player.controlDown) {
+      // Allow cancelling if player doesn't want to commit to the stomp
+      CancelState();
+    }
+
+    if (IsGrounded) {
+      CancelState();
+    }
+  }
+
+  protected override void OnUpdate() {
     Player.controlUp = false;
     Player.controlDown = false;
-    if (Starting) {
-      Player.controlLeft = false;
-      Player.controlRight = false;
-    }
     Player.controlJump = false;
     Player.controlHook = false;
     Player.controlMount = false;
     Player.controlThrow = false;
     Player.controlUseItem = false;
     Player.controlUseTile = false;
-    oPlayer.KillGrapples();
-  }
+    Player.RemoveAllGrapplingHooks();
 
-  public override void PreUpdate() {
-    if (Inactive) {
-      if (CanUse) {
-        if (Input.Stomp.JustPressed) {
-          _currentHoldDown = 1;
-        }
-        if (_currentHoldDown >= 1 && Player.controlDown && Input.Stomp.Current && IsLocal) {
-          _currentHoldDown++;
-          if (_currentHoldDown > HoldDownDelay) {
-            _currentHoldDown = 0;
-            SetState(AbilityState.Starting);
-          }
-        }
-      }
-      if (Starting) {
-        _currentHoldDown = 0;
-      }
+    if (Starting) {
+      Player.controlLeft = false;
+      Player.controlRight = false;
+      Player.velocity.X = 0;
+      Player.velocity.Y *= 0.9f;
+      Player.gravity = -0.1f;
     }
-    else if (Starting) {
-      if (StateTime > StartDuration) {
-        SetState(AbilityState.Active);
+    else {
+      ref StompStats stats = ref Stats;
+      if (ActiveTime == stats.StartDuration) {
+        _activeSound.Play(Player);
+        NewAbilityProjectile<StompProjectile>(damage: stats.Damage * 2);
       }
-      if (Abilities.AirJump.State == AbilityState.Active) {
-        SetState(AbilityState.Inactive);
-        StartCooldown();
-      }
-    }
-    else if (Active) {
-      if ((StateTime > MinDuration && !Player.controlDown) || Abilities.AirJump) {
-        SetState(AbilityState.Inactive);
-        StartCooldown();
-      }
-      if (IsGrounded) {
-        EndStomp();
-      }
+
+      Player.maxRunSpeed = 1f;
+      Player.runSlowdown = 8;
+      Player.gravity = Gravity;
+      Player.maxFallSpeed = stats.MaxFallSpeed;
+      OriPlayer.SetImmune(12);
     }
   }
 
-  public override void ReadPacket(BinaryReader r) {
-    _currentHoldDown = r.ReadInt32();
-    Player.position = r.ReadVector2();
-    Player.velocity = r.ReadVector2();
+  protected override void NetSync(ISync sync) {
+    sync.SyncPositionAndVelocity(Player);
   }
 
-  public override void WritePacket(ModPacket packet) {
-    packet.Write(_currentHoldDown);
-    packet.WriteVector2(Player.position);
-    packet.WriteVector2(Player.velocity);
+  protected override void OnEndCooldown() => RefreshParticles(Color.Orange);
+
+  protected override AnimationOptions? GetAnimationOptions() {
+    return Starting
+      ? new AnimationOptions("AirJump", rotation: ActiveTime * 0.8f)
+      : new AnimationOptions("ChargeJump", speed: 2, rotation: (float)Math.PI, loopCount: 0, isPingPong: true);
+  }
+
+  private readonly record struct StompStats(
+    int Damage,
+    int StartDuration,
+    int MaxFallSpeed,
+    int MaxCooldown) : IStats<StompStats> {
+    public static ref StompStats[] Values => ref _values;
+
+    private static StompStats[] _values = [
+      default,
+      new StompStats(Damage: 50, StartDuration: 24, MaxFallSpeed: 28, MaxCooldown: 60),
+      new StompStats(Damage: 70, StartDuration: 20, MaxFallSpeed: 36, MaxCooldown: 90),
+    ];
+
+    public static StompStats CreateFromLevel(int level) => new(
+      Damage: 30 + level * 20,
+      StartDuration: 16,
+      MaxFallSpeed: 25 + level * 5,
+      MaxCooldown: Math.Min(30 + level * 30, 600));
   }
 }

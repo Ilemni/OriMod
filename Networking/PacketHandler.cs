@@ -1,20 +1,17 @@
 using System.IO;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Networking; 
+namespace OriMod.Networking;
 
 /// <summary>
 /// Base class for sending and handling received <see cref="ModPacket"/>s.
 /// </summary>
-internal abstract class PacketHandler {
-  protected PacketHandler(byte handlerType) => _handlerType = handlerType;
-
+internal abstract class PacketHandler(byte handlerType) {
   /// <summary>
   /// Identifies which <see cref="PacketHandler"/> created the <see cref="ModPacket"/>.
   /// </summary>
-  private readonly byte _handlerType;
+  private readonly byte _handlerType = handlerType;
 
   /// <summary>
   /// Handle the received <see cref="ModPacket"/> using <paramref name="reader"/>. Packet is from <paramref name="fromWho"/>.
@@ -29,9 +26,11 @@ internal abstract class PacketHandler {
   /// <param name="fromWho">The whoAmI of the player whose data will be in this packet.</param>
   protected ModPacket GetPacket(int fromWho) {
     ModPacket packet = OriMod.instance.GetPacket();
-    if (Main.netMode == NetmodeID.Server) {
+
+    if (Main.dedServ) {
       packet.Write((ushort)fromWho);
     }
+
     packet.Write(_handlerType);
     return packet;
   }

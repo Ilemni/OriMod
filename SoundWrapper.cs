@@ -1,35 +1,50 @@
 using Microsoft.Xna.Framework;
 using Terraria.Audio;
-using ReLogic.Utilities;
+using Terraria;
+using Terraria.ModLoader;
 
 namespace OriMod;
 
 public static class SoundWrapper {
   /// <summary>
-  /// Whether or not we have sounds loaded.
-  /// This wrapper is necessary in case a compilation is done without sounds. We do not distribute sounds in our repository.
+  /// Whether we have sounds loaded.
+  /// This wrapper is necessary in case a mod build is done without sounds. We do not distribute sounds in our repository.
   /// </summary>
   private static bool _canPlaySounds;
 
   private static bool _checkedCanPlaySounds;
 
-  public static SlotId PlaySound(Vector2 position, string soundPath, out SoundStyle style, float volumeScale = 1f, float pitchOffset = 0.0f)
-    => PlaySound((int)position.X, (int)position.Y, soundPath, out style, volumeScale, pitchOffset);
+  public static void Play(Player player, string soundPath, float volumeScale = 1f, float pitchOffset = 0.0f) =>
+    Play(player.Center, soundPath, volumeScale, pitchOffset);
 
-  public static SlotId PlaySound(int x, int y, string soundPath, out SoundStyle style, float volumeScale = 1f, float pitchOffset = 0.0f) {
-    style = new("OriMod/Sounds/Custom/NewSFX/" + soundPath) {
+  public static void Play(Vector2 pos, string soundPath, float volumeScale = 1f, float pitchOffset = 0.0f) {
+    Play(pos, new SoundStyle("OriMod/Sounds/" + soundPath) {
       Pitch = pitchOffset,
       Volume = volumeScale,
-    };
-    Vector2 pos = new(x, y);
-    if (_checkedCanPlaySounds)
-      return !_canPlaySounds ? SlotId.Invalid : SoundEngine.PlaySound(in style, pos);
+    });
+  }
+
+  public static void Play(Vector2 pos, SoundStyle style) {
+    if (_checkedCanPlaySounds) {
+      if (_canPlaySounds) {
+        SoundEngine.PlaySound(in style, pos);
+      }
+
+      return;
+    }
 
     // Check if we can play sounds
-    if (OriMod.instance is null) return SlotId.Invalid;
+    _canPlaySounds = ModContent.HasAsset(style.SoundPath);
     _checkedCanPlaySounds = true;
-    _canPlaySounds = OriMod.instance.HasAsset("Sounds/Custom/NewSFX/Ori/Dash/seinDashA");
 
-    return !_canPlaySounds ? SlotId.Invalid : SoundEngine.PlaySound(in style, pos);
+    if (_canPlaySounds) {
+      SoundEngine.PlaySound(in style, pos);
+    }
+  }
+
+  public static void PlayLocal(Player player, string path, float volume = 1, float pitch = 0) {
+    if (player.whoAmI == Main.myPlayer) {
+      Play(player.Center, path, volume, pitch);
+    }
   }
 }

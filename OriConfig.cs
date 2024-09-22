@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.ModLoader.Config;
 // ReSharper disable UnassignedField.Global
 // ReSharper disable InconsistentNaming
+// ReSharper disable FieldCanBeMadeReadOnly.Global
 
 namespace OriMod;
 
@@ -37,7 +38,13 @@ public sealed class OriConfigClient1 : ModConfig {
   public bool softCrouch;
 
   [DefaultValue("Default"), OptionStrings(["Default", "Not Down", "Only Up"])]
-  public string airJumpCondition;
+  public string airJumpCondition = null!; // Config field
+
+  [JsonIgnore]
+  public bool AirJumpNotDown => airJumpCondition == "Not Down";
+
+  [JsonIgnore]
+  public bool AirJumpOnlyUp => airJumpCondition == "Only Up";
 
   [DefaultValue(true)]
   public bool smoothCamera;
@@ -46,10 +53,10 @@ public sealed class OriConfigClient1 : ModConfig {
   internal bool BurrowToMouse => burrowControls == "Mouse";
 
   [DefaultValue("Mouse"), OptionStrings(["WASD", "Mouse"])]
-  public string burrowControls;
+  public string burrowControls = null!; // Config field
 
   [DefaultValue("Target"), OptionStrings(["Target", "Player"])]
-  public string bashMode;
+  public string bashMode = null!; // Config field
 
   [DefaultValue("false")]
   public bool blockControlsInMenu;
@@ -72,7 +79,13 @@ public sealed class OriConfigClient1 : ModConfig {
   public float dyeLerp;
 
   [DefaultValue("Transparent"), OptionStrings(["Transparent", "Red", "Disabled"])]
-  public string flashMode;
+  public string flashMode = null!; // Config field
+
+  [JsonIgnore]
+  public Color FlashColor => flashMode == "Red" ? Color.Red : Color.Transparent;
+
+  [JsonIgnore]
+  public bool FlashOff => flashMode == "Disabled";
 
   [Header($"{HeaderPath}.Experimental")]
   [DefaultValue(typeof(bool), "false")]
@@ -82,7 +95,7 @@ public sealed class OriConfigClient1 : ModConfig {
     OriMod.ConfigClient = this;
   }
 
-  [OnDeserialized]
+  [OnDeserialized, UsedImplicitly]
   public void OnDeserializedMethod(StreamingContext stream) {
     playerColor.A = 255;
     if (stompHoldDownDelay < 0) {
@@ -92,7 +105,10 @@ public sealed class OriConfigClient1 : ModConfig {
 
   public override void OnChanged() {
     Player player = Main.LocalPlayer;
-    if (!player.active) return;
+    if (!player.active) {
+      return;
+    }
+
     OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
     oPlayer.SpriteColorPrimary = playerColor;
     oPlayer.SpriteColorSecondary = playerColorSecondary;

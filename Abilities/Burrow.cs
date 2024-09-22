@@ -1,10 +1,10 @@
-using AnimLib.Abilities;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OriMod.Utilities;
 using System;
-using System.IO;
-using System.Linq;
+using AnimLib.Animations;
+using AnimLib.Networking;
+using AnimLib.States;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -18,32 +18,32 @@ namespace OriMod.Abilities;
 /// <remarks>
 /// This ability was somewhat difficult to balance; the simplest solution was to restrict tiles to whatever pickaxe was in inventory.
 /// </remarks>
-public sealed class Burrow : OriAbility, ILevelable {
-  public override int Id => AbilityId.Burrow;
-  public override int Level => ((ILevelable)this).Level;
-  public override bool Unlocked => Level > 0;
-  int ILevelable.Level { get; set; }
-  int ILevelable.MaxLevel => 3;
+public sealed class Burrow(Player player) : OriAbility(player) {
+  private Asset<Texture2D> _burrowTimer = ModContent.Request<Texture2D>("OriMod/PlayerEffects/BurrowTimer");
 
-  public override bool CanUse => base.CanUse && !Player.mount.Active && !InMenu && Abilities.Crouch;
-  public override int Cooldown => 12;
-  public override void OnRefreshed() => Abilities.RefreshParticles(Color.SandyBrown);
+  public override int MaxLevel => 3;
 
-  private int MaxDuration =>
-    Level switch {
-      1 => 300,
-      2 => 480,
-      3 => 600,
-      _ => 120 + Level * 120
-    };
+  private ref BurrowStats Stats => ref IStats<BurrowStats>.Get(Level);
 
-  private float RecoveryRate =>
-    Level switch {
-      1 => 0.1f,
-      2 => 0.2f,
-      3 => 0.35f,
-      _ => Level * 0.125f
-    };
+  public override bool CanEnter() => base.CanEnter() && !InMenu;
+
+  protected override bool CanTransitionFrom(State fromState) => fromState is Crouch || OnWall;
+
+  protected override bool OnPreUpdateInterruptible(State fromState) {
+    if (!Input.Burrow.JustPressed) {
+      return false;
+    }
+
+    // Not in use
+    _breath = Math.Clamp(_breath + Stats.RecoveryRate, 0, Stats.Duration);
+
+    // Check if player can enter Burrow
+    EnterHitbox.UpdateHitbox(Player.Center);
+    return EnterHitbox.Any(CanBurrow);
+  }
+
+  public override int MaxCooldown => 12;
+  protected override void OnEndCooldown() => RefreshParticles(Color.SandyBrown);
 
   private static int UiIncrement => 60;
   private static float BaseSpeed => 6f;
@@ -55,87 +55,66 @@ public sealed class Burrow : OriAbility, ILevelable {
     Main.clothesWindow || Main.playerInventory;
 
   private float _breath = float.MaxValue;
-  private int Strength =>
-    Level switch {
-      0 => 0,
-      1 => 55, // Exclude evil biomes, dungeon
-      2 => 200, // Exclude lihzahrd
-      _ => 100 + Level * 50
-    };
+
+  private int _endingTime;
+
+  private bool Ending => _endingTime > 0;
 
   private bool CanBurrowAny => Level >= 3;
-  internal static bool IsSolid(Tile tile) => tile is { HasTile: true, IsActuated: false, HasUnactuatedTile: true } &&
-    Main.tileSolid[tile.TileType];
+  private static bool IsSolid(Tile tile) => tile.HasUnactuatedTile && Main.tileSolid[tile.TileType];
 
   internal bool CanBurrow(Tile t) =>
-    CanBurrowAny && IsSolid(t) || TileCollection.Instance.TilePickaxeMin[t.TileType] <= Strength;
+    CanBurrowAny && IsSolid(t) || TileCollection.TilePickaxeMin[t.TileType] <= Stats.Strength;
 
   private Vector2 _lastPosition;
-  internal Vector2 Velocity;
+  private Vector2 _velocity;
+
+  protected override bool StartCooldownOnExit => true;
+
   /// <summary>
   /// Tile hitbox for determining if the player can enter Burrow state.
   /// </summary>
-  internal static TileHitbox EnterHitbox => _eh ??= Unloadable.New(new TileHitbox(
+  internal static readonly TileHitbox EnterHitbox = new(stackalloc (int, int)[] {
     (0, -1), (0, 0), (0, 1), // Center
     (-1, -1), (-1, 0), (-1, 1), // Left
     (2, -1), (2, 0), (2, 1), // Right
     (0, -2), (1, -2), // Top
     (0, 2), (1, 2), // Bottom
     (2, 2), (2, -2), (-1, 2), (-1, -2) // Corners
-  ), () => _eh = null);
+  });
+
   /// <summary>
   /// Tile hitbox for determining collisions when in the Burrow state
   /// </summary>
-  internal static TileHitbox InnerHitbox => _ih ??= Unloadable.New(new TileHitbox(
+  internal static readonly TileHitbox InnerHitbox = new(stackalloc (int, int)[] {
     (0, -1), // Top
     (0, 1), // Bottom
     (-1, 0), // Left
     (1, 0) // Right
-  ), () => _ih = null);
-  private static TileHitbox _eh;
-  private static TileHitbox _ih;
+  });
 
-  /// <summary>
-  /// Modify player velocity when they collide with a tile they cannot burrow through.
-  /// </summary>
-  /// <param name="point"><see cref="TileHitbox"/> template point.</param>
-  /// <param name="didX">Whether a collision has occurred on the X axis.</param>
-  /// <param name="didY">Whether a collision has occurred on the Y axis.</param>
-  private void OnCollision(Point point, ref bool didX, ref bool didY) {
-    if (!didX && point.X != 0) {
-      // Left or right
-      didX = true;
-      Velocity.X *= -1;
-    }
-    if (!didY && point.Y != 0) {
-      // Top or bottom
-      didY = true;
-      Velocity.Y *= -1;
-    }
+  protected override void NetSync(ISync sync) {
+    sync.Sync(ref _lastPosition);
+    sync.Sync(ref Player.position);
+    sync.Sync(ref _velocity);
+    sync.Sync(ref _breath);
   }
 
-  public override void ReadPacket(BinaryReader r) {
-    _lastPosition = r.ReadVector2();
-    Player.position = _lastPosition;
-    Velocity = r.ReadVector2();
-    _breath = r.ReadSingle();
+  protected override void OnEnter(State? fromState) {
+    _currentSpeed = FastSpeed;
+    _velocity = Vector2.UnitY * Player.gravDir * _currentSpeed;
+    Player.position += _velocity;
+    _lastPosition = Player.position;
   }
 
-  public override void WritePacket(ModPacket packet) {
-    packet.WriteVector2(_lastPosition);
-    packet.WriteVector2(Velocity);
-    packet.Write(_breath);
-  }
-
-  public override void UpdateActive() {
-
+  private void UpdateActive() {
     if (IsLocal) {
       // Get intended velocity based on input
       bool holdNeutral = false;
       Vector2 newVel = Vector2.Zero;
       if (OriMod.ConfigClient.BurrowToMouse) {
         newVel = Player.AngleTo(Main.MouseWorld).ToRotationVector2();
-        holdNeutral = Vector2.DistanceSquared(Main.MouseWorld,Player.Center) < 3600.0f;
+        holdNeutral = Vector2.DistanceSquared(Main.MouseWorld, Player.Center) < 3600.0f;
         if (Player.confused) {
           newVel *= -1;
         }
@@ -144,62 +123,68 @@ public sealed class Burrow : OriAbility, ILevelable {
         if (Player.controlLeft) {
           newVel.X -= 1;
         }
+
         if (Player.controlRight) {
           newVel.X += 1;
         }
+
         if (Player.controlUp) {
           newVel.Y -= Player.gravDir;
         }
+
         if (Player.controlDown) {
           newVel.Y += Player.gravDir;
         }
-        
+
         if (newVel == Vector2.Zero) {
           holdNeutral = true;
-          newVel = Velocity;
+          newVel = _velocity;
         }
       }
-      if ((Velocity.ToRotation() - newVel.ToRotation()).ToRotationVector2().X < 0f) {
+
+      if ((_velocity.ToRotation() - newVel.ToRotation()).ToRotationVector2().X < 0f) {
         holdNeutral = true;
       }
 
-      _currentSpeed = OriUtils.Lerp(_currentSpeed,
+      _currentSpeed = float.Lerp(_currentSpeed,
         Input.Burrow.Current ? FastSpeed : BaseSpeed * (holdNeutral ? 0.2f : 1f), 0.09f);
 
       if (newVel == Vector2.Zero) {
-        newVel = Velocity;
+        newVel = _velocity;
       }
-      Velocity = Vector2.Lerp(Velocity.Normalized(), newVel.Normalized(), 0.1f) * _currentSpeed;
+
+      _velocity = Vector2.Lerp(_velocity.SafeNormalize(default), newVel.SafeNormalize(default), 0.1f) * _currentSpeed;
     }
 
     // Detect bouncing
     if (!CanBurrowAny) {
-      bool didX = false;
-      bool didY = false;
-      InnerHitbox.UpdateHitbox(Player.Center + Velocity.Normalized() * (Player.gravDir < 0 ? 48 : 32));
-      var innerPoints = InnerHitbox.Points;
-      for (int i = 0, len = innerPoints.Length; i < len; i++) {
-        Point point = innerPoints[i];
-        if (!CanBurrow(Main.tile[point])) {
-          OnCollision(InnerHitbox.Template[i], ref didX, ref didY);
-        }
-      }
+      InnerHitbox.UpdateHitbox(Player.Center + _velocity.SafeNormalize(default) * (Player.gravDir < 0 ? 48 : 32));
+      InnerHitbox.GetCollisions(CanBurrow, out bool didX, out bool didY);
+      _velocity = (didX, didY) switch {
+        (true, true) => _velocity * -1,
+        (false, false) => _velocity,
+        (true, false) => new Vector2(_velocity.X * -1, _velocity.Y),
+        (false, true) => new Vector2(_velocity.X, _velocity.Y * -1)
+      };
     }
 
     // Apply changes
     Player.velocity = Vector2.Zero;
-    oPlayer.CreatePlayerDust();
+    OriPlayer.CreatePlayerDust();
     _breath = Math.Max(_breath -= Input.LeftClick.Current ? 2.2f : 1, 0);
   }
 
-  public override void UpdateEnding() {
-    // Runs when leaving solid tiles
-    Velocity = Velocity.Normalized() * Math.Max(Velocity.Length(), BaseSpeed);
-    Player.velocity = Velocity * SpeedExitMultiplier;
-    Player.direction = Math.Sign(Velocity.X);
-  }
+  protected override void OnUpdate() {
+    if (Ending) {
+      // Runs when leaving solid tiles
+      _velocity = _velocity.SafeNormalize(default) * Math.Max(_velocity.Length(), BaseSpeed);
+      Player.velocity = _velocity * SpeedExitMultiplier;
+      Player.ChangeDir(Math.Sign(_velocity.X));
+    }
+    else {
+      UpdateActive();
+    }
 
-  public override void UpdateUsing() {
     // Manage suffocation debuff
     if (_breath > 0) {
       Player.buffImmune[BuffID.Suffocation] = true;
@@ -216,13 +201,15 @@ public sealed class Burrow : OriAbility, ILevelable {
     Player.controlUseTile = false;
     Player.controlThrow = false;
     Player.controlUp = false;
-    oPlayer.KillGrapples();
-    Player.grapCount = 0;
+    Player.RemoveAllGrapplingHooks();
   }
 
-  public override void PostUpdate() {
-    if (!InUse) return;
-    Player.position = _lastPosition + Velocity;
+  protected override void OnPostUpdate() {
+    if (!IsActive) {
+      return;
+    }
+
+    Player.position = _lastPosition + _velocity;
     _lastPosition = Player.position;
   }
 
@@ -230,80 +217,88 @@ public sealed class Burrow : OriAbility, ILevelable {
   /// Draw breath meter to screen
   /// </summary>
   internal void DrawEffects(ref PlayerDrawSet drawInfo) {
-    if (_breath >= MaxDuration || Main.hideUI) return;
+    if (_breath >= Stats.Duration || Main.hideUI) {
+      return;
+    }
 
     Vector2 baseDrawPosition = Player.Right - Main.screenPosition;
     baseDrawPosition.X += 48;
     baseDrawPosition.Y += Player.gravDir >= 0 ? 16 : 112;
 
-    Texture2D texture = OriTextures.Instance.BurrowTimer.Value;
+    Texture2D texture = OriPlayer.BurrowTimer.Value;
     Vector2 origin = texture.Size() / 2;
-    Color color = Color.White * (InUse ? 1 : 0.6f);
+    Color color = Color.White * (IsActive ? 1 : 0.6f);
     SpriteEffects effect = Player.gravDir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
 
     // Adding to drawDataCache multiple times, position is updated each time
-    Vector2 currentDrawPosition = baseDrawPosition;
+    Vector2 drawPosition = baseDrawPosition;
     int uiCount = (int)Math.Ceiling(_breath / UiIncrement);
     for (int i = 0; i < uiCount; i++) {
       if (i % 10 == 0) {
-        currentDrawPosition.X = baseDrawPosition.X;
-        currentDrawPosition.Y += 40 * Player.gravDir;
+        drawPosition.X = baseDrawPosition.X;
+        drawPosition.Y += 40 * Player.gravDir;
       }
-      currentDrawPosition.X += 24;
+
+      drawPosition.X += 24;
 
       // Different frameY if this represents a partially filled bar
       int frameX = (int)Main.time % 30 / 10;
       int frameY = 0;
-      if ((i+1) * UiIncrement > _breath) {
+      if ((i + 1) * UiIncrement > _breath) {
         frameY = 4 - (int)_breath % UiIncrement / (UiIncrement / 5);
       }
 
       Rectangle rect = texture.Frame(3, 5, frameX, frameY);
 
-      DrawData data = new(texture, currentDrawPosition, rect, color, 0, origin, 1, effect)
-        {
-          ignorePlayerRotation = true
-        };
+      DrawData data = new(texture, drawPosition, rect, color, 0, origin, 1, effect) {
+        ignorePlayerRotation = true
+      };
       drawInfo.DrawDataCache.Add(data);
     }
   }
 
-  public override void PreUpdate() {
-    if (InUse) {
-      InnerHitbox.UpdateHitbox(Player.Center + Velocity.Normalized() * (Player.gravDir < 0 ? 48 : 32));
+  protected override void OnPreUpdate() {
+    InnerHitbox.UpdateHitbox(Player.Center + _velocity.SafeNormalize(default) * (Player.gravDir < 0 ? 48 : 32));
 
-      if (Active) {
-        bool canBurrow = InnerHitbox.Points.Any(p => IsSolid(Main.tile[p.X, p.Y]));
-        if (!canBurrow) {
-          SetState(AbilityState.Ending);
-        }
-      }
-      else if (Ending && StateTime > 2) {
-        SetState(AbilityState.Inactive);
-        StartCooldown();
-      }
-
-      NetUpdate = true;
-      return;
+    if (!InnerHitbox.Any(IsSolid)) {
+      _endingTime++;
+    }
+    else {
+      _endingTime = 0;
     }
 
-    // Not in use
-    _breath = Math.Clamp(_breath + RecoveryRate, 0, MaxDuration);
+    if (Ending && _endingTime > 2) {
+      CancelState();
+    }
 
-    // Is player trying to enter Burrow?
-    if (!CanUse || !Input.Burrow.JustPressed) return;
+    NetUpdate = true;
+  }
 
-    // Check if player can enter Burrow
-    EnterHitbox.UpdateHitbox(Player.Center);
-    bool doBurrow = EnterHitbox.Points.Any(p => CanBurrow(Main.tile[p.X, p.Y]));
-    if (!doBurrow) return;
+  protected override AnimationOptions? GetAnimationOptions() {
+    float gravDir = Player.gravDir;
 
-    // Enter Burrow
-    SetState(AbilityState.Active);
-    CooldownLeft = Cooldown;
-    _currentSpeed = FastSpeed;
-    Velocity = Vector2.UnitY * Player.gravDir * _currentSpeed;
-    Player.position += Velocity;
-    _lastPosition = Player.position;
+    float rad = (float)Math.Atan2(_velocity.X, -_velocity.Y * gravDir) * gravDir;
+    return new AnimationOptions("Burrow", rotation: rad);
+  }
+
+  private readonly record struct BurrowStats(
+    int Duration,
+    float RecoveryRate,
+    int Strength
+  ) : IStats<BurrowStats> {
+    public static ref BurrowStats[] Values => ref _values;
+
+    private static BurrowStats[] _values = [
+      default,
+      new BurrowStats(Duration: 300, RecoveryRate: 0.1f, Strength: 55), // Evil biomes, dungeon
+      new BurrowStats(Duration: 480, RecoveryRate: 0.2f, Strength: 200), // Pre-Temple
+      new BurrowStats(Duration: 600, RecoveryRate: 0.35f, Strength: 300)
+    ];
+
+    public static BurrowStats CreateFromLevel(int level) => new(
+      Duration: (level + 1) * 120,
+      RecoveryRate: level * 0.125f,
+      Strength: (level + 2) * 100
+    );
   }
 }

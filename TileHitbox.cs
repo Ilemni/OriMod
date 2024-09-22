@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using OriMod.Utilities;
 using Terraria;
 
 namespace OriMod;
 
+// ReSharper disable IdentifierTypo
 /// <summary>
 /// Primarily used for <see cref="Abilities.Burrow"/>, stores an array of points as a template, and retrieves tiles of that template when updated.
 /// </summary>
@@ -14,7 +14,7 @@ public sealed class TileHitbox {
   /// Instantiate a <see cref="TileHitbox"/> with local-space <paramref name="template"/>.
   /// </summary>
   /// <param name="template"><see cref="Template"/>. Must have at least 1 item.</param>
-  public TileHitbox(params Point[] template) {
+  private TileHitbox(params Point[] template) {
     ArgumentNullException.ThrowIfNull(template);
     if (template.Length == 0) {
       throw new ArgumentException("Template must have at least one item.", nameof(template));
@@ -25,7 +25,18 @@ public sealed class TileHitbox {
     UpdateHitbox(Point.Zero);
   }
 
-  public TileHitbox(params (int x, int y)[] template) : this(template?.Select(tuple => new Point(tuple.x, tuple.y)).ToArray()) { }
+  public TileHitbox(ReadOnlySpan<(int x, int y)> template) : this(ToPoints(template)) {
+  }
+
+  private static Point[] ToPoints(ReadOnlySpan<(int x, int y)> span) {
+    var result = new Point[span.Length];
+    for (int i = 0; i < span.Length; i++) {
+      (int x, int y) = span[i];
+      result[i] = new Point(x, y);
+    }
+
+    return result;
+  }
 
   /// <summary>
   /// Current world position of points in the hitbox, in tile coordinates.
@@ -36,6 +47,27 @@ public sealed class TileHitbox {
   /// Local position of points in the hitbox, in tile coordinates.
   /// </summary>
   public Point[] Template { get; }
+
+  public bool Contains(Point point) => Points.Contains(point);
+
+  public bool Any(Func<Tile, bool> func) => Points.Any(p => func(Main.tile[p.X, p.Y]));
+
+  public void GetCollisions(Func<Tile, bool> checkFunc, out bool x, out bool y) {
+    x = y = false;
+    for (int i = 0; i < Points.Length; i++) {
+      Point point = Points[i];
+      if (!checkFunc(Main.tile[point.X, point.Y])) {
+        continue;
+      }
+
+      Point templatePoint = Template[i];
+      x |= templatePoint.X != 0;
+      y |= templatePoint.Y != 0;
+      if (x && y) {
+        return;
+      }
+    }
+  }
 
   /// <summary>
   /// Updates the position of the hitbox based on the given world position.
@@ -49,7 +81,7 @@ public sealed class TileHitbox {
   /// <param name="origin">Tile-space position to use.</param>
   public void UpdateHitbox(Point origin) {
     for (int i = 0; i < Points.Length; i++) {
-      Points[i] = Template[i].Add(origin);
+      Points[i] = Template[i] + origin;
     }
   }
 }

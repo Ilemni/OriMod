@@ -1,10 +1,9 @@
-using AnimLib.Abilities;
-using Microsoft.Xna.Framework;
-using OriMod.Dusts;
-using OriMod.Projectiles.Abilities;
-using OriMod.Utilities;
 using System;
-using System.IO;
+using AnimLib.Animations;
+using AnimLib.Networking;
+using AnimLib.States;
+using Microsoft.Xna.Framework;
+using OriMod.Projectiles.Abilities;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -13,129 +12,67 @@ namespace OriMod.Abilities;
 /// <summary>
 /// Ability for a charged jump off walls.
 /// </summary>
-public sealed class WallChargeJump : OriAbility {
-  public override int Id => AbilityId.WallChargeJump;
-  public override bool Unlocked => Abilities.Climb.Unlocked && LevelableDependency.Level >= 2;
-  public override ILevelable LevelableDependency => Abilities.ChargeJump;
-
-  public override bool CanUse => base.CanUse && Charged && CanCharge;
-
-  private static int MaxCharge => 35;
-  private static int Duration => Speeds.Length - 1;
-
-  private static float[] Speeds => _speeds ??= Unloadable.New(new float[20] {
+public sealed class WallChargeJump(Player player) : OriAbility(player) {
+  private static readonly float[] Speeds = [
     100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f,
     12f
-  }, () => _speeds = null);
+  ];
 
-  private static float[] _speeds;
-  private static float MaxAngle => 0.65f;
 
-  public bool CanCharge => base.CanUse && Abilities.Climb.IsCharging && !Player.shimmering;
-  public bool Charged => _currentCharge >= MaxCharge;
-  private int _currentCharge;
-
-  /// <summary>
-  /// Angle that the player is facing.
-  /// </summary>
-  public float Angle {
-    get => _angle;
-    set {
-      if (Math.Abs(value - _angle) < 0.01f) return;
-      _angle = value;
-      NetUpdate = true;
-    }
-  }
-  
-  private float _angle;
   private Vector2 _direction;
-  public float XDirection => _direction.X < 0 ? -1 : 1;
+  private float _angle;
 
-  private RandomChar _rand = new();
+  private SoundInfo _startSound = new("Ori/ChargeJump/seinChargeJumpJump", 3, 0.8f);
 
-  private void Start() {
-    PlaySound("Ori/ChargeJump/seinChargeJumpJump" + _rand.NextNoRepeat(3), 0.8f);
-    _currentCharge = 0;
-    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero, ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f,
+  protected override bool StartCooldownOnEnter => true;
+
+  protected override void OnEnter(State? fromState) {
+    _startSound.Play(Player);
+    Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero,
+      ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f,
       Player.whoAmI, 0, 1);
-    StartCooldown();
-    // TODO: multiplayer sync of direction
-    // Currently it is very, very incorrect to use mouse position for multiplayer clients
-    Player.velocity = _direction * Speeds[0] * 0.5f;
+    Player.velocity = _direction * (Speeds[ActiveTime] * 0.5f);
   }
 
-  private void UpdateCharged() {
-    if (Main.rand.NextFloat() < 0.7f) {
-      Dust.NewDust(Player.Center, 12, 12, ModContent.DustType<AbilityRefreshedDust>(), newColor: Color.Blue);
-    }
+  protected override void NetSync(ISync sync) {
+    sync.Sync(ref _direction);
+    sync.Sync(ref _angle);
+    sync.SyncPositionAndVelocity(Player);
   }
 
-  public override void ReadPacket(BinaryReader r) {
-    _currentCharge = r.ReadInt32();
-    _direction = r.ReadVector2();
-    Angle = r.ReadSingle();
-    Player.position = r.ReadVector2();
-    Player.velocity = r.ReadVector2();
-  }
-
-  public override void WritePacket(ModPacket packet) {
-    packet.Write(_currentCharge);
-    packet.WriteVector2(_direction);
-    packet.Write(Angle);
-    packet.WriteVector2(Player.position);
-    packet.WriteVector2(Player.velocity);
-  }
-
-  public override void UpdateActive() {
-    float speed = Speeds[StateTime] * 0.5f;
-    Player.velocity = _direction * speed;
-    Player.direction = Math.Sign(Player.velocity.X);
+  protected override void OnUpdate() {
+    Player.velocity = _direction * (Speeds[ActiveTime] * 0.5f);
+    Player.ChangeDir(Math.Sign(Player.velocity.X));
     Player.maxFallSpeed = Math.Abs(Player.velocity.Y);
     Player.controlJump = false;
     Player.controlLeft = false;
     Player.controlRight = false;
+    Player.controlTorch = false;
+    Player.controlUseItem = false;
 
-    if (IsLocal) NetUpdate = true;
+    // NetUpdate = true;
   }
 
-  public override void PreUpdate() {
-    if (Abilities.Burrow) {
-      _currentCharge = 0;
+  protected override void OnPreUpdate() {
+    if (ActiveTime <= Speeds.Length - 1) {
       return;
     }
 
-    if (InUse) UpdateCooldown();
-    if (IsLocal && !Charged && CanCharge) {
-      if (_currentCharge == 0) {
-        PlayLocalSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
-      }
-
-      _currentCharge++;
-      NetUpdate = true;
-      if (_currentCharge > MaxCharge) {
-        PlayLocalSound("Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
-      }
+    // At end of WallChargeJump, see if we should transition right to gliding
+    if (Input.Glide.Current && TriggerState<Glide>()) {
+      return;
     }
 
-    if (CanUse && Input.Jump.JustPressed) {
-      Start();
-      SetState(AbilityState.Active);
-    }
-    else if (Charged) {
-      UpdateCharged();
-      if (IsLocal) {
-        _direction = OriUtils.GetMouseDirection(oPlayer, out float angle,
-          new Vector2(-Abilities.Climb.WallDirection, Player.gravDir), MaxAngle);
-        Angle = angle;
-        if (!CanCharge) {
-          _currentCharge = 0;
-          PlayLocalSound("Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
-        }
-      }
-    }
+    CancelState();
+  }
 
-    if (!Active || StateTime <= Duration) return;
-    SetState(AbilityState.Inactive);
-    NetUpdate = false; // Deterministic
+  protected override AnimationOptions? GetAnimationOptions() {
+    float angle = _angle * Player.gravDir * (_direction.X < 0 ? -1 : 1);
+    return new AnimationOptions("Dash", frameIndex: 0, rotation: angle);
+  }
+
+  internal void SetAimAndDirection(float angle, Vector2 direction) {
+    _angle = angle;
+    _direction = direction;
   }
 }

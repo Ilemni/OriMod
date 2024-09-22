@@ -1,14 +1,12 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
 
-namespace OriMod.Items.Abilities; 
+namespace OriMod.Items.Abilities;
 
 /// <summary>
 /// Medallion that grants <see cref="AirJump"/> Level 1.
 /// </summary>
-public class AirJumpLevel1 : AbilityMedallionBase {
-  public override byte Id => AbilityId.AirJump;
-
+public sealed class AirJumpLevel1() : AbilityMedallionBase<AirJump>(1) {
   public override void AddRecipes() {
     GetAbilityRecipe()
       .AddRecipeGroup(OriRecipeGroups.DarkBars, 12)
@@ -20,10 +18,7 @@ public class AirJumpLevel1 : AbilityMedallionBase {
 /// <summary>
 /// Medallion that grants <see cref="AirJump"/> Level 2: Triple Jump.
 /// </summary>
-public class AirJumpLevel2 : AbilityMedallionBase {
-  public override byte Id => AbilityId.AirJump;
-  public override byte Level => 2;
-
+public sealed class AirJumpLevel2() : AbilityMedallionBase<AirJump>(2) {
   public override void AddRecipes() {
     GetAbilityRecipe<AirJumpLevel1>()
       .AddRecipeGroup(OriRecipeGroups.HardmodeBars2, 12)
@@ -35,10 +30,7 @@ public class AirJumpLevel2 : AbilityMedallionBase {
 /// <summary>
 /// Medallion that grants <see cref="AirJump"/> Level 3: Quadruple Jump.
 /// </summary>
-public class AirJumpLevel3 : AbilityMedallionBase {
-  public override byte Id => AbilityId.AirJump;
-  public override byte Level => 3;
-
+public sealed class AirJumpLevel3() : AbilityMedallionBase<AirJump>(3) {
   public override void AddRecipes() {
     GetAbilityRecipe<AirJumpLevel2>()
       .AddIngredient(ItemID.HallowedBar, 16)
@@ -48,13 +40,10 @@ public class AirJumpLevel3 : AbilityMedallionBase {
 }
 
 /// <summary>
-/// Medallion that grants <see cref="AirJump"/> Level 3: Quintuple Jump.
+/// Medallion that grants <see cref="AirJump"/> Level 4: Quintuple Jump.
 /// </summary>
-public class AirJumpLevel4 : AbilityMedallionBase {
-  public override byte Id => AbilityId.AirJump;
-  public override byte Level => 4;
-
-  public override void AddRecipes() {      
+public sealed class AirJumpLevel4() : AbilityMedallionBase<AirJump>(4) {
+  public override void AddRecipes() {
     GetAbilityRecipe<AirJumpLevel3>()
       .AddIngredient(ItemID.ShroomiteBar, 8)
       .AddIngredient(ItemID.BundleofBalloons)

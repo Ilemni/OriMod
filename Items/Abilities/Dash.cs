@@ -1,14 +1,12 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
 
-namespace OriMod.Items.Abilities; 
+namespace OriMod.Items.Abilities;
 
 /// <summary>
 /// Medallion that grants <see cref="Dash"/> Level 1.
 /// </summary>
-public class DashLevel1 : AbilityMedallionBase {
-  public override byte Id => AbilityId.Dash;
-
+public sealed class DashLevel1() : AbilityMedallionBase<Dash>(1) {
   public override void AddRecipes() {
     GetAbilityRecipe()
       .AddRecipeGroup(OriRecipeGroups.HardmodeBars1, 14)
@@ -20,10 +18,7 @@ public class DashLevel1 : AbilityMedallionBase {
 /// <summary>
 /// Medallion that grants <see cref="Dash"/> Level 2: No Cooldown.
 /// </summary>
-public class DashLevel2 : AbilityMedallionBase {
-  public override byte Id => AbilityId.Dash;
-  public override byte Level => 2;
-
+public sealed class DashLevel2() : AbilityMedallionBase<Dash>(2) {
   public override void AddRecipes() {
     GetAbilityRecipe<DashLevel1>()
       .AddIngredient(ItemID.HallowedBar, 20)
@@ -38,10 +33,7 @@ public class DashLevel2 : AbilityMedallionBase {
 /// <remarks>
 /// Although <see cref="ChargeDash"/> is a different ability, its unlock condition is that <see cref="Dash"/> is at least Level 3.
 /// </remarks>
-public class DashLevel3 : AbilityMedallionBase {
-  public override byte Id => AbilityId.Dash;
-  public override byte Level => 3;
-
+public sealed class DashLevel3() : AbilityMedallionBase<ChargeDash>(1) {
   public override void AddRecipes() {
     GetAbilityRecipe<DashLevel2>()
       .AddIngredient(ItemID.ShroomiteBar, 10)

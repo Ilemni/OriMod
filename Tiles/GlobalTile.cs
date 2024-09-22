@@ -16,27 +16,36 @@ public sealed class OriTile : GlobalTile {
   private static int InnerRange => 4;
   private static int OuterRange => 13;
 
-  private static void BurrowEffects(int i, int j, ref Color drawColor, OriPlayer oPlayer) {
+  private static void BurrowEffects(int i, int j, ref Color drawColor, OriPlayer oPlayer, Burrow burrow) {
     Color orig = drawColor;
-    Vector2 playerPos = Main.LocalPlayer.Center / 16;
+    Vector2 playerPos = oPlayer.Player.Center / 16;
     float dist = Vector2.Distance(playerPos, new Vector2(i, j)) - InnerRange;
     dist = Utils.Clamp((OuterRange - dist) / OuterRange, 0, 1);
     drawColor = Color.Lerp(orig, Color.White,
-      (oPlayer.Abilities.Burrow.CanBurrow(Main.tile[i, j]) ? 0.8f : 0.4f) * dist);
+      (burrow.CanBurrow(Main.tile[i, j]) ? 0.8f : 0.4f) * dist);
     drawColor.A = orig.A;
   }
 
   public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref TileDrawInfo drawInfo) {
-    OriPlayer oPlayer = OriPlayer.Local;
-    if (!oPlayer.Abilities.Burrow) return;
-    BurrowEffects(i, j, ref drawInfo.finalColor, oPlayer);
-    if (!oPlayer.DebugMode) return;
-    Point pos = new(i, j);
-    if (Burrow.InnerHitbox.Points.Contains(pos)) {
-      drawInfo.finalColor = Color.Red;
+    OriPlayer oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
+    if (oPlayer.ActiveState is not Burrow burrow) {
+      return;
     }
-    else if (Burrow.EnterHitbox.Points.Contains(pos)) {
-      drawInfo.finalColor = Color.LimeGreen;
+
+    BurrowEffects(i, j, ref drawInfo.finalColor, oPlayer, burrow);
+
+    if (oPlayer.DebugMode) {
+      DebugEffects(i, j, ref drawInfo.finalColor);
+    }
+  }
+
+  private static void DebugEffects(int i, int j, ref Color drawColor) {
+    Point pos = new(i, j);
+    if (Burrow.InnerHitbox.Contains(pos)) {
+      drawColor = Color.Red;
+    }
+    else if (Burrow.EnterHitbox.Contains(pos)) {
+      drawColor = Color.LimeGreen;
     }
   }
 }

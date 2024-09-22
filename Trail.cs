@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.DataStructures;
@@ -42,8 +42,6 @@ public sealed class Trail {
   /// Current <see cref="_segments"/> index. Used for <see cref="TrailSegment.Reset"/>.
   /// </summary>
   private int _index;
-
-  internal bool HasDrawnThisFrame;
 
   /// <summary>
   /// Number of segments in a trail.

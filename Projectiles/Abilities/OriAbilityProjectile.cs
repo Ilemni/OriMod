@@ -2,18 +2,17 @@ using AnimLib.Projectiles;
 using OriMod.Abilities;
 using Terraria.ModLoader;
 
-namespace OriMod.Projectiles.Abilities; 
+namespace OriMod.Projectiles.Abilities;
 
   /// <summary>
   /// Base class for ability projectiles. These act more as hitboxes and have no visible texture.
   /// </summary>
-  public abstract class OriAbilityProjectile : AbilityProjectile {
+  public abstract class OriAbilityProjectile<T> : AbilityProjectile<T> where T : OriAbility {
     /// <summary>
-    /// THe <see cref="OriPlayer"/> that this <see cref="AbilityProjectile"/> belongs to.
+    /// THe <see cref="global::OriMod.OriPlayer"/> that this <see cref="AbilityProjectile{T}"/> belongs to.
     /// </summary>
-  public OriAbilityManager Abilities => _abilities ??=
-    APlayer.Player.GetModPlayer<OriPlayer>().Abilities;
-    private OriAbilityManager _abilities;
+    protected OriPlayer OriPlayer => _oriPlayer ??= Player.GetModPlayer<OriPlayer>();
+    private OriPlayer? _oriPlayer;
     public override string Texture => "OriMod/Projectiles/Abilities/Blank";
 
     /// <summary>
@@ -40,7 +39,7 @@ namespace OriMod.Projectiles.Abilities;
     /// <para>Defaults to keeping timeLeft above 0 if ability is in use.</para>
     /// </summary>
     protected virtual void CheckAbilityActive() {
-      if (Ability.InUse) {
+      if (Ability.IsActive) {
         Projectile.timeLeft = 2;
       }
     }
@@ -50,6 +49,6 @@ namespace OriMod.Projectiles.Abilities;
     /// <para>Defaults to setting projectile center to player center.</para>
     /// </summary>
     protected virtual void Behavior() {
-      Projectile.Center = APlayer.Player.Center;
+      Projectile.Center = Player.Center;
   }
 }

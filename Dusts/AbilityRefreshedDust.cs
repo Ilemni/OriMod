@@ -7,7 +7,7 @@ using Terraria.ModLoader;
 namespace OriMod.Dusts;
 
 /// <summary>
-/// Dust used to display that a player's <see cref="AnimLib.Abilities.Ability"/> has just refreshed.
+/// Dust used to display that a player's <see cref="AnimLib.States.AbilityState"/> has just refreshed.
 /// </summary>
 [UsedImplicitly]
 public sealed class AbilityRefreshedDust : ModDust {

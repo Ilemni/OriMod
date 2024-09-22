@@ -1,12 +1,13 @@
-﻿using AnimLib.Abilities;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using System;
-using System.IO;
+using AnimLib.Animations;
+using AnimLib.Networking;
+using AnimLib.States;
+using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
 
@@ -14,91 +15,112 @@ namespace OriMod.Abilities;
 /// Ability for launching the player in the desired direction. Used in the air.
 /// </summary>
 /// <remarks>
-/// Seems a common consensus that as an ability that is actually a leveled version of another ability,
-/// it would be more fitting as a Charge Jump Lv3, rather than Bash Lv3.
+/// Seems a common trait that as an ability that is actually a leveled version of another ability.
+/// Launch would be more fitting as a Charge Jump Lv3, rather than Bash Lv3.
 /// This must be a separate class rather than built into Bash, as this would otherwise require
 /// Bash to be unlocked as well to be usable.
 /// </remarks>
-public sealed class Launch : OriAbility {
-  public override int Id => AbilityId.Launch;
-  public override int Level => Math.Max(0, LevelableDependency.Level - 2);
-  public override ILevelable LevelableDependency => Abilities.ChargeJump;
-  public override bool Unlocked => Level > 0;
+public sealed class Launch(Player player) : OriAbility(player) {
+  private static float NetAngleTolerance => 0.15f;
+  private static float NetAngleLerpValue => 0.2f;
+
+  protected override void OnInitialize() {
+    base.OnInitialize();
+    MovementStates parent = GetParent<MovementStates>();
+
+    parent.AddInterruptible<NoAbility>(to: this);
+    parent.AddInterruptible<AirJump>(to: this);
+    parent.AddInterruptible<Climb>(to: this);
+    parent.AddInterruptible<Crouch>(to: this);
+    parent.AddInterruptible<Dash>(to: this);
+    parent.AddInterruptible<Glide>(to: this);
+    parent.AddInterruptible<LookUp>(to: this);
+    parent.AddInterruptible<WallJump>(to: this);
+  }
+
+  public override bool CanEnter() => base.CanEnter() && !IsGrounded;
+
+  public bool Starting => _starting;
+
+  private bool _starting;
+
+  private int _currentChainTime;
+
+  private ref LaunchStats Stats => ref IStats<LaunchStats>.Get(Level);
+
+  private float _launchAngle;
+
+  private Vector2 LaunchDirection => new((float)Math.Cos(_launchAngle), (float)Math.Sin(_launchAngle));
+
+  private SoundInfo _endSound = new("Ori/Bash/seinBashEnd", 3, 0.55f);
+
+  private int _currentChain;
 
   /// <summary>
-  /// Bash restrictions, plus in air and bash failed
+  /// <see cref="_launchAngle"/> value sent across multiplayer clients.
+  /// Not directly set to M<see cref="_launchAngle"/> to allow visual lerping
   /// </summary>
-  public override bool CanUse => base.CanUse && Inactive && !IsGrounded && !Player.mount.Active &&
-    !Abilities.Bash && !Abilities.Burrow && !Abilities.ChargeDash &&
-    !Abilities.ChargeJump && !Abilities.Climb &&
-    !Abilities.Dash && !Abilities.Stomp && !Abilities.WallChargeJump;
+  private float _netAngle;
 
-  public ushort CurrentChain { get; set; }
+  private int _timeSinceLastSync;
 
-  private ushort MaxChain =>
-    Level switch {
-      1 => 1,
-      2 => 3,
-      3 => 7,
-      _ => (ushort)(Level * 3 + 1)
-    };
 
-  // Surely there's a better way to do this
-  private int MinLaunchDuration =>
-    Level == 3
-      ? CurrentChain == 1 ? 8 : 11
-      : CurrentChain == 1 ? 15 : 20;
+  protected override bool StartCooldownOnExit => true;
 
-  private int MaxLaunchDuration =>
-    Level == 3
-      ? CurrentChain == 1 ? 20 : 15
-      : CurrentChain == 1 ? 45 : 30;
 
-  private int EndDuration =>
-    Level == 3
-      ? CurrentChain == 1 || CurrentChain == MaxChain ? 9 : 4
-      : CurrentChain == 1 || CurrentChain == MaxChain ? 12 : 6;
+  protected override void NetSync(ISync sync) {
+    sync.Sync7BitEncodedInt(ref _currentChain);
+    sync.Sync(ref _starting);
+    sync.Sync(ref _netAngle);
+    if (!_starting) {
+      sync.SyncPositionAndVelocity(Player);
+    }
 
-  private float LaunchSpeed =>
-    Level == 3
-      ? CurrentChain == 1 ? 40 : 45
-      : CurrentChain == 1 ? 25 : 40;
-
-  public float LaunchAngle { get; private set; }
-  private Vector2 LaunchDirection => new((float)Math.Cos(LaunchAngle), (float)Math.Sin(LaunchAngle));
-  private RandomChar _rand;
-
-  public override void ReadPacket(BinaryReader r) {
-    CurrentChain = r.ReadUInt16();
-    LaunchAngle = r.ReadSingle();
-    Player.position = r.ReadVector2();
-    Player.velocity = r.ReadVector2();
+    if (sync.Reading && Main.dedServ) {
+      // Server needs to know actual value, and doesn't need visual lerping
+      _launchAngle = _netAngle;
+    }
   }
 
-  public override void WritePacket(ModPacket packet) {
-    packet.Write(CurrentChain);
-    packet.Write(LaunchAngle);
-    packet.WriteVector2(Player.position);
-    packet.WriteVector2(Player.velocity);
-  }
-
-  public override void UpdateUsing() {
-    if (!Active) {
+  protected override void OnUpdate() {
+    if (_starting) {
       if (IsLocal) {
-        OriUtils.GetMouseDirection(oPlayer, out float angle, Vector2.One);
-        LaunchAngle = angle;
+        OriUtils.GetMouseDirection(Player, out float angle, Vector2.One);
+        _launchAngle = angle;
+
+        // Determine whether to push a netupdate
+        // Sync large changes, or small changes over larger time
+        float angleDelta = Math.Abs(_launchAngle - _netAngle);
+        if (
+          (_timeSinceLastSync > 30 && angleDelta > 0.01f) ||
+          (_timeSinceLastSync > 10 && angleDelta > NetAngleTolerance / 4) ||
+          _timeSinceLastSync > 4 && angleDelta > NetAngleTolerance) {
+          _netAngle = _launchAngle;
+          NetUpdate = true;
+          _timeSinceLastSync = 0;
+        }
+        else {
+          _timeSinceLastSync++;
+        }
+      }
+      else {
+        // Non-local, smooth visual angle to net angle
+        _launchAngle = LerpAngleRad(_launchAngle, _netAngle, NetAngleLerpValue);
       }
 
       Player.velocity *= 0.86f;
       Player.gravity = 0;
       Player.runSlowdown = 0;
     }
-
-    if (IsLocal) {
-      NetUpdate = true;
+    else {
+      Player.velocity = LaunchDirection * Stats.GetSpeed(_currentChain);
+      OriPlayer.SetImmune(5);
     }
 
-    Player.maxFallSpeed = LaunchSpeed;
+    // TODO: Find out how to actually cancel pulley
+    Player.pulley = false;
+    Player.maxFallSpeed = Stats.GetSpeed(_currentChain);
+
     // Allow only quick heal and quick mana
     Player.controlJump = false;
     Player.controlUp = false;
@@ -113,88 +135,187 @@ public sealed class Launch : OriAbility {
     Player.controlTorch = false;
     Player.controlUseItem = false;
     Player.controlUseTile = false;
-    Player.buffImmune[BuffID.CursedInferno] = true;
-    Player.buffImmune[BuffID.Dazed] = true;
-    Player.buffImmune[BuffID.Frozen] = true;
-    Player.buffImmune[BuffID.Frostburn] = true;
-    Player.buffImmune[BuffID.MoonLeech] = true;
-    Player.buffImmune[BuffID.Obstructed] = true;
-    Player.buffImmune[BuffID.OnFire] = true;
-    Player.buffImmune[BuffID.Poisoned] = true;
-    Player.buffImmune[BuffID.ShadowFlame] = true;
-    Player.buffImmune[BuffID.Silenced] = true;
-    Player.buffImmune[BuffID.Slow] = true;
-    Player.buffImmune[BuffID.Stoned] = true;
-    Player.buffImmune[BuffID.Suffocation] = true;
-    Player.buffImmune[BuffID.Venom] = true;
-    Player.buffImmune[BuffID.Weak] = true;
-    Player.buffImmune[BuffID.WitheredArmor] = true;
-    Player.buffImmune[BuffID.WitheredWeapon] = true;
-    Player.buffImmune[BuffID.WindPushed] = true;
-  }
+    BuffImmune();
 
-  public override void UpdateActive() {
-    if (StateTime == 0) {
-      NewAbilityProjectile<LaunchProjectile>(damage: 70);
+    return;
+
+    static float LerpAngleRad(float from, float to, float weight) {
+      float num1 = (float)((to - (double)from) % MathF.Tau);
+      float num2 = (float)(2.0 * num1 % MathF.Tau) - num1;
+      return from + num2 * weight;
     }
-
-    Player.pulley = false;
-    Player.velocity = LaunchDirection * LaunchSpeed;
-    oPlayer.ImmuneTimer = 5;
   }
 
-  private void End() {
+  private void BuffImmune() {
+    Player.buffImmune.AssignValueToKeys(true, stackalloc int[] {
+      BuffID.CursedInferno,
+      BuffID.Dazed,
+      BuffID.Frozen,
+      BuffID.Frostburn,
+      BuffID.MoonLeech,
+      BuffID.Obstructed,
+      BuffID.OnFire,
+      BuffID.Poisoned,
+      BuffID.ShadowFlame,
+      BuffID.Silenced,
+      BuffID.Slow,
+      BuffID.Stoned,
+      BuffID.Suffocation,
+      BuffID.Venom,
+      BuffID.Weak,
+      BuffID.WitheredArmor,
+      BuffID.WitheredWeapon,
+      BuffID.WindPushed
+    });
+  }
+
+  protected override void OnEnter(State? fromState) {
+    base.OnEnter(fromState);
+    LaunchProjectile proj = NewAbilityProjectile<LaunchProjectile>(damage: 70);
+    proj.Ability = this;
+
+    SoundWrapper.PlayLocal(Player, "Ori/Bash/seinBashStartA", 0.5f);
+
+    RestoreAirJumps();
+    _currentChain = 1;
+    _currentChainTime = 0;
+    _starting = true;
+  }
+
+  protected override void OnExit() {
     Player.velocity = LaunchDirection * 10;
-    StartCooldown();
+    _currentChainTime = 0;
+    _starting = true;
   }
 
-  public override void PreUpdate() {
-    if (CanUse && Input.Charge.Current && Input.Bash.JustPressed && IsLocal) {
-      if (CurrentChain == 0) {
-        PlayLocalSound("Ori/Bash/seinBashStartA", 0.5f);
-      }
-
-      SetState(AbilityState.Starting);
-      RestoreAirJumps();
-      CurrentChain = 1;
+  protected override bool OnPreUpdateInterruptible(State activeState) {
+    if (!IsLocal) {
+      return false;
     }
-    else if (!InUse) return;
+
+    return CanEnter() && Input.Charge.Current && Input.Bash.JustPressed;
+  }
+
+  protected override void OnPreUpdate() {
+    _currentChainTime++;
 
     if (IsGrounded || OnWall) {
       // Prevent any usage of Launch while not in air
-      SetState(AbilityState.Inactive);
+      CancelState();
       return;
     }
 
-    if (Starting) {
-      if (StateTime > MaxLaunchDuration || (StateTime >= MinLaunchDuration && !Input.Bash.Current)) {
-        SetState(AbilityState.Active);
+    if (!IsLocal) {
+      return;
+    }
+
+    ref LaunchStats stats = ref Stats;
+
+    // Post-ending state depends on player input
+    // Maybe too sensitive to rely on input packet
+    if (_starting) {
+      if (_currentChainTime > stats.GetMinDuration(_currentChain) && !Input.Bash.Current ||
+          _currentChainTime > stats.GetMaxDuration(_currentChain)) {
+        _currentChainTime = 0;
+        _starting = false;
+        NetUpdate = true;
       }
 
       return;
     }
 
-    if (!Active) return;
-    if (IsGrounded || OnWall) {
-      SetState(AbilityState.Inactive);
+    if (_currentChainTime <= stats.GetMovDuration(_currentChain)) {
+      return;
     }
 
-    // Post-ending state depends on player input
-    // Maybe too sensitive to rely on input packet
-    if (!IsLocal || StateTime <= EndDuration) return;
-    if (CurrentChain < MaxChain && Input.Bash.Current) {
-      CurrentChain++;
-      SetState(AbilityState.Starting);
-      PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), Level == 3 ? 0.15f : 0.35f);
+    if (_currentChain < stats.MaxChains && Input.Bash.Current) {
+      _currentChain++;
+      _currentChainTime = 0;
+      _starting = true;
+      _endSound.Play(Player);
     }
     else {
-      End();
-      SetState(AbilityState.Inactive);
-      PlaySound("Ori/Bash/seinBashEnd" + _rand.NextNoRepeat(3), 0.55f);
+      CancelState();
+      _endSound.Play(Player);
     }
   }
 
-  public override void UpdateCooldown() {
-    if (CurrentChain == 0) EndCooldown();
+  protected override bool CanRefresh(bool cooledDown) => _currentChain == 0;
+
+  protected override void OnEndCooldown() {
+    _currentChain = 0;
+  }
+
+  protected override AnimationOptions? GetAnimationOptions() {
+    if (_starting) {
+      // Somewhat accelerating speed of rotation
+      float rotationSpeed =
+        _currentChainTime * (_currentChainTime < 5 ? 0.05f : _currentChainTime < 20 ? 0.03f : 0.02f);
+      rotationSpeed = float.Min(rotationSpeed, MathF.Tau * 0.3f);
+      return new AnimationOptions("AirJump",
+        rotationOffset: true,
+        rotation: Player.direction * rotationSpeed);
+    }
+
+    // Launch angle needs to be offset by 90 degrees since it uses Stomp animation
+    // Disable SpriteEffects as launching should not be flipped
+    return new AnimationOptions("ChargeJump", speed: 0.67f,
+      rotation: _launchAngle + (float)Math.PI / 2 * Player.gravDir, loopCount: 0, isPingPong: true,
+      effects: SpriteEffects.None);
+  }
+
+  internal void GetDrawFields(AnimSpriteSheet sheet, out Vector2 position, out float rotation, out Rectangle rect) {
+    position = OriPlayer.Player.Center;
+    rotation = _launchAngle;
+    rect = sheet.GetRectFromTimer("Launch", "Arrow", ActiveTime);
+  }
+
+  private readonly record struct LaunchStats(
+    int MaxChains,
+    int MinDuration,
+    int MinChainedDuration,
+    int MaxDuration,
+    int MaxChainedDuration,
+    int MovingDuration,
+    int MovingMidDuration,
+    float Speed,
+    float ChainedSpeed
+  ) : IStats<LaunchStats> {
+    public static ref LaunchStats[] Values => ref _values;
+
+    private static LaunchStats[] _values = [
+      default,
+      new LaunchStats(MaxChains: 1,
+        MinDuration: 15, MinChainedDuration: 20,
+        MaxDuration: 45, MaxChainedDuration: 30,
+        MovingDuration: 12, MovingMidDuration: 6,
+        Speed: 25, ChainedSpeed: 40),
+      new LaunchStats(MaxChains: 3,
+        MinDuration: 15, MinChainedDuration: 20,
+#if DEBUG
+        MaxDuration: 4500, MaxChainedDuration: 30, // Debug for testing rotation
+#else
+        MaxDuration: 45, MaxChainedDuration: 30,
+#endif
+        MovingDuration: 12, MovingMidDuration: 6,
+        Speed: 25, ChainedSpeed: 40),
+      new LaunchStats(MaxChains: 7,
+        MinDuration: 8, MinChainedDuration: 11,
+        MaxDuration: 20, MaxChainedDuration: 15,
+        MovingDuration: 9, MovingMidDuration: 4,
+        Speed: 40, ChainedSpeed: 45)
+    ];
+
+    public int GetMinDuration(int chain) => chain == 1 ? MinDuration : MinChainedDuration;
+    public int GetMaxDuration(int chain) => chain == 1 ? MaxDuration : MaxChainedDuration;
+    public int GetMovDuration(int chain) => chain == 1 || chain == MaxChains ? MovingDuration : MovingMidDuration;
+    public float GetSpeed(int chain) => chain == 1 ? Speed : ChainedSpeed;
+
+    public static LaunchStats CreateFromLevel(int level) {
+      LaunchStats last = Values[^1];
+      return last with {
+        MaxChains = last.MaxChains + 3
+      };
+    }
   }
 }

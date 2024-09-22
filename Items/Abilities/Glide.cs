@@ -1,14 +1,12 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
 
-namespace OriMod.Items.Abilities; 
+namespace OriMod.Items.Abilities;
 
 /// <summary>
 /// Medallion that grants <see cref="Glide"/>.
 /// </summary>
-public class GlideLevel1 : AbilityMedallionBase {
-  public override byte Id => AbilityId.Glide;
-
+public sealed class GlideLevel1() : AbilityMedallionBase<Glide>(1) {
   public override void AddRecipes() {
     GetAbilityRecipe()
       .AddIngredient(ItemID.Feather, 10)

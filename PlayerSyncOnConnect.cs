@@ -19,7 +19,7 @@ internal sealed class PlayerSyncOnConnect : ModSystem {
     if (msgType == MessageID.FinishedConnectingToServer && Main.netMode == NetmodeID.Server) {
       foreach (Player pl in Main.ActivePlayers) {
         if (remoteClient != pl.whoAmI)
-          ModNetHandler.Instance.OriPlayerHandler.SendOriState(remoteClient, pl.whoAmI);
+          ModNetHandler.OriPlayerHandler.SendOriState(remoteClient, pl.whoAmI);
       }
     }
     return false;

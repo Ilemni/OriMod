@@ -7,6 +7,7 @@
     <RepositoryUrl>https://github.com/Ilemni/OriMod</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
 	<ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />

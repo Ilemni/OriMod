@@ -1,25 +1,42 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ModLoader;
+using Terraria.ModLoader.Core;
 
 namespace OriMod;
 
 public sealed partial class OriPlayer {
-  #region Variables
+  private static class StarlightCompat {
+    private const string ModName = "StarlightRiver";
+    private const string PlatformTypeName = "StarlightRiver.Content.NPCs.BaseTypes.MovingPlatform";
 
-  private static Type? _starlightRiverBasePlatform;
+    [MemberNotNullWhen(true, nameof(PlatformType))]
+    internal static bool StarlightLoaded { get; private set; }
 
-  #endregion
+    internal static Type? PlatformType { get; private set; }
+
+    internal static void Initialize() {
+      StarlightLoaded = ModLoader.TryGetMod(ModName, out Mod mod);
+      if (StarlightLoaded) {
+        PlatformType = AssemblyManager.GetLoadableTypes(mod.Code).First(IsPlatformType);
+      }
+    }
+
+    private static bool IsPlatformType(Type type) => type.FullName == PlatformTypeName;
+  }
 
   private static bool CheckGrounded_StarlightRiverBasePlatform(Player player) {
-    if (_starlightRiverBasePlatform is null) {
+    if (!StarlightCompat.StarlightLoaded) {
       return false;
     }
 
     int velY = (int)Math.Max(player.velocity.Y, 0);
     Rectangle playerRect = new((int)player.position.X, (int)player.position.Y + player.height, player.width, 1);
     foreach (NPC npc in Main.ActiveNPCs) {
-      if (!_starlightRiverBasePlatform.IsInstanceOfType(npc.ModNPC)) {
+      if (!StarlightCompat.PlatformType.IsInstanceOfType(npc.ModNPC)) {
         continue;
       }
 

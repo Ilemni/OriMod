@@ -1,14 +1,12 @@
 ﻿using OriMod.Abilities;
 using Terraria.ID;
 
-namespace OriMod.Items.Abilities; 
+namespace OriMod.Items.Abilities;
 
 /// <summary>
 /// Medallion that grants <see cref="ChargeJump"/> Level 1.
 /// </summary>
-public class ChargeJumpLevel1 : AbilityMedallionBase {
-  public override byte Id => AbilityId.ChargeJump;
-
+public sealed class ChargeJumpLevel1() : AbilityMedallionBase<ChargeJump>(1) {
   public override void AddRecipes() {
     GetAbilityRecipe()
       .AddIngredient(ItemID.HallowedBar, 18)
@@ -21,10 +19,7 @@ public class ChargeJumpLevel1 : AbilityMedallionBase {
 /// <summary>
 /// Medallion that grants <see cref="ChargeJump"/> Level 2: Wall Charge Jump.
 /// </summary>
-public class ChargeJumpLevel2 : AbilityMedallionBase {
-  public override byte Id => AbilityId.ChargeJump;
-  public override byte Level => 2;
-
+public sealed class ChargeJumpLevel2() : AbilityMedallionBase<WallChargeJump>(1) {
   public override void AddRecipes() {
     GetAbilityRecipe<ChargeJumpLevel1>()
       .AddIngredient(ItemID.ChlorophyteBar, 12)
@@ -36,10 +31,7 @@ public class ChargeJumpLevel2 : AbilityMedallionBase {
 /// <summary>
 /// Medallion that grants <see cref="ChargeJump"/> Level 3: Launch.
 /// </summary>
-public class ChargeJumpLevel3 : AbilityMedallionBase {
-  public override byte Id => AbilityId.ChargeJump;
-  public override byte Level => 3;
-
+public sealed class ChargeJumpLevel3() : AbilityMedallionBase<Launch>(1) {
   public override void AddRecipes() {
     GetAbilityRecipe<ChargeJumpLevel2>()
       .AddRecipeGroup(OriRecipeGroups.LunarFragments, 30)
@@ -52,10 +44,7 @@ public class ChargeJumpLevel3 : AbilityMedallionBase {
 /// <summary>
 /// Medallion that grants <see cref="ChargeJump"/> Level 4: Multi-Launch.
 /// </summary>
-public class ChargeJumpLevel4 : AbilityMedallionBase {
-  public override byte Id => AbilityId.ChargeJump;
-  public override byte Level => 4;
-
+public sealed class ChargeJumpLevel4() : AbilityMedallionBase<ChargeJump>(2) {
   public override void AddRecipes() {
     GetAbilityRecipe<ChargeJumpLevel3>()
       .AddIngredient(ItemID.LunarBar, 24)

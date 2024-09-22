@@ -34,7 +34,7 @@ public sealed class OriPotion : ModItem {
       Dust dust = Dust.NewDustDirect(pos, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, new Color(255, 255, 255));
       dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
     }
-    oPlayer.PlaySound("SavePoints/checkpointSpawnSound");
+    SoundWrapper.Play(player, "SavePoints/checkpointSpawnSound");
     Item.NewItem(player.GetSource_FromThis(), player.getRect(), ModContent.ItemType<OriPotionEmpty>(), noGrabDelay: true);
     return true;
   }
