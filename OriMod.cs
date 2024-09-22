@@ -16,7 +16,7 @@ namespace OriMod;
 /// The mod of this assembly.
 /// </summary>
 [UsedImplicitly]
-public sealed class OriMod : Mod {
+public sealed partial class OriMod : Mod {
   public OriMod() {
     ContentAutoloadingEnabled = true;
     GoreAutoloadingEnabled = true;
@@ -171,6 +171,4 @@ public sealed class OriMod : Mod {
 
     ModNetHandler.Instance.HandlePacket(reader, fromWho);
   }
-
-  public override object Call(params object[] args) => OriModCall.Call(args);
 }

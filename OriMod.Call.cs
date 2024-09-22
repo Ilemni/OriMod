@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace OriMod;
 
-public static class OriModCall {
+public partial class OriMod {
   private const string ResetPlayerCmd = "ResetPlayerModData";
   private const string IsOriCmd = "IsOri";
 
@@ -53,11 +53,11 @@ public static class OriModCall {
   /// </item>
   /// </list>
   /// </summary>
-  public static object Call(params object[] args) {
+  public override object? Call(params object[] args) {
     int len = args.Length;
     if (len <= 0 || args[0] is not string cmd) return null;
-    
-    OriPlayer oPlayer = len >= 2 ? GetOriPlayer(args[1]) : null;
+
+    OriPlayer? oPlayer = len >= 2 ? GetOriPlayer(args[1]) : null;
 
     switch (cmd) {
       case ResetPlayerCmd when oPlayer is not null:
@@ -70,9 +70,9 @@ public static class OriModCall {
         break;
       case IsOriCmd when oPlayer is not null && len < 3:
         // ("IsOri", player)
-        return oPlayer.IsOri || oPlayer.Transforming;
+        return oPlayer.IsOri;
       case IsOriCmd when oPlayer is not null && args[2] is bool isOri:
-        // ("IsOri", player, isOri)
+        // ("IsOri", player, bool)
         oPlayer.IsOri = isOri;
         break;
       case IsOriCmd when oPlayer is not null:
@@ -87,8 +87,8 @@ public static class OriModCall {
     return null;
   }
 
-  private static OriPlayer GetOriPlayer(object obj) {
-    Player player = obj switch {
+  private static OriPlayer? GetOriPlayer(object obj) {
+    Player? player = obj switch {
       Player p => p,
       ModPlayer modPlayer => modPlayer.Player,
       int index => Main.player[index],
@@ -97,7 +97,7 @@ public static class OriModCall {
     return player?.GetModPlayer<OriPlayer>();
   }
 
-  private static void WarnArgType(string cmd, int argIndex, object arg, System.Type expectedType) {
-    OriMod.Log.Warn($"{OriMod.instance.Name}.Call() - {cmd} - Arg {argIndex}: Expected type {expectedType}, got {arg.GetType()}");
+  private void WarnArgType(string cmd, int argIndex, object arg, System.Type expectedType) {
+    Log?.Warn($"{Name}.Call() - {cmd} - Arg {argIndex}: Expected type {expectedType}, got {arg.GetType()}");
   }
 }
