@@ -1,13 +1,15 @@
+using JetBrains.Annotations;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Items; 
+namespace OriMod.Items;
 
 /// <summary>
 /// Empty bottle, craftable into <see cref="OriPotion"/>.
 /// </summary>
-public class OriPotionEmpty : ModItem {
+[UsedImplicitly]
+public sealed class OriPotionEmpty : ModItem {
   public override void SetDefaults() {
     Item.width = 24;
     Item.height = 26;

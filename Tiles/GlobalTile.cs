@@ -1,4 +1,4 @@
-using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using OriMod.Abilities;
@@ -6,11 +6,12 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace OriMod.Tiles; 
+namespace OriMod.Tiles;
 
 /// <summary>
 /// Used for draw effects, specifically brightening solid areas when the player uses <see cref="Burrow"/>.
 /// </summary>
+[UsedImplicitly]
 public sealed class OriTile : GlobalTile {
   private static int InnerRange => 4;
   private static int OuterRange => 13;

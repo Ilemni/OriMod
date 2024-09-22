@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -6,7 +7,8 @@ namespace OriMod.Items;
 /// <summary>
 /// Used to place <see cref="Tiles.HotAshTile"/>
 /// </summary>
-public class HotAshItem : ModItem {
+[UsedImplicitly]
+public sealed class HotAshItem : ModItem {
   public override void SetDefaults() {
     Item.DefaultToPlaceableTile(ModContent.TileType<Tiles.HotAshTile>());
     ItemID.Sets.IsLavaImmuneRegardlessOfRarity[Type] = true;

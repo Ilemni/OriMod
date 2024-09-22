@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
 using OriMod.Utilities;
@@ -6,12 +7,13 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Projectiles.Minions; 
+namespace OriMod.Projectiles.Minions;
 
 /// <summary>
 /// Projectile fired by the minion <see cref="Sein"/>.
 /// </summary>
-public abstract class SpiritFlame : ModProjectile {
+[UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
+public abstract class SpiritFlame(int type) : ModProjectile {
   /// <summary>
   /// Current position the projectile is moving towards.
   /// </summary>
@@ -69,9 +71,9 @@ public abstract class SpiritFlame : ModProjectile {
   }
 
   /// <summary>
-  /// Type for <see cref="SpiritFlame"/>. Determines initialized values by using <see cref="SeinData.All"/>.
+  /// Type for <see cref="SpiritFlame"/>. Determines initialized values by using <see cref="SeinData.Get"/>.
   /// </summary>
-  protected abstract byte SpiritFlameType { get; }
+  private int SpiritFlameType { get; } = type;
 
   private void CreateDust() {
     Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, _dustType);

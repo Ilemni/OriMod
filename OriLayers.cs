@@ -19,6 +19,7 @@ internal static class OriLayers {
   /// <summary>
   /// Draws the Ori sprite.
   /// </summary>
+  [UsedImplicitly]
   private sealed class OriPlayerSprite : PlayerDrawLayer {
     public override bool IsHeadLayer => true;
 
@@ -98,6 +99,7 @@ internal static class OriLayers {
   /// <summary>
   /// Draws the Ori trails.
   /// </summary>
+  [UsedImplicitly]
   private sealed class OriTrailLayer : PlayerDrawLayer {
     public override string Name => nameof(OriTrail);
 
@@ -133,6 +135,7 @@ internal static class OriLayers {
   /// <summary>
   /// Draws the <see cref="Bash"/> arrow when the player Bashes or Launches.
   /// </summary>
+  [UsedImplicitly]
   private sealed class OriBashArrowLayer : PlayerDrawLayer {
     public override string Name => nameof(BashArrow);
 

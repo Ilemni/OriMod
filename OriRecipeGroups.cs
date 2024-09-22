@@ -1,10 +1,12 @@
-﻿using Terraria;
+using JetBrains.Annotations;
+using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace OriMod;
 
+[UsedImplicitly]
 public class OriRecipeGroups : ModSystem {
   public static RecipeGroup EnchantedItems { get; private set; }
   public static RecipeGroup MovementAccessories { get; private set; }

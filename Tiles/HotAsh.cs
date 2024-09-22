@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -10,7 +11,8 @@ namespace OriMod.Tiles;
 /// <summary>
 /// Creates an updraft, which can be used with glide to gain height
 /// </summary>
-public class HotAshTile : ModTile {
+[UsedImplicitly]
+public sealed class HotAshTile : ModTile {
   public override void SetStaticDefaults() {
     Main.tileSolid[Type] = true;
     Main.tileLighted[Type] = true;

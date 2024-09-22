@@ -8,6 +8,7 @@ using OriMod.Networking;
 using OriMod.Utilities;
 using System;
 using System.Linq;
+using JetBrains.Annotations;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
@@ -23,6 +24,7 @@ namespace OriMod;
 /// <summary>
 /// <see cref="ModPlayer"/> class for <see cref="OriMod"/>. Contains Ori data for a player, such as abilities and animations.
 /// </summary>
+[UsedImplicitly]
 public sealed class OriPlayer : ModPlayer {
   private const string AbilitiesTagName = "AnimLibAbilities";
 

@@ -1,4 +1,5 @@
 using System.IO;
+using JetBrains.Annotations;
 using log4net;
 using Microsoft.Xna.Framework;
 using OriMod.Networking;
@@ -14,6 +15,7 @@ namespace OriMod;
 /// <summary>
 /// The mod of this assembly.
 /// </summary>
+[UsedImplicitly]
 public sealed class OriMod : Mod {
   public OriMod() {
     ContentAutoloadingEnabled = true;

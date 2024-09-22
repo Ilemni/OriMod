@@ -1,10 +1,12 @@
+using JetBrains.Annotations;
 using Terraria.ModLoader;
 
-namespace OriMod.Projectiles.Minions; 
+namespace OriMod.Projectiles.Minions;
 
 /// <summary>
 /// Base class for minion projectiles.
 /// </summary>
+[UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
 public abstract class Minion : ModProjectile {
   /// <summary>
   /// Write minion AI in <see cref="Behavior"/>.

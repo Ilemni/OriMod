@@ -1,15 +1,17 @@
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Items; 
+namespace OriMod.Items;
 
 /// <summary>
 /// Consumable item that toggles <see cref="OriPlayer.IsOri"/>.
 /// </summary>
-public class OriPotion : ModItem {
+[UsedImplicitly]
+public sealed class OriPotion : ModItem {
   public override void SetDefaults() {
     Item.width = 24;
     Item.height = 26;

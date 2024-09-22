@@ -9,7 +9,7 @@ namespace OriMod;
 /// <summary>
 /// Primarily used for <see cref="Abilities.Burrow"/>, stores an array of points as a template, and retrieves tiles of that template when updated.
 /// </summary>
-public class TileHitbox {
+public sealed class TileHitbox {
   /// <summary>
   /// Instantiate a <see cref="TileHitbox"/> with local-space <paramref name="template"/>.
   /// </summary>

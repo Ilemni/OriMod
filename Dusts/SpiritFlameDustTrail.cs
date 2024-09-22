@@ -1,12 +1,14 @@
+using JetBrains.Annotations;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace OriMod.Dusts; 
+namespace OriMod.Dusts;
 
 /// <summary>
 /// Dust used as a trail for <see cref="Projectiles.Minions.SpiritFlame"/>.
 /// </summary>
-public class SpiritFlameDustTrail : ModDust {
+[UsedImplicitly]
+public sealed class SpiritFlameDustTrail : ModDust {
   private int AlphaRate => 1;
 
   public override string Texture => "OriMod/Dusts/SFDust1";

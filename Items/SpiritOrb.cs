@@ -1,14 +1,16 @@
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace OriMod.Items; 
+namespace OriMod.Items;
 
 /// <summary>
 /// Summoning item used to summon <see cref="Projectiles.Minions.Sein"/>.
 /// </summary>
+[UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
 public abstract class SpiritOrb : ModItem {
   public override string Texture => "OriMod/Items/SpiritOrb";
 

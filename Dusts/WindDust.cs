@@ -1,14 +1,16 @@
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 using OriMod.Utilities;
 
-namespace OriMod.Dusts; 
+namespace OriMod.Dusts;
 
 /// <summary>
 /// Dust used to by Hot Ash blocks to show updrafts for gliding
 /// </summary>
-public class WindDust : ModDust {
+[UsedImplicitly]
+public sealed class WindDust : ModDust {
   public override void OnSpawn(Dust dust) {
     dust.alpha = 200;
     dust.noGravity = true;

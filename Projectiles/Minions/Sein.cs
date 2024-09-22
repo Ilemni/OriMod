@@ -14,7 +14,7 @@ namespace OriMod.Projectiles.Minions;
 /// <summary>
 /// Minion for the Ori character Sein.
 /// </summary>
-public abstract class Sein : Minion {
+public abstract class Sein(int type) : Minion {
   public sealed override string Texture => "OriMod/Projectiles/Minions/Sein";
 
   public sealed override bool? CanCutTiles() => false;
@@ -29,7 +29,7 @@ public abstract class Sein : Minion {
   /// <summary>
   /// Type used for <see cref="Sein"/>. Values are indices to <see cref="SeinData.All"/>.
   /// </summary>
-  protected abstract byte SeinType { get; }
+  private int SeinType { get; } = type;
 
   /// <summary>
   /// Type for <see cref="Buffs.SeinBuff"/>. This value should be from <see cref="ModContent.BuffType{T}"/>

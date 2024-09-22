@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria.DataStructures;
@@ -8,7 +8,7 @@ namespace OriMod;
 /// <summary>
 /// Class for containing and updating all <see cref="TrailSegment"/>s on an <see cref="OriPlayer"/>.
 /// </summary>
-public class Trail {
+public sealed class Trail {
   /// <summary>
   /// Create an instance of <see cref="Trail"/> that will belong to <paramref name="oPlayer"/>.
   /// </summary>

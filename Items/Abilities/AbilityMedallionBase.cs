@@ -1,16 +1,18 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using AnimLib.Abilities;
+using JetBrains.Annotations;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
-namespace OriMod.Items.Abilities; 
+namespace OriMod.Items.Abilities;
 
 /// <summary>
 /// Base class for items that unlocks or upgrades an <see cref="Ability"/>.
 /// </summary>
+[UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
 public abstract class AbilityMedallionBase : ModItem {
   /// <summary>
   /// <see cref="AbilityId"/> of the <see cref="Ability"/> to unlock.

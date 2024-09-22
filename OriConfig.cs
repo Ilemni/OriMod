@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Terraria;
@@ -12,7 +13,8 @@ namespace OriMod;
 /// <summary>
 /// Configurations for the player's own Ori settings.
 /// </summary>
-public class OriConfigClient1 : ModConfig {
+[UsedImplicitly]
+public sealed class OriConfigClient1 : ModConfig {
   private const string ConfigPath = $"$Mods.{nameof(OriMod)}.Configs.{nameof(OriConfigClient1)}";
   private const string HeaderPath = $"{ConfigPath}.Headers";
 
