@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using OriMod.Abilities;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.ID;
@@ -58,6 +59,12 @@ public sealed class OriNpc : GlobalNPC, IBashable {
 
   public override bool PreAI(NPC npc) {
     if (IsBashed) {
+      if (!IBashable.ValidateBash(BashPlayer, npc)) {
+        IsBashed = false;
+        BashPlayer = null;
+        return true;
+      }
+
       FramesSinceLastBash = 0;
       npc.Center = BashPosition;
       return false;

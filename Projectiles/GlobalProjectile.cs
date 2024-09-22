@@ -63,6 +63,12 @@ public sealed class OriProjectile : GlobalProjectile, IBashable {
 
   public override bool PreAI(Projectile proj) {
     if (IsBashed) {
+      if (!IBashable.ValidateBash(BashPlayer, proj)) {
+        IsBashed = false;
+        BashPlayer = null;
+        return true;
+      }
+
       FramesSinceLastBash = 0;
       proj.Center = BashPosition;
       proj.friendly = true;

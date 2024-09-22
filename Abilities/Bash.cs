@@ -5,6 +5,7 @@ using OriMod.Projectiles;
 using OriMod.Utilities;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
@@ -39,10 +40,16 @@ public sealed class Bash(Player player) : OriAbility(player) {
   private SoundInfo _startSound = new("Ori/Bash/seinBashStart", 1, 0.5f);
   private SoundInfo _endSound = new("Ori/Bash/seinBashEnd", 3, 0.5f);
 
-  /// Set false at state activation, true whenever input released, prevents activation when false
+  /// Set false at state activation, true whenever input released, prevents repeated activation from holding down input
   private bool _hasReleasedBash;
 
+  /// <summary>
+  /// The <see cref="NPC"/> or <see cref="Projectile"/> that is being bashed.
+  /// </summary>
   private Entity? _bashEntity;
+  /// <summary>
+  /// The <see cref="OriNpc"/> or <see cref="OriProjectile"/> global that is being bashed.
+  /// </summary>
   private IBashable? _bashTarget;
 
   private Vector2 _playerStartPos;
@@ -50,6 +57,15 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
   [MemberNotNullWhen(true, nameof(_bashEntity), nameof(_bashTarget))]
   private bool HasBashEntity => _bashEntity is { active: true };
+
+  /// <summary>
+  /// Query if the specified entity is being bashed by this.
+  /// </summary>
+  /// <param name="entity"></param>
+  /// <returns></returns>
+  public bool IsBashing(Entity entity) {
+    return IsActive && _bashEntity is not null && ReferenceEquals(entity, _bashEntity);
+  }
 
   /// <summary>
   /// Entity that this player is Bashing. Setting this also sets <see cref="_bashTarget"/>.
@@ -158,6 +174,10 @@ public sealed class Bash(Player player) : OriAbility(player) {
     }
 
     _bashTarget.IsBashed = false;
+    if (_bashTarget.BashPlayer?.Player.whoAmI == Player.whoAmI) {
+      _bashTarget.BashPlayer = null;
+    }
+
     if (IsLocal && _bashEntity is NPC npc) {
       if (!npc.immortal) {
         // Don't knockback target dummies
@@ -276,6 +296,12 @@ public sealed class Bash(Player player) : OriAbility(player) {
   }
 
   protected override void OnPreUpdate() {
+    if (_bashEntity is not { active: true } ||
+        _bashTarget?.BashPlayer is null ||
+        _bashTarget.BashPlayer.Player.whoAmI != Player.whoAmI) {
+      CancelState();
+    }
+
     ref readonly BashStats stats = ref Stats;
     if (ActiveTime == stats.MinTime + 4) {
       SoundWrapper.PlayLocal(Player, "Ori/Bash/seinBashLoopA", 0.5f);
