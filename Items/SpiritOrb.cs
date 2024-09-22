@@ -11,25 +11,13 @@ namespace OriMod.Items;
 /// Summoning item used to summon <see cref="Projectiles.Minions.Sein"/>.
 /// </summary>
 [UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
-public abstract class SpiritOrb : ModItem {
+public abstract class SpiritOrb(int type) : ModItem {
   public override string Texture => "OriMod/Items/SpiritOrb";
 
   /// <summary>
-  /// Type for <see cref="Buffs.SeinBuff"/>. This value should be from <see cref="ModContent.BuffType{T}"/>.
+  /// Type used for <see cref="Projectiles.Minions.Sein"/>. Values are indices to <see cref="SeinData.Get"/>.
   /// </summary>
-  /// <returns>The type of the <see cref="ModBuff"/>.</returns>
-  protected abstract int GetBuffType();
-
-  /// <summary>
-  /// Type for <see cref="Projectiles.Minions.Sein"/>. This value should be from <see cref="ModContent.ProjectileType{T}"/>.
-  /// </summary>
-  /// <returns>The type of the <see cref="Projectiles.Minions.Sein"/>.</returns>
-  protected abstract int GetShootType();
-
-  /// <summary>
-  /// Type used for <see cref="Projectiles.Minions.Sein"/>. Values are indices to <see cref="SeinData.All"/>.
-  /// </summary>
-  protected abstract int SeinType { get; }
+  private int SeinType { get; } = type;
 
   protected Recipe GetRecipe<T>() where T : ModItem =>
     GetRecipe()
@@ -40,8 +28,9 @@ public abstract class SpiritOrb : ModItem {
       .AddTile(ModContent.TileType<Tiles.SpiritSapling>());
 
   public override void SetDefaults() {
-    Item.buffType = GetBuffType();
-    Item.shoot = GetShootType();
+    SeinTypeInfo typeInfo = SeinData.GetSeinTypeInfo(SeinType);
+    Item.buffType = typeInfo.Buff;
+    Item.shoot = typeInfo.Minion;
     Item.DamageType = DamageClass.Summon;
     Item.mana = 10;
     Item.width = 18;
@@ -52,7 +41,7 @@ public abstract class SpiritOrb : ModItem {
     Item.noMelee = true;
     Item.UseSound = SoundID.Item44;
 
-    SeinData data = SeinData.All[SeinType - 1];
+    ref SeinData data = ref SeinData.Get(SeinType);
     Item.damage = data.Damage;
     Item.rare = data.Rarity;
     Item.value = data.Value;
@@ -62,20 +51,22 @@ public abstract class SpiritOrb : ModItem {
   public override bool AltFunctionUse(Player player) => true;
 
   public override bool CanUseItem(Player player) {
-    OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-    return player.altFunctionUse != 2 && (!oPlayer.SeinMinionActive || oPlayer.SeinMinionType != Item.shoot);
+    return player.altFunctionUse != 2 && !player.HasBuff(Item.buffType);
   }
 
-  public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockBack) {
-    OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-    oPlayer.RemoveSeinBuffs();
+  public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity,
+    int type, int damage, float knockBack) {
+    foreach (SeinTypeInfo typeInfo in SeinData.Ids) {
+      player.ClearBuff(typeInfo.Buff);
+    }
+
     player.AddBuff(Item.buffType, 2);
-    oPlayer.SeinMinionType = Item.shoot;
-    oPlayer.SeinMinionActive = true;
+
     if (player.altFunctionUse == 2) {
       player.MinionNPCTargetAim(true);
     }
-    oPlayer.SeinMinionId = Projectile.NewProjectile(source, position, -Vector2.UnitY, type, damage, knockBack, player.whoAmI);
+
+    Projectile.NewProjectile(source, position, -Vector2.UnitY, type, damage, knockBack, player.whoAmI);
     return false;
   }
 }

@@ -1,68 +1,84 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod;
 
-public sealed class SeinData {
-  private SeinData() { }
+public readonly record struct SeinTypeInfo(int Buff, int Minion, int SpiritFlame);
+
+public readonly record struct SeinData {
+  public SeinData() {
+  }
 
   /// <summary>
   /// Collection of all <see cref="SeinData"/>s in the mod.
   /// </summary>
-  public static SeinData[] All { get; private set; }
+  private static SeinData[] All { get; set; } = null!; // OriMod.Load() -> SeinData.Load()
 
   /// <summary>
-  /// Collection of all sein buffs ids.
+  /// Collection of all <see cref="Buffs.SeinBuff{T}"/> IDs.
   /// </summary>
-  public static int[] SeinBuffs { get; private set; }
+  public static SeinTypeInfo[] Ids { get; private set; } = null!; // OriMod.Load() -> SeinData.Load()
+
+  public static ref SeinData Get(int index) {
+    ArgumentOutOfRangeException.ThrowIfNegativeOrZero(index);
+    ArgumentOutOfRangeException.ThrowIfGreaterThan(index, All.Length);
+
+    return ref All[index - 1];
+  }
+
+  public static SeinTypeInfo GetSeinTypeInfo(int index) {
+    ArgumentOutOfRangeException.ThrowIfLessThan(index, 1);
+    ArgumentOutOfRangeException.ThrowIfGreaterThan(index, Ids.Length);
+
+    return Ids[index - 1];
+  }
 
   /// <summary>
   /// Loads all Sein variants. Sein stats are hardcoded into this method.
   /// </summary>
-  /// <remarks>
-  /// Okay, no matter how many times I try to refactor this, I don't think it can be organized any better.
-  /// <para>1. Memory is always only ever using 8 <see cref="SeinData"/>s, or however many is in <see cref="All"/>. Not too big a deal though.</para>
-  /// <para>2. Readability. I feel that this is the best setup for a few reasons.</para>
-  /// <para>2a. It's all in one file rather than multiple derived classes for easy comparison.</para>
-  /// <para>2b. Only the changes/upgrades are shown, rather than having redundant data. The same could be accomplished with inheritance, but I'd rather not have 8 levels of it.</para>
-  /// </remarks>
   internal static void Load() {
-    SeinData defaultSein = new();
-    var fields = typeof(SeinData).GetFields();
+    var list = new List<SeinData> {
+      // Tier 1 (Silver)
+      new() {
+        Rarity = ItemRarityID.Blue,
+        Value = 1000,
+        Color = Color.White,
 
-    var list = new List<SeinData>();
-    void AddNewSein(SeinData newSein) {
-      SeinData lastSein = list.Count == 0 ? new SeinData() : list[^1];
+        Damage = 18,
+        Targets = 1,
+        Bursts = 2,
+        ShotsPerTarget = 1,
+        ShotsToPrimaryTarget = 1,
+        MaxShotsAtOnce = 1,
 
-      foreach (FieldInfo field in fields) {
-        object defVal = field.GetValue(defaultSein);
-        object oldVal = field.GetValue(lastSein);
-        object newVal = field.GetValue(newSein);
+        TargetMaxDistTiles = 15,
+        TargetThroughWallDistTiles = 5,
 
-        // If value is specified in constructor, use it
-        // If value is unspecified, use value of previous upgrade
-        if (newVal?.ToString() == defVal?.ToString()) {
-          newVal = oldVal;
-        }
-        field.SetValue(newSein, newVal);
+        RandDegrees = 40,
+        ProjectileSpeedStart = 7.5f,
+        ProjectileSpeedIncreaseDelay = 8,
+        ProjectileSpeedIncreaseRate = 0.5f,
+
+        HomingStrengthStart = 0.08f,
+        HomingIncreaseDelay = 12,
+        HomingIncreaseRate = 0.05f,
+
+        CooldownMin = 10,
+        CooldownShort = 15,
+        CooldownLong = 30,
+
+        DustScale = 1.65f,
+        LightStrength = 0.4f
       }
-      list.Add(newSein);
-      //OriMod.Log.Debug(newSein.CalculateStuff(tierName));
-    }
-
-    // Tier 1 (Silver)
-    AddNewSein(new SeinData() {
-      LightStrength = 0.4f
-    });
+    };
 
     // Tier 2 (Demonite/Crimtane)
     // Increased shots per burst
     // Max damage per burst: 15
-    AddNewSein(new SeinData {
+    list.Add(list[^1] with {
       Rarity = ItemRarityID.Green,
       Value = 3000,
       Color = new Color(108, 92, 172),
@@ -70,17 +86,20 @@ public sealed class SeinData {
       Damage = 24,
       Targets = 1,
       Bursts = 3,
+
       ProjectileSpeedStart = 9f,
+
       HomingIncreaseRate = 0.05f,
+
       DustScale = 1.8f,
-      LightStrength = 1.6f,
+      LightStrength = 1.6f
     });
 
     // Tier 3 (Hellstone)
     // 2 targets
     // Max damage per burst: 42
     // For some sort of "rage" effect to pair with red theme, lower CD
-    AddNewSein(new SeinData {
+    list.Add(list[^1] with {
       Rarity = ItemRarityID.Orange,
       Value = 10000,
       Color = new Color(240, 0, 0, 194),
@@ -88,22 +107,26 @@ public sealed class SeinData {
       Damage = 29,
       Targets = 2,
       MaxShotsAtOnce = 2,
+
+      TargetMaxDistTiles = 23,
+
       RandDegrees = 100,
+      ProjectileSpeedStart = 12.5f,
+      ProjectileSpeedIncreaseDelay = 10,
+      ProjectileSpeedIncreaseRate = 0.7f,
+
       CooldownMin = 5,
       CooldownShort = 16,
       CooldownLong = 35,
-      ProjectileSpeedStart = 12.5f,
-      ProjectileSpeedIncreaseRate = 0.7f,
-      ProjectileSpeedIncreaseDelay = 10,
-      TargetMaxDist = 370f,
+
       DustScale = 2f,
-      LightStrength = 1.275f,
+      LightStrength = 1.275f
     });
 
-    // Tier 4 (Mythril/Orichalcum)
+    // Tier 4 (Mithril/Orichalcum)
     // 2 targets, 2 shots to primary, 3 shots max (rather than 4)
     // Max damage per burst: 81
-    AddNewSein(new SeinData {
+    list.Add(list[^1] with {
       Rarity = ItemRarityID.LightRed,
       Value = 25000,
       Color = new Color(185, 248, 248),
@@ -111,13 +134,17 @@ public sealed class SeinData {
       Damage = 33,
       ShotsToPrimaryTarget = 2,
       MaxShotsAtOnce = 3,
+
       RandDegrees = 60,
+      ProjectileSpeedStart = 13.5f,
+
+      HomingIncreaseDelay = 20,
+      HomingIncreaseRate = 0.06f,
+
       CooldownMin = 11,
       CooldownShort = 25,
       CooldownLong = 40,
-      ProjectileSpeedStart = 13.5f,
-      HomingIncreaseRate = 0.06f,
-      HomingIncreaseDelay = 20,
+
       DustScale = 2.2f,
       LightStrength = 1.2f,
     });
@@ -125,7 +152,7 @@ public sealed class SeinData {
     // Tier 5 (Hallow)
     // 3 targets, 2 shots to primary, 4 shots max (rather than 5)
     // Max damage per burst: 132
-    AddNewSein(new SeinData {
+    list.Add(list[^1] with {
       Rarity = ItemRarityID.Pink,
       Value = 50000,
       Color = new Color(255, 228, 160),
@@ -133,16 +160,19 @@ public sealed class SeinData {
       Damage = 37,
       Targets = 3,
       MaxShotsAtOnce = 4,
+
+      TargetMaxDistTiles = 27.5f,
+
       HomingIncreaseDelay = 17,
-      TargetMaxDist = 440f,
+
       DustScale = 2.4f,
       LightStrength = 1.4f,
     });
 
     // Tier 6 (Spectral)
-    // 3 targets, 3 shots to primary, 5 shots max
+    // 3 targets, 3 shots to primary, 5 shots max.
     // Max damage per burst: 195
-    AddNewSein(new SeinData {
+    list.Add(list[^1] with {
       Rarity = ItemRarityID.Yellow,
       Value = 100000,
       Color = new Color(0, 180, 174, 210),
@@ -150,15 +180,20 @@ public sealed class SeinData {
       Damage = 42,
       ShotsToPrimaryTarget = 3,
       MaxShotsAtOnce = 5,
+
+      TargetThroughWallDistTiles = 14,
+
+      RandDegrees = 70,
+      ProjectileSpeedStart = 15f,
+      ProjectileSpeedIncreaseDelay = 14,
+      ProjectileSpeedIncreaseRate = 0.85f,
+
+      HomingIncreaseRate = 0.07f,
+
       CooldownMin = 12,
       CooldownShort = 26,
       CooldownLong = 52,
-      TargetThroughWallDist = 224f,
-      HomingIncreaseRate = 0.07f,
-      ProjectileSpeedStart = 15f,
-      ProjectileSpeedIncreaseRate = 0.85f,
-      ProjectileSpeedIncreaseDelay = 14,
-      RandDegrees = 70,
+
       DustScale = 2.65f,
       LightStrength = 2.25f,
     });
@@ -166,20 +201,24 @@ public sealed class SeinData {
     // Tier 7 (Lunar)
     // 4 targets, 3 shots to primary, 2 to others, 6 shots max (rather than 9)
     // Max damage per burst: 282
-    AddNewSein(new SeinData {
+    list.Add(list[^1] with {
       Rarity = ItemRarityID.Cyan,
       Value = 250000,
       Color = new Color(78, 38, 102),
 
       Damage = 47,
       Targets = 4,
-      ShotsToPrimaryTarget = 3,
       ShotsPerTarget = 2,
+      ShotsToPrimaryTarget = 3,
       MaxShotsAtOnce = 9,
-      HomingIncreaseRate = 0.025f,
-      ProjectileSpeedStart = 16f,
-      TargetMaxDist = 510f,
+
+      TargetMaxDistTiles = 32,
+
       RandDegrees = 120,
+      ProjectileSpeedStart = 16f,
+
+      HomingIncreaseRate = 0.025f,
+
       DustScale = 3f,
       LightStrength = 4.5f,
     });
@@ -187,7 +226,7 @@ public sealed class SeinData {
     // Tier 8 (Lunar Bars)
     // 5 targets, 4 shots to primary, 2 shots to others, 10 shots max (rather than 12)
     // Max damage per burst: 530 (too high?)
-    AddNewSein(new SeinData {
+    list.Add(list[^1] with {
       Rarity = ItemRarityID.Red,
       Value = 500000,
       Color = new Color(220, 220, 220),
@@ -197,157 +236,202 @@ public sealed class SeinData {
       Targets = 6,
       ShotsToPrimaryTarget = 4,
       MaxShotsAtOnce = 10,
-      CooldownMin = 16,
-      CooldownShort = 24,
-      CooldownLong = 55,
-      HomingStrengthStart = 0.05f,
-      HomingIncreaseDelay = 15,
+
+      TargetMaxDistTiles = 40,
+      TargetThroughWallDistTiles = 23,
+
+      RandDegrees = 180,
       ProjectileSpeedStart = 20f,
       ProjectileSpeedIncreaseRate = 1.25f,
       ProjectileSpeedIncreaseDelay = 28,
-      RandDegrees = 180,
-      TargetMaxDist = 650f,
-      TargetThroughWallDist = 370f,
+
+      HomingStrengthStart = 0.05f,
+      HomingIncreaseDelay = 15,
+
+      CooldownMin = 16,
+      CooldownShort = 24,
+      CooldownLong = 55,
+
       DustScale = 3.35f,
       LightStrength = 2.5f,
     });
 
-    All = Unloadable.New(list.ToArray(), () => All = null);
-    SeinBuffs = Unloadable.New(new int[All.Length], () => SeinBuffs = null);
-    for (int u = 0; u < All.Length; u++) {
-      SeinBuffs[u] = ModContent.Find<ModBuff>(OriMod.instance.Name, "SeinBuff" + (u + 1)).Type;
+    All = list.ToArray();
+    Ids = new SeinTypeInfo[list.Count];
+
+    for (int u = 0; u < list.Count; u++) {
+      Ids[u] = new SeinTypeInfo {
+        Buff = OriMod.instance.Find<ModBuff>("SeinBuff" + (u + 1)).Type,
+        Minion = OriMod.instance.Find<ModProjectile>("Sein" + (u + 1)).Type,
+        SpiritFlame = OriMod.instance.Find<ModProjectile>("SpiritFlame" + (u + 1)).Type
+      };
     }
   }
 
   #region Stats
+
   #region Stats responsible for DPS
+
   /// <summary>
-  /// Damage of Spirit Flame.
+  /// Damage dealt by Spirit Flame.
   /// </summary>
-  public int Damage = 18;
+  public int Damage { get; private init; }
 
   /// <summary>
   /// Number of NPCs that can be targeted at once.
   /// </summary>
-  public int Targets = 1;
+  public int Targets { get; private init; }
 
   /// <summary>
   /// Maximum times the minion can fire with a delay of <see cref="CooldownMin"/> before having a delay of <see cref="CooldownLong"/>.
   /// </summary>
-  public int Bursts = 2;
+  public int Bursts { get; private init; }
 
   /// <summary>
   /// Maximum number of shots that can be fired at each target.
   /// </summary>
-  public int ShotsPerTarget = 1;
+  public int ShotsPerTarget { get; private init; }
 
   /// <summary>
   /// Maximum number of shots that can be fired at the primary target at once.
   /// </summary>
-  public int ShotsToPrimaryTarget = 1;
+  public int ShotsToPrimaryTarget { get; private init; }
 
   /// <summary>
   /// Maximum number of shots that can be fired at once.
   /// </summary>
-  public int MaxShotsAtOnce = 1;
+  public int MaxShotsAtOnce { get; private init; }
 
   /// <summary>
   /// Delay between each shot in <see cref="Bursts"/>.
   /// </summary>
-  public int CooldownMin = 10;
+  public int CooldownMin { get; private init; }
 
   /// <summary>
   /// Shortest time to wait during <see cref="Bursts"/> to reset burst count.
   /// </summary>
-  public int CooldownShort = 15;
+  public int CooldownShort { get; private init; }
 
   /// <summary>
   /// Delay between each series of shots, incurred when shots reaches <see cref="Bursts"/>.
   /// </summary>
-  public int CooldownLong = 30;
+  public int CooldownLong { get; private init; }
+
   #endregion
 
   /// <summary>
   /// Maximum angle that fired Spirit Flames will be away from the target.
   /// </summary>
-  internal int RandDegrees = 40;
+  internal int RandDegrees { get; private init; }
+
+  /// <summary>
+  /// Value of <see cref="TargetMaxDist"/>, in tiles.
+  /// <para />
+  /// <inheritdoc cref="TargetMaxDist"/>
+  /// </summary>
+  public float TargetMaxDistTiles {
+    get => TargetMaxDist / 16;
+    init => TargetMaxDist = value * 16;
+  }
 
   /// <summary>
   /// NPCs within this distance from the player can be targeted by the minion, if there is line of sight between it and the player.
   /// </summary>
-  public float TargetMaxDist = 240f;
-  public float TargetMaxDistSquared => TargetMaxDist * TargetMaxDist;
+  public float TargetMaxDist { get; private init; }
+
+  /// <summary>
+  /// Squared version of <see cref="TargetMaxDist"/>
+  /// <para />
+  /// <inheritdoc cref="TargetMaxDist"/>
+  /// </summary>
+  public float TargetMaxDistSquared => MathF.Pow(TargetMaxDist, 2);
+
+  /// <summary>
+  /// Value of <see cref="TargetThroughWallDist"/>, in tiles.
+  /// <para />
+  /// <inheritdoc cref="TargetThroughWallDist"/>
+  /// </summary>
+  public float TargetThroughWallDistTiles {
+    get => TargetThroughWallDist / 16;
+    init => TargetThroughWallDist = value * 16;
+  }
 
   /// <summary>
   /// NPCs within this distance from the player can be targeted by the minion, regardless of line of sight.
   /// </summary>
-  public float TargetThroughWallDist = 80f;
-  public float TargetThroughWallDistSquared => TargetThroughWallDist * TargetThroughWallDist;
+  public float TargetThroughWallDist { get; private init; }
+
+  /// <summary>
+  /// Squared version of <see cref="TargetThroughWallDist"/>
+  /// <para />
+  /// <inheritdoc cref="TargetThroughWallDist"/>
+  /// </summary>
+  public float TargetThroughWallDistSquared => MathF.Pow(TargetThroughWallDist, 2);
 
   /// <summary>
   /// The knockback of Spirit Flame.
   /// </summary>
-  public float Knockback = 0f;
+  public float Knockback { get; private init; } = 0f;
 
   /// <summary>
   /// Starting homing strength of Spirit Flame.
   /// </summary>
-  internal float HomingStrengthStart = 0.08f;
+  internal float HomingStrengthStart { get; private init; }
 
   /// <summary>
   /// Rate to increase homing strength every frame after <see cref="HomingIncreaseDelay"/>.
   /// </summary>
-  internal float HomingIncreaseRate = 0.05f;
+  internal float HomingIncreaseRate { get; private init; }
 
   /// <summary>
   /// Ticks to wait before increasing homing strength by <see cref="HomingIncreaseRate"/>.
   /// </summary>
-  internal int HomingIncreaseDelay = 12;
+  internal int HomingIncreaseDelay { get; private init; }
 
   /// <summary>
   /// Speed of Spirit Flame when it is fired.
   /// </summary>
-  internal float ProjectileSpeedStart = 7.5f;
+  internal float ProjectileSpeedStart { get; private init; }
 
   /// <summary>
   /// Acceleration of Spirit Flame after waiting for <see cref="ProjectileSpeedIncreaseDelay"/>.
   /// </summary>
-  internal float ProjectileSpeedIncreaseRate = 0.5f;
+  internal float ProjectileSpeedIncreaseRate { get; private init; }
 
   /// <summary>
   /// Time to wait before increasing Spirit Flame speed by <see cref="ProjectileSpeedIncreaseRate"/>.
   /// </summary>
-  internal int ProjectileSpeedIncreaseDelay = 8;
+  internal int ProjectileSpeedIncreaseDelay { get; private init; }
 
-  internal int SeinWidth = 10;
-  internal int SeinHeight = 11;
-  internal int SpiritFlameWidth = 12;
-  internal int SpiritFlameHeight = 12;
+  internal const int SeinWidth = 10;
+  internal const int SeinHeight = 11;
+  internal const int SpiritFlameWidth = 12;
+  internal const int SpiritFlameHeight = 12;
 
   /// <summary>
   /// The size of the dust trail emitted from Spirit Flame.
   /// </summary>
-  public float DustScale = 1.65f;
+  public float DustScale { get; private init; }
 
   /// <summary>
   /// Rarity of the Spirit Orb.
   /// </summary>
-  internal int Rarity = 1;
+  internal int Rarity { get; private init; }
 
   /// <summary>
   /// Buy value of the Spirit Orb.
   /// </summary>
-  internal int Value = 1000;
+  internal int Value { get; private init; }
 
   /// <summary>
   /// Color of the Spirit Orb, Sein, Spirit Flame, and emitted lights.
   /// </summary>
-  internal Color Color = Color.White;
+  internal Color Color { get; private init; }
 
   /// <summary>
   /// Strength of the light emitted from Sein and Spirit Flame.
   /// </summary>
-  internal float LightStrength;
+  internal float LightStrength { get; private init; }
 
   internal string CalculateStuff(string tierName) {
     int minShotsPerBurst = ShotsToPrimaryTarget;
@@ -365,5 +449,6 @@ public sealed class SeinData {
       ? $"Sein ({tierName}): DPS:{minDps}, Shots:{minShotsPerBurst} Bursts:{Bursts} DMG per Burst:{minDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}"
       : $"Sein ({tierName}): DPS:{minDps}-{maxDps}, Shots:{minShotsPerBurst}-{maxShotsPerBurst} Bursts:{Bursts} DMG per Burst:{minDmgPerBurst}-{maxDmgPerBurst}, DMG per all Bursts:{minDmgPerAllBursts}-{maxDmgPerAllBursts}";
   }
+
   #endregion
 }
