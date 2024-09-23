@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using OriMod.Abilities;
+﻿using OriMod.Abilities;
 using Terraria;
 
 namespace OriMod;
@@ -16,26 +15,26 @@ public interface IBashable {
   OriPlayer? BashPlayer { get; set; }
 
   /// <summary>
-  /// The position where the entity was bashed.
-  /// </summary>
-  Vector2 BashPosition { get; set; }
-
-  /// <summary>
   /// Whether the entity is being bashed.
   /// </summary>
   bool IsBashed { get; set; }
 
   /// <summary>
-  /// Time since this was last Bashed, in frames. <see langword="0"/> if <see cref="IsBashed"/> is <see langword="true"/>, otherwise a positive value.
+  /// Time until this can be bashed.
+  /// Equal to <see cref="ImmuneTime"/> if <see cref="IsBashed"/> is <see langword="true"/>.
+  /// If this value is not <c>0</c>, the entity cannot be bashed.
   /// </summary>
-  int FramesSinceLastBash { get; }
+  int FramesUntilBashable { get; set; }
 
 
   /// <summary>
-  /// Whether the entity can be bashed. False if it is already bashed, or currently immune to bashing.
+  /// Whether the entity's current state allows it to be bashed.
+  /// Returns <see langword="false"/> if it is already bashed, or currently immune to bashing.
   /// </summary>
-  /// <returns><see langword="true"/> if the entity is capable of being bashed, otherwise <see langword="false"/></returns>
-  bool CanBeBashed() => !IsBashed && FramesSinceLastBash >= ImmuneTime;
+  /// <returns>
+  /// <see langword="true"/> if the entity can currently be bashed, otherwise <see langword="false"/>
+  /// </returns>
+  public bool CanBeBashed() => !IsBashed && FramesUntilBashable == 0;
 
   /// <summary>
   /// Checks that the <see cref="BashPlayer"/> is still active, alive, is bashing, and that the entity it is bashing is this.
@@ -46,5 +45,16 @@ public interface IBashable {
   public static bool ValidateBash(OriPlayer? bashPlayer, Entity entity) {
     return bashPlayer is { Player: { active: true, dead: false }, ActiveState: Bash bash } &&
       bash.IsBashing(entity);
+  }
+
+  public void SetBashPlayer(OriPlayer bashPlayer) {
+    IsBashed = true;
+    BashPlayer = bashPlayer;
+    FramesUntilBashable = ImmuneTime;
+  }
+
+  public void ClearBashPlayer() {
+    IsBashed = false;
+    BashPlayer = null;
   }
 }

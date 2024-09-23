@@ -5,7 +5,6 @@ using OriMod.Projectiles;
 using OriMod.Utilities;
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
@@ -26,8 +25,6 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
   private ref BashStats Stats => ref IStats<BashStats>.Get(Level);
 
-  private bool Starting => ActiveTime < Stats.MinTime;
-
   private int _currentBuffer;
 
   private int _currentStress;
@@ -47,6 +44,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
   /// The <see cref="NPC"/> or <see cref="Projectile"/> that is being bashed.
   /// </summary>
   private Entity? _bashEntity;
+
   /// <summary>
   /// The <see cref="OriNpc"/> or <see cref="OriProjectile"/> global that is being bashed.
   /// </summary>
@@ -82,15 +80,25 @@ public sealed class Bash(Player player) : OriAbility(player) {
   }
 
   private void UpdateBashTarget() {
-    _bashTarget = _bashEntity switch {
+    IBashable? oldBashTarget = _bashTarget;
+    IBashable? newBashGlobal = _bashEntity switch {
       NPC npc => npc.GetGlobalNPC<OriNpc>(),
       Projectile proj => proj.GetGlobalProjectile<OriProjectile>(),
       _ => null
     };
+
+    if (ReferenceEquals(oldBashTarget, newBashGlobal)) {
+      return;
+    }
+
+    _bashTarget?.ClearBashPlayer();
+    _bashTarget = newBashGlobal;
+    _bashTarget?.SetBashPlayer(OriPlayer);
   }
 
   private void ClearBashEntity() {
     _bashEntity = null;
+    _bashTarget?.ClearBashPlayer();
     _bashTarget = null;
   }
 
@@ -108,6 +116,25 @@ public sealed class Bash(Player player) : OriAbility(player) {
   }
 
   protected override void NetSync(ISync sync) {
+    // No need to send this stuff more than once
+    if (ActiveTime == 0) {
+      sync.Sync(ref _targetStartPos);
+      sync.Sync(ref _playerStartPos);
+      sync.Sync7BitEncodedInt(ref _currentStress);
+      sync.Sync7BitEncodedInt(ref _lastStress);
+      sync.SyncPositionAndVelocity(Player);
+      sync.SyncEntity(ref _bashEntity);
+      if (_bashEntity is not null) {
+        sync.SyncPositionAndVelocity(_bashEntity);
+      }
+
+      if (sync.Reading) {
+        UpdateBashTarget();
+      }
+
+      Main.NewText($"[{Main.time}] Bash Sync: entity is {_bashEntity?.whoAmI.ToString() ?? "null"}");
+    }
+
     // _netAngle and _bashAngle are separate values to allow visual lerping when syncing from a MP client
     // This avoids a jittery, snappy look when other clients modify the angle (i.e. move their mouse)
     // We use a deadzone for syncing to avoid potentially spamming packets every frame
@@ -117,24 +144,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
       _netAngle = _aimAngle;
     }
 
-    // Starting depends on ActiveTime, which is synced in base State class
-    if (Starting) {
-      sync.Sync(ref _targetStartPos);
-      sync.Sync(ref _playerStartPos);
-    }
-    else {
-      sync.SyncPositionAndVelocity(Player);
-    }
-
     sync.Sync(ref _netAngle);
-    sync.Sync7BitEncodedInt(ref _currentStress);
-    sync.Sync7BitEncodedInt(ref _lastStress);
-    sync.Sync7BitEncodedInt(ref _currentBuffer);
-
-    sync.SyncEntity(ref _bashEntity);
-    if (sync.Reading) {
-      UpdateBashTarget();
-    }
 
     if (sync.Reading && Main.dedServ) {
       // Server needs to know actual value, and doesn't need visual lerping
@@ -146,24 +156,18 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
   protected override void OnEnter(State? fromState) {
     RestoreAirJumps();
+    NetUpdate = true;
   }
 
   protected override void OnExit() {
     Player.pulley = false;
     _endSound.Play(Player);
 
-    if (!HasBashEntity) {
-      return;
-    }
-
     Vector2 bashVector = new((float)(0 - Math.Cos(_aimAngle)), (float)(0 - Math.Sin(_aimAngle)));
     Vector2 playerBashVector = -bashVector * Stats.PlayerStrength;
     Vector2 npcBashVector = bashVector * Stats.NpcStrength;
 
     Player.velocity = playerBashVector;
-
-    // Player.position += playerBashVector * 3;
-    // Player.position += npcBashVector * 5;
 
     if (IsGrounded) {
       Player.position.Y -= 1f * Player.gravDir;
@@ -173,21 +177,18 @@ public sealed class Bash(Player player) : OriAbility(player) {
       OriPlayer.SetImmune(20);
     }
 
-    _bashTarget.IsBashed = false;
-    if (_bashTarget.BashPlayer?.Player.whoAmI == Player.whoAmI) {
-      _bashTarget.BashPlayer = null;
-    }
-
-    if (IsLocal && _bashEntity is NPC npc) {
+    if (_bashEntity is NPC { active: true } npc) {
       if (!npc.immortal) {
         // Don't knockback target dummies
         npc.velocity = npcBashVector * npc.knockBackResist;
       }
 
-      if (Level >= 2) {
+      if (IsLocal && Level >= 2) {
         Player.ApplyDamageToNPC(npc, Stats.Damage, 0, 1);
       }
     }
+
+    ClearBashEntity();
   }
 
   protected override bool OnPreUpdateInterruptible(State activeState) {
@@ -239,8 +240,6 @@ public sealed class Bash(Player player) : OriAbility(player) {
   /// </summary>
   /// <returns><see langword="true"/> if an <see cref="Entity"/> to bash was found and set as target, otherwise <see langword="false"/>.</returns>
   private bool TryStart() {
-    ClearBashEntity();
-
     // Check for Bashing NPCs
     float range = Stats.Range;
     if (Player.GetClosesEntity(Main.ActiveNPCs, ref range, out NPC? npc, condition: BashNpcFilter)) {
@@ -266,17 +265,19 @@ public sealed class Bash(Player player) : OriAbility(player) {
       SetBashEntity(proj);
     }
 
-    _bashTarget!.IsBashed = true;
-    _bashTarget.BashPosition = _bashEntity.Center;
-    _bashTarget.BashPlayer = OriPlayer;
+    _bashTarget.SetBashPlayer(OriPlayer);
 
-    _playerStartPos = Player.Center;
-    _targetStartPos = _bashEntity.Center;
+    _playerStartPos = Player.position;
+    _targetStartPos = _bashEntity.position;
     _startSound.PlayLocal(Player);
     return true;
 
-    static bool BashNpcFilter(NPC npc) => npc.GetGlobalNPC<OriNpc>().CanBeBashed(npc);
-    static bool BashProjFilter(Projectile proj) => proj.GetGlobalProjectile<OriProjectile>().CanBeBashed(proj);
+    // TryGet, since explicitly immune Npcs/Projs will not have the bash GlobalNpc/Proj created for them
+    static bool BashNpcFilter(NPC npc) =>
+      npc.TryGetGlobalNPC(out OriNpc oNpc) && ((IBashable)oNpc).CanBeBashed();
+
+    static bool BashProjFilter(Projectile proj) =>
+      proj.TryGetGlobalProjectile(out OriProjectile oProj) && ((IBashable)oProj).CanBeBashed();
   }
 
   private void StressDust() {
@@ -322,13 +323,14 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
   protected override void OnUpdate() {
     if (HasBashEntity) {
-      _bashEntity.Center = _targetStartPos;
+      _bashEntity.position = _targetStartPos;
       if (IsLocal) {
         Entity target = OriMod.ConfigClient.bashMode == "Target" ? _bashEntity : Player;
         _aimAngle = target.AngleTo(Main.MouseWorld);
       }
     }
 
+    Player.position = _playerStartPos;
     Player.velocity = Vector2.Zero;
     Player.gravity = 0;
 
