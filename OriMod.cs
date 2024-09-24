@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using JetBrains.Annotations;
 using log4net;
@@ -141,5 +142,11 @@ public sealed partial class OriMod : Mod {
     }
 
     ModNetHandler.HandlePacket(reader, fromWho);
+  }
+
+  [Conditional("DEBUG")]
+  public static void Debug(string value) {
+    Log.Debug(value);
+    Main.NewText(value);
   }
 }
