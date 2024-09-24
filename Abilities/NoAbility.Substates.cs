@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AnimLib.Animations;
 using AnimLib.States;
 using Terraria;
@@ -74,6 +74,15 @@ public sealed partial class NoAbility {
     }
 
     private SoundInfo _jumpSound = new("Ori/Jump/seinJumpsGrass", 5, 0.6f);
+
+    private float _velocityLastFrame;
+
+    protected override AnimationOptions? GetAnimationOptions() {
+      float velocityY = Player.velocity.Y * Player.gravDir;
+      int frame = _velocityLastFrame * 0.98f > velocityY ? 0 : 1;
+      _velocityLastFrame = velocityY;
+      return new AnimationOptions("Jump", frameIndex: Player.webbed ? 1 : frame);
+    }
   }
 
   internal sealed class Falling(Player player) : InAir(player);
