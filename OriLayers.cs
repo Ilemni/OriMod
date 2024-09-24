@@ -236,10 +236,10 @@ internal static class OriLayers {
   [UsedImplicitly]
   private sealed class OriBashArrow : PlayerDrawLayer {
     public override void SetStaticDefaults() {
-      SpriteSheet = ModContent.Request<AnimSpriteSheet>("OriMod/Animations/BashAnim");
+      _spriteSheet = ModContent.Request<AnimSpriteSheet>("OriMod/Animations/BashAnim");
     }
 
-    private static Asset<AnimSpriteSheet> SpriteSheet = null!;
+    private static Asset<AnimSpriteSheet> _spriteSheet = null!;
 
     public override bool GetDefaultVisibility(PlayerDrawSet drawInfo) =>
       GetAllDefaultVisibility(drawInfo, out OriPlayer oriPlayer) &&
@@ -250,7 +250,7 @@ internal static class OriLayers {
 
     protected override void Draw(ref PlayerDrawSet drawInfo) {
       OriPlayer oPlayer = drawInfo.drawPlayer.GetModPlayer<OriPlayer>();
-      AnimSpriteSheet arrowSpriteSheet = SpriteSheet.Value;
+      AnimSpriteSheet arrowSpriteSheet = _spriteSheet.Value;
       AnimTextureAtlas atlas = arrowSpriteSheet.Atlases[BashArrowLayer];
 
       Vector2 pos;

@@ -379,7 +379,7 @@ public readonly record struct SeinData {
   internal float HomingStrengthStart { get; private init; }
 
   /// <summary>
-  /// Rate to increase homing strength every frame after <see cref="HomingIncreaseDelay"/>.
+  /// Rate to increase homing strength every tick after <see cref="HomingIncreaseDelay"/>.
   /// </summary>
   internal float HomingIncreaseRate { get; private init; }
 

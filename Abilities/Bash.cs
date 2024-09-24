@@ -137,7 +137,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
     // _netAngle and _bashAngle are separate values to allow visual lerping when syncing from a MP client
     // This avoids a jittery, snappy look when other clients modify the angle (i.e. move their mouse)
-    // We use a deadzone for syncing to avoid potentially spamming packets every frame
+    // We use a deadzone for syncing to avoid potentially spamming packets every tick
 
     if (sync.Writing) {
       // Send the actual bash angle value

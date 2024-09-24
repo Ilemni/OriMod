@@ -66,17 +66,17 @@ public abstract class Input {
   public bool Current { get; private set; }
 
   /// <summary>
-  /// Whether this is the first frame this key was pressed down.
+  /// Whether this is the first tick this key was pressed down.
   /// </summary>
   public bool JustPressed => Current && Changed;
 
   /// <summary>
-  /// Whether this is the first frame this key was not pressed down.
+  /// Whether this is the first tick this key was not pressed down.
   /// </summary>
   public bool JustReleased => !Current && Changed;
 
   /// <summary>
-  /// Whether the value of <see cref="Current"/> during this frame is different from the previous frame.
+  /// Whether the value of <see cref="Current"/> during this tick is different from the previous tick.
   /// </summary>
   internal bool Changed;
 

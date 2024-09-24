@@ -5,7 +5,7 @@ namespace OriMod;
 
 public interface IBashable {
   /// <summary>
-  /// Time in frames which the previously Bashed entity cannot be bashed again.
+  /// Time in ticks which the previously Bashed entity cannot be bashed again.
   /// </summary>
   int ImmuneTime { get; }
 

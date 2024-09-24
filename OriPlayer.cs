@@ -49,7 +49,7 @@ public sealed partial class OriPlayer : ModPlayer {
   public State? ActiveState => Character.Move.ActiveChild;
 
   /// <summary>
-  /// Whether this <see cref="OriPlayer"/> instance should sync with multiplayer this frame.
+  /// Whether this <see cref="OriPlayer"/> instance should sync with multiplayer this tick.
   /// </summary>
   private bool _netUpdate = true;
 
@@ -59,7 +59,7 @@ public sealed partial class OriPlayer : ModPlayer {
   internal bool DebugMode;
 
   /// <summary>
-  /// Whether player was mounted last frame. Used to decay trail segments when player dismounts.
+  /// Whether player was mounted last tick. Used to decay trail segments when player dismounts.
   /// </summary>
   private bool _wasMounted;
 
@@ -378,7 +378,6 @@ public sealed partial class OriPlayer : ModPlayer {
   public override void PostUpdateMiscEffects() {
     IsGrappling = Player.grappling[0] > -1;
     if (Player.HasBuff(BuffID.TheTongue) || IsGrappling || Player.pulley) {
-      Main.NewText("FORCE NOABILITY");
       Character.Move.TriggerState<NoAbility>();
     }
   }

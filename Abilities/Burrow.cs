@@ -19,8 +19,6 @@ namespace OriMod.Abilities;
 /// This ability was somewhat difficult to balance; the simplest solution was to restrict tiles to whatever pickaxe was in inventory.
 /// </remarks>
 public sealed class Burrow(Player player) : OriAbility(player) {
-  private Asset<Texture2D> _burrowTimer = ModContent.Request<Texture2D>("OriMod/PlayerEffects/BurrowTimer");
-
   public override int MaxLevel => 3;
 
   private ref BurrowStats Stats => ref IStats<BurrowStats>.Get(Level);

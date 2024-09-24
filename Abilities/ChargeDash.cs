@@ -44,11 +44,6 @@ public sealed class ChargeDash(Player player) : OriAbility(player) {
 
   protected override bool StartCooldownOnExit => true;
 
-  protected override void OnInitialize() {
-    base.OnInitialize();
-    Parent!.GetChild<Dash>();
-  }
-
   public override bool CanEnter() => base.CanEnter() && !OnWall && Player.CheckMana(ManaCost, blockQuickMana: true);
 
   protected override void OnEnter(State? fromState) {

@@ -93,7 +93,7 @@ public sealed class AirJump(Player player) : OriAbility(player) {
     }
 
     // Prevent NoAbility transition if we can glide instead
-    // Without this, Player.controlTorch may flicker for one frame
+    // Without this, Player.controlTorch may flicker for one tick
     if (Input.Glide.Current && TriggerState<Glide>()) {
       return;
     }
