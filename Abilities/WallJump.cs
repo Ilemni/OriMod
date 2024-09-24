@@ -32,6 +32,7 @@ public sealed class WallJump(Player player) : OriAbility(player) {
 
   protected override void OnEnter(State? fromState) {
     if (IsLocal) {
+      NetUpdate = true;
       _wallDirection = Player.direction;
       _gravDirection = (int)Player.gravDir;
     }
@@ -40,9 +41,11 @@ public sealed class WallJump(Player player) : OriAbility(player) {
   }
 
   protected override void NetSync(ISync sync) {
-    sync.SyncSign(ref _wallDirection);
-    sync.SyncSign(ref _gravDirection);
-    sync.SyncPositionAndVelocity(Player);
+    if (ActiveTime == 0) {
+      sync.SyncSign(ref _wallDirection);
+      sync.SyncSign(ref _gravDirection);
+      sync.SyncPositionAndVelocity(Player);
+    }
   }
 
   protected override void OnPreUpdate() {

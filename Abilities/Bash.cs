@@ -115,6 +115,13 @@ public sealed class Bash(Player player) : OriAbility(player) {
     parent.AddInterruptible<WallJump>(to: this);
   }
 
+  /// <summary>
+  /// Always syncs <see cref="_netAngle"/>.
+  /// At start, will sync start positions, stress
+  /// <see cref="Player"/> position and velocity, and
+  /// <see cref="_bashEntity"/> and its velocity and position.
+  /// </summary>
+  /// <param name="sync"></param>
   protected override void NetSync(ISync sync) {
     // No need to send this stuff more than once
     if (ActiveTime == 0) {

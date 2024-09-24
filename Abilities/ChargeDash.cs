@@ -88,6 +88,7 @@ public sealed class ChargeDash(Player player) : OriAbility(player) {
 
     _sound.Play(Player);
     NewAbilityProjectile<ChargeDashProjectile>(damage: 50);
+    NetUpdate = true;
   }
 
   internal void EndByNpcContact(NPC npc) {
