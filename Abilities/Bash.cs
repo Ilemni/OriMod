@@ -388,7 +388,15 @@ public sealed class Bash(Player player) : OriAbility(player) {
     }
     else {
       // Non-local, smooth visual angle to net angle
-      _aimAngle = float.Lerp(_aimAngle, _netAngle, NetAngleLerpValue);
+      _aimAngle = LerpAngleRad(_aimAngle, _netAngle, NetAngleLerpValue);
+    }
+
+    return;
+
+    static float LerpAngleRad(float from, float to, float weight) {
+      float num1 = (to - from) % MathF.Tau;
+      float num2 = 2f * num1 % MathF.Tau - num1;
+      return from + num2 * weight;
     }
   }
 

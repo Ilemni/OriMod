@@ -140,8 +140,8 @@ public sealed class Launch(Player player) : OriAbility(player) {
     return;
 
     static float LerpAngleRad(float from, float to, float weight) {
-      float num1 = (float)((to - (double)from) % MathF.Tau);
-      float num2 = (float)(2.0 * num1 % MathF.Tau) - num1;
+      float num1 = (to - from) % MathF.Tau;
+      float num2 = 2f * num1 % MathF.Tau - num1;
       return from + num2 * weight;
     }
   }
