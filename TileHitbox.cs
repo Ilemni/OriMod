@@ -25,7 +25,7 @@ public sealed class TileHitbox {
     UpdateHitbox(Point.Zero);
   }
 
-  public TileHitbox(ReadOnlySpan<(int x, int y)> template) : this(ToPoints(template)) {
+  public TileHitbox(params ReadOnlySpan<(int x, int y)> template) : this(ToPoints(template)) {
   }
 
   private static Point[] ToPoints(ReadOnlySpan<(int x, int y)> span) {

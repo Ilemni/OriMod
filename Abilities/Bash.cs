@@ -355,7 +355,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
     Player.controlTorch = false;
     Player.controlUseItem = false;
     Player.controlUseTile = false;
-    Player.buffImmune.AssignValueToKeys(true, stackalloc int[] {
+    Player.buffImmune.AssignValueToKeys(true, [
       BuffID.CursedInferno,
       BuffID.Dazed,
       BuffID.Frozen,
@@ -374,7 +374,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
       BuffID.WitheredArmor,
       BuffID.WitheredWeapon,
       BuffID.WindPushed
-    });
+    ]);
     if (_lastStress < Stats.MaxStress / 2) {
       OriPlayer.SetImmune(2);
     }

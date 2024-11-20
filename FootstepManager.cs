@@ -32,7 +32,7 @@ public sealed class FootstepManager : ModSystem {
   }
 
   private static void AssignTiles() {
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.None, stackalloc ushort[] {
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.None, [
       TileID.Plants, TileID.Torches, TileID.Trees,
       TileID.ClosedDoor, TileID.OpenDoor, TileID.Heart, TileID.Bottles, TileID.Saplings, TileID.Chairs, TileID.Furnaces,
       TileID.Containers, TileID.CorruptPlants, TileID.DemonAltar, TileID.Sunflower, TileID.Pots, TileID.PiggyBank,
@@ -84,13 +84,13 @@ public sealed class FootstepManager : ModSystem {
       TileID.PartyMonolith, TileID.PartyBundleOfBalloonTile, TileID.PartyPresent, TileID.SandDrip, TileID.DjinnLamp,
       TileID.DefendersForge, TileID.WarTable, TileID.WarTableBanner, TileID.ElderCrystalStand, TileID.Containers2,
       TileID.FakeContainers2, TileID.Tables2
-    });
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Grass, stackalloc ushort[] {
+    ]);
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Grass, [
       TileID.Dirt, TileID.Grass, TileID.CorruptGrass,
       TileID.ClayBlock, TileID.Mud, TileID.JungleGrass, TileID.MushroomGrass, TileID.HallowedGrass, TileID.PineTree,
       TileID.LeafBlock, TileID.CrimsonGrass, TileID.HayBlock, TileID.LavaMoss, TileID.LivingMahoganyLeaves
-    });
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Rock, stackalloc ushort[] {
+    ]);
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Rock, [
       TileID.Stone, TileID.Iron, TileID.Copper, TileID.Gold,
       TileID.Silver, TileID.Demonite, TileID.Ebonstone, TileID.Meteorite, TileID.Obsidian, TileID.Hellstone,
       TileID.Sapphire, TileID.Ruby, TileID.Emerald, TileID.Topaz, TileID.Amethyst, TileID.Diamond, TileID.Cobalt,
@@ -102,30 +102,30 @@ public sealed class FootstepManager : ModSystem {
       TileID.CrimsonHardenedSand, TileID.CorruptSandstone, TileID.CrimsonSandstone, TileID.HallowHardenedSand,
       TileID.HallowSandstone, TileID.DesertFossil, TileID.FossilOre, TileID.LunarOre, TileID.LunarBlockSolar,
       TileID.LunarBlockVortex, TileID.LunarBlockNebula, TileID.LunarBlockStardust
-    });
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Wood, stackalloc ushort[] {
+    ]);
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Wood, [
       TileID.Tables, TileID.WorkBenches, TileID.Platforms,
       TileID.WoodBlock, TileID.Pianos, TileID.Dressers, TileID.Bookcases, TileID.TinkerersWorkbench, TileID.Ebonwood,
       TileID.RichMahogany, TileID.Pearlwood, TileID.Shadewood, TileID.WoodenSpikes, TileID.SpookyWood,
       TileID.DynastyWood, TileID.RedDynastyShingles, TileID.BlueDynastyShingles, TileID.BorealWood, TileID.PalmWood,
       TileID.FishingCrate, TileID.TrapdoorClosed
-    });
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Sand, stackalloc ushort[] {
+    ]);
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Sand, [
       TileID.Sand, TileID.Ash, TileID.Ebonsand,
       TileID.Pearlsand, TileID.Silt, TileID.Hive, TileID.CrispyHoneyBlock, TileID.Crimsand
-    });
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Snow, stackalloc ushort[] {
+    ]);
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Snow, [
       TileID.SnowBlock, TileID.RedStucco, TileID.YellowStucco,
       TileID.GreenStucco, TileID.GrayStucco, TileID.Cloud, TileID.RainCloud, TileID.Slush, TileID.HoneyBlock,
       TileID.SnowCloud
-    });
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Mushroom, stackalloc ushort[] {
+    ]);
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.Mushroom, [
       TileID.CandyCaneBlock, TileID.GreenCandyCaneBlock,
       TileID.CactusBlock, TileID.MushroomBlock, TileID.SlimeBlock, TileID.FrozenSlimeBlock, TileID.BubblegumBlock,
       TileID.PumpkinBlock, TileID.Coralstone, TileID.PinkSlimeBlock, TileID.SillyBalloonPink, TileID.SillyBalloonPurple,
       TileID.SillyBalloonGreen, TileID.SillyBalloonTile
-    });
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.LightDark, stackalloc ushort[] {
+    ]);
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.LightDark, [
       TileID.Glass, TileID.MagicalIceBlock,
       TileID.Sunplate, TileID.Teleporter, TileID.AmethystGemsparkOff, TileID.TopazGemsparkOff,
       TileID.SapphireGemsparkOff, TileID.EmeraldGemsparkOff, TileID.RubyGemsparkOff, TileID.DiamondGemsparkOff,
@@ -136,8 +136,8 @@ public sealed class FootstepManager : ModSystem {
       TileID.TeamBlockYellow, TileID.TeamBlockPink, TileID.TeamBlockWhite, TileID.TeamBlockGreenPlatform,
       TileID.TeamBlockBluePlatform, TileID.TeamBlockYellowPlatform, TileID.TeamBlockPinkPlatform,
       TileID.TeamBlockWhitePlatform, TileID.SandFallBlock, TileID.SnowFallBlock
-    });
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeRock, stackalloc ushort[] {
+    ]);
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeRock, [
       TileID.Anvils, TileID.GrayBrick,
       TileID.RedBrick, TileID.BlueDungeonBrick, TileID.GreenDungeonBrick, TileID.PinkDungeonBrick, TileID.GoldBrick,
       TileID.SilverBrick, TileID.CopperBrick, TileID.Spikes, TileID.ObsidianBrick, TileID.HellstoneBrick,
@@ -148,9 +148,9 @@ public sealed class FootstepManager : ModSystem {
       TileID.StoneSlab, TileID.SandStoneSlab, TileID.CopperPlating, TileID.TinPlating, TileID.ChlorophyteBrick,
       TileID.CrimtaneBrick, TileID.ShroomitePlating, TileID.MartianConduitPlating, TileID.MarbleBlock,
       TileID.GraniteBlock, TileID.MeteoriteBrick, TileID.Fireplace, TileID.ConveyorBeltLeft, TileID.ConveyorBeltRight
-    });
+    ]);
     _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeWood,
-      stackalloc ushort[] { TileID.LivingWood, TileID.LivingMahogany });
+      [TileID.LivingWood, TileID.LivingMahogany]);
   }
 
   private static void AssignModTiles() {

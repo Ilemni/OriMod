@@ -30,7 +30,7 @@ public sealed class OriProjectile : GlobalProjectile, IBashable {
 
   private static bool[] CreateImmuneTypes() {
     bool[] result = new bool[ProjectileLoader.ProjectileCount];
-    result.AssignValueToKeys(true, stackalloc short[] {
+    result.AssignValueToKeys(true, [
       ProjectileID.FlamethrowerTrap, ProjectileID.FlamesTrap, ProjectileID.GeyserTrap, ProjectileID.SpearTrap,
       ProjectileID.GemHookAmethyst, ProjectileID.GemHookDiamond, ProjectileID.GemHookEmerald,
       ProjectileID.GemHookRuby, ProjectileID.GemHookSapphire, ProjectileID.GemHookTopaz,
@@ -41,7 +41,7 @@ public sealed class OriProjectile : GlobalProjectile, IBashable {
       ProjectileID.SlimeHook, ProjectileID.StaticHook, ProjectileID.TendonHook, ProjectileID.ThornHook,
       ProjectileID.TrackHook,
       ProjectileID.WoodHook, ProjectileID.WormHook
-    });
+    ]);
     return result;
   }
 

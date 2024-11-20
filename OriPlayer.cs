@@ -152,40 +152,40 @@ public sealed partial class OriPlayer : ModPlayer {
   /// Primary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
   /// </summary>
   public Color SpriteColorPrimary {
-    get => _spriteColorPrimary;
+    get;
     set {
-      _spriteColorPrimary = value;
+      field = value;
       if (IsLocal) {
         OriMod.ConfigClient.playerColor = value;
       }
     }
-  }
+  } = Color.LightCyan;
 
   /// <summary>
   /// Secondary color of the Ori sprite for this instance of <see cref="OriPlayer"/>.
   /// </summary>
   public Color SpriteColorSecondary {
-    get => _spriteColorSecondary;
+    get;
     set {
-      _spriteColorSecondary = value;
+      field = value;
       if (IsLocal) {
         OriMod.ConfigClient.playerColorSecondary = value;
       }
     }
-  }
+  } = Color.LightCyan;
 
   /// <summary>
   /// Coef. of ori and dye color lerp for this instance of <see cref="OriPlayer"/>.
   /// </summary>
   public float DyeColorBlend {
-    get => _dyeColorBlend;
+    get;
     set {
-      _dyeColorBlend = value;
+      field = value;
       if (IsLocal) {
         OriMod.ConfigClient.dyeLerp = value;
       }
     }
-  }
+  } = 0.65f;
 
   /// <summary>
   /// Whether the multiplayer client instance of this <see cref="OriPlayer"/> uses light.
@@ -209,12 +209,12 @@ public sealed partial class OriPlayer : ModPlayer {
     get {
       int dye = Player.dye[1].netID;
       if (_primaryArmorDye == dye) {
-        return _primaryDyeShader;
+        return field;
       }
 
       _primaryArmorDye = dye;
 
-      return _primaryDyeShader = GameShaders.Armor.GetShaderFromItemId(dye);
+      return field = GameShaders.Armor.GetShaderFromItemId(dye);
     }
   }
 
@@ -222,27 +222,17 @@ public sealed partial class OriPlayer : ModPlayer {
     get {
       int dye = Player.dye[0].netID;
       if (_secondaryArmorDye == dye) {
-        return _secondaryDyeShader;
+        return field;
       }
 
       _secondaryArmorDye = dye;
 
-      return _secondaryDyeShader = GameShaders.Armor.GetShaderFromItemId(dye);
+      return field = GameShaders.Armor.GetShaderFromItemId(dye);
     }
   }
 
-  private ArmorShaderData? _primaryDyeShader;
-  private ArmorShaderData? _secondaryDyeShader;
   private int _primaryArmorDye;
   private int _secondaryArmorDye;
-
-  #endregion
-
-  #region Backing fields
-
-  private Color _spriteColorPrimary = Color.LightCyan;
-  private Color _spriteColorSecondary = Color.LightCyan;
-  private float _dyeColorBlend = 0.65f;
 
   #endregion
 
@@ -337,9 +327,9 @@ public sealed partial class OriPlayer : ModPlayer {
     IsOri = tag.TryGet("OriSet", out bool set) && set;
     DebugMode = tag.TryGet("Debug", out bool debug) && debug;
     HasTransformedOnce = tag.TryGet("TransformedOnce", out bool value) && value;
-    _spriteColorPrimary = tag.TryGet("Color1", out Color color1) ? color1 : OriMod.ConfigClient.playerColor;
-    _spriteColorSecondary = tag.TryGet("Color2", out Color color2) ? color2 : OriMod.ConfigClient.playerColorSecondary;
-    _dyeColorBlend = tag.TryGet("DyeColLerp", out float blend) ? blend : OriMod.ConfigClient.dyeLerp;
+    SpriteColorPrimary = tag.TryGet("Color1", out Color color1) ? color1 : OriMod.ConfigClient.playerColor;
+    SpriteColorSecondary = tag.TryGet("Color2", out Color color2) ? color2 : OriMod.ConfigClient.playerColorSecondary;
+    DyeColorBlend = tag.TryGet("DyeColLerp", out float blend) ? blend : OriMod.ConfigClient.dyeLerp;
 
     //Backward compatibility don't pay attention
     // Character.OldLoad(tag);

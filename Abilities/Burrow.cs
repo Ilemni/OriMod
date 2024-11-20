@@ -72,24 +72,24 @@ public sealed class Burrow(Player player) : OriAbility(player) {
   /// <summary>
   /// Tile hitbox for determining if the player can enter Burrow state.
   /// </summary>
-  internal static readonly TileHitbox EnterHitbox = new(stackalloc (int, int)[] {
+  internal static readonly TileHitbox EnterHitbox = new(
     (0, -1), (0, 0), (0, 1), // Center
     (-1, -1), (-1, 0), (-1, 1), // Left
     (2, -1), (2, 0), (2, 1), // Right
     (0, -2), (1, -2), // Top
     (0, 2), (1, 2), // Bottom
     (2, 2), (2, -2), (-1, 2), (-1, -2) // Corners
-  });
+  );
 
   /// <summary>
   /// Tile hitbox for determining collisions when in the Burrow state
   /// </summary>
-  internal static readonly TileHitbox InnerHitbox = new(stackalloc (int, int)[] {
+  internal static readonly TileHitbox InnerHitbox = new(
     (0, -1), // Top
     (0, 1), // Bottom
     (-1, 0), // Left
     (1, 0) // Right
-  });
+  );
 
   protected override void NetSync(ISync sync) {
     sync.Sync(ref _lastPosition);

@@ -30,14 +30,14 @@ public sealed class OriNpc : GlobalNPC, IBashable {
 
   private static bool[] CreateImmuneTypes() {
     bool[] result = new bool[NPCLoader.NPCCount];
-    result.AssignValueToKeys(true, stackalloc short[] {
+    result.AssignValueToKeys(true, [
       NPCID.EaterofWorldsBody, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsTail,
       NPCID.TheDestroyer, NPCID.TheDestroyerBody, NPCID.TheDestroyerTail,
       NPCID.BlazingWheel, NPCID.SpikeBall,
       NPCID.DD2EterniaCrystal, NPCID.DD2LanePortal,
       NPCID.CultistTablet,
       NPCID.LunarTowerNebula, NPCID.LunarTowerSolar, NPCID.LunarTowerStardust, NPCID.LunarTowerVortex
-    });
+    ]);
     return result;
   }
 

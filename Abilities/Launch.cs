@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using System;
@@ -147,7 +147,7 @@ public sealed class Launch(Player player) : OriAbility(player) {
   }
 
   private void BuffImmune() {
-    Player.buffImmune.AssignValueToKeys(true, stackalloc int[] {
+    Player.buffImmune.AssignValueToKeys(true, [
       BuffID.CursedInferno,
       BuffID.Dazed,
       BuffID.Frozen,
@@ -166,7 +166,7 @@ public sealed class Launch(Player player) : OriAbility(player) {
       BuffID.WitheredArmor,
       BuffID.WitheredWeapon,
       BuffID.WindPushed
-    });
+    ]);
   }
 
   protected override void OnEnter(State? fromState) {
