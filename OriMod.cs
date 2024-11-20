@@ -38,11 +38,13 @@ public sealed partial class OriMod : Mod {
   /// <summary>
   /// GitHub profile that the mod's repository is stored on.
   /// </summary>
-  public static string GithubUserName => "TwiliChaos";
+  [UsedImplicitly]
+  public static string GithubUserName => "Ilemni";
 
   /// <summary>
   /// Name of the GitHub repository this mod is stored on.
   /// </summary>
+  [UsedImplicitly]
   public static string GithubProjectName => "OriMod";
 
   #region Logging Shortcuts
