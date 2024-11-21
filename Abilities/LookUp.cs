@@ -14,9 +14,9 @@ public sealed class LookUp(Player player) : OriState(player) {
   private static int StartDuration => 12;
   private static int EndDuration => 8;
 
-  internal bool Starting => ActiveTime < StartDuration;
+  private bool Starting => ActiveTime < StartDuration;
 
-  internal bool Ending => _endingTime > 0;
+  private bool Ending => _endingTime > 0;
 
   private int _endingTime;
 

@@ -282,7 +282,7 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
   protected override void DebugText(DebugUIState ui) {
     ui.DrawAppendLabelValue("Breath", (int)_breath, Stats.Duration);
-    ui.DrawAppendLabelValue("Speed", _currentSpeed, format:"F2");
+    ui.DrawAppendLabelValue("Speed", _currentSpeed, format: "F2");
   }
 
   private readonly record struct BurrowStats(
@@ -292,11 +292,12 @@ public sealed class Burrow(Player player) : OriAbility(player) {
   ) : IStats<BurrowStats> {
     public static ref BurrowStats[] Values => ref _values;
 
+    // ReSharper disable once ReplaceWithFieldKeyword - Causes CS8145
     private static BurrowStats[] _values = [
       default,
-      new BurrowStats(Duration: 300, RecoveryRate: 0.1f, Strength: 55), // Evil biomes, dungeon
-      new BurrowStats(Duration: 480, RecoveryRate: 0.2f, Strength: 200), // Pre-Temple
-      new BurrowStats(Duration: 600, RecoveryRate: 0.35f, Strength: 300)
+      new(Duration: 300, RecoveryRate: 0.4f, Strength: 55), // Evil biomes, dungeon
+      new(Duration: 480, RecoveryRate: 1.2f, Strength: 200), // Pre-Temple
+      new(Duration: 600, RecoveryRate: 2.35f, Strength: 300)
     ];
 
     public static BurrowStats CreateFromLevel(int level) => new(

@@ -15,8 +15,6 @@ public sealed class Trail {
   /// <param name="oPlayer">The <see cref="OriPlayer"/> this <see cref="Trail"/> will belong to.</param>
   /// <exception cref="ArgumentNullException"><paramref name="oPlayer"/> is <see langword="null"/>.</exception>
   internal Trail(OriPlayer oPlayer) {
-    ArgumentNullException.ThrowIfNull(oPlayer);
-
     _segments = new TrailSegment[Count];
     int i = 0;
     while (i < Count) {

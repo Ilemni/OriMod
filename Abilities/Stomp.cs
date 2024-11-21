@@ -174,8 +174,8 @@ public sealed class Stomp(Player player) : OriAbility(player) {
 
     private static StompStats[] _values = [
       default,
-      new StompStats(Damage: 50, StartDuration: 24, MaxFallSpeed: 28, MaxCooldown: 60),
-      new StompStats(Damage: 70, StartDuration: 20, MaxFallSpeed: 36, MaxCooldown: 90),
+      new(Damage: 50, StartDuration: 24, MaxFallSpeed: 28, MaxCooldown: 60),
+      new(Damage: 70, StartDuration: 20, MaxFallSpeed: 36, MaxCooldown: 90),
     ];
 
     public static StompStats CreateFromLevel(int level) => new(

@@ -234,12 +234,12 @@ public sealed class Launch(Player player) : OriAbility(player) {
       _currentChain++;
       _currentChainTime = 0;
       _starting = true;
-      _endSound.Play(Player);
     }
     else {
       CancelState();
-      _endSound.Play(Player);
     }
+
+    _endSound.Play(Player);
   }
 
   protected override bool CanRefresh(bool cooledDown) => _currentChain == 0;
@@ -297,21 +297,17 @@ public sealed class Launch(Player player) : OriAbility(player) {
 
     private static LaunchStats[] _values = [
       default,
-      new LaunchStats(MaxChains: 1,
+      new(MaxChains: 1,
         MinDuration: 15, MinChainedDuration: 20,
         MaxDuration: 45, MaxChainedDuration: 30,
         MovingDuration: 12, MovingMidDuration: 6,
         Speed: 25, ChainedSpeed: 40),
-      new LaunchStats(MaxChains: 3,
+      new(MaxChains: 3,
         MinDuration: 15, MinChainedDuration: 20,
-#if DEBUG
-        MaxDuration: 4500, MaxChainedDuration: 30, // Debug for testing rotation
-#else
         MaxDuration: 45, MaxChainedDuration: 30,
-#endif
         MovingDuration: 12, MovingMidDuration: 6,
         Speed: 25, ChainedSpeed: 40),
-      new LaunchStats(MaxChains: 7,
+      new(MaxChains: 7,
         MinDuration: 8, MinChainedDuration: 11,
         MaxDuration: 20, MaxChainedDuration: 15,
         MovingDuration: 9, MovingMidDuration: 4,

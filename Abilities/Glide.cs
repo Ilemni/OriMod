@@ -23,8 +23,8 @@ public sealed class Glide(Player player) : OriAbility(player) {
   private static int StartDuration => 5;
   private static int EndDuration => 5;
 
-  internal bool Starting => ActiveTime < StartDuration;
-  internal bool Ending => _endingTime > 0;
+  private bool Starting => ActiveTime < StartDuration;
+  private bool Ending => _endingTime > 0;
 
   private int _endingTime;
 
