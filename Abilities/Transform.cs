@@ -1,6 +1,7 @@
 ﻿using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
+using AnimLib.UI.Debug;
 using Microsoft.Xna.Framework;
 using Terraria;
 
@@ -75,5 +76,10 @@ public sealed class Transform(Player player) : OriState(player) {
 
   protected override AnimationOptions? GetAnimationOptions() {
     return new AnimationOptions("Transform", speed: HasTransformedOnce ? RepeatedTransformSpeed : 1);
+  }
+
+  protected override void DebugText(DebugUIState ui) {
+    base.DebugText(ui);
+    ui.DrawAppendBoolean(HasTransformedOnce);
   }
 }

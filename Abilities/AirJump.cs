@@ -1,6 +1,7 @@
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
+using AnimLib.UI.Debug;
 using JetBrains.Annotations;
 using Terraria;
 using Terraria.DataStructures;
@@ -22,6 +23,7 @@ public sealed class AirJump(Player player) : OriAbility(player) {
   private SoundInfo _doubleJumpSound = new("Ori/DoubleJump/seinDoubleJumps", 4, 0.5f);
 
   public override int MaxLevel => 4;
+  public override bool SupportsCooldown => true;
   private int MaxJumps => Level;
   private ref ExtraJumpState AirJumpExtraJumpState => ref Player.GetJumpState<ExtraAirJump>();
 
@@ -116,6 +118,12 @@ public sealed class AirJump(Player player) : OriAbility(player) {
   protected override AnimationOptions? GetAnimationOptions() {
     float rotation = ActiveTime * Player.gravDir * Player.direction;
     return new AnimationOptions("AirJump", rotation: rotation);
+  }
+
+  protected override void DebugText(DebugUIState ui) {
+    base.DebugText(ui);
+    ui.DrawAppendLabelValue("Jumps", _currentCount, MaxJumps);
+    ui.DrawAppendLabelValue("Jump Duration", ActiveTime, EndDuration);
   }
 
   [UsedImplicitly]

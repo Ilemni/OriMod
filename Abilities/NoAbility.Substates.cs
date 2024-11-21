@@ -1,6 +1,7 @@
 using System;
 using AnimLib.Animations;
 using AnimLib.States;
+using AnimLib.UI.Debug;
 using Terraria;
 
 namespace OriMod.Abilities;
@@ -26,6 +27,10 @@ public sealed partial class NoAbility {
 
     protected override AnimationOptions? GetAnimationOptions() =>
       new(Name, speed: Player.webbed ? 0.3f : 1);
+
+    protected override void DebugText(DebugUIState ui) {
+      // No useful fields to display, prevent calling base.DebugText
+    }
   }
 
   internal abstract class InAir(Player player) : OriState(player) {
@@ -50,10 +55,14 @@ public sealed partial class NoAbility {
     }
 
     protected override AnimationOptions? GetAnimationOptions() {
+      // If other mods modify player rotation, assume spinning behaviour
       return Player.fullRotation != 0
-        // If other mods modify player rotation, assume spinning behaviour
         ? new AnimationOptions("AirJump")
         : new AnimationOptions(Name, frameIndex: Player.webbed ? 1 : null);
+    }
+
+    protected override void DebugText(DebugUIState ui) {
+      // No useful fields to display, prevent calling base.DebugText
     }
   }
 
@@ -104,5 +113,9 @@ public sealed partial class NoAbility {
 
     protected override AnimationOptions? GetAnimationOptions() =>
       new("WallSlide", speed: Player.webbed ? 0.3f : 1.0f);
+
+    protected override void DebugText(DebugUIState ui) {
+      // No useful fields to display, prevent calling base.DebugText
+    }
   }
 }

@@ -1,6 +1,7 @@
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
+using AnimLib.UI.Debug;
 using Microsoft.Xna.Framework;
 using Terraria;
 
@@ -67,4 +68,10 @@ public sealed class WallJump(Player player) : OriAbility(player) {
   }
 
   protected override AnimationOptions? GetAnimationOptions() => new("WallJump");
+
+  protected override void DebugText(DebugUIState ui) {
+    base.DebugText(ui);
+    ui.DrawAppendLabelValue("X Direction", _wallDirection > 0 ? "Right" : "Left");
+    ui.DrawAppendLabelValue("Y Direction", _gravDirection > 0 ? "Down" : "Up");
+  }
 }

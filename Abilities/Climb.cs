@@ -2,6 +2,7 @@ using System;
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
+using AnimLib.UI.Debug;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
 using OriMod.Utilities;
@@ -254,5 +255,16 @@ public sealed class Climb(Player player) : OriAbility(player) {
       > 0.17f => 3,
       _ => 0
     });
+  }
+
+  protected override void DebugText(DebugUIState ui) {
+    base.DebugText(ui);
+    ui.DrawAppendLabelValue("X Direction", _wallDirection > 0 ? "Right" : "Left");
+    ui.DrawAppendLabelValue("Y Direction", _gravDirection > 0 ? "Down" : "Up");
+    if (_currentCharge > 0) {
+      ui.DrawAppendBoolean(IsFullyCharged);
+      ui.DrawAppendLabelValue("Current Charge", _currentCharge, MaxCharge);
+      ui.DrawAppendLabelValue("Angle", _angle);
+    }
   }
 }

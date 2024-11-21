@@ -2,6 +2,7 @@ using System;
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
+using AnimLib.UI.Debug;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using Terraria;
@@ -74,5 +75,10 @@ public sealed class WallChargeJump(Player player) : OriAbility(player) {
   internal void SetAimAndDirection(float angle, Vector2 direction) {
     _angle = angle;
     _direction = direction;
+  }
+
+  protected override void DebugText(DebugUIState ui) {
+    base.DebugText(ui);
+    ui.DrawAppendLabelValue(_angle, format:['F']);
   }
 }

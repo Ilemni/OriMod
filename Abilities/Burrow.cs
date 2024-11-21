@@ -4,7 +4,7 @@ using System;
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
-using ReLogic.Content;
+using AnimLib.UI.Debug;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -40,6 +40,7 @@ public sealed class Burrow(Player player) : OriAbility(player) {
     return EnterHitbox.Any(CanBurrow);
   }
 
+  public override bool SupportsCooldown => true;
   public override int MaxCooldown => 12;
   protected override void OnEndCooldown() => RefreshParticles(Color.SandyBrown);
 
@@ -277,6 +278,11 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
     float rad = (float)Math.Atan2(_velocity.X, -_velocity.Y * gravDir) * gravDir;
     return new AnimationOptions("Burrow", rotation: rad);
+  }
+
+  protected override void DebugText(DebugUIState ui) {
+    ui.DrawAppendLabelValue("Breath", (int)_breath, Stats.Duration);
+    ui.DrawAppendLabelValue("Speed", _currentSpeed, format:"F2");
   }
 
   private readonly record struct BurrowStats(

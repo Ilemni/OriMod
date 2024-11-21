@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
+using AnimLib.UI.Debug;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -420,6 +421,18 @@ public sealed class Bash(Player player) : OriAbility(player) {
     position = target.Center;
     rotation = _aimAngle;
     rect = sheet.GetRectFromTimer("Bash", "Arrow", ActiveTime);
+  }
+
+  protected override void DebugText(DebugUIState ui) {
+    base.DebugText(ui);
+    string name = _bashEntity switch {
+      null => "null",
+      NPC npc => npc.TypeName,
+      Projectile proj => proj.Name,
+      _ => _bashEntity.GetType().Name
+    };
+    ui.DrawAppendLabelValue("Target", name);
+    ui.DrawAppendLabelValue("Stress", _currentStress);
   }
 
   /// <summary>

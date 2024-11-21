@@ -30,6 +30,8 @@ public sealed class Dash(Player player) : OriAbility(player) {
 
   private SoundInfo _startSound = new("Ori/Dash/seinDash", 3, 0.2f);
 
+  public override bool SupportsCooldown => true;
+
   protected override void OnInitialize() {
     base.OnInitialize();
 

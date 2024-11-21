@@ -5,6 +5,7 @@ using System;
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
+using AnimLib.UI.Debug;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.ID;
@@ -64,6 +65,7 @@ public sealed class Launch(Player player) : OriAbility(player) {
 
   private int _timeSinceLastSync;
 
+  public override bool SupportsCooldown => true;
 
   protected override bool StartCooldownOnExit => true;
 
@@ -268,6 +270,16 @@ public sealed class Launch(Player player) : OriAbility(player) {
     position = OriPlayer.Player.Center;
     rotation = _launchAngle;
     rect = sheet.GetRectFromTimer("Launch", "Arrow", ActiveTime);
+  }
+
+  protected override void DebugText(DebugUIState ui) {
+    base.DebugText(ui);
+    ui.DrawAppendLabelValue("Chain", _currentChain, Stats.MaxChains);
+    ui.DrawAppendBoolean(Starting);
+    ui.DrawAppendLabelValue(_currentChainTime, color: Color.LightGray);
+
+    ui.DrawAppendLabelValue("Angle", _launchAngle, format:['F']);
+    ui.DrawAppendLabelValue(_netAngle, color: Color.LightGray, format:['F']);
   }
 
   private readonly record struct LaunchStats(

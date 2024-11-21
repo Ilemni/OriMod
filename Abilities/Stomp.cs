@@ -4,6 +4,7 @@ using System;
 using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
+using AnimLib.UI.Debug;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
@@ -157,6 +158,11 @@ public sealed class Stomp(Player player) : OriAbility(player) {
     return Starting
       ? new AnimationOptions("AirJump", rotation: ActiveTime * 0.8f)
       : new AnimationOptions("ChargeJump", speed: 2, rotation: (float)Math.PI, loopCount: 0, isPingPong: true);
+  }
+
+  protected override void DebugText(DebugUIState ui) {
+    base.DebugText(ui);
+    ui.DrawAppendBoolean(Starting);
   }
 
   private readonly record struct StompStats(
