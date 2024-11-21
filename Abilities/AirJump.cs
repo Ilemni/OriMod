@@ -71,6 +71,10 @@ public sealed class AirJump(Player player) : OriAbility(player) {
     sync.Sync7BitEncodedInt(ref _currentCount);
   }
 
+  protected override bool OnPreUpdateInterruptible(State activeState) {
+    return Input.Jump.JustPressed;
+  }
+
   protected override void OnPreUpdate() {
     if (!IsLocal) {
       return;

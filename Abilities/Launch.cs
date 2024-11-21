@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using OriMod.Utilities;
 using System;
@@ -22,6 +22,8 @@ namespace OriMod.Abilities;
 /// Bash to be unlocked as well to be usable.
 /// </remarks>
 public sealed class Launch(Player player) : OriAbility(player) {
+  public override int MaxLevel => 3;
+
   private static float NetAngleTolerance => 0.15f;
   private static float NetAngleLerpValue => 0.2f;
 
@@ -31,11 +33,8 @@ public sealed class Launch(Player player) : OriAbility(player) {
 
     parent.AddInterruptible<NoAbility>(to: this);
     parent.AddInterruptible<AirJump>(to: this);
-    parent.AddInterruptible<Climb>(to: this);
-    parent.AddInterruptible<Crouch>(to: this);
     parent.AddInterruptible<Dash>(to: this);
     parent.AddInterruptible<Glide>(to: this);
-    parent.AddInterruptible<LookUp>(to: this);
     parent.AddInterruptible<WallJump>(to: this);
   }
 

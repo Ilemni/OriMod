@@ -23,6 +23,13 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
   private ref BurrowStats Stats => ref IStats<BurrowStats>.Get(Level);
 
+  protected override void OnInitialize() {
+    base.OnInitialize();
+    MovementStates parent = GetParent<MovementStates>();
+    parent.AddInterruptible<NoAbility>(to: this);
+    parent.AddInterruptible<Crouch>(to: this);
+  }
+
   public override bool CanEnter() => base.CanEnter() && !InMenu;
 
   protected override bool CanTransitionFrom(State fromState) => fromState is Crouch || OnWall;

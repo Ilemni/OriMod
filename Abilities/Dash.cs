@@ -30,12 +30,19 @@ public sealed class Dash(Player player) : OriAbility(player) {
 
   private SoundInfo _startSound = new("Ori/Dash/seinDash", 3, 0.2f);
 
+  private ChargeDash _chargeDash = null!; // OnInitialize()
+
   public override bool SupportsCooldown => true;
 
   protected override void OnInitialize() {
     base.OnInitialize();
-
     MovementStates parent = GetParent<MovementStates>();
+    _chargeDash = parent.GetChild<ChargeDash>();
+    parent.AddInterruptible<NoAbility>(to: this);
+    parent.AddInterruptible<Glide>(to: this);
+    parent.AddInterruptible<WallJump>(to: this);
+    parent.AddInterruptible<Crouch>(to: this);
+    parent.AddInterruptible<LookUp>(to: this);
   }
 
   public override bool CanEnter() => base.CanEnter() && !OnWall && (Level >= 2 || IsGrounded);
@@ -45,7 +52,7 @@ public sealed class Dash(Player player) : OriAbility(player) {
     _startSound.Play(Player);
     Player.pulley = false;
     _currentCount++;
-    if (_currentCount > MaxDashes) {
+    if (_currentCount >= MaxDashes) {
       StartCooldown();
     }
   }
@@ -63,8 +70,7 @@ public sealed class Dash(Player player) : OriAbility(player) {
   }
 
   protected override bool OnPreUpdateInterruptible(State activeState) {
-    // TODO: Check all abilities which use Interruptible that they have Interruptibles registered
-    return Input.Dash.JustPressed;
+    return Input.Dash.JustPressed && (!Input.Charge.Current || !_chargeDash.CanEnter());
   }
 
   protected override void OnPreUpdate() {

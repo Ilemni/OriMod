@@ -44,6 +44,20 @@ public sealed class ChargeDash(Player player) : OriAbility(player) {
 
   protected override bool StartCooldownOnExit => true;
 
+  protected override void OnInitialize() {
+    base.OnInitialize();
+    MovementStates parent = GetParent<MovementStates>();
+    parent.AddInterruptible<NoAbility>(to: this);
+    parent.AddInterruptible<Glide>(to: this);
+    parent.AddInterruptible<WallJump>(to: this);
+    parent.AddInterruptible<Crouch>(to: this);
+    parent.AddInterruptible<LookUp>(to: this);
+  }
+
+  protected override bool OnPreUpdateInterruptible(State activeState) {
+    return Input.Dash.JustPressed && Input.Charge.Current;
+  }
+
   public override bool CanEnter() => base.CanEnter() && !OnWall && Player.CheckMana(ManaCost, blockQuickMana: true);
 
   protected override void OnEnter(State? fromState) {

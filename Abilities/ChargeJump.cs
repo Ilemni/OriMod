@@ -36,7 +36,7 @@ public sealed class ChargeJump(Player player) : OriAbility(player) {
   private SoundInfo _startSound = new("Ori/ChargeJump/seinChargeJumpJump", 3, 1);
 
 
-  private bool CanCharge => base.CanEnter() && Input.Charge.Current;
+  private bool CanCharge => base.CanEnter() && Input.Charge.Current && IsGrounded;
 
   public override int MaxLevel => 5;
 

@@ -27,7 +27,7 @@ public sealed class WallJump(Player player) : OriAbility(player) {
   public override int MaxLevel => 1;
 
 
-  protected override bool CanTransitionFrom(State fromState) => fromState is not Climb climb || climb.IsFullyCharged;
+  protected override bool CanTransitionFrom(State fromState) => fromState is not Climb { IsFullyCharged: true };
 
   public override bool CanEnter() => OnWall && !IsGrounded;
 

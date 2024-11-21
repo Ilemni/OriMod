@@ -99,20 +99,6 @@ public sealed class Glide(Player player) : OriAbility(player) {
       return;
     }
 
-    if (Input.Jump.JustPressed) {
-      TriggerState<AirJump>();
-    }
-
-    if (Input.Dash.JustPressed) {
-      TriggerState<Dash>();
-      return;
-    }
-
-    if (Input.Burrow.JustPressed) {
-      TriggerState<Burrow>();
-      return;
-    }
-
     if (OnWall || IsGrounded || !Input.Glide.Current) {
       if (Starting) {
         CancelState();

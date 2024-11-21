@@ -35,22 +35,8 @@ public sealed partial class NoAbility {
 
   internal abstract class InAir(Player player) : OriState(player) {
     protected override void OnPreUpdate() {
-      if (Input.Jump.JustPressed && TriggerState<AirJump>()) {
-        return;
-      }
-
       if (Input.Glide.Current && TriggerState<Glide>()) {
         return;
-      }
-
-      if (Input.Dash.JustPressed && Input.Charge.Current) {
-        if (TriggerState<ChargeDash>()) {
-          return;
-        }
-
-        if (TriggerState<Dash>()) {
-          return;
-        }
       }
     }
 
