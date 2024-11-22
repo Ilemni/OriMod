@@ -42,12 +42,13 @@ public sealed class Bash(Player player) : OriAbility(player) {
   private bool _hasReleasedBash;
 
   /// <summary>
-  /// The <see cref="NPC"/> or <see cref="Projectile"/> that is being bashed.
+  /// The <see cref="NPC"/> or <see cref="Projectile"/> that is being bashed. May be segment of a worm.
   /// </summary>
   private Entity? _bashEntity;
 
   /// <summary>
   /// The <see cref="OriNpc"/> or <see cref="OriProjectile"/> global that is being bashed.
+  /// If <see cref="_bashEntity"/> is a worm, this will be the worm's head.
   /// </summary>
   private IBashable? _bashTarget;
 
@@ -82,11 +83,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
   private void UpdateBashTarget() {
     IBashable? oldBashTarget = _bashTarget;
-    IBashable? newBashGlobal = _bashEntity switch {
-      NPC npc => npc.GetGlobalNPC<OriNpc>(),
-      Projectile proj => proj.GetGlobalProjectile<OriProjectile>(),
-      _ => null
-    };
+    IBashable? newBashGlobal = GetBashTarget(_bashEntity);
 
     if (ReferenceEquals(oldBashTarget, newBashGlobal)) {
       return;
@@ -95,6 +92,14 @@ public sealed class Bash(Player player) : OriAbility(player) {
     _bashTarget?.ClearBashPlayer();
     _bashTarget = newBashGlobal;
     _bashTarget?.SetBashPlayer(OriPlayer);
+  }
+
+  private static IBashable? GetBashTarget(Entity? entity) {
+    return entity switch {
+      NPC npc => npc.HeadOrSelf().GetGlobalNPC<OriNpc>(),
+      Projectile proj => proj.GetGlobalProjectile<OriProjectile>(),
+      _ => null
+    };
   }
 
   private void ClearBashEntity() {
@@ -280,7 +285,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
     // TryGet, since explicitly immune Npcs/Projs will not have the bash GlobalNpc/Proj created for them
     static bool BashNpcFilter(NPC npc) =>
-      npc.TryGetGlobalNPC(out OriNpc oNpc) && ((IBashable)oNpc).CanBeBashed();
+      npc.HeadOrSelf().TryGetGlobalNPC(out OriNpc oNpc) && ((IBashable)oNpc).CanBeBashed();
 
     static bool BashProjFilter(Projectile proj) =>
       proj.TryGetGlobalProjectile(out OriProjectile oProj) && ((IBashable)oProj).CanBeBashed();
