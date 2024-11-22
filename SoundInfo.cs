@@ -23,7 +23,7 @@ public record struct SoundInfo {
 
     soundStyles = new SoundStyle[random];
     for (int i = 0; i < random; i++) {
-      string soundPath = pathPrefix + (char)('A' + i);
+      string soundPath = "OriMod/Sounds/" + pathPrefix + (char)('A' + i);
       soundStyles[i] = new SoundStyle(soundPath) {
         Volume = volume,
         Pitch = pitch
