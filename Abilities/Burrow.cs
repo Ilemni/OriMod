@@ -247,8 +247,9 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
     Texture2D texture = OriPlayer.BurrowTimer.Value;
     Vector2 origin = texture.Size() / 2;
-    Color color = Color.White * (IsActive ? 1 : 0.6f);
+    Color color = Color.White * (IsActive ? 0.3f : 0.07f);
     SpriteEffects effect = Player.gravDir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
+    const float scale = 0.5f;
 
     // Adding to drawDataCache multiple times, position is updated each time
     Vector2 drawPosition = baseDrawPosition;
@@ -256,10 +257,10 @@ public sealed class Burrow(Player player) : OriAbility(player) {
     for (int i = 0; i < uiCount; i++) {
       if (i % 10 == 0) {
         drawPosition.X = baseDrawPosition.X;
-        drawPosition.Y += 40 * Player.gravDir;
+        drawPosition.Y += 40 * Player.gravDir * scale;
       }
 
-      drawPosition.X += 24;
+      drawPosition.X += 24 * scale;
 
       // Different frameY if this represents a partially filled bar
       int frameX = (int)Main.time % 30 / 10;
@@ -270,7 +271,7 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
       Rectangle rect = texture.Frame(3, 5, frameX, frameY);
 
-      DrawData data = new(texture, drawPosition, rect, color, 0, origin, 1, effect) {
+      DrawData data = new(texture, drawPosition, rect, color, 0, origin, scale, effect) {
         ignorePlayerRotation = true
       };
       drawInfo.DrawDataCache.Add(data);
