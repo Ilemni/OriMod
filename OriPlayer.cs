@@ -96,7 +96,8 @@ public sealed partial class OriPlayer : ModPlayer {
   /// <summary>
   /// Represents if the player is on the ground.
   /// </summary>
-  public bool IsGrounded { get; private set; }
+  // Init as true required for player selection menu displaying character as idle
+  public bool IsGrounded { get; private set; } = true;
 
   /// <summary>
   /// Represents if the player is on a wall.
