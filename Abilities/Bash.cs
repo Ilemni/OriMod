@@ -9,6 +9,7 @@ using AnimLib.Animations;
 using AnimLib.Networking;
 using AnimLib.States;
 using AnimLib.UI.Debug;
+using OriMod.Networking;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -129,6 +130,9 @@ public sealed class Bash(Player player) : OriAbility(player) {
   /// </summary>
   /// <param name="sync"></param>
   protected override void NetSync(ISync sync) {
+    Vector2 oldEntityPosition = default;
+    Vector2 oldEntityVelocity = default;
+
     // No need to send this stuff more than once
     if (ActiveTime == 0) {
       sync.Sync(ref _targetStartPos);
@@ -137,11 +141,15 @@ public sealed class Bash(Player player) : OriAbility(player) {
       sync.Sync7BitEncodedInt(ref _lastStress);
       sync.SyncPositionAndVelocity(Player);
       sync.SyncEntity(ref _bashEntity);
+
       if (_bashEntity is not null) {
+        oldEntityPosition = _bashEntity.position;
+        oldEntityVelocity = _bashEntity.velocity;
         sync.SyncPositionAndVelocity(_bashEntity);
       }
 
-      if (sync.Reading) {
+      if (sync.Reading && !Main.dedServ) {
+        // dedServ requires validating, later in method
         UpdateBashTarget();
       }
     }
@@ -157,9 +165,34 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
     sync.Sync(ref _netAngle);
 
+    // Done syncing data
     if (sync.Reading && Main.dedServ) {
+      if (!Main.dedServ) {
+        UpdateBashTarget();
+        return;
+      }
+
       // Server needs to know actual value, and doesn't need visual lerping
       _aimAngle = _netAngle;
+
+      // Server needs to make sure bash target is valid for bashing.
+      // It's possible to be invalid if 2 or more players attempt to bash the same target at the same time.
+      // If entity is somehow null, bash is invalid there too.
+      // This check must be at end of sync to ensure all data is read
+      IBashable? target = GetBashTarget(_bashEntity);
+      if (target is not (null or { IsBashed: true, BashPlayer.ActiveState: Bash })) {
+        UpdateBashTarget();
+        return;
+      }
+
+      // The player that sent the invalid bash needs its bash rejected.
+      ModNetHandler.BashRejection.SendPacket(Player.whoAmI);
+
+      // Restore pos/vel values that were set in packet.
+      if (_bashEntity is not null) {
+        _bashEntity.position = oldEntityPosition;
+        _bashEntity.velocity = oldEntityVelocity;
+      }
     }
   }
 
@@ -407,7 +440,10 @@ public sealed class Bash(Player player) : OriAbility(player) {
   }
 
   protected override void OnPostUpdate() {
-    AddStress(-1);
+    if (!IsActive) {
+      AddStress(-1);
+    }
+
     if (!Input.Bash.Current) {
       _hasReleasedBash = true;
     }
