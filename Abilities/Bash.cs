@@ -89,7 +89,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
       return;
     }
 
-    _bashTarget?.ClearBashPlayer();
+    _bashTarget?.TryClearBashPlayer(Player);
     _bashTarget = newBashGlobal;
     _bashTarget?.SetBashPlayer(OriPlayer);
   }
@@ -104,7 +104,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
   private void ClearBashEntity() {
     _bashEntity = null;
-    _bashTarget?.ClearBashPlayer();
+    _bashTarget?.TryClearBashPlayer(Player);
     _bashTarget = null;
   }
 

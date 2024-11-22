@@ -53,6 +53,16 @@ public interface IBashable {
     FramesUntilBashable = ImmuneTime;
   }
 
+  /// <summary>
+  /// Clears the Bash Player, only if it is the matching player.
+  /// </summary>
+  /// <param name="player"></param>
+  public void TryClearBashPlayer(Player player) {
+    if (BashPlayer is null || BashPlayer.Player.whoAmI == player.whoAmI) {
+      ClearBashPlayer();
+    }
+  }
+
   public void ClearBashPlayer() {
     IsBashed = false;
     BashPlayer = null;
