@@ -8,7 +8,6 @@ using AnimLib.UI.Debug;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
 
@@ -256,6 +255,8 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
   protected override void OnPostUpdate() {
     if (!IsActive) {
+      // Restore burrow breath
+      _breath = Math.Clamp(_breath + Stats.RecoveryRate, 0, Stats.Duration);
       return;
     }
 
