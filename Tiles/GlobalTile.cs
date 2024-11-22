@@ -1,9 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using OriMod.Abilities;
 using Terraria;
-using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OriMod.Tiles;
@@ -12,40 +10,43 @@ namespace OriMod.Tiles;
 /// Used for draw effects, specifically brightening solid areas when the player uses <see cref="Burrow"/>.
 /// </summary>
 [UsedImplicitly]
-public sealed class OriTile : GlobalTile {
+public sealed class OriTile : GlobalWall {
   private static int InnerRange => 4;
   private static int OuterRange => 13;
 
-  private static void BurrowEffects(int i, int j, ref Color drawColor, OriPlayer oPlayer, Burrow burrow) {
-    Color orig = drawColor;
-    Vector2 playerPos = oPlayer.Player.Center / 16;
-    float dist = Vector2.Distance(playerPos, new Vector2(i, j)) - InnerRange;
-    dist = Utils.Clamp((OuterRange - dist) / OuterRange, 0, 1);
-    drawColor = Color.Lerp(orig, Color.White,
-      (burrow.CanBurrow(Main.tile[i, j]) ? 0.8f : 0.4f) * dist);
-    drawColor.A = orig.A;
-  }
-
-  public override void DrawEffects(int i, int j, int type, SpriteBatch spriteBatch, ref TileDrawInfo drawInfo) {
+  public override void ModifyLight(int i, int j, int type, ref float r, ref float g, ref float b) {
     OriPlayer oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
     if (oPlayer.ActiveState is not Burrow burrow) {
       return;
     }
 
-    BurrowEffects(i, j, ref drawInfo.finalColor, oPlayer, burrow);
+    float lightStrength = burrow.CanBurrow(Main.tile[i, j]) ? 0.8f : 0.4f;
+
+    float dist = (oPlayer.Player.Center / 16 - new Vector2(i, j)).Length();
+    if (dist < InnerRange) {
+      r = MathHelper.Clamp(r + lightStrength, r, 1f);
+      g = MathHelper.Clamp(g + lightStrength, g, 1f);
+      b = MathHelper.Clamp(b + lightStrength, b, 1f);
+    }
+    else if (dist < OuterRange) {
+      float lerp = 1 - (dist - InnerRange) / (OuterRange - InnerRange);
+      r = MathHelper.Lerp(r, lightStrength, lerp);
+      g = MathHelper.Lerp(g, lightStrength, lerp);
+      b = MathHelper.Lerp(b, lightStrength, lerp);
+    }
 
     if (oPlayer.DebugMode) {
-      DebugEffects(i, j, ref drawInfo.finalColor);
-    }
-  }
-
-  private static void DebugEffects(int i, int j, ref Color drawColor) {
-    Point pos = new(i, j);
-    if (Burrow.InnerHitbox.Contains(pos)) {
-      drawColor = Color.Red;
-    }
-    else if (Burrow.EnterHitbox.Contains(pos)) {
-      drawColor = Color.LimeGreen;
+      Point pos = new(i, j);
+      if (Burrow.InnerHitbox.Contains(pos)) {
+        r = 1f;
+        g = 0f;
+        b = 0f;
+      }
+      else if (Burrow.EnterHitbox.Contains(pos)) {
+        r = 0f;
+        g = 1f;
+        b = 0f;
+      }
     }
   }
 }
