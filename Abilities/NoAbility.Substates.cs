@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using AnimLib.Animations;
 using AnimLib.States;
 using AnimLib.UI.Debug;
@@ -99,6 +99,15 @@ public sealed partial class NoAbility {
 
     protected override AnimationOptions? GetAnimationOptions() =>
       new("WallSlide", speed: Player.webbed ? 0.3f : 1.0f);
+
+    protected override void DebugText(DebugUIState ui) {
+      // No useful fields to display, prevent calling base.DebugText
+    }
+  }
+
+  // Treat this as a placeholder state
+  internal sealed class Default(Player player) : OriState(player) {
+    protected override AnimationOptions? GetAnimationOptions() => new("Default");
 
     protected override void DebugText(DebugUIState ui) {
       // No useful fields to display, prevent calling base.DebugText

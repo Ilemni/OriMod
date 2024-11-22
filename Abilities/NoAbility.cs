@@ -17,6 +17,7 @@ public sealed partial class NoAbility(Player player) : StateMachine(player) {
   private Running _running = null!; // OnInitialize()
   private Jump _jump = null!; // OnInitialize()
   private Falling _falling = null!; // OnInitialize()
+  private Default _default = null!; // OnInitialize()
 
   protected override void OnInitialize() {
     _oriPlayer = Player.GetModPlayer<OriPlayer>();
@@ -26,6 +27,7 @@ public sealed partial class NoAbility(Player player) : StateMachine(player) {
     _running = AddChild(new Running(Player));
     _jump = AddChild(new Jump(Player));
     _falling = AddChild(new Falling(Player));
+    _default = AddChild(new Default(Player));
   }
 
   protected override void OnEnter(State? fromState) => UpdateChildState();
@@ -34,7 +36,19 @@ public sealed partial class NoAbility(Player player) : StateMachine(player) {
     UpdateChildState();
   }
 
+  protected override void OnPostUpdate() {
+    if (Player.grapCount > 0 || Player.pulley || Player.dead || Player.stoned) {
+      // I'd rather not stick a transition in PostUpdate, but Player.pulley is always false during OnPreUpdate
+      TrySetActiveChild(_default, checkTransition: false, silent: true);
+    }
+  }
+
   private void UpdateChildState() {
+    if (Player.grapCount > 0 || Player.pulley || Player.dead || Player.stoned) {
+      TrySetActiveChild(_default, checkTransition: false, silent: true);
+      return;
+    }
+
     State desiredState = (_oriPlayer.IsGrounded, _oriPlayer.OnWall) switch {
       (IsGrounded: true, OnWall: false) when IsIdle() => _idle,
       (IsGrounded: true, OnWall: false) => _running,
