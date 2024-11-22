@@ -200,10 +200,18 @@ public sealed class Burrow(Player player) : OriAbility(player) {
     }
 
     // Disable actions while burrowing
-    Player.noItems = true;
     Player.gravity = 0;
     Player.controlJump = false;
-    Player.controlUseItem = false;
+
+    // Allow use item only if it is a warp item, like magic mirror
+    if (Player.HeldItem.type is not (ItemID.MagicMirror or ItemID.IceMirror or ItemID.CellPhone or ItemID.RecallPotion
+        or ItemID.Shellphone or ItemID.ShellphoneSpawn or ItemID.ShellphoneHell or ItemID.ShellphoneOcean
+        or ItemID.ShellphoneDummy or ItemID.PDA or ItemID.GPS
+        or ItemID.RodofDiscord or ItemID.TeleportationPotion or ItemID.WormholePotion)) {
+      Player.noItems = true;
+      Player.controlUseItem = false;
+    }
+
     Player.controlUseTile = false;
     Player.controlThrow = false;
     Player.controlUp = false;
@@ -212,6 +220,12 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
   protected override void OnPostUpdate() {
     if (!IsActive) {
+      return;
+    }
+
+    // Position was modified directly, likely as a result of player warping
+    if (!Ending && ActiveTime > 10 && Vector2.DistanceSquared(Player.position, _lastPosition) > 100) {
+      CancelState();
       return;
     }
 
