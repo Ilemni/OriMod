@@ -131,9 +131,6 @@ public sealed class Burrow(Player player) : OriAbility(player) {
       if (OriMod.ConfigClient.BurrowToMouse) {
         newVel = Player.AngleTo(Main.MouseWorld).ToRotationVector2();
         holdNeutral = Vector2.DistanceSquared(Main.MouseWorld, Player.Center) < 3600.0f;
-        if (Player.confused) {
-          newVel *= -1;
-        }
       }
       else {
         if (Player.controlLeft) {
@@ -156,6 +153,10 @@ public sealed class Burrow(Player player) : OriAbility(player) {
           holdNeutral = true;
           newVel = _velocity;
         }
+      }
+
+      if (Player.confused) {
+        newVel *= -1;
       }
 
       if ((_velocity.ToRotation() - newVel.ToRotation()).ToRotationVector2().X < 0f) {
