@@ -56,7 +56,7 @@ public sealed class TileHitbox {
     x = y = false;
     for (int i = 0; i < Points.Length; i++) {
       Point point = Points[i];
-      if (!checkFunc(Main.tile[point.X, point.Y])) {
+      if (checkFunc(Main.tile[point.X, point.Y])) {
         continue;
       }
 
