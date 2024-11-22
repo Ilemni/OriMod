@@ -48,6 +48,7 @@ public sealed class Climb(Player player) : OriAbility(player) {
   private Vector2 _chargeJumpAimDirection;
 
   private float _angle;
+  private float _lastSyncedAngle;
 
   private int _wallDirection;
   private int _gravDirection;
@@ -128,9 +129,12 @@ public sealed class Climb(Player player) : OriAbility(player) {
       }
 
       Vector2 direction = new(-_wallDirection, _gravDirection);
-      _chargeJumpAimDirection = OriUtils.GetMouseDirection(Player, out float angle, direction, MaxAimAngle);
-      if (Math.Abs(_angle - angle) > 0.1f) {
-        _angle = angle;
+      _chargeJumpAimDirection = OriUtils.GetMouseDirection(Player, out _angle, direction, MaxAimAngle);
+      // Trigger net update if angle delta is large enough, or if the angle becomes equal to the bounds
+      if (Math.Abs(_lastSyncedAngle - _angle) > 0.1f ||
+          _lastSyncedAngle > -MaxAimAngle && _lastSyncedAngle < MaxAimAngle &&
+          (_angle <= -MaxAimAngle || _angle >= MaxAimAngle)) {
+        _lastSyncedAngle = _angle;
         NetUpdate = true;
       }
 
@@ -266,5 +270,8 @@ public sealed class Climb(Player player) : OriAbility(player) {
       ui.DrawAppendLabelValue("Current Charge", _currentCharge, MaxCharge);
       ui.DrawAppendLabelValue("Angle", _angle);
     }
+
+    ui.Color = Color.LightGray;
+    ui.DrawAppendLabelValue(_lastSyncedAngle);
   }
 }
