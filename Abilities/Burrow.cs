@@ -39,8 +39,9 @@ public sealed class Burrow(Player player) : OriAbility(player) {
       return false;
     }
 
-    // Not in use
-    _breath = Math.Clamp(_breath + Stats.RecoveryRate, 0, Stats.Duration);
+    if (fromState is not Crouch && !OnWall) {
+      return false;
+    }
 
     // Check if player can enter Burrow
     EnterHitbox.UpdateHitbox(Player.Center);
@@ -108,7 +109,10 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
   protected override void OnEnter(State? fromState) {
     _currentSpeed = FastSpeed;
-    _velocity = Vector2.UnitY * Player.gravDir * _currentSpeed;
+    Vector2 baseVelocity = fromState is Crouch
+      ? Vector2.UnitY * Player.gravDir
+      : Vector2.UnitX * Player.direction;
+    _velocity = baseVelocity * Player.gravDir * _currentSpeed;
     Player.position += _velocity;
     _lastPosition = Player.position;
   }
