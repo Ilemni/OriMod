@@ -563,7 +563,7 @@ public sealed partial class OriPlayer : ModPlayer {
   public void RestoreAirJumps() {
     Player.RefreshExtraJumps();
     MovementStates move = Character.Move;
-    move.GetChild<AirJump>().EndCooldown();
+    move.GetChild<AirJump>().EndCooldown(force: true);
     move.GetChild<Dash>().EndCooldown();
     move.GetChild<Launch>().EndCooldown();
   }
