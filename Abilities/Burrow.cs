@@ -126,11 +126,11 @@ public sealed class Burrow(Player player) : OriAbility(player) {
   private void UpdateActive() {
     if (IsLocal) {
       // Get intended velocity based on input
-      bool holdNeutral = false;
+      bool holdNeutral = Input.Glide.Current;
       Vector2 newVel = Vector2.Zero;
       if (OriMod.ConfigClient.BurrowToMouse) {
         newVel = Player.AngleTo(Main.MouseWorld).ToRotationVector2();
-        holdNeutral = Vector2.DistanceSquared(Main.MouseWorld, Player.Center) < 3600.0f;
+        holdNeutral |= Vector2.DistanceSquared(Main.MouseWorld, Player.Center) < 3600.0f;
       }
       else {
         if (Player.controlLeft) {
@@ -174,25 +174,46 @@ public sealed class Burrow(Player player) : OriAbility(player) {
         IsBounceStunned ? 0.01f : 0.1f) * _currentSpeed;
     }
 
+    float breathDecreaseAmount = Input.Burrow.Current ? 0.45f : 0.2f;
     // Detect bouncing
     if (!CanBurrowAny) {
       InnerHitbox.UpdateHitbox(Player.Center + _velocity.SafeNormalize(default) * (Player.gravDir < 0 ? 48 : 32));
-      InnerHitbox.GetCollisions(CanBurrow, out bool didX, out bool didY);
-      _velocity = (didX, didY) switch {
-        (true, true) => _velocity * -1,
-        (false, false) => _velocity,
-        (true, false) => new Vector2(_velocity.X * -1, _velocity.Y),
-        (false, true) => new Vector2(_velocity.X, _velocity.Y * -1)
-      };
-      if ((didX, didY) is not (false, false)) {
-        _bounceStunLeft = MaxBounceStunDuration;
+      if (_velocity.LengthSquared() >= 20f) {
+        // Normal/high speed burrow
+        InnerHitbox.GetCollisions(CanBurrow, out bool didX, out bool didY);
+        _velocity = (didX, didY) switch {
+          (true, true) => _velocity * -1,
+          (false, false) => _velocity,
+          (true, false) => new Vector2(_velocity.X * -1, _velocity.Y),
+          (false, true) => new Vector2(_velocity.X, _velocity.Y * -1)
+        };
+        if ((didX, didY) is not (false, false)) {
+          _bounceStunLeft = MaxBounceStunDuration;
+        }
+      }
+      else {
+        // Low speed burrow
+        breathDecreaseAmount *= 0.1f;
+
+        // Get the tile the player is at
+        Point nextTilePosition = (Player.Center + _velocity).ToTileCoordinates();
+        Tile nextTile = Main.tile[nextTilePosition.X, nextTilePosition.Y];
+        if (!CanBurrow(nextTile)) {
+          // Modify _velocity such that it will not push the player into the tile
+          // Player is inside the tile
+          Vector2 playerCenter = Player.Center;
+          Vector2 tileCenter = nextTilePosition.ToWorldCoordinates() + new Vector2(8, 8);
+          Vector2 direction = playerCenter - tileCenter;
+          direction.Normalize();
+          _velocity = direction * 0.1f;
+        }
       }
     }
 
     // Apply changes
     Player.velocity = Vector2.Zero;
     OriPlayer.CreatePlayerDust();
-    _breath = Math.Max(_breath -= Input.LeftClick.Current ? 2.2f : 1, 0);
+    _breath = Math.Max(_breath - breathDecreaseAmount, 0);
   }
 
   protected override void OnUpdate() {
