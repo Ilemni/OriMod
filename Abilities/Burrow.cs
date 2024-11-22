@@ -23,6 +23,12 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
   private ref BurrowStats Stats => ref IStats<BurrowStats>.Get(Level);
 
+  private static int MaxBounceStunDuration => 10;
+
+  private bool IsBounceStunned => _bounceStunLeft > 0;
+
+  private int _bounceStunLeft;
+
   protected override void OnInitialize() {
     base.OnInitialize();
     MovementStates parent = GetParent<MovementStates>();
@@ -163,7 +169,8 @@ public sealed class Burrow(Player player) : OriAbility(player) {
         newVel = _velocity;
       }
 
-      _velocity = Vector2.Lerp(_velocity.SafeNormalize(default), newVel.SafeNormalize(default), 0.1f) * _currentSpeed;
+      _velocity = Vector2.Lerp(_velocity.SafeNormalize(default), newVel.SafeNormalize(default),
+        IsBounceStunned ? 0.01f : 0.1f) * _currentSpeed;
     }
 
     // Detect bouncing
@@ -176,6 +183,9 @@ public sealed class Burrow(Player player) : OriAbility(player) {
         (true, false) => new Vector2(_velocity.X * -1, _velocity.Y),
         (false, true) => new Vector2(_velocity.X, _velocity.Y * -1)
       };
+      if ((didX, didY) is not (false, false)) {
+        _bounceStunLeft = MaxBounceStunDuration;
+      }
     }
 
     // Apply changes
@@ -225,6 +235,10 @@ public sealed class Burrow(Player player) : OriAbility(player) {
   protected override void OnPostUpdate() {
     if (!IsActive) {
       return;
+    }
+
+    if (IsBounceStunned) {
+      _bounceStunLeft--;
     }
 
     // Position was modified directly, likely as a result of player warping
