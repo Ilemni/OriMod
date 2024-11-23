@@ -344,8 +344,6 @@ public sealed class Bash(Player player) : OriAbility(player) {
     if (_bashEntity is not { active: true } ||
         _bashTarget?.BashPlayer is null ||
         _bashTarget.BashPlayer.Player.whoAmI != Player.whoAmI) {
-      OriMod.Debug(
-        $"[{Main.time}] State cancelled by \"Invalid bash entity {_bashEntity?.ToString() ?? "null"} (active:{_bashEntity?.active.ToString() ?? "null"} | {_bashTarget?.BashPlayer?.ToString() ?? "null"})\"");
       CancelState();
     }
 
