@@ -8,7 +8,7 @@ namespace OriMod.Abilities;
 /// </summary>
 public sealed class Crouch(Player player) : OriState(player) {
   public override bool CanEnter() => base.CanEnter() && IsGrounded &&
-    (OriMod.ConfigClient.softCrouch || !(Player.controlLeft || Player.controlRight));
+    (!OriMod.ConfigClient.softCrouch || !(Player.controlLeft || Player.controlRight));
 
   private static int StartDuration => 10;
   private static int EndDuration => 4;
@@ -47,7 +47,7 @@ public sealed class Crouch(Player player) : OriState(player) {
   }
 
   protected override void OnPreUpdate() {
-    if (!CanEnter()) {
+    if (OriMod.ConfigClient.softCrouch && !CanEnter()) {
       CancelState();
       return;
     }
