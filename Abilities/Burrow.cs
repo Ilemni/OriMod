@@ -264,12 +264,6 @@ public sealed class Burrow(Player player) : OriAbility(player) {
       _bounceStunLeft--;
     }
 
-    // Position was modified directly, likely as a result of player warping
-    if (!Ending && ActiveTime > 10 && Vector2.DistanceSquared(Player.position, _lastPosition) > 100) {
-      CancelState();
-      return;
-    }
-
     Player.position = _lastPosition + _velocity;
     _lastPosition = Player.position;
   }
