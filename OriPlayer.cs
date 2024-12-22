@@ -535,7 +535,7 @@ public sealed partial class OriPlayer : ModPlayer {
 
       Tile tile = Main.tile[pos];
       bool isLiquidSurface = tile.LiquidAmount > 0 && Main.tile[pos.X, pos.Y - 1].LiquidAmount == 0;
-      if (isLiquidSurface && (Player.waterWalk2 || tile.LiquidType != LiquidID.Lava)) {
+      if (isLiquidSurface && (Player.waterWalk || tile.LiquidType != LiquidID.Lava)) {
         return true;
       }
     }
