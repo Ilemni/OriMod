@@ -16,6 +16,15 @@ namespace OriMod.Projectiles.Minions;
 public abstract class Sein(int type) : Minion {
   public sealed override string Texture => "OriMod/Projectiles/Minions/Sein";
 
+  private static Asset<Texture2D> _glowTexture = null!; // SetStaticDefaults
+
+  /// <summary>
+  /// Type used for <see cref="Sein"/>. Values are indices to <see cref="SeinData.Get"/>.
+  /// </summary>
+  private int SeinType { get; } = type;
+
+  private ref readonly SeinData Data => ref SeinLoader.Get(SeinType);
+
   public sealed override bool? CanCutTiles() => false;
 
   public sealed override void SetStaticDefaults() {
@@ -27,12 +36,9 @@ public abstract class Sein(int type) : Minion {
     _glowTexture = ModContent.Request<Texture2D>("OriMod/Projectiles/Minions/Sein_Glow");
   }
 
-  private static Asset<Texture2D> _glowTexture = null!; // SetStaticDefaults
-
-  /// <summary>
-  /// Type used for <see cref="Sein"/>. Values are indices to <see cref="SeinData.Get"/>.
-  /// </summary>
-  private int SeinType { get; } = type;
+  public override void Unload() {
+    _glowTexture = null!;
+  }
 
   public override void SetDefaults() {
     Projectile.netImportant = true;
@@ -47,10 +53,8 @@ public abstract class Sein(int type) : Minion {
     Projectile.width = SeinData.SeinWidth;
     Projectile.height = SeinData.SeinHeight;
 
-    SeinTypeInfo typeInfo = SeinData.GetSeinTypeInfo(SeinType);
-
-    _buffType = typeInfo.Buff;
-    _spiritFlameType = typeInfo.SpiritFlame;
+    _buffType = SeinLoader.BuffType(SeinType);
+    _spiritFlameType = SeinLoader.SpiritFlameType(SeinType);
 
     string suffix = SeinType switch {
       <= 2 => "",
@@ -62,9 +66,8 @@ public abstract class Sein(int type) : Minion {
     _spiritFlameSound = new SoundInfo("Ori/SpiritFlame/Throw" + suffix, 3, 1f);
   }
 
-  private ref SeinData Data => ref SeinData.Get(SeinType);
-
-  private Player Player => _player ??= Main.player[Projectile.owner];
+  [field: AllowNull, MaybeNull]
+  private Player Player => field ??= Main.player[Projectile.owner];
 
   /// <summary>
   /// Whether the AI should automatically fire projectiles or not.
@@ -268,7 +271,7 @@ public abstract class Sein(int type) : Minion {
     int wormCount = 0;
 
     _mainTargetNpc = null;
-    ref SeinData data = ref Data;
+    ref readonly SeinData data = ref Data;
 
     // If player specifies target, add that target to selection
     if (Player.HasMinionAttackTargetNPC) {
@@ -309,7 +312,7 @@ public abstract class Sein(int type) : Minion {
       return;
     }
 
-    SeinData data = Data;
+    ref readonly SeinData data = ref Data;
 
     float dist = Vector2.Distance(Player.Center, npc.Center);
     if (dist > data.TargetThroughWallDistSquared ||
@@ -362,7 +365,7 @@ public abstract class Sein(int type) : Minion {
   /// <param name="hasTarget"></param>
   private void Attack(bool hasTarget) {
     _spiritFlameSound.Play(Projectile.Center);
-    ref SeinData data = ref Data;
+    ref readonly SeinData data = ref Data;
 
     if (!hasTarget) {
       // Fire at air - nothing to target
@@ -398,7 +401,7 @@ public abstract class Sein(int type) : Minion {
   /// </summary>
   /// <param name="npc">NPC to target, -or- <see langword="null"/> to fires at the air randomly.</param>
   private void Shoot(NPC? npc) {
-    ref SeinData data = ref Data;
+    ref readonly SeinData data = ref Data;
 
     Vector2 shootVel;
     float rotation;
@@ -461,7 +464,7 @@ public abstract class Sein(int type) : Minion {
       _lightStrength -= 0.004f;
     }
 
-    ref SeinData data = ref Data;
+    ref readonly SeinData data = ref Data;
 
     Lighting.AddLight(Projectile.Center, data.Color.ToVector3() * data.LightStrength * _lightStrength);
     if (!Main.dedServ) {

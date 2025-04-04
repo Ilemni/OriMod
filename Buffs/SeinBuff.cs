@@ -1,14 +1,18 @@
 using JetBrains.Annotations;
+using OriMod.Projectiles.Minions;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Buffs;
 
 /// <summary>
-/// Buff that would keep the <see cref="Projectiles.Minions.Sein"/> minion active.
+/// Buff that would keep the <see cref="Sein"/> minion active.
 /// </summary>
 [UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
-public abstract class SeinBuff<TMinion> : ModBuff where TMinion : Projectiles.Minions.Sein {
+public abstract class SeinBuff<TMinion> : ModBuff where TMinion : Sein {
+  // ReSharper disable once StaticMemberInGenericType
+  private static int _minionType;
+
   public override string Texture => "OriMod/Buffs/SeinBuff";
 
   public override void SetStaticDefaults() {
@@ -17,16 +21,10 @@ public abstract class SeinBuff<TMinion> : ModBuff where TMinion : Projectiles.Mi
     _minionType = ModContent.ProjectileType<TMinion>();
   }
 
-  // ReSharper disable once StaticMemberInGenericType
-  private static int _minionType;
-
   public override void Update(Player player, ref int buffIndex) {
-    if (player.ownedProjectileCounts[_minionType] > 0) {
-      player.buffTime[buffIndex] = 18000;
-    }
-    else {
-      player.DelBuff(buffIndex);
-      buffIndex--;
+    player.buffTime[buffIndex] = 18000;
+    if (player.ownedProjectileCounts[_minionType] <= 0) {
+      player.DelBuff(buffIndex--);
     }
   }
 }

@@ -15,7 +15,8 @@ public abstract class SpiritOrb(int type) : ModItem {
   public override string Texture => "OriMod/Items/SpiritOrb";
 
   /// <summary>
-  /// Type used for <see cref="Projectiles.Minions.Sein"/>. Values are indices to <see cref="SeinData.Get"/>.
+  /// Type used for <see cref="Projectiles.Minions.Sein"/>.
+  /// Values are indices for <see cref="SeinLoader"/>.
   /// </summary>
   private int SeinType { get; } = type;
 
@@ -28,9 +29,8 @@ public abstract class SpiritOrb(int type) : ModItem {
       .AddTile(ModContent.TileType<Tiles.SpiritSapling>());
 
   public override void SetDefaults() {
-    SeinTypeInfo typeInfo = SeinData.GetSeinTypeInfo(SeinType);
-    Item.buffType = typeInfo.Buff;
-    Item.shoot = typeInfo.Minion;
+    Item.buffType = SeinLoader.BuffType(SeinType);
+    Item.shoot = SeinLoader.MinionType(SeinType);
     Item.DamageType = DamageClass.Summon;
     Item.mana = 10;
     Item.width = 18;
@@ -41,7 +41,7 @@ public abstract class SpiritOrb(int type) : ModItem {
     Item.noMelee = true;
     Item.UseSound = SoundID.Item44;
 
-    ref SeinData data = ref SeinData.Get(SeinType);
+    ref readonly SeinData data = ref SeinLoader.Get(SeinType);
     Item.damage = data.Damage;
     Item.rare = data.Rarity;
     Item.value = data.Value;
@@ -56,8 +56,8 @@ public abstract class SpiritOrb(int type) : ModItem {
 
   public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity,
     int type, int damage, float knockBack) {
-    foreach (SeinTypeInfo typeInfo in SeinData.Ids) {
-      player.ClearBuff(typeInfo.Buff);
+    foreach (int buffType in SeinLoader.BuffTypes) {
+      player.ClearBuff(buffType);
     }
 
     player.AddBuff(Item.buffType, 2);

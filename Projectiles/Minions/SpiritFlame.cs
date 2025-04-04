@@ -22,11 +22,6 @@ public abstract class SpiritFlame(int type) : ModProjectile {
   private Vector2 _targetPosition;
 
   /// <summary>
-  /// Stats for speed, damage, etc.
-  /// </summary>
-  private ref SeinData Data => ref SeinData.Get(type);
-
-  /// <summary>
   /// Current homing strength of the projectile. Increases over time by <see cref="SeinData.HomingIncreaseRate"/>.
   /// <para>0 = no homing; 1 = full homing.</para>
   /// </summary>
@@ -74,7 +69,7 @@ public abstract class SpiritFlame(int type) : ModProjectile {
     Projectile.tileCollide = false;
     _dustType = ModContent.DustType<SpiritFlameDustTrail>();
 
-    ref SeinData data = ref Data;
+    ref readonly SeinData data = ref SeinLoader.Get(type);
     Projectile.knockBack = data.Knockback;
     Projectile.width = SeinData.SpiritFlameWidth;
     Projectile.height = SeinData.SpiritFlameHeight;
@@ -83,14 +78,14 @@ public abstract class SpiritFlame(int type) : ModProjectile {
   }
 
   private void CreateDust() {
-    ref SeinData data = ref Data;
+    ref readonly SeinData data = ref SeinLoader.Get(type);
     Dust dust = Dust.NewDustDirect(Projectile.position, 10, 10, _dustType);
     dust.scale = data.DustScale;
     dust.velocity = (_targetPosition - Projectile.Center).LengthSquared() >= SpeedSquared
       ? Projectile.velocity * 0.01f
       : Vector2.Zero;
 
-    dust.rotation = (float)(Math.Atan2(Projectile.velocity.Y, Projectile.velocity.X) - Math.PI / 180 * 270);
+    dust.rotation = MathF.Atan2(Projectile.velocity.Y, Projectile.velocity.X) - MathF.PI / 180 * 270;
     dust.position = Projectile.Center;
     dust.color = Color.Lerp(data.Color.Brightened(), Color.White, 0.85f);
     dust.color.A = 230;
@@ -136,7 +131,7 @@ public abstract class SpiritFlame(int type) : ModProjectile {
   }
 
   public override void AI() {
-    ref SeinData data = ref Data;
+    ref readonly SeinData data = ref SeinLoader.Get(type);
 
     Lighting.AddLight(Projectile.Center, data.Color.ToVector3() * data.LightStrength);
     CreateDust();
