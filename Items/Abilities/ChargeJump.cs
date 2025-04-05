@@ -1,4 +1,4 @@
-﻿using OriMod.Abilities;
+using OriMod.Abilities;
 using Terraria.ID;
 
 namespace OriMod.Items.Abilities;
@@ -29,7 +29,7 @@ public sealed class ChargeJumpLevel2() : AbilityMedallionBase<WallChargeJump>(1)
 }
 
 /// <summary>
-/// Medallion that grants <see cref="ChargeJump"/> Level 3: Launch.
+/// Medallion that grants <see cref="Launch"/> Level 1.
 /// </summary>
 public sealed class ChargeJumpLevel3() : AbilityMedallionBase<Launch>(1) {
   public override void AddRecipes() {

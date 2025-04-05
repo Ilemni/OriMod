@@ -24,8 +24,8 @@ public sealed class ChargeJumpProjectile : OriAbilityProjectile<ChargeJump> {
   protected override void Behavior() {
     base.Behavior();
     // Stretch projectile size based on velocity
-    Vector2 vel = Player.velocity;
-    Projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 2.5f, 96, 250);
-    Projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 2.5f, 96, 250);
+    Point vel = (Player.velocity * 2.5f).ToPoint();
+    Projectile.width = Math.Clamp(Math.Abs(vel.X), 96, 250);
+    Projectile.height = Math.Clamp(Math.Abs(vel.Y), 96, 250);
   }
 }

@@ -20,9 +20,10 @@ public sealed class ChargeDashProjectile : OriAbilityProjectile<ChargeDash> {
     base.Behavior();
     // Size is stretched greatly based on velocity.
     Player player = Player;
-    Vector2 vel = player.velocity;
-    Projectile.width = (int)Utils.Clamp(Math.Abs(vel.X) * 1.5f, player.width * 1.5f, 96);
-    Projectile.height = (int)Utils.Clamp(Math.Abs(vel.Y) * 1.5f, player.height * 1.5f, 96);
+    Vector2 vel = player.velocity * 1.5f;
+    Vector2 playerSize = player.Size * 1.5f;
+    Projectile.width = (int)Math.Clamp(Math.Abs(vel.X), playerSize.X, 96);
+    Projectile.height = (int)Math.Clamp(Math.Abs(vel.Y), playerSize.X, 96);
   }
 
   /// <summary>

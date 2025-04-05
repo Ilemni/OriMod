@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using System.Collections.Generic;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using OriMod.Utilities;
 using ReLogic.Utilities;
@@ -11,8 +13,27 @@ namespace OriMod;
 /// <summary>
 /// This class is used to handle creation of footstep sounds.
 /// </summary>
+// TODO: Convert this to an Id set?
 [UsedImplicitly]
 public sealed class FootstepManager : ModSystem {
+  /// <summary>
+  /// Dictionary of pairs where the key is a sound type, and the value is a list,
+  /// where if a <see cref="ModTile"/>'s <see cref="ModType.Name"/> contains the value,
+  /// that tile will play that footstep sound.
+  /// </summary>
+  public static readonly Dictionary<FootstepSound, List<string>> SoundsFromName = new() {
+    [FootstepSound.None] = ["mysterytile", "pendingmysterytile", "unloaded"],
+    [FootstepSound.Grass] = ["dirt", "grass", "mud"],
+    [FootstepSound.Rock] = ["rock", "stone"],
+    [FootstepSound.Wood] = ["wood"],
+    [FootstepSound.Sand] = ["sand", "ash"],
+    [FootstepSound.Snow] = ["snow"],
+    [FootstepSound.Mushroom] = ["mushroom"],
+    [FootstepSound.LightDark] = ["glass"],
+    [FootstepSound.SpiritTreeRock] = ["brick"],
+    [FootstepSound.SpiritTreeWood] = ["living"]
+  };
+
   public override void SetStaticDefaults() {
     _tileFootstepSounds = new FootstepSound[TileLoader.TileCount];
     _stepSounds = new SoundInfo[(byte)FootstepSound.Count];
@@ -32,6 +53,10 @@ public sealed class FootstepManager : ModSystem {
   }
 
   private static void AssignTiles() {
+    for (int i = 0; i < _tileFootstepSounds.Length; i++) {
+      _tileFootstepSounds[i] = FootstepSound.None;
+    }
+
     _tileFootstepSounds.AssignValueToKeys(FootstepSound.None, [
       TileID.Plants, TileID.Torches, TileID.Trees,
       TileID.ClosedDoor, TileID.OpenDoor, TileID.Heart, TileID.Bottles, TileID.Saplings, TileID.Chairs, TileID.Furnaces,
@@ -149,21 +174,28 @@ public sealed class FootstepManager : ModSystem {
       TileID.CrimtaneBrick, TileID.ShroomitePlating, TileID.MartianConduitPlating, TileID.MarbleBlock,
       TileID.GraniteBlock, TileID.MeteoriteBrick, TileID.Fireplace, TileID.ConveyorBeltLeft, TileID.ConveyorBeltRight
     ]);
-    _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeWood,
-      [TileID.LivingWood, TileID.LivingMahogany]);
+    _tileFootstepSounds.AssignValueToKeys(FootstepSound.SpiritTreeWood, [
+      TileID.LivingWood, TileID.LivingMahogany
+    ]);
   }
 
   private static void AssignModTiles() {
     int missingSoundCount = 0;
+    Span<char> loweredName = stackalloc char[256];
     for (int i = TileID.Count; i < TileLoader.TileCount; i++) {
+      if (_tileFootstepSounds[i] != FootstepSound.None) {
+        continue;
+      }
+
       if (!Main.tileSolid[i] && !Main.tileSolidTop[i]) {
         _tileFootstepSounds[i] = FootstepSound.None;
         continue;
       }
 
       string tileName = TileLoader.GetTile(i).Name;
-      string name = tileName[(tileName.LastIndexOf('.') + 1)..];
-      FootstepSound sound = SoundFromName(name);
+      var name = tileName.AsSpan(start: tileName.LastIndexOf('.') + 1);
+      name.ToLower(loweredName, null);
+      FootstepSound sound = SoundFromName(loweredName[..name.Length]);
       _tileFootstepSounds[i] = sound;
 
       if (sound != FootstepSound.NoModTranslation) {
@@ -208,10 +240,10 @@ public sealed class FootstepManager : ModSystem {
     AddLanding(FootstepSound.Water, 5, 0.15f);
     return;
 
-    static void AddFootstep(FootstepSound sound, int random, float volume, float pitch = 0.1f) =>
+    static void AddFootstep(FootstepSound sound, byte random, float volume, float pitch = 0.1f) =>
       _stepSounds[(byte)sound] = new SoundInfo($"Ori/Footsteps/{sound}/{sound}", random, volume, pitch);
 
-    static void AddLanding(FootstepSound sound, int random, float volume, float pitch = 0.1f) =>
+    static void AddLanding(FootstepSound sound, byte random, float volume, float pitch = 0.1f) =>
       _landingSounds[(byte)sound] = new SoundInfo($"Ori/Land/{sound}/seinLands{sound}", random, volume, pitch);
 
     static void AddLandingFromFootstep(FootstepSound sound, float pitch = 0.2f) {
@@ -230,42 +262,13 @@ public sealed class FootstepManager : ModSystem {
   /// A <see cref="FootstepSound"/> that best represents the sound from the name, -or-
   /// <see cref="FootstepSound.NoModTranslation"/> if none could be found.
   /// </returns>
-  private static FootstepSound SoundFromName(string name) {
-    name = name.ToLower();
-    if (name is "mysterytile" or "pendingmysterytile" || name.StartsWith("unloaded")) {
-      return FootstepSound.None;
-    }
-
-    if (name.Contains("brick")) {
-      return FootstepSound.SpiritTreeRock;
-    }
-
-    if (name.Contains("living")) {
-      return FootstepSound.SpiritTreeWood;
-    }
-
-    if (name.Contains("rock") || name.Contains("stone")) {
-      return FootstepSound.Rock;
-    }
-
-    if (name.Contains("glass")) {
-      return FootstepSound.LightDark;
-    }
-
-    if (name.Contains("sand") || name.Contains("ash")) {
-      return FootstepSound.Sand;
-    }
-
-    if (name.Contains("snow")) {
-      return FootstepSound.Snow;
-    }
-
-    if (name.Contains("grass") || name.Contains("dirt") || name.Contains("mud")) {
-      return FootstepSound.Grass;
-    }
-
-    if (name.Contains("wood")) {
-      return FootstepSound.Wood;
+  private static FootstepSound SoundFromName(ReadOnlySpan<char> name) {
+    foreach ((FootstepSound sound, var candidates) in SoundsFromName) {
+      foreach (string candidate in candidates) {
+        if (name.Contains(candidate, StringComparison.Ordinal)) {
+          return sound;
+        }
+      }
     }
 
     return FootstepSound.NoModTranslation;
@@ -292,11 +295,7 @@ public sealed class FootstepManager : ModSystem {
   /// <param name="player">Player to play sound effect from.</param>
   /// <returns><see cref="SlotId"/> Check this, otherwise style is default.</returns>
   public static void PlayFootstepFromPlayer(Player player) {
-    if (Main.dedServ) {
-      return;
-    }
-
-    if (GetSoundFromPlayerPosition(player, out FootstepSound sound)) {
+    if (!Main.dedServ && GetSoundFromPlayerPosition(player, out FootstepSound sound)) {
       _stepSounds[(byte)sound].Play(player.Bottom);
     }
   }
@@ -310,17 +309,15 @@ public sealed class FootstepManager : ModSystem {
   /// <param name="player">Player to play sound effect from.</param>
   /// <returns><see cref="SlotId"/> Check this, otherwise style is default.</returns>
   public static void PlayLandingFromPlayer(Player player) {
-    if (Main.dedServ) {
-      return;
-    }
-
-    if (GetSoundFromPlayerPosition(player, out FootstepSound sound)) {
+    if (!Main.dedServ && GetSoundFromPlayerPosition(player, out FootstepSound sound)) {
       _landingSounds[(byte)sound].Play(player.Bottom);
     }
   }
 
-  private static bool GetSoundFromPlayerPosition(Player player, out FootstepSound sound) =>
-    (sound = GetSoundFromPlayerPosition(player)) is not (FootstepSound.None or FootstepSound.NoModTranslation);
+  private static bool GetSoundFromPlayerPosition(Player player, out FootstepSound sound) {
+    sound = GetSoundFromPlayerPosition(player);
+    return sound is not (FootstepSound.None or FootstepSound.NoModTranslation);
+  }
 
   /// <summary>
   /// Get a <see cref="FootstepSound"/> based on where the player is standing.
@@ -357,7 +354,7 @@ public sealed class FootstepManager : ModSystem {
   /// <summary>
   /// Represents different footstep sounds.
   /// </summary>
-  private enum FootstepSound : byte {
+  public enum FootstepSound : byte {
     /// <summary>
     /// Footsteps on grassy terrain.
     /// </summary>

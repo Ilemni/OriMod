@@ -5,7 +5,6 @@ using Terraria;
 
 namespace OriMod;
 
-// ReSharper disable IdentifierTypo
 /// <summary>
 /// Primarily used for <see cref="Abilities.Burrow"/>, stores an array of points as a template, and retrieves tiles of that template when updated.
 /// </summary>
@@ -13,15 +12,15 @@ public sealed class TileHitbox {
   /// <summary>
   /// Instantiate a <see cref="TileHitbox"/> with local-space <paramref name="template"/>.
   /// </summary>
-  /// <param name="template"><see cref="Template"/>. Must have at least 1 item.</param>
+  /// <param name="template"><see cref="_template"/>. Must have at least 1 item.</param>
   private TileHitbox(params Point[] template) {
     ArgumentNullException.ThrowIfNull(template);
     if (template.Length == 0) {
       throw new ArgumentException("Template must have at least one item.", nameof(template));
     }
 
-    Template = template;
-    Points = new Point[Template.Length];
+    _template = template;
+    _points = new Point[_template.Length];
     UpdateHitbox(Point.Zero);
   }
 
@@ -41,32 +40,53 @@ public sealed class TileHitbox {
   /// <summary>
   /// Current world position of points in the hitbox, in tile coordinates.
   /// </summary>
-  public Point[] Points { get; }
+  private readonly Point[] _points;
 
   /// <summary>
   /// Local position of points in the hitbox, in tile coordinates.
   /// </summary>
-  public Point[] Template { get; }
+  private readonly Point[] _template;
 
-  public bool Contains(Point point) => Points.Contains(point);
+  public bool Contains(Point point) => _points.Contains(point);
 
-  public bool Any(Func<Tile, bool> func) => Points.Any(p => func(Main.tile[p.X, p.Y]));
+  public bool Any(Func<Tile, bool> func) {
+    foreach (Point point in _points) {
+      if (func(Main.tile[point.X, point.Y])) {
+        return true;
+      }
+    }
 
-  public void GetCollisions(Func<Tile, bool> checkFunc, out bool x, out bool y) {
-    x = y = false;
-    for (int i = 0; i < Points.Length; i++) {
-      Point point = Points[i];
-      if (checkFunc(Main.tile[point.X, point.Y])) {
+    return false;
+  }
+
+  // Overload to prevent delegate allocation
+  public bool Any<T1>(T1 arg1, Func<Tile, T1, bool> func) {
+    foreach (Point point in _points) {
+      if (func(Main.tile[point.X, point.Y], arg1)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // Overload to prevent delegate allocation
+  public (bool x, bool y) GetCollisions<T1>(T1 arg1, Func<Tile, T1, bool> checkFunc) {
+    bool x = false, y = false;
+    for (int i = 0; i < _points.Length; i++) {
+      Point point = _points[i];
+      if (checkFunc(Main.tile[point.X, point.Y], arg1)) {
         continue;
       }
 
-      Point templatePoint = Template[i];
+      Point templatePoint = _template[i];
       x |= templatePoint.X != 0;
       y |= templatePoint.Y != 0;
       if (x && y) {
-        return;
+        return (x, y);
       }
     }
+    return (x, y);
   }
 
   /// <summary>
@@ -79,9 +99,9 @@ public sealed class TileHitbox {
   /// Updates the world position of the hitbox based on the given tile position.
   /// </summary>
   /// <param name="origin">Tile-space position to use.</param>
-  public void UpdateHitbox(Point origin) {
-    for (int i = 0; i < Points.Length; i++) {
-      Points[i] = Template[i] + origin;
+  private void UpdateHitbox(Point origin) {
+    for (int i = 0; i < _points.Length; i++) {
+      _points[i] = _template[i] + origin;
     }
   }
 }

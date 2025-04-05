@@ -4,7 +4,7 @@ using Terraria;
 namespace OriMod.Utilities;
 
 /// <summary>
-/// Class to get non-repeating random values.
+/// Struct to get non-repeating random <see cref="char"/>s.
 /// </summary>
 internal struct RandomChar {
   public RandomChar(byte maxValue) {
@@ -13,7 +13,7 @@ internal struct RandomChar {
     _maxValue = maxValue;
   }
 
-  private const byte RandMaxValue = 25;
+  private const byte RandMaxValue = 26;
 
   /// <summary>
   /// Value that represents the last used character of <see cref="NextNoRepeat"/>

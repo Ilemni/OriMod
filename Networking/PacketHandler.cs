@@ -25,7 +25,7 @@ internal abstract class PacketHandler(byte handlerType) {
   /// </summary>
   /// <param name="fromWho">The whoAmI of the player whose data will be in this packet.</param>
   protected ModPacket GetPacket(int fromWho) {
-    ModPacket packet = OriMod.instance.GetPacket();
+    ModPacket packet = OriMod.Instance.GetPacket();
 
     if (Main.dedServ) {
       packet.Write((ushort)fromWho);

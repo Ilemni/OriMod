@@ -23,7 +23,7 @@ public sealed class OriPotionEmpty : ModItem {
 
   public override bool? UseItem(Player player) {
     if (player.whoAmI == Main.myPlayer) {
-      SoundWrapper.Play(player, "SavePoints/checkpointCantPlaceSound");
+      SoundWrapper.Play(player, "OriMod/Sounds/SavePoints/checkpointCantPlaceSound");
     }
 
     return true;

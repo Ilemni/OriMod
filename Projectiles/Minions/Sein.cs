@@ -107,12 +107,12 @@ public abstract class Sein(int type) : Minion {
   /// Positions that the minion idly moves towards. Positions are relative to <see cref="_goalNpc"/> with a fixed offset, or the player if <see cref="_goalNpc"/> is <see langword="null"/>.
   /// </summary>
   private static readonly Vector2[] GoalPositions = [
-    new Vector2(-32, 12),
-    new Vector2(32, -12),
-    new Vector2(-32, -12),
-    new Vector2(32, 12),
-    new Vector2(-32, -12),
-    new Vector2(32, -12)
+    new(-32, 12),
+    new(32, -12),
+    new(-32, -12),
+    new(32, 12),
+    new(-32, -12),
+    new(32, -12)
   ];
 
   private NPC? _goalNpc;
@@ -125,8 +125,8 @@ public abstract class Sein(int type) : Minion {
   /// <para>This value automatically wraps to be in-bounds of <see cref="GoalPositions"/>.</para>
   /// </summary>
   private int GoalPositionIdx {
-    get => _hPi;
-    set => _hPi = value % GoalPositions.Length;
+    get;
+    set => field = value % GoalPositions.Length;
   }
 
   /// <summary>
@@ -209,7 +209,7 @@ public abstract class Sein(int type) : Minion {
     float speed = Projectile.velocity.Length();
 
     // Limit acceleration
-    float newSpeed = MathHelper.Clamp(goalSpeed, speed * 0.95f - 0.05f, speed * 1.1f + 0.05f);
+    float newSpeed = Math.Clamp(goalSpeed, speed * 0.95f - 0.05f, speed * 1.1f + 0.05f);
     newSpeed = Math.Min(newSpeed, 16f);
     Projectile.velocity = goalVelocity.SafeNormalize(default) * newSpeed;
   }
@@ -409,12 +409,12 @@ public abstract class Sein(int type) : Minion {
     if (npc is null) {
       // Fire at air
       shootVel = new Vector2(Main.rand.Next(-12, 12), Main.rand.Next(24, 48)).SafeNormalize(default);
-      rotation = (float)(Main.rand.Next(-180, 180) / 180f * Math.PI);
+      rotation = Main.rand.Next(-180, 180) / 180f * MathF.PI;
     }
     else {
       // Fire at enemy NPC
       shootVel = npc.position - Projectile.Center;
-      rotation = Main.rand.Next(-data.RandDegrees, data.RandDegrees) / 180f * (float)Math.PI;
+      rotation = Main.rand.Next(-data.RandDegrees, data.RandDegrees) / 180f * MathF.PI;
     }
 
     if (shootVel == Vector2.Zero) {
@@ -434,7 +434,7 @@ public abstract class Sein(int type) : Minion {
     if (npc is null) {
       Vector2 targetPos =
         new Vector2(Projectile.position.X, Projectile.position.Y + Main.rand.NextFloat(8, 48))
-          .RotatedBy(Main.rand.NextFloat((float)Math.PI * 2));
+          .RotatedBy(Main.rand.NextFloat(MathF.PI * 2));
       spiritFlame.ai[0] = targetPos.X != 0 ? targetPos.X : float.Epsilon;
       spiritFlame.ai[1] = targetPos.Y;
       spiritFlame.timeLeft = 20;
@@ -523,9 +523,6 @@ public abstract class Sein(int type) : Minion {
         SpriteEffects.None);
     }
   }
-
-  private Player? _player;
-  private int _hPi;
 
   private readonly record struct TargetInfo(ushort NpcId, float Distance, bool IsMainTarget);
 }

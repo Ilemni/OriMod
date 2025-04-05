@@ -10,12 +10,7 @@ namespace OriMod;
 /// Contains information for playing sounds,
 /// and randomly switches between sounds of different suffixes without repeating.
 /// </summary>
-public record struct SoundInfo {
-  public SoundInfo(string pathPrefix, int random, float volume, float pitch = 0f) {
-    _randomChar = new RandomChar((byte)random);
-    _paths = GetOrCreateStyles(pathPrefix, random, volume, pitch);
-  }
-
+public struct SoundInfo(string pathPrefix, byte random, float volume, float pitch = 0f) {
   private static SoundStyle[] GetOrCreateStyles(string pathPrefix, int random, float volume, float pitch) {
     if (AllPaths.TryGetValue(pathPrefix, out var soundStyles)) {
       return soundStyles;
@@ -23,7 +18,7 @@ public record struct SoundInfo {
 
     soundStyles = new SoundStyle[random];
     for (int i = 0; i < random; i++) {
-      string soundPath = "OriMod/Sounds/" + pathPrefix + (char)('A' + i);
+      string soundPath = $"OriMod/Sounds/{pathPrefix}{(char)('A' + i)}";
       soundStyles[i] = new SoundStyle(soundPath) {
         Volume = volume,
         Pitch = pitch
@@ -42,8 +37,8 @@ public record struct SoundInfo {
     }
   }
 
-  private readonly SoundStyle[] _paths;
-  private RandomChar _randomChar;
+  private readonly SoundStyle[] _paths = GetOrCreateStyles(pathPrefix, random, volume, pitch);
+  private RandomChar _randomChar = new(random);
 
   public void Play(Player player) => Play(player.Center);
 

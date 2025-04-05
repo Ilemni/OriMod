@@ -23,9 +23,9 @@ public sealed class StompProjectile : OriAbilityProjectile<Stomp> {
   }
 
   public override void OnHitNPC(NPC target, NPC.HitInfo modifiers, int damageDone) {
-    if (target.life > 0 && OriPlayer.ActiveState is Stomp stomp) {
-      stomp.StartCooldown();
-      stomp.CancelState();
+    if (target.life > 0 && Ability.Active) {
+      Ability.StartCooldown();
+      Ability.CancelState();
     }
   }
 }

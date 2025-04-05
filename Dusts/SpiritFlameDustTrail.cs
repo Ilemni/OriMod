@@ -24,19 +24,16 @@ public sealed class SpiritFlameDustTrail : ModDust {
     if (dust.alpha > 14) {
       dust.alpha = 255;
       dust.active = false;
+      return false;
     }
-    else if (dust.alpha > 11) {
-      dust.frame.Y = 40;
-    }
-    else if (dust.alpha > 8) {
-      dust.frame.Y = 30;
-    }
-    else if (dust.alpha > 5) {
-      dust.frame.Y = 20;
-    }
-    else if (dust.alpha > 2) {
-      dust.frame.Y = 10;
-    }
+
+    dust.frame.Y = dust.alpha switch {
+      > 11 => 40,
+      > 8 => 30,
+      > 5 => 20,
+      > 2 => 10,
+      _ => dust.frame.Y
+    };
     return false;
   }
 }

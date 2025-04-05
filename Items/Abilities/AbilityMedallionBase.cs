@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using AnimLib.States;
 using JetBrains.Annotations;
 using Terraria;
@@ -12,7 +12,7 @@ namespace OriMod.Items.Abilities;
 /// Base class for items that unlocks or upgrades an <see cref="AbilityState"/>.
 /// </summary>
 [UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
-public abstract class AbilityMedallionBase<T>(int level) : ModItem where T : AbilityState {
+public abstract class AbilityMedallionBase<T>(int level) : ModItem where T : AbilityState, new() {
   /// <summary>
   /// Level that the <see cref="AbilityState"/> of type <see cref="T"/> will be set to when this item is used.
   /// </summary>

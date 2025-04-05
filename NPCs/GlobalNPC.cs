@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using OriMod.Utilities;
 using Terraria;
@@ -11,9 +12,11 @@ namespace OriMod.NPCs;
 /// </summary>
 [UsedImplicitly]
 public sealed class OriNpc : GlobalNPC, IBashable {
-  private static bool[] ImmuneTypes => _immuneTypes ??= CreateImmuneTypes();
-
-  private static bool[]? _immuneTypes;
+  [field: AllowNull, MaybeNull]
+  private static bool[] ImmuneTypes {
+    get => field ??= CreateImmuneTypes();
+    set;
+  }
 
 
   public int ImmuneTime => 15;
@@ -29,8 +32,7 @@ public sealed class OriNpc : GlobalNPC, IBashable {
 
 
   private static bool[] CreateImmuneTypes() {
-    bool[] result = new bool[NPCLoader.NPCCount];
-    result.AssignValueToKeys(true, [
+    return new bool[NPCLoader.NPCCount].WithTrueValues([
       NPCID.EaterofWorldsBody, NPCID.EaterofWorldsHead, NPCID.EaterofWorldsTail,
       NPCID.TheDestroyer, NPCID.TheDestroyerBody, NPCID.TheDestroyerTail,
       NPCID.BlazingWheel, NPCID.SpikeBall,
@@ -38,11 +40,10 @@ public sealed class OriNpc : GlobalNPC, IBashable {
       NPCID.CultistTablet,
       NPCID.LunarTowerNebula, NPCID.LunarTowerSolar, NPCID.LunarTowerStardust, NPCID.LunarTowerVortex
     ]);
-    return result;
   }
 
   public override void Unload() {
-    _immuneTypes = null!;
+    ImmuneTypes = null!;
   }
 
   public override bool AppliesToEntity(NPC npc, bool lateInstantiation) {

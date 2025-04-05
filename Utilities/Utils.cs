@@ -44,9 +44,7 @@ public static class OriUtils {
   /// <param name="entity2">Second entity.</param>
   /// <returns>The squared value between two entities, -or- <see langword="0"/> if they overlap.</returns>
   internal static float DistanceBetweenTwoEntitiesSquared(Entity entity1, Entity entity2) {
-    return DistanceBetweenTwoRectsSquared(
-      new Rectangle((int)entity1.position.X, (int)entity1.position.Y, entity1.width, entity1.height),
-      new Rectangle((int)entity2.position.X, (int)entity2.position.Y, entity2.width, entity2.height));
+    return DistanceBetweenTwoRectsSquared(entity1.Hitbox, entity2.Hitbox);
   }
 
   /// <summary>
@@ -68,15 +66,14 @@ public static class OriUtils {
   #endregion
 
   internal static Vector2 GetMouseDirection(Player player, out float angle, Vector2? direction = null,
-    float maxAngle = (float)Math.PI) {
+    float maxAngle = MathF.PI) {
     // Normalize direction, or set to player values if null or cannot normalize
-    Vector2 dir = direction.HasValue && direction != Vector2.Zero || !direction!.Value.HasNaNs()
-      ? Vector2.Normalize(direction.Value)
-      : new Vector2(player.direction, player.gravDir);
+    Vector2 defaultDir = Vector2.Normalize(new Vector2(player.direction, player.gravDir));
+    Vector2 dir = direction?.SafeNormalize(defaultDir) ?? defaultDir;
 
     Vector2 offset = (Main.MouseWorld - player.Center) * dir + player.Center;
 
-    angle = Math.Clamp(player.AngleTo(offset), -maxAngle, maxAngle);
+    angle = Math.Clamp(player.AngleTo(offset), -Math.Abs(maxAngle), Math.Abs(maxAngle));
 
     return Vector2.UnitX.RotatedBy(angle) * dir;
   }

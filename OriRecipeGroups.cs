@@ -67,18 +67,18 @@ public sealed class OriRecipeGroups : ModSystem {
 
   // Avoid lambdas in function for full mod unload
   private const string Prefix = "Mods.OriMod.RecipeGroups.";
-  private static string EnchantedItemsText() => Language.GetTextValue(Prefix + "EnchantedItems");
-  private static string MovementAccessoriesText() => Language.GetTextValue(Prefix + "MovementAccessories");
-  private static string IronBarsText() => Language.GetTextValue(Prefix + "IronBars");
-  private static string GoldBarsText() => Language.GetTextValue(Prefix + "GoldBars");
-  private static string DarkBarsText() => Language.GetTextValue(Prefix + "DarkBars");
-  private static string HardmodeBars1Text() => Language.GetTextValue(Prefix + "HardmodeBars1");
-  private static string HardmodeBars2Text() => Language.GetTextValue(Prefix + "HardmodeBars2");
-  private static string HardmodeBars3Text() => Language.GetTextValue(Prefix + "HardmodeBars3");
-  private static string LunarFragmentsText() => Language.GetTextValue(Prefix + "LunarFragments");
-  private static string WallJumpGearText() => Language.GetTextValue(Prefix + "WallJumpGear");
-  private static string JumpBottlesText() => Language.GetTextValue(Prefix + "JumpBottles");
-  private static string JumpBalloonsText() => Language.GetTextValue(Prefix + "JumpBalloons");
+  private string EnchantedItemsText() => Language.GetTextValue(Prefix + "EnchantedItems");
+  private string MovementAccessoriesText() => Language.GetTextValue(Prefix + "MovementAccessories");
+  private string IronBarsText() => Language.GetTextValue(Prefix + "IronBars");
+  private string GoldBarsText() => Language.GetTextValue(Prefix + "GoldBars");
+  private string DarkBarsText() => Language.GetTextValue(Prefix + "DarkBars");
+  private string HardmodeBars1Text() => Language.GetTextValue(Prefix + "HardmodeBars1");
+  private string HardmodeBars2Text() => Language.GetTextValue(Prefix + "HardmodeBars2");
+  private string HardmodeBars3Text() => Language.GetTextValue(Prefix + "HardmodeBars3");
+  private string LunarFragmentsText() => Language.GetTextValue(Prefix + "LunarFragments");
+  private string WallJumpGearText() => Language.GetTextValue(Prefix + "WallJumpGear");
+  private string JumpBottlesText() => Language.GetTextValue(Prefix + "JumpBottles");
+  private string JumpBalloonsText() => Language.GetTextValue(Prefix + "JumpBalloons");
 
   public override void Unload() {
     EnchantedItems = null!;

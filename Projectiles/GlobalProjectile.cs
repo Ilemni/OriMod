@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using OriMod.Utilities;
 using Terraria;
@@ -11,9 +12,11 @@ namespace OriMod.Projectiles;
 /// </summary>
 [UsedImplicitly]
 public sealed class OriProjectile : GlobalProjectile, IBashable {
-  private static bool[] ImmuneTypes => _immuneTypes ??= CreateImmuneTypes();
-
-  private static bool[]? _immuneTypes;
+  [field: AllowNull, MaybeNull]
+  private static bool[] ImmuneTypes {
+    get => field ??= CreateImmuneTypes();
+    set;
+  }
 
 
   public int ImmuneTime => 10;
@@ -29,8 +32,7 @@ public sealed class OriProjectile : GlobalProjectile, IBashable {
 
 
   private static bool[] CreateImmuneTypes() {
-    bool[] result = new bool[ProjectileLoader.ProjectileCount];
-    result.AssignValueToKeys(true, [
+    return new bool[ProjectileLoader.ProjectileCount].WithTrueValues([
       ProjectileID.FlamethrowerTrap, ProjectileID.FlamesTrap, ProjectileID.GeyserTrap, ProjectileID.SpearTrap,
       ProjectileID.GemHookAmethyst, ProjectileID.GemHookDiamond, ProjectileID.GemHookEmerald,
       ProjectileID.GemHookRuby, ProjectileID.GemHookSapphire, ProjectileID.GemHookTopaz,
@@ -42,11 +44,10 @@ public sealed class OriProjectile : GlobalProjectile, IBashable {
       ProjectileID.TrackHook,
       ProjectileID.WoodHook, ProjectileID.WormHook
     ]);
-    return result;
   }
 
   public override void Unload() {
-    _immuneTypes = null!;
+    ImmuneTypes = null!;
   }
 
   public override bool AppliesToEntity(Projectile proj, bool lateInstantiation) {

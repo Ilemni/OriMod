@@ -47,7 +47,7 @@ public static class EntityExtensions {
     }
 
     // Entity found
-    distance = (float)Math.Sqrt(distance);
+    distance = MathF.Sqrt(distance);
     return true;
   }
 }

@@ -17,7 +17,7 @@ public sealed class AbilityRefreshedDust : ModDust {
   public override void OnSpawn(Dust dust) {
     dust.alpha = 0;
     dust.noGravity = true;
-    dust.velocity = Vector2.UnitX.RotateRandom(2 * Math.PI) * Speed;
+    dust.velocity = Vector2.UnitX.RotateRandom(MathF.Tau) * Speed;
   }
 
   public override bool Update(Dust dust) {

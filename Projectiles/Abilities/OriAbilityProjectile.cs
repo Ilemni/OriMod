@@ -4,51 +4,47 @@ using Terraria.ModLoader;
 
 namespace OriMod.Projectiles.Abilities;
 
+/// <summary>
+/// Base class for ability projectiles. These act more as hitboxes and have no visible texture.
+/// </summary>
+public abstract class OriAbilityProjectile<T> : AbilityProjectile<T> where T : OriAbility, new() {
+  public override string Texture => "OriMod/Projectiles/Abilities/Blank";
+
   /// <summary>
-  /// Base class for ability projectiles. These act more as hitboxes and have no visible texture.
+  /// <para>Ability projectile SetDefaults(): magic, low timeleft, magic, no tile collision, friendly.</para>
+  /// <inheritdoc/>
   /// </summary>
-  public abstract class OriAbilityProjectile<T> : AbilityProjectile<T> where T : OriAbility {
-    /// <summary>
-    /// THe <see cref="global::OriMod.OriPlayer"/> that this <see cref="AbilityProjectile{T}"/> belongs to.
-    /// </summary>
-    protected OriPlayer OriPlayer => _oriPlayer ??= Player.GetModPlayer<OriPlayer>();
-    private OriPlayer? _oriPlayer;
-    public override string Texture => "OriMod/Projectiles/Abilities/Blank";
+  public override void SetDefaults() {
+    Projectile.timeLeft = 2;
+    Projectile.penetrate = int.MaxValue;
+    Projectile.DamageType = DamageClass.Magic;
+    Projectile.tileCollide = false;
+    Projectile.ignoreWater = true;
+    Projectile.friendly = true;
+  }
 
-    /// <summary>
-    /// <para>Ability projectile SetDefaults(): magic, low timeleft, magic, no tile collision, friendly.</para>
-    /// <inheritdoc/>
-    /// </summary>
-    public override void SetDefaults() {
+  public override bool ShouldUpdatePosition() => false;
+
+  public sealed override void AI() {
+    CheckAbilityActive();
+    Behavior();
+  }
+
+  /// <summary>
+  /// Used to determine timeLeft or active state of the projectile.
+  /// <para>Defaults to keeping timeLeft above 0 if ability is in use.</para>
+  /// </summary>
+  protected virtual void CheckAbilityActive() {
+    if (Ability.Active) {
       Projectile.timeLeft = 2;
-      Projectile.penetrate = int.MaxValue;
-      Projectile.DamageType = DamageClass.Magic;
-      Projectile.tileCollide = false;
-      Projectile.ignoreWater = true;
-      Projectile.friendly = true;
     }
+  }
 
-    public override bool ShouldUpdatePosition() => false;
-    public sealed override void AI() {
-      CheckAbilityActive();
-      Behavior();
-    }
-
-    /// <summary>
-    /// Used to determine timeLeft or active state of the projectile.
-    /// <para>Defaults to keeping timeLeft above 0 if ability is in use.</para>
-    /// </summary>
-    protected virtual void CheckAbilityActive() {
-      if (Ability.IsActive) {
-        Projectile.timeLeft = 2;
-      }
-    }
-
-    /// <summary>
-    /// How the projectile behaves.
-    /// <para>Defaults to setting projectile center to player center.</para>
-    /// </summary>
-    protected virtual void Behavior() {
-      Projectile.Center = Player.Center;
+  /// <summary>
+  /// How the projectile behaves.
+  /// <para>Defaults to setting projectile center to player center.</para>
+  /// </summary>
+  protected virtual void Behavior() {
+    Projectile.Center = Player.Center;
   }
 }

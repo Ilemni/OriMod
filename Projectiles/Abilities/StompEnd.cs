@@ -59,10 +59,13 @@ public sealed class StompEnd : OriAbilityProjectile<Stomp> {
     Vector2 playerCenter = Player.Center;
     Vector2 direction = (target.Center - playerCenter).SafeNormalize(default);
 
-    float kb = Math.Max(6, Knockback * (160.0f - target.Distance(playerCenter)) / 160.0f);
-    float kbResist = target is NPC npc ? npc.knockBackResist : 1;
+    float kb = Math.Max(6, Knockback * (160 - target.Distance(playerCenter)) / 160) * target switch {
+      NPC npc => npc.knockBackResist,
+      Player player => -player.noKnockback.ToInt(),
+      _ => 1
+    };
 
-    target.velocity += direction * kb * kbResist;
+    target.velocity += direction * kb;
   }
 
   public override void ModifyHitPlayer(Player target, ref Player.HurtModifiers modifiers) {

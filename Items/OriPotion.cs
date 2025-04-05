@@ -31,10 +31,10 @@ public sealed class OriPotion : ModItem {
     pos.Y += 4;
     pos.X -= 2;
     for (int m = 0; m < 100; m++) {
-      Dust dust = Dust.NewDustDirect(pos, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, new Color(255, 255, 255));
+      Dust dust = Dust.NewDustDirect(pos, 30, 30, DustID.Clentaminator_Cyan, 0f, 0f, 0, Color.White);
       dust.shader = GameShaders.Armor.GetSecondaryShader(19, Main.LocalPlayer);
     }
-    SoundWrapper.Play(player, "SavePoints/checkpointSpawnSound");
+    SoundWrapper.Play(player, "OriMod/Sounds/SavePoints/checkpointSpawnSound");
     Item.NewItem(player.GetSource_FromThis(), player.getRect(), ModContent.ItemType<OriPotionEmpty>(), noGrabDelay: true);
     return true;
   }
