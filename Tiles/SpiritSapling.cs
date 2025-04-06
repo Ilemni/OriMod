@@ -1,3 +1,4 @@
+using AnimLib;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
@@ -33,19 +34,17 @@ public sealed class SpiritSapling : ModTile {
 
   public override bool RightClick(int i, int j) {
     Player player = Main.LocalPlayer;
-    OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
+    OriCharacter ori = player.GetCharacter<OriCharacter>();
 
     Main.mouseRightRelease = false;
-    if (oPlayer.ActiveState is Transform) {
+    if (ori.ActiveState is Transform) {
       return false;
     }
 
-    if (!oPlayer.IsOri) {
-      OriCharacter character = oPlayer.Character;
-      character.TryEnable();
-      if (character.IsActive) {
-        character.Move.TriggerState<Transform>();
-      }
+    ori.Toggle();
+
+    if (ori.Active) {
+      ori.TriggerState<Transform>();
       return true;
     }
 

@@ -1,31 +1,33 @@
 using AnimLib.States;
 using AnimLib.Projectiles;
 using Microsoft.Xna.Framework;
+using OriMod.Animations;
 using OriMod.Dusts;
 using Terraria;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
 
-public abstract class OriAbility(Player player) : AbilityState(player) {
-  // ReSharper disable once InconsistentNaming
-  protected Player Player => Entity;
-  protected OriPlayer OriPlayer { get; private set; } = null!; // OnInitialize()
-  protected OriInput Input { get; private set; } = null!; // OnInitialize()
+public abstract class OriAbility : AbilityState {
+  /// <summary>
+  /// When this ability should begin to show in the UI.
+  /// <br/> This value should correspond with some part of progression, such as boss progression.
+  /// </summary>
+  public abstract bool ShowHintInUI { get; }
 
-  protected bool OnWall => OriPlayer.OnWall;
-  protected bool IsGrounded => OriPlayer.IsGrounded;
+  public override OriCharacter Character => (OriCharacter)base.Character!;
 
-  protected override void OnInitialize() {
-    OriPlayer = Player.GetModPlayer<OriPlayer>();
-    Input = OriPlayer.Input;
-  }
+  public OriAnimation Anim => Character.Anim;
+  protected OriInput Input => Character.Input;
+
+  protected bool OnWall => Character.OnWall;
+  protected bool IsGrounded => Character.IsGrounded;
 
   public override bool CanEnter() =>
     base.CanEnter() && !Player.mount.Active &&
     Player is { dead: false, frozen: false, stoned: false, webbed: false, shimmering: false };
 
-  protected void RestoreAirJumps() => OriPlayer.RestoreAirJumps();
+  protected void RestoreAirJumps() => Character.RestoreAirJumps();
 
   internal void RefreshParticles(Color col) {
     // TODO: Replace with better indicator of ability being off cooldown

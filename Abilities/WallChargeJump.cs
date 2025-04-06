@@ -1,8 +1,8 @@
 using System;
 using AnimLib.Animations;
+using AnimLib.Menus.Debug;
 using AnimLib.Networking;
 using AnimLib.States;
-using AnimLib.UI.Debug;
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using Terraria;
@@ -13,7 +13,7 @@ namespace OriMod.Abilities;
 /// <summary>
 /// Ability for a charged jump off walls.
 /// </summary>
-public sealed class WallChargeJump(Player player) : OriAbility(player) {
+public sealed class WallChargeJump : OriAbility {
   private static readonly float[] Speeds = [
     100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 82.8f, 76f, 69f, 61f, 51f, 40f, 30f, 22f, 15f,
     12f
@@ -27,6 +27,10 @@ public sealed class WallChargeJump(Player player) : OriAbility(player) {
 
   protected override bool StartCooldownOnEnter => true;
 
+  public override bool ShowHintInUI => NPC.downedPlantBoss
+    && GetState<ChargeJump>().Unlocked
+    && GetState<Climb>().Unlocked;
+
   protected override void OnEnter(State? fromState) {
     _startSound.Play(Player);
     Projectile.NewProjectile(Player.GetSource_FromThis(), Player.Center, Vector2.Zero,
@@ -35,26 +39,29 @@ public sealed class WallChargeJump(Player player) : OriAbility(player) {
     Player.velocity = _direction * (Speeds[ActiveTime] * 0.5f);
   }
 
-  protected override void NetSync(ISync sync) {
+  protected override void NetSync(NetSyncer sync) {
     sync.Sync(ref _direction);
     sync.Sync(ref _angle);
     sync.SyncPositionAndVelocity(Player);
   }
 
-  protected override void OnUpdate() {
-    Player.velocity = _direction * (Speeds[ActiveTime] * 0.5f);
-    Player.ChangeDir(Math.Sign(Player.velocity.X));
-    Player.maxFallSpeed = Math.Abs(Player.velocity.Y);
+  public override void SetControls() {
     Player.controlJump = false;
     Player.controlLeft = false;
     Player.controlRight = false;
     Player.controlTorch = false;
     Player.controlUseItem = false;
+  }
+
+  public override void PostUpdateRunSpeeds() {
+    Player.velocity = _direction * (Speeds[ActiveTime] * 0.5f);
+    Player.ChangeDir(Math.Sign(Player.velocity.X));
+    Player.maxFallSpeed = Math.Abs(Player.velocity.Y);
 
     // NetUpdate = true;
   }
 
-  protected override void OnPreUpdate() {
+  public override void PostUpdateMiscEffects() {
     if (ActiveTime <= Speeds.Length - 1) {
       return;
     }
@@ -67,9 +74,9 @@ public sealed class WallChargeJump(Player player) : OriAbility(player) {
     CancelState();
   }
 
-  protected override AnimationOptions? GetAnimationOptions() {
+  public override AnimationOptions? GetAnimationOptions() {
     float angle = _angle * Player.gravDir * (_direction.X < 0 ? -1 : 1);
-    return new AnimationOptions("Dash", frameIndex: 0, rotation: angle);
+    return new AnimationOptions("Dash") { FrameIndex = 0, Rotation = angle };
   }
 
   internal void SetAimAndDirection(float angle, Vector2 direction) {
@@ -77,8 +84,9 @@ public sealed class WallChargeJump(Player player) : OriAbility(player) {
     _direction = direction;
   }
 
-  protected override void DebugText(DebugUIState ui) {
+  protected override void DebugText(UIStateInfo ui) {
     base.DebugText(ui);
-    ui.DrawAppendLabelValue(_angle, format:['F']);
+    ui.DrawAppendLabelProgressBar("Duration", ActiveTime, Speeds.Length - 1, Color.Blue);
+    ui.DrawAppendLabelValue(_angle, format: ['F']);
   }
 }

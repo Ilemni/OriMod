@@ -1,3 +1,4 @@
+﻿using AnimLib;
 using Microsoft.Xna.Framework;
 using AnimLib.States;
 using JetBrains.Annotations;
@@ -31,8 +32,7 @@ public abstract class AbilityMedallionBase<T>(int level) : ModItem where T : Abi
   /// <param name="player">The player using the item.</param>
   /// <returns><see langword="true"/> if the ability can be leveled. If this returns <see langword="false"/>, this <see cref="AbilityMedallionBase{T}"/> or the <see cref="AbilityState"/> must be fixed.</returns>
   public override bool? UseItem(Player player) {
-    OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-    AbilityState ability = oPlayer.Character.GetAbility<T>();
+    AbilityState ability = player.GetState<T>();
     ability.Level = ability.Level < Level ? ability.Level + 1 : 0;
     if (player.whoAmI == Main.myPlayer) {
       string key = $"Mods.OriMod.Lore.{ability.GetType().Name}.{ability.Level}";

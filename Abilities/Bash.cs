@@ -4,13 +4,15 @@ using OriMod.NPCs;
 using OriMod.Projectiles;
 using OriMod.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using AnimLib.Animations;
+using AnimLib.Menus.Debug;
 using AnimLib.Networking;
 using AnimLib.States;
-using AnimLib.UI.Debug;
 using OriMod.Networking;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -19,13 +21,13 @@ namespace OriMod.Abilities;
 /// <summary>
 /// Ability for pushing the player and enemies in opposite directions. Iconic ability of the Ori franchise.
 /// </summary>
-public sealed class Bash(Player player) : OriAbility(player) {
+public sealed class Bash : OriAbility {
   private static float NetAngleTolerance => 0.3f;
   private static float NetAngleLerpValue => 0.2f;
 
   public override int MaxLevel => 3;
 
-  private ref BashStats Stats => ref IStats<BashStats>.Get(Level);
+  public ref readonly BashStats Stats => ref IStats<BashStats>.Get(Level);
 
   private int _currentBuffer;
 
@@ -42,8 +44,10 @@ public sealed class Bash(Player player) : OriAbility(player) {
   /// Set false at state activation, true whenever input released, prevents repeated activation from holding down input
   private bool _hasReleasedBash;
 
+  private bool _immuneAfterExit;
+
   /// <summary>
-  /// The <see cref="NPC"/> or <see cref="Projectile"/> that is being bashed. May be segment of a worm.
+  /// The <see cref="NPC"/> or <see cref="Projectile"/> that is being bashed. This may be a segment of a worm.
   /// </summary>
   private Entity? _bashEntity;
 
@@ -59,13 +63,15 @@ public sealed class Bash(Player player) : OriAbility(player) {
   [MemberNotNullWhen(true, nameof(_bashEntity), nameof(_bashTarget))]
   private bool HasBashEntity => _bashEntity is { active: true };
 
+  public override bool ShowHintInUI => Main.hardMode;
+
   /// <summary>
   /// Query if the specified entity is being bashed by this.
   /// </summary>
   /// <param name="entity"></param>
   /// <returns></returns>
   public bool IsBashing(Entity entity) {
-    return IsActive && _bashEntity is not null && ReferenceEquals(entity, _bashEntity);
+    return Active && _bashEntity is not null && ReferenceEquals(entity, _bashEntity);
   }
 
   /// <summary>
@@ -74,7 +80,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
   [MemberNotNull(nameof(_bashEntity), nameof(_bashTarget))]
   private void SetBashEntity(Entity value) {
     if (value is not (NPC or Projectile)) {
-      throw new ArgumentException("Value must be of type NPC, Projectile, or null");
+      throw new ArgumentException("Value must be of type NPC or Projectile");
     }
 
     _bashEntity = value;
@@ -84,15 +90,15 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
   private void UpdateBashTarget() {
     IBashable? oldBashTarget = _bashTarget;
-    IBashable? newBashGlobal = GetBashTarget(_bashEntity);
+    IBashable? newBashTarget = GetBashTarget(_bashEntity);
 
-    if (ReferenceEquals(oldBashTarget, newBashGlobal)) {
+    if (ReferenceEquals(oldBashTarget, newBashTarget)) {
       return;
     }
 
-    _bashTarget?.TryClearBashPlayer(Player);
-    _bashTarget = newBashGlobal;
-    _bashTarget?.SetBashPlayer(OriPlayer);
+    _bashTarget?.TryClearBash(this);
+    _bashTarget = newBashTarget;
+    _bashTarget?.SetBash(this);
   }
 
   private static IBashable? GetBashTarget(Entity? entity) {
@@ -105,21 +111,33 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
   private void ClearBashEntity() {
     _bashEntity = null;
-    _bashTarget?.TryClearBashPlayer(Player);
+    _bashTarget?.TryClearBash(this);
     _bashTarget = null;
   }
 
-  protected override void OnInitialize() {
-    base.OnInitialize();
-    MovementStates parent = GetParent<MovementStates>();
-    parent.AddInterruptible<NoAbility>(to: this);
-    parent.AddInterruptible<AirJump>(to: this);
-    parent.AddInterruptible<Climb>(to: this);
-    parent.AddInterruptible<Crouch>(to: this);
-    parent.AddInterruptible<Dash>(to: this);
-    parent.AddInterruptible<Glide>(to: this);
-    parent.AddInterruptible<LookUp>(to: this);
-    parent.AddInterruptible<WallJump>(to: this);
+  public override void RegisterInterruptibles(List<State> interruptibles) {
+    interruptibles.AddRange([
+      GetState<NoAbility>(),
+      GetState<AirJump>(),
+      GetState<Climb>(),
+      GetState<Crouch>(),
+      GetState<Dash>(),
+      GetState<Glide>(),
+      GetState<LookUp>(),
+      GetState<WallJump>()
+    ]);
+  }
+
+  public override bool ImmuneTo(PlayerDeathReason damageSource, int cooldownCounter, bool dodgeable) {
+    if (!Active) {
+      return _immuneAfterExit && InactiveTime <= 20;
+    }
+
+    if (_lastStress >= Stats.MaxStress / 2) {
+      return false;
+    }
+
+    return IsLocal && damageSource.TryGetCausingEntity(out Entity? entity) && IsBashing(entity);
   }
 
   /// <summary>
@@ -129,7 +147,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
   /// <see cref="_bashEntity"/> and its velocity and position.
   /// </summary>
   /// <param name="sync"></param>
-  protected override void NetSync(ISync sync) {
+  protected override void NetSync(NetSyncer sync) {
     Vector2 oldEntityPosition = default;
     Vector2 oldEntityVelocity = default;
 
@@ -180,7 +198,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
       // If entity is somehow null, bash is invalid there too.
       // This check must be at end of sync to ensure all data is read
       IBashable? target = GetBashTarget(_bashEntity);
-      if (target is not (null or { IsBashed: true, BashPlayer.ActiveState: Bash })) {
+      if (target is not (null or { IsBashed: true, Bash.Active: true })) {
         UpdateBashTarget();
         return;
       }
@@ -199,17 +217,18 @@ public sealed class Bash(Player player) : OriAbility(player) {
   protected override bool StartCooldownOnEnter => true;
 
   protected override void OnEnter(State? fromState) {
+    _immuneAfterExit = false;
     RestoreAirJumps();
     NetUpdate = true;
   }
 
-  protected override void OnExit() {
+  protected override void OnExit(State? toState) {
     Player.pulley = false;
     _endSound.Play(Player);
 
-    Vector2 bashVector = new((float)(0 - Math.Cos(_aimAngle)), (float)(0 - Math.Sin(_aimAngle)));
-    Vector2 playerBashVector = -bashVector * Stats.PlayerStrength;
-    Vector2 npcBashVector = bashVector * Stats.NpcStrength;
+    Vector2 bashVector = _aimAngle.ToRotationVector2();
+    Vector2 playerBashVector = bashVector * Stats.PlayerStrength;
+    Vector2 npcBashVector = -bashVector * Stats.NpcStrength;
 
     Player.velocity = playerBashVector;
 
@@ -217,8 +236,8 @@ public sealed class Bash(Player player) : OriAbility(player) {
       Player.position.Y -= 1f * Player.gravDir;
     }
 
-    if (_lastStress < Stats.MaxStress / 1.33) {
-      OriPlayer.SetImmune(20);
+    if (_lastStress < Stats.MaxStress / 1.33f) {
+      _immuneAfterExit = true;
     }
 
     if (_bashEntity is NPC { active: true } npc) {
@@ -235,7 +254,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
     ClearBashEntity();
   }
 
-  protected override bool OnPreUpdateInterruptible(State activeState) {
+  protected override bool UpdateInterrupt(State activeState) {
     if (!_hasReleasedBash) {
       return false;
     }
@@ -244,7 +263,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
       return false;
     }
 
-    if (Input.Bash.JustPressed) {
+    if (Input.Bash.JustPressed && !Input.Charge.Current) {
       _currentBuffer = 0;
       _lastStress = _currentStress;
       AddStress(40);
@@ -253,6 +272,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
       _currentBuffer++;
     }
     else {
+      _currentBuffer = 0;
       return false;
     }
 
@@ -260,7 +280,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
     BashStats stats = Stats;
     if (!Input.Charge.Current && _currentBuffer <= stats.MaxBuffer) {
       if (_currentBuffer == 0) {
-        SoundWrapper.PlayLocal(Player, "Ori/Bash/bashNoTargetB", 0.35f);
+        SoundWrapper.PlayLocal(Player, "OriMod/Sounds/Ori/Bash/bashNoTargetB", 0.35f);
       }
 
       AddStress(3);
@@ -309,7 +329,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
       SetBashEntity(proj);
     }
 
-    _bashTarget.SetBashPlayer(OriPlayer);
+    _bashTarget.SetBash(this);
 
     _playerStartPos = Player.position;
     _targetStartPos = _bashEntity.position;
@@ -326,6 +346,10 @@ public sealed class Bash(Player player) : OriAbility(player) {
 
   private void StressDust() {
     BashStats stats = Stats;
+    if (stats.MaxStress == 0) {
+      return;
+    }
+
     _stressParticleTimer++;
     if (_stressParticleTimer <= 8 - _currentStress / stats.MaxStress * 5) {
       return;
@@ -340,16 +364,33 @@ public sealed class Bash(Player player) : OriAbility(player) {
     }
   }
 
-  protected override void OnPreUpdate() {
+  public override void SetControls() {
+    // Allow only quick heal and quick mana
+    Player.controlJump = false;
+    Player.controlUp = false;
+    Player.controlDown = false;
+    Player.controlLeft = false;
+    Player.controlRight = false;
+    Player.controlHook = false;
+    Player.controlInv = false;
+    Player.controlMount = false;
+    Player.controlSmart = false;
+    Player.controlThrow = false;
+    Player.controlTorch = false;
+    Player.controlUseItem = false;
+    Player.controlUseTile = false;
+  }
+
+  public override void PostUpdateMiscEffects() {
     if (_bashEntity is not { active: true } ||
-        _bashTarget?.BashPlayer is null ||
-        _bashTarget.BashPlayer.Player.whoAmI != Player.whoAmI) {
+        _bashTarget?.Bash is null ||
+        _bashTarget.Bash.Player.whoAmI != Player.whoAmI) {
       CancelState();
     }
 
     ref readonly BashStats stats = ref Stats;
     if (ActiveTime == stats.MinTime + 4) {
-      SoundWrapper.PlayLocal(Player, "Ori/Bash/seinBashLoopA", 0.5f);
+      SoundWrapper.PlayLocal(Player, "OriMod/Sounds/Ori/Bash/seinBashLoopA", 0.5f);
     }
 
     AddStress(1);
@@ -365,7 +406,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
     }
   }
 
-  protected override void OnUpdate() {
+  public override void PostUpdateRunSpeeds() {
     if (HasBashEntity) {
       _bashEntity.position = _targetStartPos;
       if (IsLocal) {
@@ -377,21 +418,6 @@ public sealed class Bash(Player player) : OriAbility(player) {
     Player.position = _playerStartPos;
     Player.velocity = Vector2.Zero;
     Player.gravity = 0;
-
-    // Allow only quick heal and quick mana
-    Player.controlJump = false;
-    Player.controlUp = false;
-    Player.controlDown = false;
-    Player.controlLeft = false;
-    Player.controlRight = false;
-    Player.controlHook = false;
-    Player.controlInv = false;
-    Player.controlMount = false;
-    Player.controlSmart = false;
-    Player.controlThrow = false;
-    Player.controlTorch = false;
-    Player.controlUseItem = false;
-    Player.controlUseTile = false;
     Player.buffImmune.AssignValueToKeys(true, [
       BuffID.CursedInferno,
       BuffID.Dazed,
@@ -412,9 +438,6 @@ public sealed class Bash(Player player) : OriAbility(player) {
       BuffID.WitheredWeapon,
       BuffID.WindPushed
     ]);
-    if (_lastStress < Stats.MaxStress / 2) {
-      OriPlayer.SetImmune(2);
-    }
 
     if (IsLocal) {
       // Determine whether to push a netupdate
@@ -425,20 +448,12 @@ public sealed class Bash(Player player) : OriAbility(player) {
     }
     else {
       // Non-local, smooth visual angle to net angle
-      _aimAngle = LerpAngleRad(_aimAngle, _netAngle, NetAngleLerpValue);
-    }
-
-    return;
-
-    static float LerpAngleRad(float from, float to, float weight) {
-      float num1 = (to - from) % MathF.Tau;
-      float num2 = 2f * num1 % MathF.Tau - num1;
-      return from + num2 * weight;
+      _aimAngle = _aimAngle.AngleLerp(_netAngle, NetAngleLerpValue);
     }
   }
 
-  protected override void OnPostUpdate() {
-    if (!IsActive) {
+  public override void PostUpdate() {
+    if (!Active) {
       AddStress(-1);
     }
 
@@ -447,23 +462,26 @@ public sealed class Bash(Player player) : OriAbility(player) {
     }
   }
 
-  protected override void OnEndCooldown() {
-    RefreshParticles(Color.LightYellow);
+  protected override void OnEndCooldown(bool wasOnCooldown) {
+    if (wasOnCooldown) {
+      RefreshParticles(Color.LightYellow);
+    }
   }
 
-  protected override AnimationOptions? GetAnimationOptions() => new("Bash", loopCount: 1);
+  public override AnimationOptions? GetAnimationOptions() => new("Bash") { LoopCount = 1 };
 
   private void AddStress(int value) => _currentStress = Math.Clamp(_currentStress + value, 0, Stats.MaxStress);
 
-  internal void GetDrawFields(AnimSpriteSheet sheet, out Vector2 position, out float rotation, out Rectangle rect) {
-    Entity target = HasBashEntity ? _bashEntity : Player;
-    position = target.Center;
-    rotation = _aimAngle;
-    rect = sheet.GetRectFromTimer("Bash", "Arrow", ActiveTime);
+  internal float GetRotation(ref readonly PlayerDrawSet drawInfo) {
+    return !Character.UiInfo.IsDrawingInUI
+      ? _aimAngle
+      : (drawInfo.Position - Main.screenPosition).AngleTo(Main.MouseScreen);
   }
 
-  protected override void DebugText(DebugUIState ui) {
+  protected override void DebugText(UIStateInfo ui) {
     base.DebugText(ui);
+    ui.DrawAppendLabelValue("Range", Stats.Range / 16f, format: "F1");
+    ui.DrawAppendLabelValue("Damage", Stats.Damage);
     string name = _bashEntity switch {
       null => "null",
       NPC npc => npc.TypeName,
@@ -471,7 +489,9 @@ public sealed class Bash(Player player) : OriAbility(player) {
       _ => _bashEntity.GetType().Name
     };
     ui.DrawAppendLabelValue("Target", name);
-    ui.DrawAppendLabelValue("Stress", _currentStress);
+    ui.DrawAppendLabelProgressBar("Buffer", _currentBuffer, Stats.MaxBuffer);
+    ui.DrawAppendLabelProgressBar("Stress", _currentStress, Stats.MaxStress);
+    ui.DrawAppendLabelProgressBar("Duration", ActiveTime, [Stats.MinTime, Stats.MaxTime]);
   }
 
   /// <summary>
@@ -485,7 +505,7 @@ public sealed class Bash(Player player) : OriAbility(player) {
   /// <param name="MaxTime">Max time which bash may be in state.</param>
   /// <param name="MaxBuffer">Max time which Bash may attempt to be entered</param>
   /// <param name="MaxStress"></param>
-  private readonly record struct BashStats(
+  public readonly record struct BashStats(
     int Damage,
     float Range,
     float PlayerStrength,
@@ -494,35 +514,21 @@ public sealed class Bash(Player player) : OriAbility(player) {
     int MaxTime,
     int MaxBuffer,
     int MaxStress) : IStats<BashStats> {
-    public static ref BashStats[] Values => ref _values;
-
-    private static BashStats[] _values = [
-      default,
-      new BashStats(
+    public static BashStats[] Values { get; } = [
+      new(
         Damage: 0, Range: 56,
         PlayerStrength: 15, NpcStrength: 12,
         MinTime: 20, MaxTime: 85,
         MaxBuffer: 25, MaxStress: 240),
-      new BashStats(
+      new(
         Damage: 20, Range: 56,
         PlayerStrength: 15, NpcStrength: 12,
         MinTime: 20, MaxTime: 85,
         MaxBuffer: 25, MaxStress: 240),
-      new BashStats(Damage: 45, Range: 90,
+      new(Damage: 45, Range: 90,
         PlayerStrength: 20, NpcStrength: 16,
         MinTime: 15, MaxTime: 105,
         MaxBuffer: 60, MaxStress: 360)
     ];
-
-    public static BashStats CreateFromLevel(int level) => new(
-      Damage: 20 + level * 15,
-      Range: 60 + level * 10,
-      PlayerStrength: 8 + level * 4,
-      NpcStrength: 4 + level * 4,
-      MinTime: 10 + level * 14 / 255,
-      MaxTime: 70 + level * 10,
-      MaxBuffer: level * 20,
-      MaxStress: level * 120
-    );
   }
 }

@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
-using Terraria;
 using Terraria.ModLoader.Config;
 // ReSharper disable UnassignedField.Global
 // ReSharper disable InconsistentNaming
@@ -63,20 +62,11 @@ public sealed class OriConfigClient1 : ModConfig {
 
   [Header($"{HeaderPath}.Aesthetics")]
 
-  [DefaultValue(typeof(Color), "210, 255, 255, 255"), ColorNoAlpha]
-  public Color playerColor;
-
-  [DefaultValue(typeof(Color), "0, 0, 0, 0")]
-  public Color playerColorSecondary;
-
   [DefaultValue(typeof(bool), "true")]
   public bool dyeEnabled;
 
   [DefaultValue(typeof(bool), "true")]
   public bool dyeEnabledAll;
-
-  [DefaultValue(typeof(float), "0.65")]
-  public float dyeLerp;
 
   [DefaultValue("Transparent"), OptionStrings(["Transparent", "Red", "Disabled"])]
   public string flashMode = null!; // Config field
@@ -100,21 +90,8 @@ public sealed class OriConfigClient1 : ModConfig {
 
   [OnDeserialized, UsedImplicitly]
   public void OnDeserializedMethod(StreamingContext stream) {
-    playerColor.A = 255;
     if (stompHoldDownDelay < 0) {
       stompHoldDownDelay = 0;
     }
-  }
-
-  public override void OnChanged() {
-    Player player = Main.LocalPlayer;
-    if (!player.active) {
-      return;
-    }
-
-    OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-    oPlayer.SpriteColorPrimary = playerColor;
-    oPlayer.SpriteColorSecondary = playerColorSecondary;
-    oPlayer.DyeColorBlend = dyeLerp;
   }
 }

@@ -17,7 +17,7 @@ public sealed class BurrowCancelOnTeleport : ModSystem {
     On_Player.Teleport += (orig, self, newPos, style, extraInfo) => {
       Vector2 oldPos = self.position;
       orig(self, newPos, style, extraInfo);
-      if (oldPos != newPos && self.GetModPlayer<OriPlayer>().ActiveState is Burrow burrow) {
+      if (oldPos != newPos && self.GetState<Burrow>() is { Active: true } burrow) {
         burrow.CancelState();
       }
     };

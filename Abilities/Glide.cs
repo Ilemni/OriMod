@@ -1,9 +1,12 @@
+using System;
+using System.Collections.Generic;
 using AnimLib.Animations;
 using AnimLib.States;
 using Microsoft.Xna.Framework;
 using OriMod.Tiles;
 using OriMod.Utilities;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
@@ -14,14 +17,13 @@ namespace OriMod.Abilities;
 /// <remarks>
 /// This ability is derived from the Ori games, despite Terraria already allowing gliding with wings.
 /// </remarks>
-public sealed class Glide(Player player) : OriAbility(player) {
+public sealed class Glide : OriAbility {
   public override int MaxLevel => 1;
-  public override bool CanEnter() => base.CanEnter() && !IsGrounded;
 
   private static float RunSlowdown => 0.125f;
   private static float RunAcceleration => 0.2f;
-  private static int StartDuration => 5;
-  private static int EndDuration => 5;
+  private static int StartDuration => 20;
+  private static int EndDuration => 10;
 
   private bool Starting => ActiveTime < StartDuration;
   private bool Ending => _endingTime > 0;
@@ -35,22 +37,50 @@ public sealed class Glide(Player player) : OriAbility(player) {
   private bool _oldLeft;
   private bool _oldRight;
 
+  public override bool ShowHintInUI => Main.hardMode;
+
+  public override void RegisterInterruptibles(List<State> interruptibles) {
+    interruptibles.AddRange([
+      GetState<NoAbility.Falling>(),
+    ]);
+  }
+
+  protected override bool UpdateInterrupt(State activeState) {
+    return activeState.ActiveTime > 4 && Input.Glide.Current;
+  }
+
+  public override bool CanEnter() => base.CanEnter() && !IsGrounded;
+
   protected override void OnEnter(State? fromState) {
     _startSound.Play(Player);
     _oldLeft = Player.controlLeft;
     _oldRight = Player.controlRight;
   }
 
-  protected override void OnExit() {
+  protected override void OnExit(State? toState) {
     _endingTime = 0;
   }
 
-  protected override void OnUpdate() {
-    Player.maxFallSpeed = MathHelper.Clamp(Player.gravity * 5, 1f, 2f);
+  public override void SetControls() {
+    Player.controlUseItem = false;
+    Player.controlTorch = false;
+  }
+
+  [HookCondition(HookConditionFlags.Strict)]
+  public override bool PreItemCheck() => false;
+
+  [HookCondition(HookConditionFlags.Strict)]
+  public override void HideDrawLayers(PlayerDrawSet drawInfo) {
+    PlayerDrawLayers.HeldItem.Hide();
+  }
+
+  public override void PostUpdateRunSpeeds() {
+    Player.maxFallSpeed = Math.Clamp(Player.gravity * 5, 1f, 2f);
 
     if (Player.gravDir > 0f) {
+      Point playerTilePos = Player.Center.ToTileCoordinates();
       for (int i = 0; i < 45; i++) {
-        Tile tile = Main.tile[Player.Center.ToTileCoordinates() + new Point(0, (int)(Player.gravDir * i))];
+        Tile tile = Main.tile[playerTilePos + new Point(0, i)];
         if (!OriUtils.IsSolid(tile, true)) {
           continue;
         }
@@ -58,8 +88,10 @@ public sealed class Glide(Player player) : OriAbility(player) {
         if (tile.TileType == ModContent.TileType<HotAshTile>()) {
           Player.maxFallSpeed = -2f;
           RestoreAirJumps();
-          tile = Main.tile[Player.Center.ToTileCoordinates() + new Point(0, (int)(Player.gravDir * -1))];
-          if (i == 44 || OriUtils.IsSolid(tile, true)) Player.maxFallSpeed = 0.001f;
+          tile = Main.tile[playerTilePos + new Point(0, -i)];
+          if (i == 44 || OriUtils.IsSolid(tile, true)) {
+            Player.maxFallSpeed = 0.001f;
+          }
         }
 
         break;
@@ -80,16 +112,9 @@ public sealed class Glide(Player player) : OriAbility(player) {
     if (Ending && _endingTime == 1) {
       _endSound.Play(Player);
     }
-
-    Player.controlUseItem = false;
-    Player.controlTorch = false;
   }
 
-  protected override void OnPreUpdate() {
-    if (!IsLocal && !Main.dedServ) {
-      bool b = CanEnter();
-      ;
-    }
+  public override void PostUpdateMiscEffects() {
     if (!CanEnter()) {
       CancelState();
       return;
@@ -99,21 +124,28 @@ public sealed class Glide(Player player) : OriAbility(player) {
       return;
     }
 
-    if (OnWall || IsGrounded || !Input.Glide.Current) {
-      if (Starting) {
-        CancelState();
-        return;
-      }
+    if (!OnWall && !IsGrounded && Input.Glide.Current) {
+      return;
+    }
 
-      _endingTime++;
-      if (_endingTime > EndDuration) {
-        CancelState();
-      }
+    if (Starting) {
+      CancelState();
+      return;
+    }
+
+    _endingTime++;
+    if (_endingTime > EndDuration) {
+      CancelState();
     }
   }
 
-  protected override AnimationOptions? GetAnimationOptions() =>
-    Starting ? new AnimationOptions("GlideStart") :
-    Ending ? new AnimationOptions("GlideStart", isReversed: true) :
-    new AnimationOptions("Glide");
+  public override AnimationOptions? GetAnimationOptions() => this switch {
+    _ when Starting => new AnimationOptions("GlideStart"),
+    _ when Ending => this switch {
+      _ when !IsGrounded && Anim.HasTag("GlideEndAir") => new AnimationOptions("GlideEndAir"),
+      _ when Anim.HasTag("GlideEnd") => new AnimationOptions("GlideEnd"),
+      _ => new AnimationOptions("GlideStart") { IsReversed = true },
+    },
+    _ => new AnimationOptions("Glide")
+  };
 }

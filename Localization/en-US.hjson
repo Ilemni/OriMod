@@ -155,7 +155,7 @@ Mods: {
 						'''
 						Determines whether bash should aim from
 						the player or the bashed target.
-						Default: Target 
+						Default: Target
 						'''
 				}
 
@@ -308,7 +308,7 @@ Mods: {
 				DisplayName: Blank {$Mods.OriMod.Common.Medal}
 				Tooltip:
 					'''
-					Used to create strong {$Mods.OriMod.Common.Medal}s 
+					Used to create strong {$Mods.OriMod.Common.Medal}s
 					to unlock or upgrade abilities.
 					'''
 			}
@@ -365,7 +365,7 @@ Mods: {
 				Tooltip:
 					'''
 					Upgrades Bash to Level 2
-					Allows you to Bash 
+					Allows you to Bash
 					projectiles, and deal damage to foes!
 					(has a stress system, read description for patch v3.2.1.0)
 					'''
@@ -644,6 +644,40 @@ Mods: {
 			WallJumpGear: Any Wall Jump Gear
 			JumpBottles: Any Jump-Enhancing Bottles
 			JumpBalloons: Any Jump-Enhancing Balloons
+		}
+
+		Skins: {
+			DefaultArrowSkin: {
+				DisplayName: Default Arrow
+				Description: Mods.OriMod.Skins.DefaultArrowSkin.Description
+			}
+
+			DefaultOriSkin: {
+				DisplayName: Default Ori
+				Description: Mods.OriMod.Skins.DefaultOriSkin.Description
+			}
+
+			BashTestSkin: {
+				DisplayName: Bash Test Skin
+				Description: Mods.OriMod.Skins.BashTestSkin.Description
+			}
+		}
+
+		SkinSlots: {
+			BashArrowSlot: {
+				DisplayName: Bash Arrow
+				Description: ""
+			}
+
+			LaunchArrowSlot: {
+				DisplayName: Launch Arrow
+				Description: ""
+			}
+
+			OriSpriteSlot: {
+				DisplayName: Ori Sprite
+				Description: ""
+			}
 		}
 	}
 }

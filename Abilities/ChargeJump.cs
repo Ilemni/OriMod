@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
 using OriMod.Projectiles.Abilities;
 using AnimLib.Animations;
+using AnimLib.Menus.Debug;
 using AnimLib.Networking;
 using AnimLib.States;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
@@ -12,7 +15,7 @@ namespace OriMod.Abilities;
 /// <summary>
 /// Ability for a quick and high jump that can deal damage to enemies.
 /// </summary>
-public sealed class ChargeJump(Player player) : OriAbility(player) {
+public sealed class ChargeJump : OriAbility {
   /// <summary>
   /// Coyote jump, how long to allow CJumping when no longer valid to do so.
   /// </summary>
@@ -26,6 +29,7 @@ public sealed class ChargeJump(Player player) : OriAbility(player) {
   ];
 
   private static int Duration => Speeds.Length;
+  private static int EndDuration => 12;
 
 
   private int _currentCharge;
@@ -38,18 +42,25 @@ public sealed class ChargeJump(Player player) : OriAbility(player) {
 
   private bool CanCharge => base.CanEnter() && Input.Charge.Current && IsGrounded;
 
-  public override int MaxLevel => 5;
+  private bool Ending => ActiveTime >= Duration - EndDuration;
+
+  public override int MaxLevel => 1;
 
   public override int MaxCooldown => 120;
 
   protected override bool StartCooldownOnEnter => true;
 
+  public override bool ShowHintInUI =>
+    Main.hardMode && (NPC.downedMechBoss1 || NPC.downedMechBoss2 || NPC.downedMechBoss3);
 
-  protected override void OnInitialize() {
-    base.OnInitialize();
-    MovementStates parent = GetParent<MovementStates>();
-    parent.AddInterruptible<NoAbility>(to: this);
-    parent.AddInterruptible<LookUp>(to: this);
+  public override void RegisterInterruptibles(List<State> interruptibles) {
+    interruptibles.AddRange([
+      GetState<NoAbility.Idle>(),
+      GetState<NoAbility.IdleAgainst>(),
+      GetState<NoAbility.Running>(),
+      GetState<NoAbility.Falling>(),
+      GetState<LookUp>()
+    ]);
   }
 
   public override bool CanEnter() => base.CanEnter() && _currentCharge >= MaxCharge;
@@ -57,11 +68,12 @@ public sealed class ChargeJump(Player player) : OriAbility(player) {
   protected override void OnEnter(State? fromState) {
     _startSound.Play(Player);
     _currentCharge = 0;
+    _currentGrace = 0;
     Projectile.NewProjectileDirect(Player.GetSource_FromThis(), Player.Center, Vector2.Zero,
       ModContent.ProjectileType<ChargeJumpProjectile>(), 30, 0f, Player.whoAmI, 0, 1);
   }
 
-  protected override bool OnPreUpdateInterruptible(State activeState) {
+  protected override bool UpdateInterrupt(State activeState) {
     // Update _currentCharge
     if (CanCharge) {
       if (_currentCharge < MaxCharge) {
@@ -70,9 +82,9 @@ public sealed class ChargeJump(Player player) : OriAbility(player) {
           _chargeSound.Play(Player);
         }
       }
-    }
-    else if (_currentGrace <= 0 && _currentCharge > 0) {
-      _currentCharge--;
+      else if (IsGrounded) {
+        _currentGrace = MaxGrace;
+      }
     }
 
     if (_currentCharge < MaxCharge) {
@@ -85,17 +97,6 @@ public sealed class ChargeJump(Player player) : OriAbility(player) {
 
     ChargeDust();
 
-    // Update _currentGrace
-    if (IsGrounded && CanCharge) {
-      _currentGrace = MaxGrace;
-    }
-    else if (_currentGrace > 0) {
-      _currentGrace--;
-      if (_currentGrace == 0) {
-        _unchargeSound.Play(Player);
-      }
-    }
-
     return false;
   }
 
@@ -105,34 +106,64 @@ public sealed class ChargeJump(Player player) : OriAbility(player) {
     }
   }
 
-  protected override void OnPreUpdate() {
+  public override void SetControls() {
+    Player.controlJump = false;
+  }
+
+  public override bool ImmuneTo(PlayerDeathReason damageSource, int cooldownCounter, bool dodgeable) => Active;
+
+  public override void PostUpdateMiscEffects() {
     if (ActiveTime >= Duration) {
       CancelState();
     }
   }
 
-  protected override void OnUpdate() {
-    Player.controlJump = false;
+  public override void PostUpdateRunSpeeds() {
     float speed = Speeds[ActiveTime] * 0.35f;
     Player.velocity.Y = speed * -Player.gravDir;
-    OriPlayer.SetImmune(12);
 
     NetUpdate = true;
   }
 
-  protected override bool CanRefresh(bool cooledDown) {
-    return GetParent<MovementStates>().ActiveChild is Burrow || cooledDown;
+  public override void PostUpdate() {
+    if (!CanCharge) {
+      if (_currentGrace > 0) {
+        _currentGrace--;
+      }
+      else if (_currentCharge > 0) {
+        _currentCharge--;
+        if (_currentCharge == 0) {
+          _unchargeSound.Play(Player);
+        }
+      }
+    }
   }
 
-  protected override void OnEndCooldown() {
-    RefreshParticles(Color.Blue);
+  protected override bool CanRefresh(bool cooledDown) {
+    return cooledDown || GetState<Burrow>().Active;
+  }
+
+  protected override void OnEndCooldown(bool justCooledDown) {
     _currentCharge = 0;
     _currentGrace = 0;
+    if (justCooledDown) {
+      RefreshParticles(Color.Blue);
+    }
   }
 
-  protected override void NetSync(ISync sync) {
+  protected override void NetSync(NetSyncer sync) {
     sync.SyncPositionAndVelocity(Player);
   }
 
-  protected override AnimationOptions? GetAnimationOptions() => new("ChargeJump");
+  public override AnimationOptions? GetAnimationOptions() =>
+    Ending && Anim.HasTag("ChargeJumpEnd")
+      ? new AnimationOptions("ChargeJumpEnd") { LoopCount = 1 }
+      : new AnimationOptions("ChargeJump");
+
+  protected override void DebugText(UIStateInfo ui) {
+    base.DebugText(ui);
+    ui.DrawAppendLabelProgressBar("Duration", ActiveTime, Duration);
+    ui.DrawAppendLabelProgressBar("Charge", _currentCharge, MaxCharge);
+    ui.DrawAppendLabelProgressBar("Grace", _currentGrace, MaxGrace);
+  }
 }

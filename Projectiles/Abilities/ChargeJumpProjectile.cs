@@ -1,4 +1,5 @@
 using System;
+using AnimLib;
 using Microsoft.Xna.Framework;
 using OriMod.Abilities;
 using Terraria;
@@ -16,7 +17,7 @@ public sealed class ChargeJumpProjectile : OriAbilityProjectile<ChargeJump> {
   }
 
   protected override void CheckAbilityActive() {
-    if (OriPlayer.ActiveState is ChargeJump or WallChargeJump) {
+    if (Player.GetCharacter<OriCharacter>().ActiveState is ChargeJump or WallChargeJump) {
       Projectile.timeLeft = 2;
     }
   }

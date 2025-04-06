@@ -1,3 +1,4 @@
+using AnimLib;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -8,7 +9,7 @@ using Terraria.ModLoader;
 namespace OriMod.Items;
 
 /// <summary>
-/// Consumable item that toggles <see cref="OriPlayer.IsOri"/>.
+/// Consumable item that toggles <see cref="OriCharacter"/> active state.
 /// </summary>
 [UsedImplicitly]
 public sealed class OriPotion : ModItem {
@@ -24,8 +25,8 @@ public sealed class OriPotion : ModItem {
   }
 
   public override bool? UseItem(Player player) {
-    OriPlayer oPlayer = player.GetModPlayer<OriPlayer>();
-    oPlayer.IsOri ^= true;
+    OriCharacter ori = player.GetCharacter<OriCharacter>();
+    ori.Toggle();
 
     Vector2 pos = player.position;
     pos.Y += 4;

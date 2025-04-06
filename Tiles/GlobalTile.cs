@@ -1,7 +1,10 @@
+using AnimLib;
 using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using OriMod.Abilities;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ModLoader;
 
 namespace OriMod.Tiles;
@@ -10,19 +13,19 @@ namespace OriMod.Tiles;
 /// Used for draw effects, specifically brightening solid areas when the player uses <see cref="Burrow"/>.
 /// </summary>
 [UsedImplicitly]
-public sealed class OriTile : GlobalWall {
+public sealed class BurrowGlobalWall : GlobalWall {
   private static int InnerRange => 4;
   private static int OuterRange => 13;
 
   public override void ModifyLight(int i, int j, int type, ref float r, ref float g, ref float b) {
-    OriPlayer oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
-    if (oPlayer.ActiveState is not Burrow burrow) {
+    if (Main.LocalPlayer.GetState<Burrow>() is not { Active: true } burrow) {
       return;
     }
 
-    float lightStrength = burrow.CanBurrow(Main.tile[i, j]) ? 0.8f : 0.4f;
+    Tile tile = Main.tile[i, j];
+    float lightStrength = Burrow.CanBurrow(tile, burrow) ? 0.8f : 0.4f;
 
-    float dist = (oPlayer.Player.Center / 16 - new Vector2(i, j)).Length();
+    float dist = (Main.LocalPlayer.Center / 16 - new Vector2(i, j)).Length();
     if (dist < InnerRange) {
       r = MathHelper.Clamp(r + lightStrength, r, 1f);
       g = MathHelper.Clamp(g + lightStrength, g, 1f);
@@ -30,23 +33,45 @@ public sealed class OriTile : GlobalWall {
     }
     else if (dist < OuterRange) {
       float lerp = 1 - (dist - InnerRange) / (OuterRange - InnerRange);
-      r = MathHelper.Lerp(r, lightStrength, lerp);
-      g = MathHelper.Lerp(g, lightStrength, lerp);
-      b = MathHelper.Lerp(b, lightStrength, lerp);
+      r = float.Lerp(r, lightStrength, lerp);
+      g = float.Lerp(g, lightStrength, lerp);
+      b = float.Lerp(b, lightStrength, lerp);
+    }
+    else {
+      r = MathHelper.Clamp(r, 0.02f, r);
+      g = MathHelper.Clamp(g, 0.02f, g);
+      b = MathHelper.Clamp(b, 0.02f, b);
+    }
+  }
+}
+
+/// <summary>
+/// Draws hitbox tiles for <see cref="Burrow"/>,
+/// representing burrow entry position in green,
+/// and player burrow hitbox in red.
+/// </summary>
+[UsedImplicitly]
+public sealed class BurrowGlobalTile : GlobalTile {
+  public override void PostDraw(int i, int j, int type, SpriteBatch spriteBatch) {
+    if (!AnimLibMod.DebugEnabled) {
+      return;
     }
 
-    if (oPlayer.DebugMode) {
-      Point pos = new(i, j);
-      if (Burrow.InnerHitbox.Contains(pos)) {
-        r = 1f;
-        g = 0f;
-        b = 0f;
-      }
-      else if (Burrow.EnterHitbox.Contains(pos)) {
-        r = 0f;
-        g = 1f;
-        b = 0f;
-      }
+    Tile tile = Main.tile[i, j];
+    if (!tile.HasUnactuatedTile || !Main.tileSolid[type]) {
+      return;
+    }
+
+    Burrow burrow = Main.LocalPlayer.GetState<Burrow>();
+
+    Point pos = new(i, j);
+    Vector2 screenPos = pos.ToWorldCoordinates() - Main.screenPosition + new Vector2(182, 182);
+    Rectangle sourceRect = new(0, 0, 16, 16);
+    if (burrow.Active && burrow.InnerHitbox.Contains(pos)) {
+      spriteBatch.Draw(TextureAssets.MagicPixel.Value, screenPos, sourceRect, Color.Red);
+    }
+    if ((burrow.Active || burrow.InactiveTime < 90) && burrow.EnterHitbox.Contains(pos)) {
+      spriteBatch.Draw(TextureAssets.MagicPixel.Value, screenPos, sourceRect, Color.Green);
     }
   }
 }

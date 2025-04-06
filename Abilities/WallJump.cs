@@ -1,9 +1,8 @@
 using AnimLib.Animations;
+using AnimLib.Menus.Debug;
 using AnimLib.Networking;
 using AnimLib.States;
-using AnimLib.UI.Debug;
 using Microsoft.Xna.Framework;
-using Terraria;
 
 namespace OriMod.Abilities;
 
@@ -13,7 +12,7 @@ namespace OriMod.Abilities;
 /// <remarks>
 /// This ability is derived from the Ori games, despite Terraria already allowing wall jumps with some accessories.
 /// </remarks>
-public sealed class WallJump(Player player) : OriAbility(player) {
+public sealed class WallJump : OriAbility {
   private static readonly Vector2 WallJumpVelocity = new(4, -7.2f);
 
   private static int EndTime => 12;
@@ -25,6 +24,8 @@ public sealed class WallJump(Player player) : OriAbility(player) {
 
 
   public override int MaxLevel => 1;
+
+  public override bool ShowHintInUI => true;
 
 
   protected override bool CanTransitionFrom(State fromState) => fromState is not Climb { IsFullyCharged: true };
@@ -41,22 +42,24 @@ public sealed class WallJump(Player player) : OriAbility(player) {
     _startSound.Play(Player);
   }
 
-  protected override void NetSync(ISync sync) {
-    if (ActiveTime == 0) {
+  protected override void NetSync(NetSyncer sync) {
+    bool doSync = ActiveTime == 0;
+    sync.Sync(ref doSync);
+    if (doSync) {
       sync.SyncSign(ref _wallDirection);
       sync.SyncSign(ref _gravDirection);
       sync.SyncPositionAndVelocity(Player);
     }
   }
 
-  protected override void OnPreUpdate() {
+  public override void PostUpdateMiscEffects() {
     if (IsGrounded || ActiveTime > EndTime ||
         (ActiveTime > EndTime * 0.5f && (Player.controlRight || Player.controlLeft))) {
       CancelState();
     }
   }
 
-  protected override void OnUpdate() {
+  public override void PostUpdateRunSpeeds() {
     Player.velocity.X = WallJumpVelocity.X * -_wallDirection;
     Player.ChangeDir(_wallDirection);
     if (ActiveTime == 0) {
@@ -67,10 +70,11 @@ public sealed class WallJump(Player player) : OriAbility(player) {
     }
   }
 
-  protected override AnimationOptions? GetAnimationOptions() => new("WallJump");
+  public override AnimationOptions? GetAnimationOptions() => new("WallJump");
 
-  protected override void DebugText(DebugUIState ui) {
+  protected override void DebugText(UIStateInfo ui) {
     base.DebugText(ui);
+    ui.DrawAppendLabelProgressBar("Duration", ActiveTime, EndTime, Color.Blue);
     ui.DrawAppendLabelValue("X Direction", _wallDirection > 0 ? "Right" : "Left");
     ui.DrawAppendLabelValue("Y Direction", _gravDirection > 0 ? "Down" : "Up");
   }

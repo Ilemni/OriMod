@@ -30,8 +30,8 @@ public sealed class ChargeDashProjectile : OriAbilityProjectile<ChargeDash> {
   /// Ends <see cref="ChargeDash"/> if this hits the target NPC
   /// </summary>
   public override void OnHitNPC(NPC target, NPC.HitInfo modifiers, int damageDone) {
-    if (OriPlayer.ActiveState is ChargeDash cDash && cDash.NpcIsTarget(target)) {
-      cDash.EndByNpcContact(target);
+    if (Ability.Active && Ability.NpcIsTarget(target)) {
+      Ability.EndByNpcContact(target);
     }
   }
 }

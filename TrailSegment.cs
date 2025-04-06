@@ -1,35 +1,43 @@
+using AnimLib.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using OriMod.Abilities;
+using OriMod.Animations;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.Graphics.Shaders;
 
 namespace OriMod;
 
 /// <summary>
 /// For drawing a trail behind the player.
 /// </summary>
-public sealed class TrailSegment(OriPlayer oPlayer) {
+public sealed class TrailSegment(OriCharacter ori) {
   private const string LayerName = "AfterImage";
   private float Alpha => _startAlpha * _timeLeft / Trail.Count;
-  private Texture2D Texture => oPlayer.Character.Move.GetTexture(LayerName);
+  private OriAnimation Anim => ori.GetAnimation<OriAnimation>();
+  private Texture2D Texture => Anim.SpriteSheet.GetAtlas(LayerName).Texture;
   private Vector2 _position;
   private Rectangle _tile;
   private byte _timeLeft;
   private float _startAlpha = 1;
   private float _rotation;
   private SpriteEffects _effect;
+  private Color _color;
+  private int _dye;
 
   /// <summary>
   /// Resets various attributes to be based on the player's current attributes.
   /// </summary>
   public void Reset() {
-    Player player = oPlayer.Player;
-    MovementStates anim = oPlayer.Character.Move;
+    if (!Anim.SpriteSheet.HasLayer("AfterImage")) {
+      return;
+    }
+
+    Player player = Anim.Player;
 
     _position = player.Center;
-    _tile = anim.GetRect(LayerName);
-    _rotation = anim.SpriteRotation;
+    _tile = Anim.GetSourceRect(LayerName);
+    _rotation = Anim.SpriteRotation;
 
     _startAlpha = player.velocity.LengthSquared() * 0.005f;
     if (_startAlpha > 0.16f) {
@@ -46,6 +54,15 @@ public sealed class TrailSegment(OriPlayer oPlayer) {
     if (player.gravDir < 0) {
       _effect |= SpriteEffects.FlipVertically;
     }
+
+    Item dyeItem = Anim.Player.dye[1];
+    var shaderColor = GameShaders.Armor.GetShaderFromItemId(dyeItem.netID)?.GetColor();
+    Color skinColor = Anim.Player.skinColor;
+    Color baseColor = shaderColor is { } sc
+      ? Color.Lerp(skinColor, sc, Anim.Character.DyeColorBlend)
+      : skinColor;
+    _color = Anim.Player.GetImmuneAlphaPure(baseColor, 0);
+    _dye = dyeItem.dye;
   }
 
   /// <summary>
@@ -65,16 +82,17 @@ public sealed class TrailSegment(OriPlayer oPlayer) {
   }
 
   /// <summary>
-  /// Gets the Trail <see cref="DrawData"/> for this <see cref="OriPlayer"/>.
+  /// Gets the Trail <see cref="DrawData"/> for this <see cref="OriCharacter"/>.
   /// </summary>
   public DrawData GetDrawData() {
     Vector2 pos = _position - Main.screenPosition;
-    Color color = oPlayer.SpriteColorPrimary * Alpha;
+    Color color = _color * Alpha;
     Rectangle rect = _tile;
-    Vector2 origin = new(rect.Width / 2f, rect.Height / 2f + 5 * oPlayer.Player.gravDir);
+    Vector2 origin = new(rect.Width / 2f, rect.Height / 2f + 5 * Anim.Player.gravDir);
 
     DrawData data = new(Texture, pos, rect, color, _rotation, origin, 1, _effect) {
-      ignorePlayerRotation = true
+      ignorePlayerRotation = true,
+      shader = _dye
     };
     return data;
   }

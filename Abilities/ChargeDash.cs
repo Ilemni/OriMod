@@ -1,18 +1,24 @@
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using AnimLib.Animations;
+using AnimLib.Menus.Debug;
 using AnimLib.Networking;
 using AnimLib.States;
 using Terraria;
+using Terraria.DataStructures;
 
 namespace OriMod.Abilities;
 
 /// <summary>
 /// Ability for a quick and fast horizontal dash. May be used in the air.
 /// </summary>
-public sealed class ChargeDash(Player player) : OriAbility(player) {
+public sealed class ChargeDash : OriAbility {
+  [field: AllowNull, MaybeNull]
+  public Dash Dash => field ??= GetState<Dash>();
+
   private static int ManaCost => 25;
   private static float MaxRange => 480f;
   private static float MaxRangeSquared => MaxRange * MaxRange;
@@ -22,53 +28,57 @@ public sealed class ChargeDash(Player player) : OriAbility(player) {
     100f, 99.5f, 99, 98.5f, 97.5f, 96.3f, 94.7f, 92.6f, 89.9f, 86.6f, 78.8f, 56f, 26f, 15f, 15f
   ];
 
+  private float Speed => Speeds[Math.Clamp(ActiveTime, 0, Speeds.Length - 1)];
+
 
   private sbyte _direction;
   private Vector2 _startDirection;
 
   private SoundInfo _sound = new("Ori/ChargeDash/seinChargeDash", 3, 0.5f);
 
-  private ushort _npcId = ushort.MaxValue;
-
 
   /// <summary>
   /// Target of this Charge Dash. May be <see langword="null"/>.
   /// </summary>
-  private NPC? Target => _npcId < Main.npc.Length ? Main.npc[_npcId] : null;
+  private Entity? _target;
 
-  [MemberNotNullWhen(true, nameof(Target))]
-  private bool HasTarget => Target is { active: true };
+  [MemberNotNullWhen(true, nameof(_target))]
+  private bool HasTarget => _target is { active: true };
 
-
-  public override int MaxCooldown => 60;
+  public bool NpcIsTarget(NPC npc) => _target is NPC target && npc.whoAmI == target.whoAmI;
 
   protected override bool StartCooldownOnExit => true;
 
-  protected override void OnInitialize() {
-    base.OnInitialize();
-    MovementStates parent = GetParent<MovementStates>();
-    parent.AddInterruptible<NoAbility>(to: this);
-    parent.AddInterruptible<Glide>(to: this);
-    parent.AddInterruptible<WallJump>(to: this);
-    parent.AddInterruptible<Crouch>(to: this);
-    parent.AddInterruptible<LookUp>(to: this);
+  public override bool ShowHintInUI => Dash.IsMaxLevel && NPC.downedGolemBoss;
+
+  public override void RegisterInterruptibles(List<State> interruptibles) {
+    interruptibles.AddRange([
+      GetState<NoAbility.Idle>(),
+      GetState<NoAbility.Running>(),
+      GetState<NoAbility.Jumping>(),
+      GetState<NoAbility.Falling>(),
+      GetState<Glide>(),
+      GetState<WallJump>(),
+      GetState<LookUp>()
+    ]);
   }
 
-  protected override bool OnPreUpdateInterruptible(State activeState) {
+  protected override bool UpdateInterrupt(State activeState) {
     return Input.Dash.JustPressed && Input.Charge.Current;
   }
 
   public override bool CanEnter() => base.CanEnter() && !OnWall && Player.CheckMana(ManaCost, blockQuickMana: true);
 
   protected override void OnEnter(State? fromState) {
-    GetParent<MovementStates>().GetChild<Dash>().StartCooldown();
-    Player.statMana -= ManaCost;
+    Dash.StartCooldown();
+    Player.CheckMana(ManaCost, pay: true, blockQuickMana: true);
 
     NPC? targetNpc = null;
 
     if (IsLocal && OriMod.ConfigClient.eChargeDashHoming) {
-      Player.manaRegenDelay = (int)Player.maxRegenDelay;
+      Player.manaRegenDelay = Player.maxRegenDelay;
       float closestDistFromMouse = MaxRangeSquared * 4;
+      Vector2 mouseWorld = Main.MouseWorld;
       foreach (NPC npc in Main.ActiveNPCs) {
         if (npc.friendly ||
             (Player.Center - npc.Center).LengthSquared() > MaxRangeSquared ||
@@ -76,7 +86,7 @@ public sealed class ChargeDash(Player player) : OriAbility(player) {
           continue;
         }
 
-        float distFromMouse = (Main.MouseWorld - npc.Center).LengthSquared();
+        float distFromMouse = (mouseWorld - npc.Center).LengthSquared();
         if (distFromMouse >= closestDistFromMouse) {
           continue;
         }
@@ -86,7 +96,7 @@ public sealed class ChargeDash(Player player) : OriAbility(player) {
       }
     }
 
-    _npcId = (ushort)(targetNpc?.whoAmI ?? ushort.MaxValue);
+    _target = targetNpc;
 
     _direction = !(IsLocal && OriMod.ConfigClient.eChargeDashHoming) || targetNpc is null
       ? (sbyte)(Player.controlLeft ? -1 : Player.controlRight ? 1 : Player.direction)
@@ -125,23 +135,25 @@ public sealed class ChargeDash(Player player) : OriAbility(player) {
       Player.velocity = newVel;
     }
 
-    _npcId = ushort.MaxValue;
+    _target = null;
     CancelState();
   }
 
-  protected override void OnPreUpdate() {
+  public override bool ImmuneTo(PlayerDeathReason damageSource, int cooldownCounter, bool dodgeable) => Active;
+
+  public override void PostUpdateMiscEffects() {
     if (ActiveTime > Duration || OnWall || Player.controlJump) {
       End();
     }
   }
 
-  protected override void OnUpdate() {
-    float speed = Speeds[ActiveTime];
+  public override void PostUpdateRunSpeeds() {
+    float speed = Speed;
     Player.gravity = 0;
 
     if (HasTarget) {
       Player.maxFallSpeed = speed;
-      Vector2 dir = Target.Center - Player.Center;
+      Vector2 dir = _target.Center - Player.Center;
       dir.Y -= 32f;
       dir.Normalize();
       Player.velocity = dir * speed;
@@ -152,27 +164,37 @@ public sealed class ChargeDash(Player player) : OriAbility(player) {
     }
 
     Player.runSlowdown = 26f;
-    OriPlayer.SetImmune(12);
 
     NetUpdate = true;
   }
 
-  protected override void NetSync(ISync sync) {
+  protected override void NetSync(NetSyncer sync) {
     if (ActiveTime == 0) {
       sync.Sync(ref _direction);
-      sync.Sync(ref _npcId);
+      sync.SyncEntity(ref _target);
       sync.SyncPositionAndVelocity(Player);
     }
   }
 
   protected override bool CanRefresh(bool cooledDown) => !Input.Charge.Current;
 
-  protected override void OnEndCooldown() => RefreshParticles(Color.LightBlue);
-
-  protected override AnimationOptions? GetAnimationOptions() {
-    int frameIndex = Math.Abs(Player.velocity.X) < 12f ? 1 : 0;
-    return new AnimationOptions("Dash", frameIndex: frameIndex);
+  protected override void OnEndCooldown(bool justCooledDown) {
+    if (justCooledDown) {
+      RefreshParticles(Color.LightBlue);
+    }
   }
 
-  public bool NpcIsTarget(NPC npc) => npc.whoAmI == _npcId;
+  public override AnimationOptions? GetAnimationOptions() {
+    int frameIndex = Math.Abs(Player.velocity.X) < 12f ? 1 : 0;
+    return new AnimationOptions("Dash") { FrameIndex = frameIndex };
+  }
+
+  protected override void DebugText(UIStateInfo ui) {
+    base.DebugText(ui);
+    ui.DrawAppendLabelProgressBar("Duration", ActiveTime, Duration, Color.Blue);
+  }
+
+  protected override void DebugCooldownReason(UIStateInfo ui) {
+    ui.DrawAppendLine("Must release Charge key");
+  }
 }

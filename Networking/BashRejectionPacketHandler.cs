@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using AnimLib;
 using OriMod.Abilities;
 using Terraria;
 using Terraria.ModLoader;
@@ -15,12 +16,12 @@ namespace OriMod.Networking;
 /// <remarks>
 /// The packet doesn't contain any data specific to the handler, only its type.
 /// </remarks>
-internal class BashRejectionPacketHandler(byte handlerType) : PacketHandler(handlerType) {
+internal sealed class BashRejectionPacketHandler(byte handlerType) : PacketHandler(handlerType) {
   internal override void HandlePacket(BinaryReader reader, int fromWho) {
     // Packet is always sent from server, telling the local player that its bash attempt is invalid.
-    OriPlayer oPlayer = Main.LocalPlayer.GetModPlayer<OriPlayer>();
-    if (oPlayer.ActiveState is Bash) {
-      oPlayer.Character.TriggerState<NoAbility>();
+    OriCharacter ori = Main.LocalPlayer.GetCharacter<OriCharacter>();
+    if (ori.ActiveState is Bash) {
+      ori.TriggerState<NoAbility>();
     }
   }
 

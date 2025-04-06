@@ -1,6 +1,9 @@
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using AnimLib.Animations;
+using AnimLib.Menus.Debug;
 using AnimLib.Networking;
 using AnimLib.States;
 using Terraria;
@@ -13,8 +16,8 @@ namespace OriMod.Abilities;
 /// <remarks>
 /// This ability is derived from the Ori games, despite Terraria already allowing dashing with the Shield of Cthuhlu.
 /// </remarks>
-public sealed class Dash(Player player) : OriAbility(player) {
-  public override int MaxLevel => 3;
+public sealed class Dash : OriAbility {
+  public override int MaxLevel => 2;
 
   private static readonly float[] Speeds = [
     50f, 50f, 50f, 49.9f, 49.6f, 49f, 48f, 46.7f, 44.9f, 42.4f, 39.3f, 35.4f, 28.6f, 20f,
@@ -30,19 +33,23 @@ public sealed class Dash(Player player) : OriAbility(player) {
 
   private SoundInfo _startSound = new("Ori/Dash/seinDash", 3, 0.2f);
 
-  private ChargeDash _chargeDash = null!; // OnInitialize()
+  [field: AllowNull, MaybeNull]
+  private ChargeDash ChargeDash => field ??= GetState<ChargeDash>();
 
   public override bool SupportsCooldown => true;
 
-  protected override void OnInitialize() {
-    base.OnInitialize();
-    MovementStates parent = GetParent<MovementStates>();
-    _chargeDash = parent.GetChild<ChargeDash>();
-    parent.AddInterruptible<NoAbility>(to: this);
-    parent.AddInterruptible<Glide>(to: this);
-    parent.AddInterruptible<WallJump>(to: this);
-    parent.AddInterruptible<Crouch>(to: this);
-    parent.AddInterruptible<LookUp>(to: this);
+  public override bool ShowHintInUI => Main.hardMode;
+
+  public override void RegisterInterruptibles(List<State> interruptibles) {
+    interruptibles.AddRange([
+      GetState<NoAbility.Idle>(),
+      GetState<NoAbility.Running>(),
+      GetState<NoAbility.Jumping>(),
+      GetState<NoAbility.Falling>(),
+      GetState<Glide>(),
+      GetState<WallJump>(),
+      GetState<LookUp>()
+    ]);
   }
 
   public override bool CanEnter() => base.CanEnter() && !OnWall && (Level >= 2 || IsGrounded);
@@ -57,29 +64,29 @@ public sealed class Dash(Player player) : OriAbility(player) {
     }
   }
 
-  protected override void OnExit() {
+  protected override void OnExit(State? toState) {
     if (!OnWall) {
       Player.velocity.X = Math.Min(Speeds[^1], Math.Abs(Player.velocity.X)) * _direction; // Rip hyperspeed dash-jump
     }
   }
 
-  protected override void NetSync(ISync sync) {
+  protected override void NetSync(NetSyncer sync) {
     sync.SyncSign(ref _direction);
     sync.Sync7BitEncodedInt(ref _currentCount);
     sync.SyncPositionAndVelocity(Player);
   }
 
-  protected override bool OnPreUpdateInterruptible(State activeState) {
-    return Input.Dash.JustPressed && (!Input.Charge.Current || !_chargeDash.CanEnter());
+  protected override bool UpdateInterrupt(State activeState) {
+    return Input.Dash.JustPressed && (!Input.Charge.Current || !ChargeDash.CanEnter());
   }
 
-  protected override void OnPreUpdate() {
+  public override void PostUpdateMiscEffects() {
     if (ActiveTime > Duration || OnWall) {
       CancelState();
     }
   }
 
-  protected override void OnUpdate() {
+  public override void PostUpdateRunSpeeds() {
     if (Player.controlJump && Player.AnyExtraJumpUsable()) {
       CancelState();
       return;
@@ -92,14 +99,25 @@ public sealed class Dash(Player player) : OriAbility(player) {
 
   protected override bool CanRefresh(bool cooledDown) => _currentCount < MaxDashes || IsGrounded || Player.mount.Active;
 
-  protected override void OnEndCooldown() {
+  protected override void OnEndCooldown(bool justCooledDown) {
     _currentCount = 0;
-    RefreshParticles(Color.White);
+    if (justCooledDown) {
+      RefreshParticles(Color.White);
+    }
   }
 
 
-  protected override AnimationOptions? GetAnimationOptions() {
+  public override AnimationOptions? GetAnimationOptions() {
     int frameIndex = Math.Abs(Player.velocity.X) < 12f ? 1 : 0;
-    return new AnimationOptions("Dash", frameIndex: frameIndex);
+    return new AnimationOptions("Dash") { FrameIndex = frameIndex };
+  }
+
+  protected override void DebugText(UIStateInfo ui) {
+    base.DebugText(ui);
+    ui.DrawAppendLabelProgressBar("Duration", ActiveTime, Duration);
+  }
+
+  protected override void DebugCooldownReason(UIStateInfo ui) {
+    ui.DrawAppendLine("Must touch ground.");
   }
 }

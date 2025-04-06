@@ -1,11 +1,13 @@
 using Microsoft.Xna.Framework;
 using OriMod.Projectiles.Abilities;
 using System;
+using System.Collections.Generic;
 using AnimLib.Animations;
+using AnimLib.Menus.Debug;
 using AnimLib.Networking;
 using AnimLib.States;
-using AnimLib.UI.Debug;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;
 
@@ -14,10 +16,13 @@ namespace OriMod.Abilities;
 /// <summary>
 /// Ability for an air-to-ground Area of Effect attack.
 /// </summary>
-public sealed class Stomp(Player player) : OriAbility(player) {
-  private static float Gravity => 8f;
+public sealed class Stomp : OriAbility {
+  private static float Gravity => 6f;
 
   private static int MinDuration => 30;
+
+  private static int EndDuration => 50;
+  private static int EndEarlyDuration => 20;
 
   /// <summary>
   /// Minimum frames required to hold <see cref="Player.controlDown"/> before Stomp can start.
@@ -34,29 +39,17 @@ public sealed class Stomp(Player player) : OriAbility(player) {
 
 
   private bool Starting => ActiveTime < Stats.StartDuration;
-
-  private bool JustPressedStomp => Input.Stomp.JustPressed || (Player.controlDown && !_wasControlDownLastFrame);
+  public bool Ending { get; private set; }
+  private int _endingTime;
 
 
   public override int MaxLevel => 3;
   public override int MaxCooldown => Stats.MaxCooldown;
   private ref StompStats Stats => ref IStats<StompStats>.Get(Level);
 
-  protected override void OnInitialize() {
-    base.OnInitialize();
-    MovementStates parent = GetParent<MovementStates>();
+  public override bool ShowHintInUI => Main.hardMode;
 
-    parent.AddInterruptible<NoAbility>(to: this);
-  }
-
-  public override bool CanEnter() => base.CanEnter() && !IsGrounded && Player.grapCount == 0;
-
-  protected override void OnEnter(State? fromState) {
-    base.OnEnter(fromState);
-    _startSound.Play(Player);
-  }
-
-  protected override void OnExit() {
+  private void ImpactEffects() {
     if (!IsGrounded) {
       return;
     }
@@ -76,20 +69,53 @@ public sealed class Stomp(Player player) : OriAbility(player) {
     NewAbilityProjectile<StompEnd>(damage: Stats.Damage);
   }
 
-  protected override bool OnPreUpdateInterruptible(State activeState) {
-    if (!IsLocal || IsGrounded || activeState is Climb or NoAbility { ActiveChild: NoAbility.WallSlide }) {
+  public override void RegisterInterruptibles(List<State> interruptibles) {
+    interruptibles.AddRange([
+      GetState<NoAbility.Jumping>(),
+      GetState<NoAbility.Falling>(),
+    ]);
+  }
+
+  public override bool CanEnter() => base.CanEnter() && !IsGrounded && Player.grapCount == 0;
+
+  protected override void OnEnter(State? fromState) {
+    _startSound.Play(Player);
+  }
+
+  protected override void OnExit(State? toState) {
+    Ending = false;
+    _endingTime = 0;
+  }
+
+  public override void SetControls() {
+    Player.controlUp = false;
+    Player.controlJump = false;
+    Player.controlHook = false;
+    Player.controlMount = false;
+    Player.controlThrow = false;
+    Player.controlUseItem = false;
+    Player.controlUseTile = false;
+    if (Starting) {
+      Player.controlLeft = false;
+      Player.controlRight = false;
+    }
+  }
+
+  protected override bool UpdateInterrupt(State activeState) {
+    if (!IsLocal) {
       return false;
     }
 
-    if (!Input.Stomp.Current || !Player.controlDown) {
+    if (!Input.Stomp.Current) {
       _controlDownDuration = 0;
       return false;
     }
 
-    bool justPressedStomp = JustPressedStomp;
-    _wasControlDownLastFrame = Player.controlDown;
+    if (_controlDownDuration == 0 && !Input.Stomp.JustPressed) {
+      return false;
+    }
 
-    if (_controlDownDuration == 0 && !justPressedStomp) {
+    if (Character.InAirTime < 5) {
       return false;
     }
 
@@ -98,71 +124,99 @@ public sealed class Stomp(Player player) : OriAbility(player) {
     return _controlDownDuration > HoldDownDelay;
   }
 
-  protected override void OnPreUpdate() {
+  public override bool ImmuneTo(PlayerDeathReason damageSource, int cooldownCounter, bool dodgeable) =>
+    Active && !Starting;
+
+  public override void PostUpdateMiscEffects() {
     if (Starting && Input.Jump.JustPressed) {
       if (TriggerState<AirJump>()) {
         return;
       }
     }
 
-    if (ActiveTime > MinDuration && !Player.controlDown) {
+    if (ActiveTime > MinDuration && !Input.Stomp.Current && !Ending) {
       // Allow cancelling if player doesn't want to commit to the stomp
       CancelState();
     }
 
-    if (IsGrounded) {
-      CancelState();
+    if (Ending) {
+      _endingTime++;
+      if (_endingTime >= EndDuration || (_endingTime >= EndEarlyDuration && !Player.controlDown)) {
+        CancelState();
+      }
+    }
+
+    if (!IsGrounded) {
+      return;
+    }
+
+    if (!Ending) {
+      Ending = true;
+      ImpactEffects();
     }
   }
 
-  protected override void OnUpdate() {
-    Player.controlUp = false;
-    Player.controlDown = false;
-    Player.controlJump = false;
-    Player.controlHook = false;
-    Player.controlMount = false;
-    Player.controlThrow = false;
-    Player.controlUseItem = false;
-    Player.controlUseTile = false;
+  public override void PostUpdateRunSpeeds() {
     Player.RemoveAllGrapplingHooks();
 
     if (Starting) {
-      Player.controlLeft = false;
-      Player.controlRight = false;
       Player.velocity.X = 0;
-      Player.velocity.Y *= 0.9f;
-      Player.gravity = -0.1f;
+      Player.velocity.Y *= 0.8f;
+      Player.gravity = -0.2f;
+      return;
     }
-    else {
-      ref StompStats stats = ref Stats;
-      if (ActiveTime == stats.StartDuration) {
-        _activeSound.Play(Player);
-        NewAbilityProjectile<StompProjectile>(damage: stats.Damage * 2);
-      }
 
-      Player.maxRunSpeed = 1f;
-      Player.runSlowdown = 8;
-      Player.gravity = Gravity;
-      Player.maxFallSpeed = stats.MaxFallSpeed;
-      OriPlayer.SetImmune(12);
+    ref StompStats stats = ref Stats;
+    if (ActiveTime == stats.StartDuration) {
+      _activeSound.Play(Player);
+      NewAbilityProjectile<StompProjectile>(damage: stats.Damage * 2);
     }
+
+    Player.maxRunSpeed = 1f;
+    Player.runSlowdown = 8;
+    Player.gravity = Gravity;
+    Player.maxFallSpeed = stats.MaxFallSpeed;
   }
 
-  protected override void NetSync(ISync sync) {
+  protected override void NetSync(NetSyncer sync) {
     sync.SyncPositionAndVelocity(Player);
   }
 
-  protected override void OnEndCooldown() => RefreshParticles(Color.Orange);
-
-  protected override AnimationOptions? GetAnimationOptions() {
-    return Starting
-      ? new AnimationOptions("AirJump", rotation: ActiveTime * 0.8f)
-      : new AnimationOptions("ChargeJump", speed: 2, rotation: (float)Math.PI, loopCount: 0, isPingPong: true);
+  protected override void OnEndCooldown(bool justCooledDown) {
+    if (justCooledDown) {
+      RefreshParticles(Color.Orange);
+    }
   }
 
-  protected override void DebugText(DebugUIState ui) {
+  public override AnimationOptions? GetAnimationOptions() {
+    if (Starting) {
+      return Anim.HasTag("StompStart")
+        ? new AnimationOptions("StompStart")
+        : new AnimationOptions("AirJump") { Rotation = ActiveTime * 0.8f };
+    }
+
+    if (Ending) {
+      return Anim.HasTag("StompEnd")
+        ? new AnimationOptions("StompEnd")
+        : new AnimationOptions("Crouch");
+    }
+
+    return Anim.HasTag("Stomp")
+      ? new AnimationOptions("Stomp")
+      : new AnimationOptions("ChargeJump") {
+        Speed = 2,
+        Rotation = MathF.PI / 2f + Player.velocity.ToRotation(),
+        LoopCount = 0,
+        IsPingPong = true
+      };
+  }
+
+  protected override void DebugText(UIStateInfo ui) {
     base.DebugText(ui);
     ui.DrawAppendBoolean(Starting);
+    ui.DrawAppendBoolean(Ending);
+    ui.DrawAppendLabelValue(_endingTime);
+    ui.DrawAppendLabelProgressBar("Duration", ActiveTime, [Stats.StartDuration, MinDuration], Color.Green);
   }
 
   private readonly record struct StompStats(
@@ -170,18 +224,10 @@ public sealed class Stomp(Player player) : OriAbility(player) {
     int StartDuration,
     int MaxFallSpeed,
     int MaxCooldown) : IStats<StompStats> {
-    public static ref StompStats[] Values => ref _values;
-
-    private static StompStats[] _values = [
-      default,
+    public static StompStats[] Values { get; } = [
       new(Damage: 50, StartDuration: 24, MaxFallSpeed: 28, MaxCooldown: 60),
       new(Damage: 70, StartDuration: 20, MaxFallSpeed: 36, MaxCooldown: 90),
+      new(Damage: 90, StartDuration: 16, MaxFallSpeed: 40, MaxCooldown: 120),
     ];
-
-    public static StompStats CreateFromLevel(int level) => new(
-      Damage: 30 + level * 20,
-      StartDuration: 16,
-      MaxFallSpeed: 25 + level * 5,
-      MaxCooldown: Math.Min(30 + level * 30, 600));
   }
 }

@@ -1,32 +1,31 @@
 using AnimLib.Animations;
-using Terraria;
+using AnimLib.Menus.Debug;
+using AnimLib.States;
+using Microsoft.Xna.Framework;
 
 namespace OriMod.Abilities;
 
 /// <summary>
 /// StateMachine for the player crouching. This ability is entirely visual, and is always unlocked.
 /// </summary>
-public sealed class Crouch(Player player) : OriState(player) {
-  public override bool CanEnter() => base.CanEnter() && IsGrounded &&
+public sealed class Crouch : OriState {
+  public override bool CanEnter() => base.CanEnter() && Character.IsGrounded &&
     (!OriMod.ConfigClient.softCrouch || !(Player.controlLeft || Player.controlRight));
 
   private static int StartDuration => 10;
   private static int EndDuration => 4;
 
-  internal bool Starting => ActiveTime < StartDuration;
+  private bool Starting => ActiveSelf && ActiveTime < StartDuration;
 
-  internal bool Ending => _endingTime > 0;
+  private bool Ending => ActiveSelf && _endingTime > 0;
 
   private int _endingTime;
 
-  protected override void OnUpdate() {
-    if (OriMod.ConfigClient.softCrouch) {
-      return;
-    }
+  protected override void OnExit(State? toState) {
+    _endingTime = 0;
+  }
 
-    Player.runAcceleration = 0;
-    Player.maxRunSpeed = 0;
-    Player.velocity.X = 0;
+  public override void SetControls() {
     if (Player.controlLeft) {
       Player.controlLeft = false;
       Player.ChangeDir(-1);
@@ -35,6 +34,16 @@ public sealed class Crouch(Player player) : OriState(player) {
       Player.controlRight = false;
       Player.ChangeDir(1);
     }
+  }
+
+  public override void PostUpdateRunSpeeds() {
+    if (OriMod.ConfigClient.softCrouch) {
+      return;
+    }
+
+    Player.runAcceleration = 0;
+    Player.maxRunSpeed = 0;
+    Player.velocity.X = 0;
 
     // if (PlayerInput.Triggers.JustPressed.Jump) { // TODO: Backflip
     //   Vector2 pos = player.position;
@@ -46,7 +55,7 @@ public sealed class Crouch(Player player) : OriState(player) {
     // }
   }
 
-  protected override void OnPreUpdate() {
+  public override void PostUpdateMiscEffects() {
     if (OriMod.ConfigClient.softCrouch && !CanEnter()) {
       CancelState();
       return;
@@ -69,8 +78,22 @@ public sealed class Crouch(Player player) : OriState(player) {
     }
   }
 
-  protected override AnimationOptions? GetAnimationOptions() =>
-    Starting ? new AnimationOptions("CrouchStart") :
-    Ending ? new AnimationOptions("CrouchStart", isReversed: true) :
-    new AnimationOptions("Crouch");
+  public override AnimationOptions? GetAnimationOptions() {
+    if (Ending) {
+      return Anim.HasTag("CrouchEnd")
+        ? new AnimationOptions("CrouchEnd")
+        : new AnimationOptions("CrouchStart") { IsReversed = true };
+    }
+
+    return Starting && !Player.controlDownHold
+      ? new AnimationOptions("CrouchStart")
+      : new AnimationOptions("Crouch");
+  }
+
+  protected override void DebugText(UIStateInfo ui) {
+    base.DebugText(ui);
+    ui.DrawAppendBoolean(Starting, color: Color.White);
+    ui.DrawAppendBoolean(Ending, color: Color.White);
+    ui.DrawAppendBoolean(OriMod.ConfigClient.softCrouch, color: Color.White, key: "Config: Soft Crouch");
+  }
 }

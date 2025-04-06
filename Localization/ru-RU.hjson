@@ -659,5 +659,39 @@ Mods: {
 			JumpBottles: Любые Улучшающие Прыжок Бутылки
 			JumpBalloons: Любые Улучшающие Прыжок Воздушные Шарики
 		}
+
+		Skins: {
+			DefaultArrowSkin: {
+				// DisplayName: Default Arrow
+				// Description: Mods.OriMod.Skins.DefaultArrowSkin.Description
+			}
+
+			DefaultOriSkin: {
+				// DisplayName: Default Ori
+				// Description: Mods.OriMod.Skins.DefaultOriSkin.Description
+			}
+
+			BashTestSkin: {
+				// DisplayName: Bash Test Skin
+				// Description: Mods.OriMod.Skins.BashTestSkin.Description
+			}
+		}
+
+		SkinSlots: {
+			BashArrowSlot: {
+				// DisplayName: Bash Arrow
+				// Description: ""
+			}
+
+			LaunchArrowSlot: {
+				// DisplayName: Launch Arrow
+				// Description: ""
+			}
+
+			OriSpriteSlot: {
+				// DisplayName: Ori Sprite
+				// Description: ""
+			}
+		}
 	}
 }

@@ -1,5 +1,7 @@
 using System.IO;
 using JetBrains.Annotations;
+using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace OriMod.Networking;
@@ -10,27 +12,17 @@ namespace OriMod.Networking;
 [UsedImplicitly]
 internal sealed class ModNetHandler : ModSystem {
   public override void SetStaticDefaults() {
-    OriPlayerHandler = new OriPlayerPacketHandler(OriState);
     BashRejection = new BashRejectionPacketHandler(BashRejectType);
   }
 
   public override void Unload() {
-    OriPlayerHandler = null!;
     BashRejection = null!;
   }
 
   /// <summary>
-  /// Enum value for <see cref="OriPlayerPacketHandler"/>.
-  /// </summary>
-  private const byte OriState = 1;
-
-  /// <summary>
   /// Enum value for <see cref="BashRejectionPacketHandler"/>
   /// </summary>
-  private const byte BashRejectType = 2;
-
-  /// <inheritdoc cref="OriPlayerPacketHandler"/>
-  internal static OriPlayerPacketHandler OriPlayerHandler { get; private set; } = null!; // SetStaticDefaults()
+  private const byte BashRejectType = 1;
 
   /// <inheritdoc cref="BashRejectionPacketHandler"/>
   internal static BashRejectionPacketHandler BashRejection { get; private set; } = null!; // SetStaticDefaults()
@@ -41,16 +33,23 @@ internal sealed class ModNetHandler : ModSystem {
   /// <param name="reader">The <see cref="BinaryReader"/> that reads the received <see cref="ModPacket"/>.</param>
   /// <param name="fromWho">The player that this packet is from.</param>
   internal static void HandlePacket(BinaryReader reader, int fromWho) {
+    if (Main.netMode == NetmodeID.MultiplayerClient) {
+      // If packet is sent TO server, it is FROM player.
+      // If packet is sent TO player, it is FROM server (This block) and fromWho is 255.
+      // Server-written packet includes the fromWho, the player that created it.
+      // Now in either case of this being server or player, the fromWho is the player.
+      fromWho = reader.ReadUInt16();
+    }
+
     byte packetClass = reader.ReadByte();
     PacketHandler? handler = packetClass switch {
-      OriState => OriPlayerHandler,
       BashRejectType => BashRejection,
-      _ => null,
+      _ => null
     };
 
     if (handler is null) {
-        OriMod.Error("UnknownPacket", args: packetClass);
-        return;
+      OriMod.Error("UnknownPacket", args: packetClass);
+      return;
     }
 
     handler.HandlePacket(reader, fromWho);

@@ -1,23 +1,24 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using AnimLib.Animations;
+using AnimLib.Menus.Debug;
 using AnimLib.Networking;
 using AnimLib.States;
-using AnimLib.UI.Debug;
+using ReLogic.Content;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace OriMod.Abilities;
 
 /// <summary>
 /// Ability for traveling through solid terrain.
 /// </summary>
-/// <remarks>
-/// This ability was somewhat difficult to balance; the simplest solution was to restrict tiles to whatever pickaxe was in inventory.
-/// </remarks>
-public sealed class Burrow(Player player) : OriAbility(player) {
+public sealed class Burrow : OriAbility {
+  private static Asset<Texture2D> _timerTexture = null!; // SetStaticDefaults
   public override int MaxLevel => 3;
 
   private ref BurrowStats Stats => ref IStats<BurrowStats>.Get(Level);
@@ -28,18 +29,30 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
   private int _bounceStunLeft;
 
-  protected override void OnInitialize() {
-    base.OnInitialize();
-    MovementStates parent = GetParent<MovementStates>();
-    parent.AddInterruptible<NoAbility>(to: this);
-    parent.AddInterruptible<Crouch>(to: this);
+  public override bool ShowHintInUI => NPC.downedBoss2 || NPC.downedBoss3 || Main.hardMode;
+
+  public override void SetStaticDefaults() {
+    _timerTexture = ModContent.Request<Texture2D>("OriMod/PlayerEffects/BurrowTimer");
+  }
+
+  public override void Unload() {
+    _timerTexture = null!;
+  }
+
+  public override void RegisterInterruptibles(List<State> interruptibles) {
+    interruptibles.AddRange([
+      GetState<NoAbility.Idle>(),
+      GetState<NoAbility.IdleAgainst>(),
+      GetState<NoAbility.Running>(),
+      GetState<Crouch>()
+    ]);
   }
 
   public override bool CanEnter() => base.CanEnter() && !InMenu;
 
   protected override bool CanTransitionFrom(State fromState) => fromState is Crouch || OnWall;
 
-  protected override bool OnPreUpdateInterruptible(State fromState) {
+  protected override bool UpdateInterrupt(State fromState) {
     if (!Input.Burrow.JustPressed) {
       return false;
     }
@@ -50,12 +63,17 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
     // Check if player can enter Burrow
     EnterHitbox.UpdateHitbox(Player.Center);
-    return EnterHitbox.Any(CanBurrow);
+    return EnterHitbox.Any(this, CanBurrow);
   }
 
   public override bool SupportsCooldown => true;
   public override int MaxCooldown => 12;
-  protected override void OnEndCooldown() => RefreshParticles(Color.SandyBrown);
+
+  protected override void OnEndCooldown(bool justCooledDown) {
+    if (justCooledDown) {
+      RefreshParticles(Color.SandyBrown);
+    }
+  }
 
   private static int UiIncrement => 60;
   private static float BaseSpeed => 6f;
@@ -75,37 +93,41 @@ public sealed class Burrow(Player player) : OriAbility(player) {
   private bool CanBurrowAny => Level >= 3;
   private static bool IsSolid(Tile tile) => tile.HasUnactuatedTile && Main.tileSolid[tile.TileType];
 
-  internal bool CanBurrow(Tile t) =>
-    CanBurrowAny && IsSolid(t) || TileCollection.TilePickaxeMin[t.TileType] <= Stats.Strength;
+  internal static bool CanBurrow(Tile t, Burrow b) =>
+    b.CanBurrowAny && IsSolid(t) || TileCollection.TilePickaxeMin[t.TileType] <= b.Stats.Strength;
 
   private Vector2 _lastPosition;
   private Vector2 _velocity;
 
   protected override bool StartCooldownOnExit => true;
 
-  /// <summary>
-  /// Tile hitbox for determining if the player can enter Burrow state.
-  /// </summary>
-  internal static readonly TileHitbox EnterHitbox = new(
+  private static readonly (int x, int y)[] EnterTemplate = [
     (0, -1), (0, 0), (0, 1), // Center
     (-1, -1), (-1, 0), (-1, 1), // Left
     (2, -1), (2, 0), (2, 1), // Right
     (0, -2), (1, -2), // Top
     (0, 2), (1, 2), // Bottom
     (2, 2), (2, -2), (-1, 2), (-1, -2) // Corners
-  );
+  ];
 
-  /// <summary>
-  /// Tile hitbox for determining collisions when in the Burrow state
-  /// </summary>
-  internal static readonly TileHitbox InnerHitbox = new(
+  private static readonly (int x, int y)[] InnerTemplate = [
     (0, -1), // Top
     (0, 1), // Bottom
     (-1, 0), // Left
     (1, 0) // Right
-  );
+  ];
 
-  protected override void NetSync(ISync sync) {
+  /// <summary>
+  /// Tile hitbox for determining if the player can enter Burrow state.
+  /// </summary>
+  internal readonly TileHitbox EnterHitbox = new(EnterTemplate);
+
+  /// <summary>
+  /// Tile hitbox for determining collisions when in the Burrow state
+  /// </summary>
+  internal readonly TileHitbox InnerHitbox = new(InnerTemplate);
+
+  protected override void NetSync(NetSyncer sync) {
     sync.Sync(ref _lastPosition);
     sync.Sync(ref Player.position);
     sync.Sync(ref _velocity);
@@ -129,7 +151,7 @@ public sealed class Burrow(Player player) : OriAbility(player) {
       Vector2 newVel = Vector2.Zero;
       if (OriMod.ConfigClient.BurrowToMouse) {
         newVel = Player.AngleTo(Main.MouseWorld).ToRotationVector2();
-        holdNeutral |= Vector2.DistanceSquared(Main.MouseWorld, Player.Center) < 3600.0f;
+        holdNeutral |= Vector2.DistanceSquared(Main.MouseWorld, Player.Center) < 3600;
       }
       else {
         if (Player.controlLeft) {
@@ -174,12 +196,13 @@ public sealed class Burrow(Player player) : OriAbility(player) {
     }
 
     float breathDecreaseAmount = Input.Burrow.Current ? 0.45f : 0.2f;
+
     // Detect bouncing
     if (!CanBurrowAny) {
       InnerHitbox.UpdateHitbox(Player.Center + _velocity.SafeNormalize(default) * (Player.gravDir < 0 ? 48 : 32));
       if (_velocity.LengthSquared() >= 20f) {
         // Normal/high speed burrow
-        InnerHitbox.GetCollisions(CanBurrow, out bool didX, out bool didY);
+        (bool didX, bool didY) = InnerHitbox.GetCollisions(this, CanBurrow);
         _velocity = (didX, didY) switch {
           (true, true) => _velocity * -1,
           (false, false) => _velocity,
@@ -197,7 +220,7 @@ public sealed class Burrow(Player player) : OriAbility(player) {
         // Get the tile the player is at
         Point nextTilePosition = (Player.Center + _velocity).ToTileCoordinates();
         Tile nextTile = Main.tile[nextTilePosition.X, nextTilePosition.Y];
-        if (!CanBurrow(nextTile)) {
+        if (!CanBurrow(nextTile, this)) {
           // Modify _velocity such that it will not push the player into the tile
           // Player is inside the tile
           Vector2 playerCenter = Player.Center;
@@ -211,11 +234,41 @@ public sealed class Burrow(Player player) : OriAbility(player) {
 
     // Apply changes
     Player.velocity = Vector2.Zero;
-    OriPlayer.CreatePlayerDust();
+    Character.CreatePlayerDust();
     _breath = Math.Max(_breath - breathDecreaseAmount, 0);
   }
 
-  protected override void OnUpdate() {
+  public override void SetControls() {
+    // Disable actions while burrowing
+    Player.controlJump = false;
+    Player.controlThrow = false;
+    Player.controlUp = false;
+
+    // Allow use item only if it is a warp item, like magic mirror
+    if (Player.HeldItem.type is not (ItemID.MagicMirror or ItemID.IceMirror or ItemID.CellPhone or ItemID.RecallPotion
+        or ItemID.Shellphone or ItemID.ShellphoneSpawn or ItemID.ShellphoneHell or ItemID.ShellphoneOcean
+        or ItemID.ShellphoneDummy
+        or ItemID.RodofDiscord or ItemID.TeleportationPotion or ItemID.WormholePotion)) {
+      Player.noItems = true;
+      Player.controlUseItem = false;
+      Player.controlUseTile = false;
+    }
+  }
+
+  public override void UpdateEquips() {
+    if (_breath > 0) {
+      Player.buffImmune[BuffID.Suffocation] = true;
+    }
+  }
+
+  public override void PreUpdateBuffs() {
+    // Manage suffocation debuff
+    if (_breath == 0) {
+      Player.AddBuff(BuffID.Suffocation, 2, quiet: true);
+    }
+  }
+
+  public override void PostUpdateRunSpeeds() {
     if (Ending) {
       // Runs when leaving solid tiles
       _velocity = _velocity.SafeNormalize(default) * Math.Max(_velocity.Length(), BaseSpeed);
@@ -226,35 +279,12 @@ public sealed class Burrow(Player player) : OriAbility(player) {
       UpdateActive();
     }
 
-    // Manage suffocation debuff
-    if (_breath > 0) {
-      Player.buffImmune[BuffID.Suffocation] = true;
-    }
-    else {
-      Player.AddBuff(BuffID.Suffocation, 1);
-    }
-
-    // Disable actions while burrowing
     Player.gravity = 0;
-    Player.controlJump = false;
-
-    // Allow use item only if it is a warp item, like magic mirror
-    if (Player.HeldItem.type is not (ItemID.MagicMirror or ItemID.IceMirror or ItemID.CellPhone or ItemID.RecallPotion
-        or ItemID.Shellphone or ItemID.ShellphoneSpawn or ItemID.ShellphoneHell or ItemID.ShellphoneOcean
-        or ItemID.ShellphoneDummy or ItemID.PDA or ItemID.GPS
-        or ItemID.RodofDiscord or ItemID.TeleportationPotion or ItemID.WormholePotion)) {
-      Player.noItems = true;
-      Player.controlUseItem = false;
-    }
-
-    Player.controlUseTile = false;
-    Player.controlThrow = false;
-    Player.controlUp = false;
     Player.RemoveAllGrapplingHooks();
   }
 
-  protected override void OnPostUpdate() {
-    if (!IsActive) {
+  public override void PostUpdate() {
+    if (!Active) {
       // Restore burrow breath
       _breath = Math.Clamp(_breath + Stats.RecoveryRate, 0, Stats.Duration);
       return;
@@ -271,8 +301,12 @@ public sealed class Burrow(Player player) : OriAbility(player) {
   /// <summary>
   /// Draw breath meter to screen
   /// </summary>
-  internal void DrawEffects(ref PlayerDrawSet drawInfo) {
-    if (_breath >= Stats.Duration || Main.hideUI) {
+  internal void DrawEffects(ref readonly PlayerDrawSet drawInfo) {
+    if (!IsLocal || Character.UiInfo.IsDrawingInUI || Main.hideUI) {
+      return;
+    }
+
+    if (!Unlocked || _breath >= Stats.Duration) {
       return;
     }
 
@@ -280,9 +314,9 @@ public sealed class Burrow(Player player) : OriAbility(player) {
     baseDrawPosition.X += 48;
     baseDrawPosition.Y += Player.gravDir >= 0 ? 16 : 112;
 
-    Texture2D texture = OriPlayer.BurrowTimer.Value;
+    Texture2D texture = _timerTexture.Value;
     Vector2 origin = texture.Size() / 2;
-    Color color = Color.White * (IsActive ? 0.3f : 0.07f);
+    Color color = Color.White * (Active ? 0.3f : 0.07f);
     SpriteEffects effect = Player.gravDir > 0 ? SpriteEffects.None : SpriteEffects.FlipVertically;
     const float scale = 0.5f;
 
@@ -313,7 +347,8 @@ public sealed class Burrow(Player player) : OriAbility(player) {
     }
   }
 
-  protected override void OnPreUpdate() {
+  [HookCondition(HookConditionFlags.Strict)]
+  public override void PostUpdateMiscEffects() {
     InnerHitbox.UpdateHitbox(Player.Center + _velocity.SafeNormalize(default) * (Player.gravDir < 0 ? 48 : 32));
 
     if (!InnerHitbox.Any(IsSolid)) {
@@ -330,14 +365,14 @@ public sealed class Burrow(Player player) : OriAbility(player) {
     NetUpdate = true;
   }
 
-  protected override AnimationOptions? GetAnimationOptions() {
+  public override AnimationOptions? GetAnimationOptions() {
     float gravDir = Player.gravDir;
 
-    float rad = (float)Math.Atan2(_velocity.X, -_velocity.Y * gravDir) * gravDir;
-    return new AnimationOptions("Burrow", rotation: rad);
+    float rad = MathF.Atan2(_velocity.X, -_velocity.Y * gravDir) * gravDir;
+    return new AnimationOptions("Burrow") { Rotation = rad };
   }
 
-  protected override void DebugText(DebugUIState ui) {
+  protected override void DebugText(UIStateInfo ui) {
     ui.DrawAppendLabelValue("Breath", (int)_breath, Stats.Duration);
     ui.DrawAppendLabelValue("Speed", _currentSpeed, format: "F2");
   }
@@ -347,20 +382,10 @@ public sealed class Burrow(Player player) : OriAbility(player) {
     float RecoveryRate,
     int Strength
   ) : IStats<BurrowStats> {
-    public static ref BurrowStats[] Values => ref _values;
-
-    // ReSharper disable once ReplaceWithFieldKeyword - Causes CS8145
-    private static BurrowStats[] _values = [
-      default,
+    public static BurrowStats[] Values { get; } = [
       new(Duration: 300, RecoveryRate: 0.4f, Strength: 55), // Evil biomes, dungeon
       new(Duration: 480, RecoveryRate: 1.2f, Strength: 200), // Pre-Temple
       new(Duration: 600, RecoveryRate: 2.35f, Strength: 300)
     ];
-
-    public static BurrowStats CreateFromLevel(int level) => new(
-      Duration: (level + 1) * 120,
-      RecoveryRate: level * 0.125f,
-      Strength: (level + 2) * 100
-    );
   }
 }

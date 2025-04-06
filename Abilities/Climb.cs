@@ -1,8 +1,8 @@
 using System;
 using AnimLib.Animations;
+using AnimLib.Menus.Debug;
 using AnimLib.Networking;
 using AnimLib.States;
-using AnimLib.UI.Debug;
 using Microsoft.Xna.Framework;
 using OriMod.Dusts;
 using OriMod.Utilities;
@@ -14,7 +14,7 @@ namespace OriMod.Abilities;
 /// <summary>
 /// Ability for climbing on walls.
 /// </summary>
-public sealed class Climb(Player player) : OriAbility(player) {
+public sealed class Climb : OriAbility {
   /// <summary>
   /// Time until <see cref="IsFullyCharged"/> becomes <see langword="true"/>.
   /// </summary>
@@ -65,14 +65,15 @@ public sealed class Climb(Player player) : OriAbility(player) {
   /// </summary>
   private bool _isCharging;
 
-  protected override void OnInitialize() {
-    base.OnInitialize();
-    _wallChargeJump = GetParent<MovementStates>().GetChild<WallChargeJump>();
+  public override bool ShowHintInUI => NPC.downedBoss2 || NPC.downedBoss3 || Main.hardMode;
+
+  public override void Initialize() {
+    _wallChargeJump = GetState<WallChargeJump>();
   }
 
   public override bool CanEnter() => base.CanEnter() && OnWall && !IsGrounded;
 
-  protected override void NetSync(ISync sync) {
+  protected override void NetSync(NetSyncer sync) {
     sync.Sync7BitEncodedInt(ref _currentCharge);
     sync.SyncSign(ref _wallDirection);
     sync.SyncSign(ref _gravDirection);
@@ -89,12 +90,26 @@ public sealed class Climb(Player player) : OriAbility(player) {
     _gravDirection = (int)Player.gravDir;
   }
 
-  protected override void OnExit() {
+  protected override void OnExit(State? toState) {
     _currentCharge = 0;
     _endingTime = 0;
   }
 
-  protected override void OnPreUpdate() {
+  public override void SetControls() {
+    Player.controlLeft = false;
+    Player.controlRight = false;
+    Player.controlDown = false;
+    Player.controlTorch = false;
+    if (IsFullyCharged) {
+      Player.controlUseItem = false;
+    }
+
+    if (Player.controlUp) {
+      _disableUp = true;
+    }
+  }
+
+  public override void PostUpdateMiscEffects() {
     if (!IsLocal) {
       return;
     }
@@ -113,13 +128,13 @@ public sealed class Climb(Player player) : OriAbility(player) {
 
     if (!IsFullyCharged && CanCharge) {
       if (_currentCharge == 0) {
-        SoundWrapper.PlayLocal(Player, "Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+        SoundWrapper.PlayLocal(Player, "OriMod/Sounds/Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
       }
 
       _currentCharge++;
       if (IsFullyCharged) {
         NetUpdate = true;
-        SoundWrapper.PlayLocal(Player, "Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
+        SoundWrapper.PlayLocal(Player, "OriMod/Sounds/Ori/ChargeJump/seinChargeJumpChargeB", 1f, .2f);
       }
     }
 
@@ -130,6 +145,7 @@ public sealed class Climb(Player player) : OriAbility(player) {
 
       Vector2 direction = new(-_wallDirection, _gravDirection);
       _chargeJumpAimDirection = OriUtils.GetMouseDirection(Player, out _angle, direction, MaxAimAngle);
+
       // Trigger net update if angle delta is large enough, or if the angle becomes equal to the bounds
       if (Math.Abs(_lastSyncedAngle - _angle) > 0.1f ||
           _lastSyncedAngle > -MaxAimAngle && _lastSyncedAngle < MaxAimAngle &&
@@ -141,7 +157,7 @@ public sealed class Climb(Player player) : OriAbility(player) {
       if (!CanCharge) {
         NetUpdate = true;
         _currentCharge = 0;
-        SoundWrapper.PlayLocal(Player, "Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
+        SoundWrapper.PlayLocal(Player, "OriMod/Sounds/Ori/ChargeDash/seinChargeDashUncharge", 1f, .3f);
       }
     }
 
@@ -177,11 +193,7 @@ public sealed class Climb(Player player) : OriAbility(player) {
     }
   }
 
-  protected override void OnUpdate() {
-    if (Player.controlUp) {
-      _disableUp = true;
-    }
-
+  public override void PostUpdateRunSpeeds() {
     if (Ending) {
       // Clamber over ledge
       Player.velocity.X = _wallDirection * 3.7f;
@@ -209,17 +221,10 @@ public sealed class Climb(Player player) : OriAbility(player) {
     Player.ChangeDir(_wallDirection);
     Player.gravDir = _gravDirection;
     Player.velocity.X = 0;
-    Player.controlLeft = false;
-    Player.controlRight = false;
-    Player.controlDown = false;
-    Player.controlTorch = false;
-    if (IsFullyCharged) {
-      Player.controlUseItem = false;
-    }
   }
 
-  protected override void OnPostUpdate() {
-    if (!IsActive) {
+  public override void PostUpdate() {
+    if (!Active) {
       return;
     }
 
@@ -234,9 +239,9 @@ public sealed class Climb(Player player) : OriAbility(player) {
     Player.controlUp = false;
   }
 
-  protected override AnimationOptions? GetAnimationOptions() {
+  public override AnimationOptions? GetAnimationOptions() {
     if (Ending) {
-      return new AnimationOptions("Jump", frameIndex: 0);
+      return new AnimationOptions("Jump") { FrameIndex = 0 };
     }
 
     if (!_isCharging) {
@@ -245,33 +250,32 @@ public sealed class Climb(Player player) : OriAbility(player) {
       }
 
       string tag = Player.velocity.Y * Player.gravDir < 0 ? "Climb" : "WallSlide";
-      return new AnimationOptions(tag, speed: Math.Abs(Player.velocity.Y) * 0.4f);
+      return new AnimationOptions(tag) { Speed = Math.Abs(Player.velocity.Y) * 0.4f };
     }
 
     if (!IsFullyCharged) {
-      return new AnimationOptions("WallChargeJumpCharge", frameIndex: !_wallChargeJump.IsOnCooldown ? null : 0);
+      return new AnimationOptions("WallChargeJumpCharge") { FrameIndex = !_wallChargeJump.IsOnCooldown ? null : 0 };
     }
 
-    return new AnimationOptions("WallChargeJumpAim", frameIndex: _angle switch {
-      < -0.46f => 2,
-      < -0.17f => 1,
-      > 0.46f => 4,
-      > 0.17f => 3,
-      _ => 0
-    });
+    return new AnimationOptions("WallChargeJumpAim") {
+      FrameIndex = _angle switch {
+        < -0.46f => 2,
+        < -0.17f => 1,
+        > 0.46f => 4,
+        > 0.17f => 3,
+        _ => 0
+      }
+    };
   }
 
-  protected override void DebugText(DebugUIState ui) {
+  protected override void DebugText(UIStateInfo ui) {
     base.DebugText(ui);
     ui.DrawAppendLabelValue("X Direction", _wallDirection > 0 ? "Right" : "Left");
     ui.DrawAppendLabelValue("Y Direction", _gravDirection > 0 ? "Down" : "Up");
-    if (_currentCharge > 0) {
-      ui.DrawAppendBoolean(IsFullyCharged);
-      ui.DrawAppendLabelValue("Current Charge", _currentCharge, MaxCharge);
-      ui.DrawAppendLabelValue("Angle", _angle);
-    }
+    ui.DrawAppendBoolean(IsFullyCharged);
+    ui.DrawAppendLabelProgressBar("Charge", _currentCharge, MaxCharge);
 
-    ui.Color = Color.LightGray;
-    ui.DrawAppendLabelValue(_lastSyncedAngle);
+    ui.DrawAppendLabelValue("Angle", _angle, format: ['F']);
+    ui.DrawAppendLabelValue(_lastSyncedAngle, format: ['F'], color: Color.LightGray);
   }
 }

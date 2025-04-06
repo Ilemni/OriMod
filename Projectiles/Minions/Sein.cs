@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using AnimLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -477,9 +478,9 @@ public abstract class Sein(int type) : Minion {
       return;
     }
 
-    OriPlayer oPlayer = Player.GetModPlayer<OriPlayer>();
+    OriCharacter ori = Player.GetCharacter<OriCharacter>();
     bool hasTarget = UpdateTargets();
-    bool attemptFire = AutoFire ? hasTarget : oPlayer.Input.LeftClick.JustPressed && !Player.mouseInterface;
+    bool attemptFire = AutoFire ? hasTarget : ori.Input.LeftClick.JustPressed && !Player.mouseInterface;
 
     if (!attemptFire || Cooldown != 0 && (Cooldown <= CooldownMin || _currentShotsFired >= data.Bursts)) {
       return;

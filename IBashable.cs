@@ -1,5 +1,4 @@
 ﻿using OriMod.Abilities;
-using Terraria;
 
 namespace OriMod;
 
@@ -12,7 +11,7 @@ public interface IBashable {
   /// <summary>
   /// The player that is bashing this or last bashed this.
   /// </summary>
-  OriPlayer? BashPlayer { get; set; }
+  Bash? Bash { get; set; }
 
   /// <summary>
   /// Whether the entity is being bashed.
@@ -36,35 +35,24 @@ public interface IBashable {
   /// </returns>
   public bool CanBeBashed() => !IsBashed && FramesUntilBashable == 0;
 
-  /// <summary>
-  /// Checks that the <see cref="BashPlayer"/> is still active, alive, is bashing, and that the entity it is bashing is this.
-  /// </summary>
-  /// <param name="bashPlayer"></param>
-  /// <param name="entity"></param>
-  /// <returns></returns>
-  public static bool ValidateBash(OriPlayer? bashPlayer, Entity entity) {
-    return bashPlayer is { Player: { active: true, dead: false }, ActiveState: Bash bash } &&
-      bash.IsBashing(entity);
-  }
-
-  public void SetBashPlayer(OriPlayer bashPlayer) {
+  public void SetBash(Bash bash) {
     IsBashed = true;
-    BashPlayer = bashPlayer;
+    Bash = bash;
     FramesUntilBashable = ImmuneTime;
   }
 
   /// <summary>
   /// Clears the Bash Player, only if it is the matching player.
   /// </summary>
-  /// <param name="player"></param>
-  public void TryClearBashPlayer(Player player) {
-    if (BashPlayer is null || BashPlayer.Player.whoAmI == player.whoAmI) {
+  /// <param name="bash"></param>
+  public void TryClearBash(Bash bash) {
+    if (Bash is null || Bash.Player.whoAmI == bash.Player.whoAmI) {
       ClearBashPlayer();
     }
   }
 
   public void ClearBashPlayer() {
     IsBashed = false;
-    BashPlayer = null;
+    Bash = null;
   }
 }

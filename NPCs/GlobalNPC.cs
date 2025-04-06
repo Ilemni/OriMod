@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
+using OriMod.Abilities;
 using OriMod.Utilities;
 using Terraria;
 using Terraria.ID;
@@ -21,7 +22,7 @@ public sealed class OriNpc : GlobalNPC, IBashable {
 
   public int ImmuneTime => 15;
 
-  public OriPlayer? BashPlayer { get; set; }
+  public Bash? Bash { get; set; }
 
   public bool IsBashed { get; set; }
 

@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Terraria.DataStructures;
 
 namespace OriMod;
 
 /// <summary>
-/// Class for containing and updating all <see cref="TrailSegment"/>s on an <see cref="OriPlayer"/>.
+/// Class for containing and updating all <see cref="TrailSegment"/>s on an <see cref="OriCharacter"/>.
 /// </summary>
 public sealed class Trail {
   /// <summary>
-  /// Create an instance of <see cref="Trail"/> that will belong to <paramref name="oPlayer"/>.
+  /// Create an instance of <see cref="Trail"/> that will belong to <paramref name="ori"/>.
   /// </summary>
-  /// <param name="oPlayer">The <see cref="OriPlayer"/> this <see cref="Trail"/> will belong to.</param>
-  /// <exception cref="ArgumentNullException"><paramref name="oPlayer"/> is <see langword="null"/>.</exception>
-  internal Trail(OriPlayer oPlayer) {
+  internal Trail(OriCharacter ori) {
     _segments = new TrailSegment[Count];
     int i = 0;
     while (i < Count) {
-      _segments[i++] = new TrailSegment(oPlayer);
+      _segments[i++] = new TrailSegment(ori);
     }
   }
 
