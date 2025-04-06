@@ -2,7 +2,6 @@
 using AnimLib.Animations;
 using AnimLib.States;
 using Microsoft.Xna.Framework;
-using OriMod.Skins.Slots;
 using Terraria;
 using Terraria.Graphics.Shaders;
 using Terraria.ID;

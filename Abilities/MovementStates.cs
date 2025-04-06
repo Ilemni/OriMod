@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AnimLib.Animations;
-using AnimLib.Networking;
 using AnimLib.States;
-using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 

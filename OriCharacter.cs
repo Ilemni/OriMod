@@ -148,13 +148,13 @@ public sealed partial class OriCharacter : AnimCharacter {
     };
   }
 
-  public override AnimCharacterStyle.UISettings GetStyleUISettings() {
+  public override AnimCharacterStyleUISettings GetStyleUISettings() {
     TextureDictionary primary = ModContent.Request<TextureDictionary>
       ("OriMod/UI/CharCreation/ColorPrimary", AssetRequestMode.ImmediateLoad).Value;
     TextureDictionary secondary = ModContent.Request<TextureDictionary>
       ("OriMod/UI/CharCreation/ColorSecondary", AssetRequestMode.ImmediateLoad).Value;
 
-    AnimCharacterStyle.UISettings uiSettings = new() {
+    AnimCharacterStyleUISettings uiSettings = new() {
       HideHairColorOption = true,
       HideShoeColorOption = true,
       SkinColorIcon = (primary["Colored"], primary["Uncolored"]),
