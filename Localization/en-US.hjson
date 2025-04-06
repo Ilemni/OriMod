@@ -185,6 +185,11 @@ Mods: {
 						Enables semi-homing of charge dash
 						'''
 				}
+
+				eBurrowForceLighting: {
+					Label: Burrow Force Lighting
+					Tooltip: Forces the Lighting Engine to update every frame while burrowing
+				}
 			}
 		}
 

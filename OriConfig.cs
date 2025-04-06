@@ -91,6 +91,9 @@ public sealed class OriConfigClient1 : ModConfig {
   [DefaultValue(typeof(bool), "false")]
   public bool eChargeDashHoming;
 
+  [DefaultValue(typeof(bool), "false")]
+  public bool eBurrowForceLighting;
+
   public override void OnLoaded() {
     OriMod.ConfigClient = this;
   }
